@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="core-access-control",
+    name="core-management-layer",
     version="0.0.1",
     description="Girl Effect Core Management Layer",
     long_description=open("README.rst", "r").read() + open("AUTHORS.rst", "r").read() + open("CHANGELOG.rst", "r").read(),
