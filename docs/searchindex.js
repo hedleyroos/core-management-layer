@@ -1,0 +1,1 @@
+Search.setIndex({docnames:["index"],envversion:52,filenames:["index.rst"],objects:{},objnames:{},objtypes:{},terms:{index:0,modul:0,page:0,search:0},titles:["Welcome to Girl Effect: Core management layer\u2019s documentation!"],titleterms:{core:0,document:0,effect:0,girl:0,indic:0,layer:0,manag:0,tabl:0,welcom:0}})
