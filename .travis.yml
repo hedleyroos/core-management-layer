@@ -1,6 +1,9 @@
-sudo: false
+sudo: true
 cache: pip
 language: python
+
+services:
+  - docker
 
 matrix:
   include:
@@ -13,3 +16,8 @@ install:
   - pip install tox
 
 script: tox
+
+after_success:
+  - export REPO=dockerhubowner/core-management-layer
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH_CLEAN ; fi`
+  - docker build -t $REPO:$TAG .
