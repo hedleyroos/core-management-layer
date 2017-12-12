@@ -57,3 +57,10 @@ docs-build:  $(VENV)
 	cp -r docs/build/html/. docs/
 	rm -rf docs/build/
 	@echo "$(GREEN)DONE$(CLEAR)"
+
+prism:
+	curl -L https://github.com/stoplightio/prism/releases/download/v0.6.21/prism_linux_amd64 -o prism
+	chmod +x prism
+
+mock-management-layer-api: prism
+	./prism run --mockDynamic --list -s swagger/management_layer.yml -p 8010
