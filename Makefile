@@ -64,3 +64,6 @@ prism:
 
 mock-management-layer-api: prism
 	./prism run --mockDynamic --list -s swagger/management_layer.yml -p 8010
+
+validate-swagger: prism
+	./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
