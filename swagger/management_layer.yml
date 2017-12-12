@@ -504,6 +504,10 @@ definitions:
         type: string
         format: uuid
         readOnly: true
+      invitor_id:
+        type: string
+        format: uuid
+        description: The user that created the invitation
       first_name:
         type: string
         maxLength: 100
@@ -526,6 +530,7 @@ definitions:
         readOnly: true
     required:
       - id
+      - invitor_id
       - first_name
       - last_name
       - email
@@ -704,6 +709,9 @@ definitions:
       creator_id:
         type: string
         format: uuid
+        readOnly: true
+        description: The user making the request will be considered the creator and thus this field is not available
+          when creating admin note.
       note:
         type: string
       created_at:
@@ -1319,6 +1327,12 @@ paths:
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
+        - description: Optional filter based on the invitor (the user who created the invitation)
+          name: invitor_id
+          in: query
+          required: false
+          type: string
+          format: uuid
       produces:
         - application/json
       responses:
@@ -2581,3 +2595,28 @@ paths:
       tags:
         - oidc_provider
 
+  '/users/{user_id}/activate/':
+    parameters:
+      - $ref: '#/parameters/user_id'
+    get:
+       description: Activate the user's account.
+       responses:
+         200:
+           description: Acccount successfully activated
+         403:
+           description: Forbidden
+         404:
+           description: User not found
+
+  '/users/{user_id}/deactivate/':
+    parameters:
+      - $ref: '#/parameters/user_id'
+    get:
+       description: Deactivate the user's account.
+       responses:
+         200:
+           description: Acccount successfully dactivated
+         403:
+           description: Forbidden
+         404:
+           description: User not found
