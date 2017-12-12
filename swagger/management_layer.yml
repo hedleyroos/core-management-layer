@@ -22,8 +22,14 @@ schemes:
 host: 'localhost:8000'
 
 info:
-  description: ''
-  title: Access Control API
+  title: Management Layer API
+  description: >
+    The Management Layer API exposes the functionality that is available to users. Access to this API is based on a
+    user token that must be presented with every request.
+
+
+    The Management Layer ties together the User Data Store, Access Control System and Authentication Service.
+    It performs permission checking and audit logging.
   version: ''
 
 basePath: /api/v1
