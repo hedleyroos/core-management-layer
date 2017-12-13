@@ -2147,6 +2147,85 @@ paths:
       tags:
         - access_control
 
+  /usersitedata/:
+    get:
+      operationId: usersitedata_list
+      parameters:
+        - $ref: '#/parameters/optional_offset'
+        - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_user_filter'
+        - $ref: '#/parameters/optional_site_filter'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/user_site_data'
+      tags:
+        - user_data
+    post:
+      operationId: usersitedata_create
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/user_site_data'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+        - user_data
+
+  /usersitedata/{user_id}/{site_id}/:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - $ref: '#/parameters/site_id'
+    delete:
+      operationId: usersitedata_delete
+      responses:
+        '204':
+          description: ''
+      tags:
+        - user_data
+    get:
+      operationId: usersitedata_read
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+        - user_data
+    put:
+      operationId: usersitedata_update
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/user_site_data_update'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+        - user_data
+
   /adminnotes/:
     get:
       operationId: adminnote_list
