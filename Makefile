@@ -1,6 +1,11 @@
 VENV=./ve
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
+CODEGEN_VERSION=2.2.3
+CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
+USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
+ACCESS_CONTROL_CLIENT_DIR=management_layer/access_control
+AUTHENTICATION_SERVICE_CLIENT_DIR=management_layer/authentication_service
 
 # Colours.
 CLEAR=\033[0m
@@ -67,3 +72,33 @@ mock-management-layer-api: prism
 
 validate-swagger: prism
 	@./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
+
+swagger-codegen-cli-$(CODEGEN_VERSION).jar:
+	        wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
+
+# Generate the client code to interface with the User Data Store
+user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+	echo "Generating the client for the User Data Store API..."
+	# curl https://github.com/girleffect/core-user-data-store/blob/develop/swagger/user_data_store.yml -o user_data_store.yml
+	#$(CODEGEN) -l python -i user_data_store.yml -o $(USER_DATA_STORE_CLIENT_DIR)
+	$(CODEGEN) -l python -i ../core-user-data-store/swagger/user_data_store.yml -o /tmp/$(USER_DATA_STORE_CLIENT_DIR)
+	cp -r /tmp/$(USER_DATA_STORE_CLIENT_DIR)/swagger_client* $(USER_DATA_STORE_CLIENT_DIR)
+
+# Generate the client code to interface with the Access Control component
+access-control-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+	echo "Generating the client for the Access Control API..."
+	# curl https://github.com/girleffect/core-access-control/blob/develop/swagger/access_control.yml -o access_control.yml
+	#$(CODEGEN) -l python -i access_control.yml -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
+	$(CODEGEN) -l python -i ../core-access-control/swagger/access_control.yml -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
+	cp -r /tmp/$(ACCESS_CONTROL_CLIENT_DIR)/swagger_client* $(ACCESS_CONTROL_CLIENT_DIR)
+
+# Generate the client code to interface with the Authentication Service
+authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+	echo "Generating the client for the Authentication Service API..."
+	# curl https://github.com/girleffect/core-authentication-service/blob/develop/swagger/authentication_service.yml -o authentication_service.yml
+	#$(CODEGEN) -l python -i authentication_service.yml -o $(AUTHENTICATION_SERVICE_CLIENT_DIR)
+	$(CODEGEN) -l python -i ../core-authentication-service/swagger/authentication_service.yml -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
+	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/swagger_client* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
+
+management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
+	$(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
