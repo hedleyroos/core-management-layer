@@ -1,23 +1,33 @@
+# coding: utf-8
+
+import sys
 from setuptools import setup, find_packages
 
+NAME = "management_layer"
+VERSION = "1.0.0"
+
+# To install the library, run the following
+#
+# python setup.py install
+#
+# prerequisite: setuptools
+# http://pypi.python.org/pypi/setuptools
+
+REQUIRES = ["connexion"]
+
 setup(
-    name="core-management-layer",
-    version="0.0.1",
-    description="Girl Effect Core Management Layer",
+    name=NAME,
+    version=VERSION,
+    description="Girl Effect Core Managment Layer",
     long_description=open("README.rst", "r").read() + open("AUTHORS.rst", "r").read() + open("CHANGELOG.rst", "r").read(),
-    author="Praekelt Consulting",
     author_email="dev@praekelt.com",
-    license="BSD",
     url="http://github.com/girleffect/core-management-layer",
+    install_requires=REQUIRES,
     packages=find_packages(),
+    package_data={'': ['swagger/swagger.yaml']},
     include_package_data=True,
-    classifiers=[
-        "Programming Language :: Python",
-        "License :: OSI Approved :: BSD License",
-        "Development Status :: 5 - Production/Stable",
-        "Operating System :: OS Independent",
-        "Intended Audience :: Developers",
-        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-    ],
-    zip_safe=False,
+    long_description="""\
+    The Management Layer API exposes the functionality that is available to users. Access to this API is based on a user token that must be presented with every request.  The Management Layer ties together the User Data Store, Access Control System and Authentication Service. It performs permission checking and audit logging.
+    """
 )
+
