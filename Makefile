@@ -1,6 +1,7 @@
 VENV=./ve
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
+FLAKE8=$(VENV)/bin/flake8
 CODEGEN_VERSION=2.2.3
 CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
 USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
@@ -14,6 +15,7 @@ GREEN=\033[0;32m
 CYAN=\033[0;36m
 
 .SILENT: docs-build
+.PHONY: check
 
 help:
 	@echo "usage: make <target>"
@@ -103,5 +105,8 @@ authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
 	$(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
 
-check: $(VENV)
-	$(VENV)/bin/flake8
+$(FLAKE8): $(VENV)
+	$(PIP) install flake8
+
+check: $(FLAKE8)
+	$(FLAKE8)
