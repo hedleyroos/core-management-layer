@@ -102,3 +102,6 @@ authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
 	$(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
+
+check: $(VENV)
+	$(VENV)/bin/flake8
