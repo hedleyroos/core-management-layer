@@ -191,12 +191,12 @@ def get_role_resource_permissions(
     """
     try:
         role_id = int(role)
-    except TypeError:
+    except ValueError:
         role_id = ROLES[role]
 
     try:
         resource_id = int(resource)
-    except TypeError:
+    except ValueError:
         resource_id = RESOURCES[resource]
 
     key = "{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id)
@@ -264,7 +264,7 @@ def get_user_roles_for_domain(
     """
     try:
         domain_id = int(domain)
-    except TypeError:
+    except ValueError:
         domain_id = DOMAINS[domain]
 
     user_roles = api_get_user_roles(user, nocache)
@@ -287,7 +287,7 @@ def get_user_roles_for_site(
     """
     try:
         site_id = int(site)
-    except TypeError:
+    except ValueError:
         site_id = SITES[site]
 
     user_roles = api_get_user_roles(user, nocache)
