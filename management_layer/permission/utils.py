@@ -45,8 +45,8 @@ RESOURCES = {}
 
 class Forbidden(Exception):
     """
-    An exception raised when a user is does not have the required permission(
-    s) to perform a function.
+    An exception raised when a user does not have the required permission(s)
+    to perform a function.
     """
     pass
 
