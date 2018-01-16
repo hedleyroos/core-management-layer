@@ -113,7 +113,7 @@ check: $(FLAKE8)
 	$(FLAKE8)
 
 $(PYTEST): $(VENV)
-	$(PIP) install pytest
+	$(PIP) install pytest pytest-cov
 
 test: $(PYTEST)
-	$(PYTEST) --verbose management_layer
+	$(PYTEST) --verbose --cov=management_layer management_layer/
