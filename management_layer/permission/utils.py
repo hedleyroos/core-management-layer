@@ -6,28 +6,30 @@ Permissions are based on the roles assigned to the user making the request,
 which maps to permissions on resources.
 """
 import typing
+from uuid import UUID
+from functools import wraps
 from pymemcache.client.base import PooledClient
 from management_layer.access_control.apis.access_control_api import \
     AccessControlApi
 from management_layer.access_control.apis.operational_api import OperationalApi
 
 # Convenience types
-Uuid = typing.TypeVar("Uuid", str)
-User = typing.TypeVar("User", Uuid)
-Resource = typing.TypeVar("Resource", str)
-Permission = typing.TypeVar("Permission", str)
-ResourcePermissions = typing.List("ResourcePermissions",
-                                  typing.Tuple[Resource, Permission])
-Site = typing.TypeVar("Site", Uuid, None)
-Domain = typing.Union("Domain", str, int, None)
-Role = typing.TypeVar("Role", str, int, None)
+UserId = type(UUID)
+SiteId = type(UUID)
+Operator = typing.Callable[..., bool]
+Resource = typing.Union[str, int]
+Permission = typing.Union[str, int]
+ResourcePermission = typing.Tuple[Resource, Permission]
+ResourcePermissions = typing.Sequence[ResourcePermission]
+Domain = typing.Union[str, int]
+Role = typing.Union[str, int]
 
-# Memcache key prefixes
+# MemCache key prefixes
 MKP_ROLE_RESOURCE_PERMISSION = "RRP"
 MKP_USER_ROLES = "UR"
 
 TECH_ADMIN = "tech_admin"
-MEMCACHE = PooledClient()
+MEMCACHE = PooledClient(("127.0.0.1", 11211))
 CACHE_TIME = 5 * 60
 
 OA = OperationalApi()
@@ -41,10 +43,82 @@ ROLES = {}
 RESOURCES = {}
 
 
-def has_permissions(
-    user: User, operator: typing.Callable[[[bool]], bool],
+class Forbidden(Exception):
+    """
+    An exception raised when a user is does not have the required permission(
+    s) to perform a function.
+    """
+    pass
+
+
+def role_has_permission(
+    role: Role, permission: Permission, resource: Resource, nocache: bool=False
+) -> bool:
+    """
+    Check if a role has a specified resource permission.
+
+    Bypassing the cache can have a significant performance impact and should
+    only be used in exceptional circumstances.
+
+    :param role: The role to check
+    :param permission: The required permission
+    :param resource: The resource
+    :param nocache: Bypass the cache if True
+    :return: True if the role has the permission on the resource, else False
+    """
+    result = False
+    permissions = get_role_resource_permissions(role, resource, nocache)
+    if permissions:
+        result = permission in permissions
+
+    return result
+
+
+def roles_have_permissions(
+    roles: typing.List[Role],
+    operator: Operator,
     resource_permissions: ResourcePermissions,
-    site: Site=None,
+    nocache: bool=False
+) -> bool:
+    """
+    Check whether the specified roles has any or all (as per the operator) of
+    the specified resource permissions.
+    It is typically used as part of the user_has_permissions() function as the
+    following simplified pseudo-code shows:
+
+        user_has_permissions(user, operator, resource_permissions):
+            roles = get_user_roles()
+            return roles_have_permissions(roles, operator, resource_permissions)
+
+    If any of the roles has the required permission, the requirement is
+    satisfied.
+    Bypassing the cache can have a significant performance impact and should
+    only be used in exceptional circumstances.
+    :param roles: A list of role ids
+    :param operator: any or all
+    :param resource_permissions: The resource permissions required
+    :param nocache: Bypass the cache if True
+    :return: True if the user is has the required permissions on the resources
+    """
+    if operator not in [all, any]:
+        raise RuntimeError("The operator must be all or any")
+
+    if TECH_ADMIN in roles:
+        return True
+
+    return operator(
+        # Any role can provide the permission.
+        any(role_has_permission(role, permission, resource, nocache)
+            for role in roles)
+        for permission, resource in resource_permissions
+    )
+
+
+def user_has_permissions(
+    user: UserId,
+    operator: Operator,
+    resource_permissions: ResourcePermissions,
+    site: SiteId=None,
     domain: Domain=None,
     nocache: bool=False
 ) -> bool:
@@ -69,43 +143,15 @@ def has_permissions(
     if operator not in [all, any]:
         raise RuntimeError("The operator must be all or any")
 
-    roles = get_user_roles(user, site=site, domain=domain)
-    if TECH_ADMIN in roles:
-        return True
-
-    return operator(
-        # Any role can provide the permission.
-        any(has_permission(role, permission, resource, nocache) for role in
-            roles)
-        for permission, resource in resource_permissions
+    roles = get_user_roles_for_site_or_domain(user, site=site, domain=domain)
+    return roles_have_permissions(
+        roles, operator, resource_permissions, nocache
     )
 
 
-def has_permission(
-    role: Role, permission: Permission, resource: Resource, nocache: bool=False
-) -> bool:
-    """
-    Check if a role has a specified resource permission.
-
-    Bypassing the cache can have a significant performance and should only be
-    used in exceptional circumstances.
-
-    :param role: The role to check
-    :param permission: The required permission
-    :param resource: The resource
-    :param nocache: Bypass the cache if True
-    :return: True if the role has the permission on the resource, else False
-    """
-    result = False
-    permissions = get_role_resource_permissions(role, resource, nocache)
-    if permissions:
-        result = permission in permissions
-
-    return result
-
-
-def get_user_roles(
-    user: User, site: Site = None, domain: Domain = None, nocache: bool=False
+def get_user_roles_for_site_or_domain(
+    user: UserId, site: SiteId=None, domain: Domain=None, nocache:
+        bool=False
 ) -> typing.List[Role]:
     """
     Get the roles assigned to the user for the specified site or domain.
@@ -165,9 +211,29 @@ def get_role_resource_permissions(
 
 
 def api_get_user_roles(
-    user: User, nocache: bool=False
+    user: UserId, nocache: bool=False
 ) -> typing.Dict[str, typing.List[Role]]:
     """
+    This function returns all the roles that a user has on all sites and
+    domains in the system. The result looks like this:
+    ```
+    {
+      "d:1": [2, 4],
+      "d:2": [2, 4, 6],
+      "d:9": [2, 4],
+      "d:11": [2, 4],
+      "d:10": [2, 4],
+      "d:3": [2, 4, 6],
+      "d:6": [2, 4, 6],
+      "d:4": [2, 4, 6],
+      "d:5": [2, 3, 4, 6],
+      "d:7": [2, 4, 6],
+      "d:8": [2, 4, 6],
+      "s:1": [2, 4, 5, 6]
+    }
+    ```
+    The dictionary keys consists of a type indicator ("d" for domains and "s"
+    for sites) and an id separated by a ":".
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
     :param user: The user for which to get roles
@@ -178,14 +244,14 @@ def api_get_user_roles(
     key = "{}:{}".format(MKP_USER_ROLES, user)
     user_roles = None if nocache else MEMCACHE.get(key)
     if not user_roles:
-        user_roles = OA.get_all_user_roles(user)
+        user_roles = OA.get_all_user_roles(user.hex)
         MEMCACHE.set(key, user_roles, expire=CACHE_TIME)
 
     return user_roles
 
 
 def get_user_roles_for_domain(
-    user: User, domain: Domain, nocache: bool=False
+    user: UserId, domain: Domain, nocache: bool=False
 ) -> typing.List[Role]:
     """
     Get the roles that a user has for a specified domain.
@@ -202,11 +268,13 @@ def get_user_roles_for_domain(
         domain_id = DOMAINS[domain]
 
     user_roles = api_get_user_roles(user, nocache)
+    # Look up the list of role ids associated with the domain key. Return an
+    # empty list of it does not exist.
     return user_roles.get("d:{}".format(domain_id), [])
 
 
 def get_user_roles_for_site(
-    user: User, site: Site, nocache: bool=False
+    user: UserId, site: SiteId, nocache: bool=False
 ) -> typing.List[Role]:
     """
     Get the roles that a user has for a specified site.
@@ -223,4 +291,119 @@ def get_user_roles_for_site(
         site_id = SITES[site]
 
     user_roles = api_get_user_roles(user, nocache)
+    # Look up the list of role ids associated with the site key. Return an
+    # empty list of it does not exist.
     return user_roles.get("s:{}".format(site_id), [])
+
+
+def require_permissions(
+    operator: Operator,
+    resource_permissions: ResourcePermissions,
+    nocache: bool=False,
+    user_field: typing.Union[int, str]=0,
+    site_field: typing.Union[int, str]=1
+) -> typing.Callable:
+    """
+    This function is used as a decorator to protect functions by specifying
+    the permissions that a user requires to perform the action, e.g.
+    ```
+    @require_permissions(all, [("urn:ge:test:foo", "write")])
+    @require_permissions(any, [("urn:ge:test:foo", "read"),
+                               ("urn:ge:test:bar", "read"])
+    def doSomething(user, site, arg1, arg2):
+        pass
+    ```
+    As can be seen from the example above, the decorator can be stacked.
+    Note, however, that for performance reasons the least amount of
+    decorators is preferred.
+    ```
+    # Logically correct, but not suboptimal performance
+    @require_permissions(all, [("urn:ge:test:foo", "write")])
+    @require_permissions(all, [("urn:ge:test:bar", "write")])
+    @require_permissions(all, [("urn:ge:test:baz", "write")])
+    def badExample(user, site, arg1, arg2):
+        pass
+
+    # Logically equivalent to the decorators of example above and more efficient
+    @require_permissions(all, [("urn:ge:test:foo", "write"),
+                               ("urn:ge:test:bar", "write"),
+                               ("urn:ge:test:baz", "write")])
+    def goodExample(user, site, arg1, arg2):
+        pass
+    ```
+    This function requires the the user who made the request as well as the
+    site from which the request originated in order to look up roles
+    associated with the user. The user and site UUID values is picked from
+    the values passed to the decorated function. By default we use the first
+    argument as the user value and the second as the site. This can be
+    changed in the decorator, e.g.
+    ```
+    @require_permissions(all, [("urn:ge:test:baz", "write")],
+                         site_field=2, user_field=3)
+    def example1(arg1, arg2, site, user):
+        pass
+
+    @require_permissions(all, [("urn:ge:test:baz", "write")],
+                         site_field=0, user_field="user")  # "user" in kwargs
+    def example2(site, **kwargs):
+        pass
+    ```
+
+    :param operator: any or all
+    :param resource_permissions: The resource permissions required
+    :param nocache: Bypass the cache if True
+    :param user_field: An integer or string identifying either the positional
+        argument or the name of the keyword argument identifying the user
+        making the request.
+    :param site_field: An integer or string identifying either the positional
+        argument or the name of the keyword argument identifying the site from
+        which the request is made.
+    :raises: Forbidden if the user does not have the required permissions.
+    """
+    if operator not in [any, all]:
+        raise RuntimeError("The operator must be any or all")
+
+    def wrap(f):
+        @wraps(f)
+        def wrapped_f(*args, **kwargs):
+            """
+            The purpose of the wrapper is to get the
+            :param args: A list of positional arguments
+            :param kwargs: A dictionary of keyword arguments
+            :return: Whatever the wrapped function
+            """
+            # Extract the user UUID from the function arguments
+            user_field_type = type(user_field)
+            if user_field_type is int:
+                user = args[user_field]
+            elif user_field_type is str:
+                user = kwargs[user_field]
+            else:
+                raise RuntimeError("Invalid value for user_field")
+
+            # Validate the UUID
+            if not isinstance(user, UUID):
+                raise RuntimeError("User is expected to be a UUID")
+
+            # Extract the site UUID from the function arguments
+            site_field_type = type(site_field)
+            if site_field_type is int:
+                site = args[site_field]
+            elif site_field_type is str:
+                site = kwargs[site_field]
+            else:
+                raise RuntimeError("Invalid value for site_field")
+
+            # Validate the UUID
+            if not isinstance(site, UUID):
+                raise RuntimeError("Site is expected to be a UUID")
+
+            roles = get_user_roles_for_site(user, site, nocache)
+            if roles_have_permissions(roles, operator, resource_permissions):
+                return f(*args, **kwargs)
+
+            # If the necessary permissions are not available, we always raise
+            # an exception.
+            raise Forbidden()
+        return wrapped_f
+    return wrap
