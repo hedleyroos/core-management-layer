@@ -45,9 +45,11 @@ def json_deserializer(key, value, flags):
 
 
 TECH_ADMIN = "tech_admin"
+# TODO: Tweak memcache params
 MEMCACHE = PooledClient(("127.0.0.1", 11211),
                         serializer=json_serializer,
-                        deserializer=json_deserializer)
+                        deserializer=json_deserializer,
+                        no_delay=True, connect_timeout=0.5, timeout=1.0)
 CACHE_TIME = 5 * 60
 
 OA = OperationalApi()
@@ -132,7 +134,7 @@ def roles_have_permissions(
         # Any role can provide the permission.
         any(role_has_permission(role, permission, resource, nocache)
             for role in roles)
-        for permission, resource in resource_permissions
+        for resource, permission in resource_permissions
     )
 
 

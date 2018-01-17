@@ -193,7 +193,7 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(all, [("permission1", "urn:resource1")])
+        @utils.require_permissions(all, [("urn:resource1", "permission1")])
         def single_requirement(_user, _site):
             return True
 
@@ -218,8 +218,8 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_user_roles_for_site.return_value = ["role1"]
         self.assertTrue(single_requirement(user, site))
 
-        @utils.require_permissions(all, [("permission1", "urn:resource1"),
-                                         ("permission2", "urn:resource2")])
+        @utils.require_permissions(all, [("urn:resource1", "permission1"),
+                                         ("urn:resource2", "permission2")])
         def multiple_requirements(_user, _site):
             return True
 
@@ -258,7 +258,7 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(any, [("permission1", "urn:resource1")])
+        @utils.require_permissions(any, [("urn:resource1", "permission1")])
         def single_requirement(_user, _site):
             return True
 
@@ -283,8 +283,8 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_user_roles_for_site.return_value = ["role1"]
         self.assertTrue(single_requirement(user, site))
 
-        @utils.require_permissions(any, [("permission1", "urn:resource1"),
-                                         ("permission2", "urn:resource2")])
+        @utils.require_permissions(any, [("urn:resource1", "permission1"),
+                                         ("urn:resource2", "permission2")])
         def multiple_requirements(_user, _site):
             return True
 
@@ -336,9 +336,9 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(all, [("permission1", "urn:resource1")])
-        @utils.require_permissions(any, [("permission2", "urn:resource2"),
-                                         ("permission3", "urn:resource3")])
+        @utils.require_permissions(all, [("urn:resource1", "permission1")])
+        @utils.require_permissions(any, [("urn:resource2", "permission2"),
+                                         ("urn:resource3", "permission3")])
         def combo_requirement(_user, _site):
             return True
 
@@ -450,3 +450,93 @@ class TestUtils(TestCase):
                     TEST_ROLES["role1"], TEST_PERMISSIONS["permission1"],
                     TEST_RESOURCES["urn:resource2"], nocache)
             )
+
+    @patch.dict("management_layer.permission.utils.ROLES",
+                TEST_ROLES, clear=True)
+    @patch.dict("management_layer.permission.utils.PERMISSIONS",
+                TEST_PERMISSIONS, clear=True)
+    @patch.dict("management_layer.permission.utils.RESOURCES",
+                TEST_RESOURCES, clear=True)
+    @patch("management_layer.access_control.apis.access_control_api"
+           ".AccessControlApi.roleresourcepermission_list")
+    def test_roles_have_permissions(self, mocked_roleresourcepermission_list):
+        """
+        Test that the "roles_have_permissions" function work as intended.
+        :param mocked_roleresourcepermission_list: Function mocked by @patch
+            decorator
+        """
+        def dummy_roleresourcepermission_list(role_id, resource_id):
+            responses = {
+                (1, 1): [
+                    RoleResourcePermission(**{
+                        "role_id": role_id,
+                        "resource_id": resource_id,
+                        "permission_id": TEST_PERMISSIONS["permission1"],
+                        "created_at": datetime.now(),
+                        "updated_at": datetime.now()
+                    })
+                ]
+            }
+            return responses.get((role_id, resource_id), [])
+
+        mocked_roleresourcepermission_list.side_effect = \
+            dummy_roleresourcepermission_list
+
+        # We test both the cached and non-cached use-cases. It is important
+        # that we test with nocache=True first, since this will not read from
+        # the cache, but populate it for the next iteration where nocache=False.
+        for nocache in [True, False]:
+            # Call function using labels
+            self.assertTrue(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], all,
+                    [("urn:resource1", "permission1")],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], all,
+                    [("urn:resource1", "permission2")],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], all,
+                    [("urn:resource2", "permission1")],
+                    nocache
+                )
+            )
+
+            # Call function using ids
+            self.assertTrue(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
+                    [(TEST_RESOURCES["urn:resource1"],
+                      TEST_PERMISSIONS["permission1"])],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
+                    [(TEST_RESOURCES["urn:resource1"],
+                      TEST_PERMISSIONS["permission2"])],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
+                    [(TEST_RESOURCES["urn:resource2"],
+                      TEST_PERMISSIONS["permission1"])],
+                    nocache
+                )
+            )
+
+        # TODO: Add tests for 'any' operator
