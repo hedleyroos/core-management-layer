@@ -41,6 +41,7 @@ SITES = {}
 DOMAINS = {}
 ROLES = {}
 RESOURCES = {}
+PERMISSIONS = {}
 
 
 class Forbidden(Exception):
@@ -67,9 +68,12 @@ def role_has_permission(
     :return: True if the role has the permission on the resource, else False
     """
     result = False
-    permissions = get_role_resource_permissions(role, resource, nocache)
-    if permissions:
-        result = permission in permissions
+    permission_id = permission if type(permission) is int else \
+        PERMISSIONS[permission]
+
+    permission_ids = get_role_resource_permissions(role, resource, nocache)
+    if permission_ids:
+        result = permission_id in permission_ids
 
     return result
 
@@ -189,22 +193,21 @@ def get_role_resource_permissions(
     :param nocache: Bypass the cache if True
     :return: A list of permission ids
     """
-    try:
-        role_id = int(role)
-    except ValueError:
-        role_id = ROLES[role]
-
-    try:
-        resource_id = int(resource)
-    except ValueError:
-        resource_id = RESOURCES[resource]
+    role_id = role if type(role) is int else ROLES[role]
+    resource_id = resource if type(resource) is int else RESOURCES[resource]
 
     key = "{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id)
     role_resource_permissions = None if nocache else MEMCACHE.get(key)
     if not role_resource_permissions:
+        # The API call returns a List[RoleResourcePermission]
         role_resource_permissions = AA.roleresourcepermission_list(
             role_id=role_id, resource_id=resource_id
         )
+        # Internally we use only the permission ids, i.e. List[int]
+        role_resource_permissions = [
+            entry.permission_id for entry in role_resource_permissions
+        ]
+
         MEMCACHE.set(key, role_resource_permissions, expire=CACHE_TIME)
 
     return role_resource_permissions
@@ -241,10 +244,17 @@ def api_get_user_roles(
     :return: A dictionary containing the roles assigned to the specified user on
        the domains and sites in the system.
     """
-    key = "{}:{}".format(MKP_USER_ROLES, user)
+    key = "{}:{}".format(MKP_USER_ROLES, user.hex)
     user_roles = None if nocache else MEMCACHE.get(key)
     if not user_roles:
-        user_roles = OA.get_all_user_roles(user.hex)
+        # The API returns an AllUserRoles object
+        response = OA.get_all_user_roles(user.hex)
+        if response.user_id != user.hex:
+            raise RuntimeError("Invalid API response: {} != {}".format(
+                response.user_id, user.hex
+            ))
+        # We store the roles_map part of the response
+        user_roles = response.roles_map
         MEMCACHE.set(key, user_roles, expire=CACHE_TIME)
 
     return user_roles
@@ -262,10 +272,7 @@ def get_user_roles_for_domain(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    try:
-        domain_id = int(domain)
-    except ValueError:
-        domain_id = DOMAINS[domain]
+    domain_id = domain if type(domain) is int else DOMAINS[domain]
 
     user_roles = api_get_user_roles(user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
@@ -285,10 +292,7 @@ def get_user_roles_for_site(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    try:
-        site_id = int(site)
-    except ValueError:
-        site_id = SITES[site]
+    site_id = site if type(site) is int else SITES[site]
 
     user_roles = api_get_user_roles(user, nocache)
     # Look up the list of role ids associated with the site key. Return an
@@ -405,5 +409,7 @@ def require_permissions(
             # If the necessary permissions are not available, we always raise
             # an exception.
             raise Forbidden()
+
         return wrapped_f
+
     return wrap
