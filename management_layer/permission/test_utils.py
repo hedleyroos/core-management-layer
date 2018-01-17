@@ -1,6 +1,10 @@
 from unittest import TestCase
 from unittest.mock import patch
 from uuid import uuid1
+
+from datetime import datetime
+
+from management_layer.access_control import RoleResourcePermission
 from management_layer.permission import utils
 
 # Test dictionaries commonly used by tests
@@ -314,6 +318,11 @@ class TestRequirePermissionsDecorator(TestCase):
         """
         A test of the 'any' operator by mocking roles, resources and
         permissions.
+
+        :param mocked_get_user_roles_for_site: Function mocked by @patch
+            decorator
+        :param mocked_get_role_resource_permissions: Function mocked by @patch
+            decorator
         """
         def dummy_get_role_resource_permissions(role, resource, _nocache):
             # Return hand-crafted responses for this test.
@@ -378,7 +387,66 @@ class TestUtils(TestCase):
                 TEST_PERMISSIONS, clear=True)
     @patch.dict("management_layer.permission.utils.RESOURCES",
                 TEST_RESOURCES, clear=True)
-    def test_role_has_permissions(self):
-        print(utils.ROLES)
-        print(utils.PERMISSIONS)
-        print(utils.RESOURCES)
+    @patch("management_layer.access_control.apis.access_control_api"
+           ".AccessControlApi.roleresourcepermission_list")
+    def test_role_has_permissions(self, mocked_roleresourcepermission_list):
+        """
+        Test that the "role_has_permissions" function work as intended.
+        :param mocked_roleresourcepermission_list: Function mocked by @patch
+            decorator
+        """
+        def dummy_roleresourcepermission_list(role_id, resource_id):
+            responses = {
+                (1, 1): [
+                    RoleResourcePermission(**{
+                        "role_id": role_id,
+                        "resource_id": resource_id,
+                        "permission_id": TEST_PERMISSIONS["permission1"],
+                        "created_at": datetime.now(),
+                        "updated_at": datetime.now()
+                    })
+                ]
+            }
+            return responses.get((role_id, resource_id), [])
+
+        mocked_roleresourcepermission_list.side_effect = \
+            dummy_roleresourcepermission_list
+
+        # We test both the cached and non-cached use-cases. It is important
+        # that we test with nocache=True first, since this will not read from
+        # the cache, but populate it for the next iteration where nocache=False.
+        for nocache in [True, False]:
+            # Call function using labels
+            self.assertTrue(
+                utils.role_has_permission("role1", "permission1",
+                                          "urn:resource1", nocache)
+            )
+
+            self.assertFalse(
+                utils.role_has_permission("role1", "permission2",
+                                          "urn:resource1", nocache)
+            )
+
+            self.assertFalse(
+                utils.role_has_permission("role1", "permission1",
+                                          "urn:resource2", nocache)
+            )
+
+            # Call function using ids
+            self.assertTrue(
+                utils.role_has_permission(
+                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission1"],
+                    TEST_RESOURCES["urn:resource1"], nocache)
+            )
+
+            self.assertFalse(
+                utils.role_has_permission(
+                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission2"],
+                    TEST_RESOURCES["urn:resource1"], nocache)
+            )
+
+            self.assertFalse(
+                utils.role_has_permission(
+                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission1"],
+                    TEST_RESOURCES["urn:resource2"], nocache)
+            )
