@@ -5,6 +5,7 @@ are permitted.
 Permissions are based on the roles assigned to the user making the request,
 which maps to permissions on resources.
 """
+import json
 import typing
 from uuid import UUID
 from functools import wraps
@@ -28,8 +29,25 @@ Role = typing.Union[str, int]
 MKP_ROLE_RESOURCE_PERMISSION = "RRP"
 MKP_USER_ROLES = "UR"
 
+
+def json_serializer(key, value):
+    if type(value) == str:
+        return value, 1
+    return json.dumps(value), 2
+
+
+def json_deserializer(key, value, flags):
+    if flags == 1:
+        return value.decode('utf-8')
+    if flags == 2:
+        return json.loads(value.decode('utf-8'))
+    raise Exception("Unknown serialization format")
+
+
 TECH_ADMIN = "tech_admin"
-MEMCACHE = PooledClient(("127.0.0.1", 11211))
+MEMCACHE = PooledClient(("127.0.0.1", 11211),
+                        serializer=json_serializer,
+                        deserializer=json_deserializer)
 CACHE_TIME = 5 * 60
 
 OA = OperationalApi()
@@ -182,7 +200,7 @@ def get_user_roles_for_site_or_domain(
 
 def get_role_resource_permissions(
     role: Role, resource: Resource, nocache: bool=False
-) -> typing.List[Permission]:
+) -> typing.List[int]:
     """
     Get the permission granted on a resource for a specified role.
     Bypassing the cache can have a significant performance and should only be
