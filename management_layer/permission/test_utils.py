@@ -4,6 +4,7 @@ from uuid import uuid1
 
 from datetime import datetime
 
+import management_layer.constants
 from management_layer.access_control import RoleResourcePermission
 from management_layer.permission import utils
 
@@ -485,6 +486,7 @@ class TestUtils(TestCase):
         # We test both the cached and non-cached use-cases. It is important
         # that we test with nocache=True first, since this will not read from
         # the cache, but populate it for the next iteration where nocache=False.
+        # Test using the 'all' operator
         for nocache in [True, False]:
             # Call function using labels
             self.assertTrue(
@@ -539,4 +541,164 @@ class TestUtils(TestCase):
                 )
             )
 
-        # TODO: Add tests for 'any' operator
+        # Test using the 'any' operator
+        for nocache in [True, False]:
+            # Call function using labels
+            self.assertTrue(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], any,
+                    [("urn:resource1", "permission1"),
+                     ("urn:resource3", "permission3")
+                    ],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], any,
+                    [("urn:resource3", "permission3"),
+                     ("urn:resource4", "permission4")
+                    ],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    ["role1", "role2"], any,
+                    [("urn:resource2", "permission1")],
+                    nocache
+                )
+            )
+
+            # Call function using ids
+            self.assertTrue(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], any,
+                    [(TEST_RESOURCES["urn:resource1"],
+                      TEST_PERMISSIONS["permission1"]),
+                     (TEST_RESOURCES["urn:resource3"],
+                      TEST_PERMISSIONS["permission3"])
+                    ],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
+                    [(TEST_RESOURCES["urn:resource3"],
+                      TEST_PERMISSIONS["permission3"]),
+                     (TEST_RESOURCES["urn:resource4"],
+                      TEST_PERMISSIONS["permission4"])
+                    ],
+                    nocache
+                )
+            )
+
+            self.assertFalse(
+                utils.roles_have_permissions(
+                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
+                    [(TEST_RESOURCES["urn:resource1"],
+                      TEST_PERMISSIONS["permission1"]),
+                     (TEST_RESOURCES["urn:resource3"],
+                      TEST_PERMISSIONS["permission3"])
+                    ],
+                    nocache
+                )
+            )
+
+        # Check that the TECH_ADMIN role grants permission to everything
+        # for 'all' and 'any' operator.
+        for operator in [all, any]:
+            self.assertTrue(
+                utils.roles_have_permissions(
+                    [management_layer.constants.TECH_ADMIN], operator,
+                    [("urn:resource{}".format(i),
+                      "permission{}".format(i)) for i in range(1, 11)
+                    ],
+                    nocache
+                )
+            )
+
+    @patch.dict("management_layer.permission.utils.ROLES",
+                TEST_ROLES, clear=True)
+    @patch.dict("management_layer.permission.utils.PERMISSIONS",
+                TEST_PERMISSIONS, clear=True)
+    @patch.dict("management_layer.permission.utils.RESOURCES",
+                TEST_RESOURCES, clear=True)
+    @patch("management_layer.permission.utils.get_role_resource_permissions")
+    @patch("management_layer.permission.utils.get_user_roles_for_site")
+    def test_user_has_permissions(self, mocked_get_user_roles_for_site,
+                                  mocked_get_role_resource_permissions):
+        """
+        """
+        # All users will have only 'role1' on any site
+        mocked_get_user_roles_for_site.return_value = [
+            TEST_ROLES["role1"]
+        ]
+
+        def dummy_get_role_resource_permissions(role, resource, _nocache):
+            # Return hand-crafted responses for this test.
+            role_id = role if type(role) is int else TEST_ROLES[role]
+            resource_id = resource if type(resource) is int else \
+                TEST_RESOURCES[resource]
+            responses = {
+                (1, 1): [TEST_PERMISSIONS["permission1"]],
+                (2, 2): [TEST_PERMISSIONS["permission2"]]
+            }
+            return responses.get((role_id, resource_id), [])
+
+        mocked_get_role_resource_permissions.side_effect = \
+            dummy_get_role_resource_permissions
+
+        user = uuid1()
+        site = uuid1()
+
+        # Because the user has only role1 assigned and role1 implies only
+        # permission1 on resource1, only this one permission check will succeed.
+        self.assertTrue(utils.user_has_permissions(
+            user, any, [("urn:resource1", "permission1")], site=site
+        ))
+
+        self.assertFalse(utils.user_has_permissions(
+            user, any, [("urn:resource1", "permission2")], site=site
+        ))
+
+        self.assertFalse(utils.user_has_permissions(
+            user, any, [("urn:resource2", "permission2")], site=site
+        ))
+
+    def test_get_user_roles_for_site_or_domain(self):
+        # We just test the validation performed by this function.
+        # Other tests cover the lookups.
+        user = uuid1()
+        site = uuid1()
+        domain = 1
+
+        # Either a site or domain must be specified
+        with self.assertRaises(RuntimeError):
+            utils.get_user_roles_for_site_or_domain(user)
+
+        # Both a site and domain cannot be specified
+        with self.assertRaises(RuntimeError):
+            utils.get_user_roles_for_site_or_domain(
+                user, site=site, domain=domain
+            )
+
+    def test_get_role_resource_permissions(self):
+        # TODO
+        pass
+
+    def test_get_all_user_roles(self):
+        # TODO
+        pass
+
+    def test_get_user_roles_for_domain(self):
+        # TODO
+        pass
+
+    def test_get_user_roles_for_site(self):
+        # TODO
+        pass

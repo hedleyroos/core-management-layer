@@ -14,6 +14,11 @@ from management_layer.access_control.apis.access_control_api import \
     AccessControlApi
 from management_layer.access_control.apis.operational_api import OperationalApi
 
+from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
+    MKP_USER_ROLES, TECH_ADMIN, SITES, DOMAINS, ROLES, RESOURCES, \
+    PERMISSIONS
+from management_layer.settings import CACHE_TIME
+
 # Convenience types
 UserId = type(UUID)
 SiteId = type(UUID)
@@ -25,9 +30,7 @@ ResourcePermissions = typing.Sequence[ResourcePermission]
 Domain = typing.Union[str, int]
 Role = typing.Union[str, int]
 
-# MemCache key prefixes
-MKP_ROLE_RESOURCE_PERMISSION = "RRP"
-MKP_USER_ROLES = "UR"
+
 
 
 def json_serializer(key, value):
@@ -44,24 +47,17 @@ def json_deserializer(key, value, flags):
     raise Exception("Unknown serialization format")
 
 
-TECH_ADMIN = "tech_admin"
 # TODO: Tweak memcache params
 MEMCACHE = PooledClient(("127.0.0.1", 11211),
                         serializer=json_serializer,
                         deserializer=json_deserializer,
                         no_delay=True, connect_timeout=0.5, timeout=1.0)
-CACHE_TIME = 5 * 60
 
 OA = OperationalApi()
 AA = AccessControlApi()
 
 # Name to id mappings. TODO: Populate via API on startup. Move somewhere
 # more appropriate.
-SITES = {}
-DOMAINS = {}
-ROLES = {}
-RESOURCES = {}
-PERMISSIONS = {}
 
 
 class Forbidden(Exception):
@@ -167,7 +163,8 @@ def user_has_permissions(
     if operator not in [all, any]:
         raise RuntimeError("The operator must be all or any")
 
-    roles = get_user_roles_for_site_or_domain(user, site=site, domain=domain)
+    roles = get_user_roles_for_site_or_domain(user, site=site, domain=domain,
+                                              nocache=nocache)
     return roles_have_permissions(
         roles, operator, resource_permissions, nocache
     )
@@ -233,9 +230,9 @@ def get_role_resource_permissions(
     return role_resource_permissions
 
 
-def api_get_user_roles(
+def get_all_user_roles(
     user: UserId, nocache: bool=False
-) -> typing.Dict[str, typing.List[Role]]:
+) -> typing.Dict[str, typing.List[int]]:
     """
     This function returns all the roles that a user has on all sites and
     domains in the system. The result looks like this:
@@ -282,7 +279,7 @@ def api_get_user_roles(
 
 def get_user_roles_for_domain(
     user: UserId, domain: Domain, nocache: bool=False
-) -> typing.List[Role]:
+) -> typing.List[int]:
     """
     Get the roles that a user has for a specified domain.
     Bypassing the cache can have a significant performance and should only be
@@ -294,7 +291,7 @@ def get_user_roles_for_domain(
     """
     domain_id = domain if type(domain) is int else DOMAINS[domain]
 
-    user_roles = api_get_user_roles(user, nocache)
+    user_roles = get_all_user_roles(user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
     # empty list of it does not exist.
     return user_roles.get("d:{}".format(domain_id), [])
@@ -302,7 +299,7 @@ def get_user_roles_for_domain(
 
 def get_user_roles_for_site(
     user: UserId, site: SiteId, nocache: bool=False
-) -> typing.List[Role]:
+) -> typing.List[int]:
     """
     Get the roles that a user has for a specified site.
     Bypassing the cache can have a significant performance and should only be
@@ -314,7 +311,7 @@ def get_user_roles_for_site(
     """
     site_id = site if type(site) is int else SITES[site]
 
-    user_roles = api_get_user_roles(user, nocache)
+    user_roles = get_all_user_roles(user, nocache)
     # Look up the list of role ids associated with the site key. Return an
     # empty list of it does not exist.
     return user_roles.get("s:{}".format(site_id), [])
@@ -341,7 +338,7 @@ def require_permissions(
     Note, however, that for performance reasons the least amount of
     decorators is preferred.
     ```
-    # Logically correct, but not suboptimal performance
+    # Logically correct, but suboptimal performance
     @require_permissions(all, [("urn:ge:test:foo", "write")])
     @require_permissions(all, [("urn:ge:test:bar", "write")])
     @require_permissions(all, [("urn:ge:test:baz", "write")])
@@ -422,8 +419,8 @@ def require_permissions(
             if not isinstance(site, UUID):
                 raise RuntimeError("Site is expected to be a UUID")
 
-            roles = get_user_roles_for_site(user, site, nocache)
-            if roles_have_permissions(roles, operator, resource_permissions):
+            if user_has_permissions(user, operator, resource_permissions,
+                                    site=site, nocache=nocache):
                 return f(*args, **kwargs)
 
             # If the necessary permissions are not available, we always raise
