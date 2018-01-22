@@ -22,7 +22,7 @@ from management_layer.settings import CACHE_TIME
 
 # Convenience types
 UserId = type(UUID)
-SiteId = type(UUID)
+SiteId = int
 Operator = typing.Callable[..., bool]
 Resource = typing.Union[str, int]
 Permission = typing.Union[str, int]
