@@ -3,7 +3,7 @@ PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 FLAKE8=$(VENV)/bin/flake8
 PYTEST=$(VENV)/bin/pytest
-CODEGEN_VERSION=2.2.3
+CODEGEN_VERSION=2.3.1
 CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
 USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
 ACCESS_CONTROL_CLIENT_DIR=management_layer/access_control
@@ -77,7 +77,7 @@ validate-swagger: prism
 	@./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
 
 swagger-codegen-cli-$(CODEGEN_VERSION).jar:
-	        wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
+	wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
 
 # Generate the client code to interface with the User Data Store
 user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
