@@ -5,8 +5,9 @@ from uuid import uuid1
 from datetime import datetime
 
 import management_layer.constants
+import management_layer.permission
 from management_layer.access_control import RoleResourcePermission
-from management_layer.permission import utils
+from management_layer.permission import utils, require_permissions
 
 # Test dictionaries commonly used by tests
 TEST_ROLE_LABEL_TO_ID_MAP = {"role{}".format(i): i for i in range(1, 11)}
@@ -25,7 +26,7 @@ class TestRequirePermissionsDecorator(TestCase):
         The name attribute and docstring of a decorated function should stay
         the same when the decorator is implemented properly.
         """
-        @utils.require_permissions(all, [("urn:ge:test:foo", "read")])
+        @require_permissions(all, [("urn:ge:test:foo", "read")])
         def simple(_user, _site, **_kwargs):
             """This docstring is checked."""
             pass
@@ -44,13 +45,13 @@ class TestRequirePermissionsDecorator(TestCase):
         """
         # require_permissions(all, []) always succeeds, regardless of which
         # roles the user has.
-        @utils.require_permissions(all, [])
+        @require_permissions(all, [])
         def empty_all(_user, _site):
             return True
 
         # require_permissions(any, []) always fails, regardless of which roles
         # the user has.
-        @utils.require_permissions(any, [])
+        @require_permissions(any, [])
         def empty_any(_user, _site):
             raise RuntimeError("This should never get executed")
 
@@ -72,7 +73,7 @@ class TestRequirePermissionsDecorator(TestCase):
         We mock a response for the get_user_roles_for_site() function in
         order check that it was called with the appropriate values.
         """
-        @utils.require_permissions(all, [], user_field=2, site_field=1)
+        @require_permissions(all, [], user_field=2, site_field=1)
         def positional_args(_arg1, _site, _user):
             return True
 
@@ -92,8 +93,7 @@ class TestRequirePermissionsDecorator(TestCase):
         We mock a response for the get_user_roles_for_site() function in
         order check that it was called with the appropriate values.
         """
-        @utils.require_permissions(all, [], user_field="user_id",
-                                   site_field="site_id")
+        @require_permissions(all, [], user_field="user_id", site_field="site_id")
         def keyword_args(**kwargs):
             return True
 
@@ -114,8 +114,8 @@ class TestRequirePermissionsDecorator(TestCase):
         We mock a response for the get_user_roles_for_site() function in
         order check that it was called with the appropriate values.
         """
-        @utils.require_permissions(all, [], user_field="user_id",
-                                   site_field=1, nocache=True)
+        @require_permissions(all, [], user_field="user_id", site_field=1,
+                             nocache=True)
         def mixed_args(_arg1, _site, **_kwargs):
             return True
 
@@ -135,13 +135,13 @@ class TestRequirePermissionsDecorator(TestCase):
         order to test the case where the specified required resource
         permission list is empty.
         """
-        @utils.require_permissions(all, [])
-        @utils.require_permissions(any, [])
+        @require_permissions(all, [])
+        @require_permissions(any, [])
         def stack(_user, _site):
             raise RuntimeError("This should never get executed")
 
-        @utils.require_permissions(any, [])
-        @utils.require_permissions(all, [])
+        @require_permissions(any, [])
+        @require_permissions(all, [])
         def reverse_stack(_user, _site):
             raise RuntimeError("This should never get executed")
 
@@ -179,7 +179,7 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(all, [("urn:resource1", "permission1")])
+        @require_permissions(all, [("urn:resource1", "permission1")])
         def single_requirement(_user, _site):
             return True
 
@@ -204,8 +204,8 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_user_roles_for_site.return_value = ["role1"]
         self.assertTrue(single_requirement(user, site))
 
-        @utils.require_permissions(all, [("urn:resource1", "permission1"),
-                                         ("urn:resource2", "permission2")])
+        @require_permissions(all, [("urn:resource1", "permission1"),
+                                   ("urn:resource2", "permission2")])
         def multiple_requirements(_user, _site):
             return True
 
@@ -244,7 +244,7 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(any, [("urn:resource1", "permission1")])
+        @require_permissions(any, [("urn:resource1", "permission1")])
         def single_requirement(_user, _site):
             return True
 
@@ -269,8 +269,8 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_user_roles_for_site.return_value = ["role1"]
         self.assertTrue(single_requirement(user, site))
 
-        @utils.require_permissions(any, [("urn:resource1", "permission1"),
-                                         ("urn:resource2", "permission2")])
+        @require_permissions(any, [("urn:resource1", "permission1"),
+                                   ("urn:resource2", "permission2")])
         def multiple_requirements(_user, _site):
             return True
 
@@ -322,9 +322,9 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_role_resource_permissions.side_effect = \
             dummy_get_role_resource_permissions
 
-        @utils.require_permissions(all, [("urn:resource1", "permission1")])
-        @utils.require_permissions(any, [("urn:resource2", "permission2"),
-                                         ("urn:resource3", "permission3")])
+        @require_permissions(all, [("urn:resource1", "permission1")])
+        @require_permissions(any, [("urn:resource2", "permission2"),
+                                   ("urn:resource3", "permission3")])
         def combo_requirement(_user, _site):
             return True
 
