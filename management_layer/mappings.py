@@ -19,14 +19,17 @@ SITES = {}
 # The API client
 API = AC()
 
-T = TypeVar(T)
-def load(
+# Custom convenience type
+T = TypeVar("T")
+
+
+def _load(
     api_call: Callable[..., List[T]],
     name_field: str
-) -> Tuple[Dict[]]
+) -> Tuple[Dict[int, T], Dict[str, int]]:
     """
 
-    :param api_call:
+    :param api_call: The API call that returns the needed
     :param name_field:
     :return:
     """
@@ -48,40 +51,39 @@ def load(
 def refresh_domains():
     global DOMAINS
     global DOMAIN_NAME_TO_ID_MAP
-    DOMAINS, DOMAIN_NAME_TO_ID_MAP = load(API.domain_list, "name")
+    DOMAINS, DOMAIN_NAME_TO_ID_MAP = _load(API.domain_list, "name")
 
 
 def refresh_permissions():
     global PERMISSIONS
     global PERMISSION_NAME_TO_ID_MAP
-    PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = load(API.permission_list, "name")
+    PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = _load(API.permission_list, "name")
 
 
 def refresh_resources():
     global RESOURCES
     global RESOURCE_URN_TO_ID_MAP
-    RESOURCES, RESOURCE_URN_TO_ID_MAP = load(API.resource_list, "urn")
+    RESOURCES, RESOURCE_URN_TO_ID_MAP = _load(API.resource_list, "urn")
 
 
 def refresh_roles():
     global ROLES
     global ROLE_LABEL_TO_ID_MAP
-    ROLES, ROLE_LABEL_TO_ID_MAP = load(API.role_list, "label")
+    ROLES, ROLE_LABEL_TO_ID_MAP = _load(API.role_list, "label")
 
 
 def refresh_sites():
     global SITES
     global SITE_NAME_TO_ID_MAP
-    SITES, SITE_NAME_TO_ID_MAP = load(API.site_list, "name")
+    SITES, SITE_NAME_TO_ID_MAP = _load(API.site_list, "name")
 
 
 def refresh_all():
+    """
+    Refresh all data mappings
+    """
     refresh_domains()
     refresh_permissions()
     refresh_resources()
     refresh_roles()
     refresh_sites()
-
-
-refresh_all()
-

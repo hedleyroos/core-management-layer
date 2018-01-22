@@ -9,9 +9,9 @@ from management_layer.access_control import RoleResourcePermission
 from management_layer.permission import utils
 
 # Test dictionaries commonly used by tests
-TEST_ROLES = {"role{}".format(i): i for i in range(1, 11)}
-TEST_PERMISSIONS = {"permission{}".format(i): i for i in range(1, 11)}
-TEST_RESOURCES = {"urn:resource{}".format(i): i for i in range(1, 11)}
+TEST_ROLE_LABEL_TO_ID_MAP = {"role{}".format(i): i for i in range(1, 11)}
+TEST_PERMISSION_NAME_TO_ID_MAP = {"permission{}".format(i): i for i in range(1, 11)}
+TEST_RESOURCE_URN_TO_ID_MAP = {"urn:resource{}".format(i): i for i in range(1, 11)}
 
 
 class TestRequirePermissionsDecorator(TestCase):
@@ -80,7 +80,7 @@ class TestRequirePermissionsDecorator(TestCase):
         site = uuid1()
 
         # Call the test function...
-        positional_args("somevalue", site, user)
+        positional_args("some_value", site, user)
         # ...and verify that the mocked function was called with the right
         # arguments.
         mocked_function.assert_called_with(user, site, False)
@@ -154,27 +154,12 @@ class TestRequirePermissionsDecorator(TestCase):
         with self.assertRaises(utils.Forbidden):
             reverse_stack(valid_uuid, valid_uuid)
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                {"role1": 1}, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                {"permission1": 1}, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                {"resources1": 1}, clear=True)
-    @patch("management_layer.permission.utils.get_user_roles_for_site")
-    def test_any(self, mocked_function):
-        """
-        A test of the 'any' operator by mocking roles, resources and
-        permissions.
-        """
-        mocked_function.return_value = []  # A mocked list of role ids
-        pass
-
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_all(self, mocked_get_user_roles_for_site,
@@ -234,12 +219,12 @@ class TestRequirePermissionsDecorator(TestCase):
         mocked_get_user_roles_for_site.return_value = ["role1", "role2"]
         self.assertTrue(multiple_requirements(user, site))
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_any(self, mocked_get_user_roles_for_site,
@@ -306,12 +291,12 @@ class TestRequirePermissionsDecorator(TestCase):
         with self.assertRaises(utils.Forbidden):
             single_requirement(user, site)
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_combo(self, mocked_get_user_roles_for_site,
@@ -382,12 +367,12 @@ class TestRequirePermissionsDecorator(TestCase):
 
 class TestUtils(TestCase):
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.access_control.apis.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_role_has_permissions(self, mocked_roleresourcepermission_list):
@@ -402,7 +387,7 @@ class TestUtils(TestCase):
                     RoleResourcePermission(**{
                         "role_id": role_id,
                         "resource_id": resource_id,
-                        "permission_id": TEST_PERMISSIONS["permission1"],
+                        "permission_id": TEST_PERMISSION_NAME_TO_ID_MAP["permission1"],
                         "created_at": datetime.now(),
                         "updated_at": datetime.now()
                     })
@@ -436,28 +421,28 @@ class TestUtils(TestCase):
             # Call function using ids
             self.assertTrue(
                 utils.role_has_permission(
-                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission1"],
-                    TEST_RESOURCES["urn:resource1"], nocache)
+                    TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_PERMISSION_NAME_TO_ID_MAP["permission1"],
+                    TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"], nocache)
             )
 
             self.assertFalse(
                 utils.role_has_permission(
-                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission2"],
-                    TEST_RESOURCES["urn:resource1"], nocache)
+                    TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_PERMISSION_NAME_TO_ID_MAP["permission2"],
+                    TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"], nocache)
             )
 
             self.assertFalse(
                 utils.role_has_permission(
-                    TEST_ROLES["role1"], TEST_PERMISSIONS["permission1"],
-                    TEST_RESOURCES["urn:resource2"], nocache)
+                    TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_PERMISSION_NAME_TO_ID_MAP["permission1"],
+                    TEST_RESOURCE_URN_TO_ID_MAP["urn:resource2"], nocache)
             )
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.access_control.apis.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_roles_have_permissions(self, mocked_roleresourcepermission_list):
@@ -472,7 +457,7 @@ class TestUtils(TestCase):
                     RoleResourcePermission(**{
                         "role_id": role_id,
                         "resource_id": resource_id,
-                        "permission_id": TEST_PERMISSIONS["permission1"],
+                        "permission_id": TEST_PERMISSION_NAME_TO_ID_MAP["permission1"],
                         "created_at": datetime.now(),
                         "updated_at": datetime.now()
                     })
@@ -516,27 +501,27 @@ class TestUtils(TestCase):
             # Call function using ids
             self.assertTrue(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
-                    [(TEST_RESOURCES["urn:resource1"],
-                      TEST_PERMISSIONS["permission1"])],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission1"])],
                     nocache
                 )
             )
 
             self.assertFalse(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
-                    [(TEST_RESOURCES["urn:resource1"],
-                      TEST_PERMISSIONS["permission2"])],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission2"])],
                     nocache
                 )
             )
 
             self.assertFalse(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
-                    [(TEST_RESOURCES["urn:resource2"],
-                      TEST_PERMISSIONS["permission1"])],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource2"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission1"])],
                     nocache
                 )
             )
@@ -548,8 +533,7 @@ class TestUtils(TestCase):
                 utils.roles_have_permissions(
                     ["role1", "role2"], any,
                     [("urn:resource1", "permission1"),
-                     ("urn:resource3", "permission3")
-                    ],
+                     ("urn:resource3", "permission3")],
                     nocache
                 )
             )
@@ -558,8 +542,7 @@ class TestUtils(TestCase):
                 utils.roles_have_permissions(
                     ["role1", "role2"], any,
                     [("urn:resource3", "permission3"),
-                     ("urn:resource4", "permission4")
-                    ],
+                     ("urn:resource4", "permission4")],
                     nocache
                 )
             )
@@ -575,36 +558,33 @@ class TestUtils(TestCase):
             # Call function using ids
             self.assertTrue(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], any,
-                    [(TEST_RESOURCES["urn:resource1"],
-                      TEST_PERMISSIONS["permission1"]),
-                     (TEST_RESOURCES["urn:resource3"],
-                      TEST_PERMISSIONS["permission3"])
-                    ],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], any,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]),
+                     (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission3"])],
                     nocache
                 )
             )
 
             self.assertFalse(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
-                    [(TEST_RESOURCES["urn:resource3"],
-                      TEST_PERMISSIONS["permission3"]),
-                     (TEST_RESOURCES["urn:resource4"],
-                      TEST_PERMISSIONS["permission4"])
-                    ],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission3"]),
+                     (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource4"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission4"])],
                     nocache
                 )
             )
 
             self.assertFalse(
                 utils.roles_have_permissions(
-                    [TEST_ROLES["role1"], TEST_ROLES["role2"]], all,
-                    [(TEST_RESOURCES["urn:resource1"],
-                      TEST_PERMISSIONS["permission1"]),
-                     (TEST_RESOURCES["urn:resource3"],
-                      TEST_PERMISSIONS["permission3"])
-                    ],
+                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]),
+                     (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
+                      TEST_PERMISSION_NAME_TO_ID_MAP["permission3"])],
                     nocache
                 )
             )
@@ -616,18 +596,17 @@ class TestUtils(TestCase):
                 utils.roles_have_permissions(
                     [management_layer.constants.TECH_ADMIN], operator,
                     [("urn:resource{}".format(i),
-                      "permission{}".format(i)) for i in range(1, 11)
-                    ],
+                      "permission{}".format(i)) for i in range(1, 11)],
                     nocache
                 )
             )
 
-    @patch.dict("management_layer.permission.utils.ROLES",
-                TEST_ROLES, clear=True)
-    @patch.dict("management_layer.permission.utils.PERMISSIONS",
-                TEST_PERMISSIONS, clear=True)
-    @patch.dict("management_layer.permission.utils.RESOURCES",
-                TEST_RESOURCES, clear=True)
+    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+                TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+                TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
+    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+                TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_user_has_permissions(self, mocked_get_user_roles_for_site,
@@ -636,17 +615,17 @@ class TestUtils(TestCase):
         """
         # All users will have only 'role1' on any site
         mocked_get_user_roles_for_site.return_value = [
-            TEST_ROLES["role1"]
+            TEST_ROLE_LABEL_TO_ID_MAP["role1"]
         ]
 
         def dummy_get_role_resource_permissions(role, resource, _nocache):
             # Return hand-crafted responses for this test.
-            role_id = role if type(role) is int else TEST_ROLES[role]
+            role_id = role if type(role) is int else TEST_ROLE_LABEL_TO_ID_MAP[role]
             resource_id = resource if type(resource) is int else \
-                TEST_RESOURCES[resource]
+                TEST_RESOURCE_URN_TO_ID_MAP[resource]
             responses = {
-                (1, 1): [TEST_PERMISSIONS["permission1"]],
-                (2, 2): [TEST_PERMISSIONS["permission2"]]
+                (1, 1): [TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]],
+                (2, 2): [TEST_PERMISSION_NAME_TO_ID_MAP["permission2"]]
             }
             return responses.get((role_id, resource_id), [])
 

@@ -15,8 +15,10 @@ from management_layer.access_control.apis.access_control_api import \
 from management_layer.access_control.apis.operational_api import OperationalApi
 
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
-    MKP_USER_ROLES, TECH_ADMIN, SITES, DOMAINS, ROLES, RESOURCES, \
-    PERMISSIONS
+    MKP_USER_ROLES, TECH_ADMIN
+from management_layer.mappings import SITE_NAME_TO_ID_MAP, \
+    DOMAIN_NAME_TO_ID_MAP, ROLE_LABEL_TO_ID_MAP, RESOURCE_URN_TO_ID_MAP, \
+    PERMISSION_NAME_TO_ID_MAP
 from management_layer.settings import CACHE_TIME
 
 # Convenience types
@@ -29,8 +31,6 @@ ResourcePermission = typing.Tuple[Resource, Permission]
 ResourcePermissions = typing.Sequence[ResourcePermission]
 Domain = typing.Union[str, int]
 Role = typing.Union[str, int]
-
-
 
 
 def json_serializer(key, value):
@@ -47,7 +47,7 @@ def json_deserializer(key, value, flags):
     raise Exception("Unknown serialization format")
 
 
-# TODO: Tweak memcache params
+# TODO: Tweak MemCache params
 MEMCACHE = PooledClient(("127.0.0.1", 11211),
                         serializer=json_serializer,
                         deserializer=json_deserializer,
@@ -55,6 +55,7 @@ MEMCACHE = PooledClient(("127.0.0.1", 11211),
 
 OA = OperationalApi()
 AA = AccessControlApi()
+
 
 # Name to id mappings. TODO: Populate via API on startup. Move somewhere
 # more appropriate.
@@ -69,7 +70,8 @@ class Forbidden(Exception):
 
 
 def role_has_permission(
-    role: Role, permission: Permission, resource: Resource, nocache: bool=False
+        role: Role, permission: Permission, resource: Resource,
+        nocache: bool = False
 ) -> bool:
     """
     Check if a role has a specified resource permission.
@@ -85,7 +87,7 @@ def role_has_permission(
     """
     result = False
     permission_id = permission if type(permission) is int else \
-        PERMISSIONS[permission]
+        PERMISSION_NAME_TO_ID_MAP[permission]
 
     permission_ids = get_role_resource_permissions(role, resource, nocache)
     if permission_ids:
@@ -95,10 +97,10 @@ def role_has_permission(
 
 
 def roles_have_permissions(
-    roles: typing.List[Role],
-    operator: Operator,
-    resource_permissions: ResourcePermissions,
-    nocache: bool=False
+        roles: typing.List[Role],
+        operator: Operator,
+        resource_permissions: ResourcePermissions,
+        nocache: bool = False
 ) -> bool:
     """
     Check whether the specified roles has any or all (as per the operator) of
@@ -135,12 +137,12 @@ def roles_have_permissions(
 
 
 def user_has_permissions(
-    user: UserId,
-    operator: Operator,
-    resource_permissions: ResourcePermissions,
-    site: SiteId=None,
-    domain: Domain=None,
-    nocache: bool=False
+        user: UserId,
+        operator: Operator,
+        resource_permissions: ResourcePermissions,
+        site: SiteId = None,
+        domain: Domain = None,
+        nocache: bool = False
 ) -> bool:
     """
     Check whether the specified user has any or all (as per the operator) of
@@ -171,8 +173,8 @@ def user_has_permissions(
 
 
 def get_user_roles_for_site_or_domain(
-    user: UserId, site: SiteId=None, domain: Domain=None, nocache:
-        bool=False
+        user: UserId, site: SiteId = None, domain: Domain = None, nocache:
+        bool = False
 ) -> typing.List[Role]:
     """
     Get the roles assigned to the user for the specified site or domain.
@@ -198,7 +200,7 @@ def get_user_roles_for_site_or_domain(
 
 
 def get_role_resource_permissions(
-    role: Role, resource: Resource, nocache: bool=False
+        role: Role, resource: Resource, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the permission granted on a resource for a specified role.
@@ -210,8 +212,9 @@ def get_role_resource_permissions(
     :param nocache: Bypass the cache if True
     :return: A list of permission ids
     """
-    role_id = role if type(role) is int else ROLES[role]
-    resource_id = resource if type(resource) is int else RESOURCES[resource]
+    role_id = role if type(role) is int else ROLE_LABEL_TO_ID_MAP[role]
+    resource_id = resource if type(resource) is int else \
+        RESOURCE_URN_TO_ID_MAP[resource]
 
     key = "{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id)
     role_resource_permissions = None if nocache else MEMCACHE.get(key)
@@ -231,7 +234,7 @@ def get_role_resource_permissions(
 
 
 def get_all_user_roles(
-    user: UserId, nocache: bool=False
+        user: UserId, nocache: bool = False
 ) -> typing.Dict[str, typing.List[int]]:
     """
     This function returns all the roles that a user has on all sites and
@@ -278,7 +281,7 @@ def get_all_user_roles(
 
 
 def get_user_roles_for_domain(
-    user: UserId, domain: Domain, nocache: bool=False
+        user: UserId, domain: Domain, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified domain.
@@ -289,7 +292,7 @@ def get_user_roles_for_domain(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    domain_id = domain if type(domain) is int else DOMAINS[domain]
+    domain_id = domain if type(domain) is int else DOMAIN_NAME_TO_ID_MAP[domain]
 
     user_roles = get_all_user_roles(user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
@@ -298,7 +301,7 @@ def get_user_roles_for_domain(
 
 
 def get_user_roles_for_site(
-    user: UserId, site: SiteId, nocache: bool=False
+        user: UserId, site: SiteId, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified site.
@@ -309,7 +312,7 @@ def get_user_roles_for_site(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    site_id = site if type(site) is int else SITES[site]
+    site_id = site if type(site) is int else SITE_NAME_TO_ID_MAP[site]
 
     user_roles = get_all_user_roles(user, nocache)
     # Look up the list of role ids associated with the site key. Return an
@@ -318,11 +321,11 @@ def get_user_roles_for_site(
 
 
 def require_permissions(
-    operator: Operator,
-    resource_permissions: ResourcePermissions,
-    nocache: bool=False,
-    user_field: typing.Union[int, str]=0,
-    site_field: typing.Union[int, str]=1
+        operator: Operator,
+        resource_permissions: ResourcePermissions,
+        nocache: bool = False,
+        user_field: typing.Union[int, str] = 0,
+        site_field: typing.Union[int, str] = 1
 ) -> typing.Callable:
     """
     This function is used as a decorator to protect functions by specifying
