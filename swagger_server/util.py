@@ -1,11 +1,11 @@
-import datetime
-
-import six
-import typing
+from typing import GenericMeta
+from datetime import datetime, date
+from six import integer_types, iteritems
 
 
 def _deserialize(data, klass):
-    """Deserializes dict, list, str into an object.
+    """
+    Deserializes dict, list, str into an object.
 
     :param data: dict, list or str.
     :param klass: class literal, or string of class name.
@@ -15,15 +15,15 @@ def _deserialize(data, klass):
     if data is None:
         return None
 
-    if klass in six.integer_types or klass in (float, str, bool):
+    if klass in integer_types or klass in (float, str, bool):
         return _deserialize_primitive(data, klass)
     elif klass == object:
         return _deserialize_object(data)
-    elif klass == datetime.date:
+    elif klass == date:
         return deserialize_date(data)
-    elif klass == datetime.datetime:
+    elif klass == datetime:
         return deserialize_datetime(data)
-    elif type(klass) == typing.GenericMeta:
+    elif type(klass) == GenericMeta:
         if klass.__extra__ == list:
             return _deserialize_list(data, klass.__args__[0])
         if klass.__extra__ == dict:
@@ -33,7 +33,8 @@ def _deserialize(data, klass):
 
 
 def _deserialize_primitive(data, klass):
-    """Deserializes to primitive type.
+    """
+    Deserializes to primitive type.
 
     :param data: data to deserialize.
     :param klass: class literal.
@@ -44,14 +45,15 @@ def _deserialize_primitive(data, klass):
     try:
         value = klass(data)
     except UnicodeEncodeError:
-        value = six.u(data)
+        value = unicode(data)
     except TypeError:
         value = data
     return value
 
 
 def _deserialize_object(value):
-    """Return a original value.
+    """
+    Return a original value.
 
     :return: object.
     """
@@ -59,7 +61,8 @@ def _deserialize_object(value):
 
 
 def deserialize_date(string):
-    """Deserializes string to date.
+    """
+    Deserializes string to date.
 
     :param string: str.
     :type string: str
@@ -74,7 +77,8 @@ def deserialize_date(string):
 
 
 def deserialize_datetime(string):
-    """Deserializes string to datetime.
+    """
+    Deserializes string to datetime.
 
     The string should be in iso8601 datetime format.
 
@@ -91,7 +95,8 @@ def deserialize_datetime(string):
 
 
 def deserialize_model(data, klass):
-    """Deserializes list or dict to model.
+    """
+    Deserializes list or dict to model.
 
     :param data: dict, list.
     :type data: dict | list
@@ -103,7 +108,7 @@ def deserialize_model(data, klass):
     if not instance.swagger_types:
         return data
 
-    for attr, attr_type in six.iteritems(instance.swagger_types):
+    for attr, attr_type in iteritems(instance.swagger_types):
         if data is not None \
                 and instance.attribute_map[attr] in data \
                 and isinstance(data, (list, dict)):
@@ -114,7 +119,8 @@ def deserialize_model(data, klass):
 
 
 def _deserialize_list(data, boxed_type):
-    """Deserializes a list and its elements.
+    """
+    Deserializes a list and its elements.
 
     :param data: list to deserialize.
     :type data: list
@@ -127,8 +133,10 @@ def _deserialize_list(data, boxed_type):
             for sub_data in data]
 
 
+
 def _deserialize_dict(data, boxed_type):
-    """Deserializes a dict and its elements.
+    """
+    Deserializes a dict and its elements.
 
     :param data: dict to deserialize.
     :type data: dict
@@ -138,4 +146,4 @@ def _deserialize_dict(data, boxed_type):
     :rtype: dict
     """
     return {k: _deserialize(v, boxed_type)
-            for k, v in six.iteritems(data)}
+            for k, v in iteritems(data)}
