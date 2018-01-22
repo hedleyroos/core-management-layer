@@ -1,6 +1,6 @@
 from typing import Callable, Tuple, List, Dict, TypeVar
 from management_layer.access_control.apis.access_control_api import \
-    AccessControlApi as AC
+    AccessControlApi
 
 # Name/label to id mappings
 DOMAIN_NAME_TO_ID_MAP = {}
@@ -17,7 +17,7 @@ ROLES = {}
 SITES = {}
 
 # The API client
-API = AC()
+API = AccessControlApi()
 
 # Custom convenience type
 T = TypeVar("T")
