@@ -1,35 +1,48 @@
 import connexion
-from swagger_server.models.domain import Domain
-from swagger_server.models.domain_role import DomainRole
-from swagger_server.models.domain_role_update import DomainRoleUpdate
-from swagger_server.models.domain_update import DomainUpdate
-from swagger_server.models.invitation import Invitation
-from swagger_server.models.invitation_domain_role import InvitationDomainRole
-from swagger_server.models.invitation_site_role import InvitationSiteRole
-from swagger_server.models.invitation_update import InvitationUpdate
-from swagger_server.models.permission import Permission
-from swagger_server.models.permission_update import PermissionUpdate
-from swagger_server.models.resource import Resource
-from swagger_server.models.resource_update import ResourceUpdate
-from swagger_server.models.role import Role
-from swagger_server.models.role_resource_permission import RoleResourcePermission
-from swagger_server.models.role_update import RoleUpdate
-from swagger_server.models.site import Site
-from swagger_server.models.site_role import SiteRole
-from swagger_server.models.site_role_update import SiteRoleUpdate
-from swagger_server.models.site_update import SiteUpdate
-from swagger_server.models.user_domain_role import UserDomainRole
-from swagger_server.models.user_site_role import UserSiteRole
-from datetime import date, datetime
-from typing import List, Dict
-from six import iteritems
-from ..util import deserialize_date, deserialize_datetime
+import six
+
+from swagger_server.models.domain import Domain  # noqa: E501
+from swagger_server.models.domain_create import DomainCreate  # noqa: E501
+from swagger_server.models.domain_role import DomainRole  # noqa: E501
+from swagger_server.models.domain_role_create import DomainRoleCreate  # noqa: E501
+from swagger_server.models.domain_role_update import DomainRoleUpdate  # noqa: E501
+from swagger_server.models.domain_update import DomainUpdate  # noqa: E501
+from swagger_server.models.invitation import Invitation  # noqa: E501
+from swagger_server.models.invitation_create import InvitationCreate  # noqa: E501
+from swagger_server.models.invitation_domain_role import InvitationDomainRole  # noqa: E501
+from swagger_server.models.invitation_domain_role_create import InvitationDomainRoleCreate  # noqa: E501
+from swagger_server.models.invitation_site_role import InvitationSiteRole  # noqa: E501
+from swagger_server.models.invitation_site_role_create import InvitationSiteRoleCreate  # noqa: E501
+from swagger_server.models.invitation_update import InvitationUpdate  # noqa: E501
+from swagger_server.models.permission import Permission  # noqa: E501
+from swagger_server.models.permission_create import PermissionCreate  # noqa: E501
+from swagger_server.models.permission_update import PermissionUpdate  # noqa: E501
+from swagger_server.models.resource import Resource  # noqa: E501
+from swagger_server.models.resource_create import ResourceCreate  # noqa: E501
+from swagger_server.models.resource_update import ResourceUpdate  # noqa: E501
+from swagger_server.models.role import Role  # noqa: E501
+from swagger_server.models.role_create import RoleCreate  # noqa: E501
+from swagger_server.models.role_resource_permission import RoleResourcePermission  # noqa: E501
+from swagger_server.models.role_resource_permission_create import RoleResourcePermissionCreate  # noqa: E501
+from swagger_server.models.role_update import RoleUpdate  # noqa: E501
+from swagger_server.models.site import Site  # noqa: E501
+from swagger_server.models.site_create import SiteCreate  # noqa: E501
+from swagger_server.models.site_role import SiteRole  # noqa: E501
+from swagger_server.models.site_role_create import SiteRoleCreate  # noqa: E501
+from swagger_server.models.site_role_update import SiteRoleUpdate  # noqa: E501
+from swagger_server.models.site_update import SiteUpdate  # noqa: E501
+from swagger_server.models.user_domain_role import UserDomainRole  # noqa: E501
+from swagger_server.models.user_domain_role_create import UserDomainRoleCreate  # noqa: E501
+from swagger_server.models.user_site_role import UserSiteRole  # noqa: E501
+from swagger_server.models.user_site_role_create import UserSiteRoleCreate  # noqa: E501
+from swagger_server import util
 
 
-def access_control_roleresourcepermission_delete(role_id, resource_id, permission_id):
-    """
-    access_control_roleresourcepermission_delete
-    
+def access_control_roleresourcepermission_delete(role_id, resource_id, permission_id):  # noqa: E501
+    """access_control_roleresourcepermission_delete
+
+     # noqa: E501
+
     :param role_id: A unique integer value identifying the role.
     :type role_id: int
     :param resource_id: A unique integer value identifying the resource.
@@ -42,24 +55,26 @@ def access_control_roleresourcepermission_delete(role_id, resource_id, permissio
     return 'do some magic!'
 
 
-def domain_create(data=None):
-    """
-    domain_create
-    
+def domain_create(data=None):  # noqa: E501
+    """domain_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Domain
     """
     if connexion.request.is_json:
-        data = Domain.from_dict(connexion.request.get_json())
+        data = DomainCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def domain_delete(domain_id):
-    """
-    domain_delete
-    
+def domain_delete(domain_id):  # noqa: E501
+    """domain_delete
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
 
@@ -68,10 +83,11 @@ def domain_delete(domain_id):
     return 'do some magic!'
 
 
-def domain_list(offset=None, limit=None, domain_ids=None):
-    """
-    domain_list
-    
+def domain_list(offset=None, limit=None, domain_ids=None):  # noqa: E501
+    """domain_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -84,10 +100,11 @@ def domain_list(offset=None, limit=None, domain_ids=None):
     return 'do some magic!'
 
 
-def domain_read(domain_id):
-    """
-    domain_read
-    
+def domain_read(domain_id):  # noqa: E501
+    """domain_read
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
 
@@ -96,10 +113,11 @@ def domain_read(domain_id):
     return 'do some magic!'
 
 
-def domain_update(domain_id, data=None):
-    """
-    domain_update
-    
+def domain_update(domain_id, data=None):  # noqa: E501
+    """domain_update
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param data: 
@@ -108,28 +126,30 @@ def domain_update(domain_id, data=None):
     :rtype: Domain
     """
     if connexion.request.is_json:
-        data = DomainUpdate.from_dict(connexion.request.get_json())
+        data = DomainUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def domainrole_create(data=None):
-    """
-    domainrole_create
-    
+def domainrole_create(data=None):  # noqa: E501
+    """domainrole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: DomainRole
     """
     if connexion.request.is_json:
-        data = DomainRole.from_dict(connexion.request.get_json())
+        data = DomainRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def domainrole_delete(domain_id, role_id):
-    """
-    domainrole_delete
-    
+def domainrole_delete(domain_id, role_id):  # noqa: E501
+    """domainrole_delete
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -140,10 +160,11 @@ def domainrole_delete(domain_id, role_id):
     return 'do some magic!'
 
 
-def domainrole_list(offset=None, limit=None, domain_id=None, role_id=None):
-    """
-    domainrole_list
-    
+def domainrole_list(offset=None, limit=None, domain_id=None, role_id=None):  # noqa: E501
+    """domainrole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -158,10 +179,11 @@ def domainrole_list(offset=None, limit=None, domain_id=None, role_id=None):
     return 'do some magic!'
 
 
-def domainrole_read(domain_id, role_id):
-    """
-    domainrole_read
-    
+def domainrole_read(domain_id, role_id):  # noqa: E501
+    """domainrole_read
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -172,10 +194,11 @@ def domainrole_read(domain_id, role_id):
     return 'do some magic!'
 
 
-def domainrole_update(domain_id, role_id, data=None):
-    """
-    domainrole_update
-    
+def domainrole_update(domain_id, role_id, data=None):  # noqa: E501
+    """domainrole_update
+
+     # noqa: E501
+
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -186,102 +209,117 @@ def domainrole_update(domain_id, role_id, data=None):
     :rtype: DomainRole
     """
     if connexion.request.is_json:
-        data = DomainRoleUpdate.from_dict(connexion.request.get_json())
+        data = DomainRoleUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitation_create(data=None):
-    """
-    invitation_create
-    
+def invitation_create(data=None):  # noqa: E501
+    """invitation_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Invitation
     """
     if connexion.request.is_json:
-        data = Invitation.from_dict(connexion.request.get_json())
+        data = InvitationCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitation_delete(invitation_id):
-    """
-    invitation_delete
-    
+def invitation_delete(invitation_id):  # noqa: E501
+    """invitation_delete
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
 
     :rtype: None
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitation_list(offset=None, limit=None, invitor_id=None, invitation_ids=None):
-    """
-    invitation_list
-    
+def invitation_list(offset=None, limit=None, invitor_id=None, invitation_ids=None):  # noqa: E501
+    """invitation_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
     :type limit: int
     :param invitor_id: Optional filter based on the invitor (the user who created the invitation)
-    :type invitor_id: str
+    :type invitor_id: dict | bytes
     :param invitation_ids: An optional list of invitation ids
     :type invitation_ids: List[int]
 
     :rtype: List[Invitation]
     """
+    if connexion.request.is_json:
+        invitor_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitation_read(invitation_id):
-    """
-    invitation_read
-    
+def invitation_read(invitation_id):  # noqa: E501
+    """invitation_read
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
 
     :rtype: Invitation
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitation_update(invitation_id, data=None):
-    """
-    invitation_update
-    
+def invitation_update(invitation_id, data=None):  # noqa: E501
+    """invitation_update
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param data: 
     :type data: dict | bytes
 
     :rtype: Invitation
     """
     if connexion.request.is_json:
-        data = InvitationUpdate.from_dict(connexion.request.get_json())
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
+    if connexion.request.is_json:
+        data = InvitationUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationdomainrole_create(data=None):
-    """
-    invitationdomainrole_create
-    
+def invitationdomainrole_create(data=None):  # noqa: E501
+    """invitationdomainrole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: InvitationDomainRole
     """
     if connexion.request.is_json:
-        data = InvitationDomainRole.from_dict(connexion.request.get_json())
+        data = InvitationDomainRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationdomainrole_delete(invitation_id, domain_id, role_id):
-    """
-    invitationdomainrole_delete
-    
+def invitationdomainrole_delete(invitation_id, domain_id, role_id):  # noqa: E501
+    """invitationdomainrole_delete
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -289,19 +327,22 @@ def invitationdomainrole_delete(invitation_id, domain_id, role_id):
 
     :rtype: None
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationdomainrole_list(offset=None, limit=None, invitation_id=None, domain_id=None, role_id=None):
-    """
-    invitationdomainrole_list
-    
+def invitationdomainrole_list(offset=None, limit=None, invitation_id=None, domain_id=None, role_id=None):  # noqa: E501
+    """invitationdomainrole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
     :type limit: int
     :param invitation_id: An optional query parameter to filter by invitation_id
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param domain_id: An optional query parameter to filter by domain_id
     :type domain_id: int
     :param role_id: An optional query parameter to filter by role_id
@@ -309,15 +350,18 @@ def invitationdomainrole_list(offset=None, limit=None, invitation_id=None, domai
 
     :rtype: List[InvitationDomainRole]
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationdomainrole_read(invitation_id, domain_id, role_id):
-    """
-    invitationdomainrole_read
-    
+def invitationdomainrole_read(invitation_id, domain_id, role_id):  # noqa: E501
+    """invitationdomainrole_read
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -325,29 +369,33 @@ def invitationdomainrole_read(invitation_id, domain_id, role_id):
 
     :rtype: InvitationDomainRole
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationsiterole_create(data=None):
-    """
-    invitationsiterole_create
-    
+def invitationsiterole_create(data=None):  # noqa: E501
+    """invitationsiterole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: InvitationSiteRole
     """
     if connexion.request.is_json:
-        data = InvitationSiteRole.from_dict(connexion.request.get_json())
+        data = InvitationSiteRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationsiterole_delete(invitation_id, site_id, role_id):
-    """
-    invitationsiterole_delete
-    
+def invitationsiterole_delete(invitation_id, site_id, role_id):  # noqa: E501
+    """invitationsiterole_delete
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param role_id: A unique integer value identifying the role.
@@ -355,19 +403,22 @@ def invitationsiterole_delete(invitation_id, site_id, role_id):
 
     :rtype: None
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationsiterole_list(offset=None, limit=None, invitation_id=None, site_id=None, role_id=None):
-    """
-    invitationsiterole_list
-    
+def invitationsiterole_list(offset=None, limit=None, invitation_id=None, site_id=None, role_id=None):  # noqa: E501
+    """invitationsiterole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
     :type limit: int
     :param invitation_id: An optional query parameter to filter by invitation_id
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param site_id: An optional query parameter to filter by site_id
     :type site_id: int
     :param role_id: An optional query parameter to filter by role_id
@@ -375,15 +426,18 @@ def invitationsiterole_list(offset=None, limit=None, invitation_id=None, site_id
 
     :rtype: List[InvitationSiteRole]
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def invitationsiterole_read(invitation_id, site_id, role_id):
-    """
-    invitationsiterole_read
-    
+def invitationsiterole_read(invitation_id, site_id, role_id):  # noqa: E501
+    """invitationsiterole_read
+
+     # noqa: E501
+
     :param invitation_id: A UUID value identifying the invitation.
-    :type invitation_id: str
+    :type invitation_id: dict | bytes
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param role_id: A unique integer value identifying the role.
@@ -391,27 +445,31 @@ def invitationsiterole_read(invitation_id, site_id, role_id):
 
     :rtype: InvitationSiteRole
     """
+    if connexion.request.is_json:
+        invitation_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def permission_create(data=None):
-    """
-    permission_create
-    
+def permission_create(data=None):  # noqa: E501
+    """permission_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Permission
     """
     if connexion.request.is_json:
-        data = Permission.from_dict(connexion.request.get_json())
+        data = PermissionCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def permission_delete(permission_id):
-    """
-    permission_delete
-    
+def permission_delete(permission_id):  # noqa: E501
+    """permission_delete
+
+     # noqa: E501
+
     :param permission_id: A unique integer value identifying the permission.
     :type permission_id: int
 
@@ -420,10 +478,11 @@ def permission_delete(permission_id):
     return 'do some magic!'
 
 
-def permission_list(offset=None, limit=None, permission_ids=None):
-    """
-    permission_list
-    
+def permission_list(offset=None, limit=None, permission_ids=None):  # noqa: E501
+    """permission_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -436,10 +495,11 @@ def permission_list(offset=None, limit=None, permission_ids=None):
     return 'do some magic!'
 
 
-def permission_read(permission_id):
-    """
-    permission_read
-    
+def permission_read(permission_id):  # noqa: E501
+    """permission_read
+
+     # noqa: E501
+
     :param permission_id: A unique integer value identifying the permission.
     :type permission_id: int
 
@@ -448,10 +508,11 @@ def permission_read(permission_id):
     return 'do some magic!'
 
 
-def permission_update(permission_id, data=None):
-    """
-    permission_update
-    
+def permission_update(permission_id, data=None):  # noqa: E501
+    """permission_update
+
+     # noqa: E501
+
     :param permission_id: A unique integer value identifying the permission.
     :type permission_id: int
     :param data: 
@@ -460,28 +521,30 @@ def permission_update(permission_id, data=None):
     :rtype: Permission
     """
     if connexion.request.is_json:
-        data = PermissionUpdate.from_dict(connexion.request.get_json())
+        data = PermissionUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def resource_create(data=None):
-    """
-    resource_create
-    
+def resource_create(data=None):  # noqa: E501
+    """resource_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Resource
     """
     if connexion.request.is_json:
-        data = Resource.from_dict(connexion.request.get_json())
+        data = ResourceCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def resource_delete(resource_id):
-    """
-    resource_delete
-    
+def resource_delete(resource_id):  # noqa: E501
+    """resource_delete
+
+     # noqa: E501
+
     :param resource_id: A unique integer value identifying the resource.
     :type resource_id: int
 
@@ -490,10 +553,11 @@ def resource_delete(resource_id):
     return 'do some magic!'
 
 
-def resource_list(offset=None, limit=None, prefix=None, resource_ids=None):
-    """
-    resource_list
-    
+def resource_list(offset=None, limit=None, prefix=None, resource_ids=None):  # noqa: E501
+    """resource_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -508,10 +572,11 @@ def resource_list(offset=None, limit=None, prefix=None, resource_ids=None):
     return 'do some magic!'
 
 
-def resource_read(resource_id):
-    """
-    resource_read
-    
+def resource_read(resource_id):  # noqa: E501
+    """resource_read
+
+     # noqa: E501
+
     :param resource_id: A unique integer value identifying the resource.
     :type resource_id: int
 
@@ -520,10 +585,11 @@ def resource_read(resource_id):
     return 'do some magic!'
 
 
-def resource_update(resource_id, data=None):
-    """
-    resource_update
-    
+def resource_update(resource_id, data=None):  # noqa: E501
+    """resource_update
+
+     # noqa: E501
+
     :param resource_id: A unique integer value identifying the resource.
     :type resource_id: int
     :param data: 
@@ -532,28 +598,30 @@ def resource_update(resource_id, data=None):
     :rtype: Resource
     """
     if connexion.request.is_json:
-        data = ResourceUpdate.from_dict(connexion.request.get_json())
+        data = ResourceUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def role_create(data=None):
-    """
-    role_create
-    
+def role_create(data=None):  # noqa: E501
+    """role_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Role
     """
     if connexion.request.is_json:
-        data = Role.from_dict(connexion.request.get_json())
+        data = RoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def role_delete(role_id):
-    """
-    role_delete
-    
+def role_delete(role_id):  # noqa: E501
+    """role_delete
+
+     # noqa: E501
+
     :param role_id: A unique integer value identifying the role.
     :type role_id: int
 
@@ -562,10 +630,11 @@ def role_delete(role_id):
     return 'do some magic!'
 
 
-def role_list(offset=None, limit=None, role_ids=None):
-    """
-    role_list
-    
+def role_list(offset=None, limit=None, role_ids=None):  # noqa: E501
+    """role_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -578,10 +647,11 @@ def role_list(offset=None, limit=None, role_ids=None):
     return 'do some magic!'
 
 
-def role_read(role_id):
-    """
-    role_read
-    
+def role_read(role_id):  # noqa: E501
+    """role_read
+
+     # noqa: E501
+
     :param role_id: A unique integer value identifying the role.
     :type role_id: int
 
@@ -590,10 +660,11 @@ def role_read(role_id):
     return 'do some magic!'
 
 
-def role_update(role_id, data=None):
-    """
-    role_update
-    
+def role_update(role_id, data=None):  # noqa: E501
+    """role_update
+
+     # noqa: E501
+
     :param role_id: A unique integer value identifying the role.
     :type role_id: int
     :param data: 
@@ -602,28 +673,30 @@ def role_update(role_id, data=None):
     :rtype: Role
     """
     if connexion.request.is_json:
-        data = RoleUpdate.from_dict(connexion.request.get_json())
+        data = RoleUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def roleresourcepermission_create(data=None):
-    """
-    roleresourcepermission_create
-    
+def roleresourcepermission_create(data=None):  # noqa: E501
+    """roleresourcepermission_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: RoleResourcePermission
     """
     if connexion.request.is_json:
-        data = RoleResourcePermission.from_dict(connexion.request.get_json())
+        data = RoleResourcePermissionCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def roleresourcepermission_list(offset=None, limit=None, role_id=None, resource_id=None, permission_id=None):
-    """
-    roleresourcepermission_list
-    
+def roleresourcepermission_list(offset=None, limit=None, role_id=None, resource_id=None, permission_id=None):  # noqa: E501
+    """roleresourcepermission_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -640,10 +713,11 @@ def roleresourcepermission_list(offset=None, limit=None, role_id=None, resource_
     return 'do some magic!'
 
 
-def roleresourcepermission_read(role_id, resource_id, permission_id):
-    """
-    roleresourcepermission_read
-    
+def roleresourcepermission_read(role_id, resource_id, permission_id):  # noqa: E501
+    """roleresourcepermission_read
+
+     # noqa: E501
+
     :param role_id: A unique integer value identifying the role.
     :type role_id: int
     :param resource_id: A unique integer value identifying the resource.
@@ -656,24 +730,26 @@ def roleresourcepermission_read(role_id, resource_id, permission_id):
     return 'do some magic!'
 
 
-def site_create(data=None):
-    """
-    site_create
-    
+def site_create(data=None):  # noqa: E501
+    """site_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: Site
     """
     if connexion.request.is_json:
-        data = Site.from_dict(connexion.request.get_json())
+        data = SiteCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def site_delete(site_id):
-    """
-    site_delete
-    
+def site_delete(site_id):  # noqa: E501
+    """site_delete
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
 
@@ -682,10 +758,11 @@ def site_delete(site_id):
     return 'do some magic!'
 
 
-def site_list(offset=None, limit=None, site_ids=None):
-    """
-    site_list
-    
+def site_list(offset=None, limit=None, site_ids=None):  # noqa: E501
+    """site_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -698,10 +775,11 @@ def site_list(offset=None, limit=None, site_ids=None):
     return 'do some magic!'
 
 
-def site_read(site_id):
-    """
-    site_read
-    
+def site_read(site_id):  # noqa: E501
+    """site_read
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
 
@@ -710,10 +788,11 @@ def site_read(site_id):
     return 'do some magic!'
 
 
-def site_update(site_id, data=None):
-    """
-    site_update
-    
+def site_update(site_id, data=None):  # noqa: E501
+    """site_update
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param data: 
@@ -722,28 +801,30 @@ def site_update(site_id, data=None):
     :rtype: Site
     """
     if connexion.request.is_json:
-        data = SiteUpdate.from_dict(connexion.request.get_json())
+        data = SiteUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def siterole_create(data=None):
-    """
-    siterole_create
-    
+def siterole_create(data=None):  # noqa: E501
+    """siterole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: SiteRole
     """
     if connexion.request.is_json:
-        data = SiteRole.from_dict(connexion.request.get_json())
+        data = SiteRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def siterole_delete(site_id, role_id):
-    """
-    siterole_delete
-    
+def siterole_delete(site_id, role_id):  # noqa: E501
+    """siterole_delete
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param role_id: A unique integer value identifying the role.
@@ -754,10 +835,11 @@ def siterole_delete(site_id, role_id):
     return 'do some magic!'
 
 
-def siterole_list(offset=None, limit=None, site_id=None, role_id=None):
-    """
-    siterole_list
-    
+def siterole_list(offset=None, limit=None, site_id=None, role_id=None):  # noqa: E501
+    """siterole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
@@ -772,10 +854,11 @@ def siterole_list(offset=None, limit=None, site_id=None, role_id=None):
     return 'do some magic!'
 
 
-def siterole_read(site_id, role_id):
-    """
-    siterole_read
-    
+def siterole_read(site_id, role_id):  # noqa: E501
+    """siterole_read
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param role_id: A unique integer value identifying the role.
@@ -786,10 +869,11 @@ def siterole_read(site_id, role_id):
     return 'do some magic!'
 
 
-def siterole_update(site_id, role_id, data=None):
-    """
-    siterole_update
-    
+def siterole_update(site_id, role_id, data=None):  # noqa: E501
+    """siterole_update
+
+     # noqa: E501
+
     :param site_id: A unique integer value identifying the site.
     :type site_id: int
     :param role_id: A unique integer value identifying the role.
@@ -800,30 +884,32 @@ def siterole_update(site_id, role_id, data=None):
     :rtype: SiteRole
     """
     if connexion.request.is_json:
-        data = SiteRoleUpdate.from_dict(connexion.request.get_json())
+        data = SiteRoleUpdate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def userdomainrole_create(data=None):
-    """
-    userdomainrole_create
-    
+def userdomainrole_create(data=None):  # noqa: E501
+    """userdomainrole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: UserDomainRole
     """
     if connexion.request.is_json:
-        data = UserDomainRole.from_dict(connexion.request.get_json())
+        data = UserDomainRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def userdomainrole_delete(user_id, domain_id, role_id):
-    """
-    userdomainrole_delete
-    
+def userdomainrole_delete(user_id, domain_id, role_id):  # noqa: E501
+    """userdomainrole_delete
+
+     # noqa: E501
+
     :param user_id: A UUID value identifying the user.
-    :type user_id: str
+    :type user_id: dict | bytes
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -831,19 +917,22 @@ def userdomainrole_delete(user_id, domain_id, role_id):
 
     :rtype: None
     """
+    if connexion.request.is_json:
+        user_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def userdomainrole_list(offset=None, limit=None, user_id=None, domain_id=None, role_id=None):
-    """
-    userdomainrole_list
-    
+def userdomainrole_list(offset=None, limit=None, user_id=None, domain_id=None, role_id=None):  # noqa: E501
+    """userdomainrole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
     :type limit: int
     :param user_id: An optional query parameter to filter by user_id
-    :type user_id: str
+    :type user_id: dict | bytes
     :param domain_id: An optional query parameter to filter by domain_id
     :type domain_id: int
     :param role_id: An optional query parameter to filter by role_id
@@ -851,15 +940,18 @@ def userdomainrole_list(offset=None, limit=None, user_id=None, domain_id=None, r
 
     :rtype: List[UserDomainRole]
     """
+    if connexion.request.is_json:
+        user_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def userdomainrole_read(user_id, domain_id, role_id):
-    """
-    userdomainrole_read
-    
+def userdomainrole_read(user_id, domain_id, role_id):  # noqa: E501
+    """userdomainrole_read
+
+     # noqa: E501
+
     :param user_id: A UUID value identifying the user.
-    :type user_id: str
+    :type user_id: dict | bytes
     :param domain_id: A unique integer value identifying the domain.
     :type domain_id: int
     :param role_id: A unique integer value identifying the role.
@@ -867,33 +959,37 @@ def userdomainrole_read(user_id, domain_id, role_id):
 
     :rtype: UserDomainRole
     """
+    if connexion.request.is_json:
+        user_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def usersiterole_create(data=None):
-    """
-    usersiterole_create
-    
+def usersiterole_create(data=None):  # noqa: E501
+    """usersiterole_create
+
+     # noqa: E501
+
     :param data: 
     :type data: dict | bytes
 
     :rtype: UserSiteRole
     """
     if connexion.request.is_json:
-        data = UserSiteRole.from_dict(connexion.request.get_json())
+        data = UserSiteRoleCreate.from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'
 
 
-def usersiterole_list(offset=None, limit=None, user_id=None, site_id=None, role_id=None):
-    """
-    usersiterole_list
-    
+def usersiterole_list(offset=None, limit=None, user_id=None, site_id=None, role_id=None):  # noqa: E501
+    """usersiterole_list
+
+     # noqa: E501
+
     :param offset: An optional query parameter specifying the offset in the result set to start from.
     :type offset: int
     :param limit: An optional query parameter to limit the number of results returned.
     :type limit: int
     :param user_id: An optional query parameter to filter by user_id
-    :type user_id: str
+    :type user_id: dict | bytes
     :param site_id: An optional query parameter to filter by site_id
     :type site_id: int
     :param role_id: An optional query parameter to filter by role_id
@@ -901,4 +997,6 @@ def usersiterole_list(offset=None, limit=None, user_id=None, site_id=None, role_
 
     :rtype: List[UserSiteRole]
     """
+    if connexion.request.is_json:
+        user_id = .from_dict(connexion.request.get_json())  # noqa: E501
     return 'do some magic!'

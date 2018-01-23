@@ -190,7 +190,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/domain"
+          $ref: "#/definitions/domain_create"
       responses:
         201:
           description: ""
@@ -310,7 +310,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/domain_role"
+          $ref: "#/definitions/domain_role_create"
       responses:
         201:
           description: ""
@@ -450,7 +450,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/invitation"
+          $ref: "#/definitions/invitation_create"
       responses:
         201:
           description: ""
@@ -579,7 +579,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/invitation_domain_role"
+          $ref: "#/definitions/invitation_domain_role_create"
       responses:
         201:
           description: ""
@@ -704,7 +704,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/invitation_site_role"
+          $ref: "#/definitions/invitation_site_role_create"
       responses:
         201:
           description: ""
@@ -818,7 +818,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/permission"
+          $ref: "#/definitions/permission_create"
       responses:
         201:
           description: ""
@@ -940,7 +940,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/resource"
+          $ref: "#/definitions/resource_create"
       responses:
         201:
           description: ""
@@ -1057,7 +1057,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/role"
+          $ref: "#/definitions/role_create"
       responses:
         201:
           description: ""
@@ -1182,7 +1182,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/role_resource_permission"
+          $ref: "#/definitions/role_resource_permission_create"
       responses:
         201:
           description: ""
@@ -1294,7 +1294,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/site"
+          $ref: "#/definitions/site_create"
       responses:
         201:
           description: ""
@@ -1414,7 +1414,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/site_role"
+          $ref: "#/definitions/site_role_create"
       responses:
         201:
           description: ""
@@ -1555,7 +1555,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/user_domain_role"
+          $ref: "#/definitions/user_domain_role_create"
       responses:
         201:
           description: ""
@@ -1678,7 +1678,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/user_site_role"
+          $ref: "#/definitions/user_site_role_create"
       responses:
         201:
           description: ""
@@ -1741,7 +1741,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/user_site_data"
+          $ref: "#/definitions/user_site_data_create"
       responses:
         201:
           description: ""
@@ -1883,7 +1883,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/admin_note"
+          $ref: "#/definitions/admin_note_create"
       responses:
         201:
           description: ""
@@ -1995,131 +1995,6 @@ paths:
         403:
           description: "Forbidden"
       x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
-  /countries/:
-    get:
-      tags:
-      - "user_data"
-      operationId: "country_list"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "limit"
-        in: "query"
-        description: "An optional query parameter to limit the number of results returned."
-        required: false
-        type: "integer"
-        default: 20
-        maximum: 100
-        minimum: 1
-      - name: "offset"
-        in: "query"
-        description: "An optional query parameter specifying the offset in the result\
-          \ set to start from."
-        required: false
-        type: "integer"
-        default: 0
-        minimum: 0
-      - name: "country_codes"
-        in: "query"
-        description: "An optional list of country codes"
-        required: false
-        type: "array"
-        items:
-          type: "string"
-          minLength: 2
-          maxLength: 2
-      responses:
-        200:
-          description: ""
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/country"
-      x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
-    post:
-      tags:
-      - "user_data"
-      operationId: "country_create"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "data"
-        required: false
-        schema:
-          $ref: "#/definitions/country"
-      responses:
-        201:
-          description: ""
-          schema:
-            $ref: "#/definitions/country"
-      x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
-  /countries/{country_code}/:
-    get:
-      tags:
-      - "user_data"
-      operationId: "country_read"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "country_code"
-        in: "path"
-        description: "A unique two-character value identifying the country."
-        required: true
-        type: "string"
-        maxLength: 2
-        minLength: 2
-      responses:
-        200:
-          description: ""
-          schema:
-            $ref: "#/definitions/country"
-      x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
-    put:
-      tags:
-      - "user_data"
-      operationId: "country_update"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "country_code"
-        in: "path"
-        description: "A unique two-character value identifying the country."
-        required: true
-        type: "string"
-        maxLength: 2
-        minLength: 2
-      - in: "body"
-        name: "data"
-        required: false
-        schema:
-          $ref: "#/definitions/country_update"
-      responses:
-        200:
-          description: ""
-          schema:
-            $ref: "#/definitions/country"
-      x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
-    delete:
-      tags:
-      - "user_data"
-      operationId: "country_delete"
-      parameters:
-      - name: "country_code"
-        in: "path"
-        description: "A unique two-character value identifying the country."
-        required: true
-        type: "string"
-        maxLength: 2
-        minLength: 2
-      responses:
-        204:
-          description: ""
-      x-swagger-router-controller: "swagger_server.controllers.user_data_controller"
   /sitedataschemas/:
     get:
       tags:
@@ -2172,7 +2047,7 @@ paths:
         name: "data"
         required: false
         schema:
-          $ref: "#/definitions/site_data_schema"
+          $ref: "#/definitions/site_data_schema_create"
       responses:
         201:
           description: ""
@@ -2511,6 +2386,25 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      parent_id: 6
+      name: "name"
+      description: "description"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+  domain_create:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      parent_id:
+        type: "integer"
+      name:
+        type: "string"
+        maxLength: 100
+      description:
+        type: "string"
   domain_update:
     type: "object"
     properties:
@@ -2553,6 +2447,30 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      domain_id: 6
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      name: "name"
+      description: "description"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+      client_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+  site_create:
+    type: "object"
+    required:
+    - "domain_id"
+    - "name"
+    properties:
+      client_id:
+        type: "string"
+        format: "uuid"
+      domain_id:
+        type: "integer"
+      name:
+        type: "string"
+        maxLength: 100
+      description:
+        type: "string"
   site_update:
     type: "object"
     properties:
@@ -2592,6 +2510,25 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      is_admin_role: true
+      description: "description"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+      label: {}
+  role_create:
+    type: "object"
+    required:
+    - "is_admin_role"
+    - "label"
+    properties:
+      label:
+        $ref: "#/definitions/role_label"
+      is_admin_role:
+        type: "boolean"
+      description:
+        type: "string"
   role_update:
     type: "object"
     properties:
@@ -2625,6 +2562,24 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      grant_implicitly: true
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      role_id: 6
+      site_id: 0
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  site_role_create:
+    type: "object"
+    required:
+    - "role_id"
+    - "site_id"
+    properties:
+      site_id:
+        type: "integer"
+      role_id:
+        type: "integer"
+      grant_implicitly:
+        type: "boolean"
   site_role_update:
     type: "object"
     properties:
@@ -2653,6 +2608,24 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      domain_id: 0
+      grant_implicitly: true
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      role_id: 6
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  domain_role_create:
+    type: "object"
+    required:
+    - "domain_id"
+    - "role_id"
+    properties:
+      domain_id:
+        type: "integer"
+      role_id:
+        type: "integer"
+      grant_implicitly:
+        type: "boolean"
   domain_role_update:
     type: "object"
     properties:
@@ -2682,6 +2655,26 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      domain_id: 0
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      role_id: 6
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  user_domain_role_create:
+    type: "object"
+    required:
+    - "domain_id"
+    - "role_id"
+    - "user_id"
+    properties:
+      user_id:
+        type: "string"
+        format: "uuid"
+      domain_id:
+        type: "integer"
+      role_id:
+        type: "integer"
   user_site_role:
     type: "object"
     required:
@@ -2706,6 +2699,26 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      role_id: 6
+      site_id: 0
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  user_site_role_create:
+    type: "object"
+    required:
+    - "role_id"
+    - "site_id"
+    - "user_id"
+    properties:
+      user_id:
+        type: "string"
+        format: "uuid"
+      site_id:
+        type: "integer"
+      role_id:
+        type: "integer"
   permission:
     type: "object"
     required:
@@ -2730,6 +2743,22 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      name: "name"
+      description: "description"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+  permission_create:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      name:
+        type: "string"
+        maxLength: 50
+      description:
+        type: "string"
   permission_update:
     type: "object"
     properties:
@@ -2762,6 +2791,22 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      urn: "http://example.com/aeiou"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      description: "description"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: 0
+  resource_create:
+    type: "object"
+    required:
+    - "urn"
+    properties:
+      urn:
+        type: "string"
+        format: "uri"
+      description:
+        type: "string"
   resource_update:
     type: "object"
     properties:
@@ -2793,6 +2838,25 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      role_id: 0
+      resource_id: 6
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      permission_id: 1
+  role_resource_permission_create:
+    type: "object"
+    required:
+    - "permission_id"
+    - "resource_id"
+    - "role_id"
+    properties:
+      role_id:
+        type: "integer"
+      resource_id:
+        type: "integer"
+      permission_id:
+        type: "integer"
   invitation:
     type: "object"
     required:
@@ -2833,6 +2897,39 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      expires_at: "2000-01-23T04:56:07.000+00:00"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      invitor_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      last_name: "last_name"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      first_name: "first_name"
+      email: "email"
+  invitation_create:
+    type: "object"
+    required:
+    - "email"
+    - "first_name"
+    - "invitor_id"
+    - "last_name"
+    properties:
+      invitor_id:
+        type: "string"
+        format: "uuid"
+        description: "The user that created the invitation"
+      first_name:
+        type: "string"
+        maxLength: 100
+      last_name:
+        type: "string"
+        maxLength: 100
+      email:
+        type: "string"
+        format: "email"
+      expires_at:
+        type: "string"
+        format: "date-time"
   invitation_update:
     type: "object"
     properties:
@@ -2872,6 +2969,26 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      domain_id: 0
+      invitation_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      role_id: 6
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  invitation_domain_role_create:
+    type: "object"
+    required:
+    - "domain_id"
+    - "invitation_id"
+    - "role_id"
+    properties:
+      invitation_id:
+        type: "string"
+        format: "uuid"
+      domain_id:
+        type: "integer"
+      role_id:
+        type: "integer"
   invitation_site_role:
     type: "object"
     required:
@@ -2896,6 +3013,26 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      invitation_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      role_id: 6
+      site_id: 0
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  invitation_site_role_create:
+    type: "object"
+    required:
+    - "invitation_id"
+    - "role_id"
+    - "site_id"
+    properties:
+      invitation_id:
+        type: "string"
+        format: "uuid"
+      site_id:
+        type: "integer"
+      role_id:
+        type: "integer"
   site_role_labels_aggregated:
     type: "object"
     properties:
@@ -2907,6 +3044,11 @@ definitions:
           $ref: "#/definitions/role_label"
     description: "An object containing a site ID and an aggregated list of all the\
       \ role labels supported by the site and all the domains in its lineage."
+    example:
+      roles:
+      - {}
+      - {}
+      site_id: 0
   user_site_role_labels_aggregated:
     type: "object"
     properties:
@@ -2922,6 +3064,12 @@ definitions:
     description: "An object containing a user ID, site ID and an aggregated list of\
       \ all the role labels assigned to the user for the site and all the domains\
       \ in its lineage."
+    example:
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      roles:
+      - {}
+      - {}
+      site_id: 0
   domain_roles:
     type: "object"
     required:
@@ -2952,6 +3100,18 @@ definitions:
             type: "integer"
     description: "An object containing the domain roles defined for a given domain\
       \ and it's lineage."
+    example:
+      domain_id: 0
+      roles_map:
+        s:1:
+        - 1
+        - 2
+        - 3
+        d:1:
+        - 1
+        d:2:
+        - 1
+        - 2
   site_and_domain_roles:
     type: "object"
     required:
@@ -2962,6 +3122,8 @@ definitions:
         description: "The site for which the request was made."
     description: "An object containing the site- and domain lineage roles defined\
       \ for a given site."
+    example:
+      site_id: 0
   all_user_roles:
     type: "object"
     required:
@@ -2990,6 +3152,18 @@ definitions:
             type: "integer"
     description: "An object containing the effective roles that a user has in any\
       \ place in the organisational tree."
+    example:
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      roles_map:
+        s:1:
+        - 1
+        - 2
+        - 3
+        d:1:
+        - 1
+        d:2:
+        - 1
+        - 2
   admin_note:
     type: "object"
     required:
@@ -3018,40 +3192,35 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      note: "note"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      creator_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  admin_note_create:
+    type: "object"
+    required:
+    - "creator_id"
+    - "note"
+    - "user_id"
+    properties:
+      user_id:
+        type: "string"
+        format: "uuid"
+      creator_id:
+        type: "string"
+        format: "uuid"
+        description: "The user making the request will be considered the creator and\
+          \ thus this field is not available when creating admin note."
+        readOnly: true
+      note:
+        type: "string"
   admin_note_update:
     type: "object"
     properties:
       note:
         type: "string"
-  country:
-    type: "object"
-    required:
-    - "code"
-    - "created_at"
-    - "name"
-    - "updated_at"
-    properties:
-      code:
-        type: "string"
-        minLength: 2
-        maxLength: 2
-      name:
-        type: "string"
-        maxLength: 256
-      created_at:
-        type: "string"
-        format: "date-time"
-        readOnly: true
-      updated_at:
-        type: "string"
-        format: "date-time"
-        readOnly: true
-  country_update:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-        maxLength: 256
   site_data_schema:
     type: "object"
     required:
@@ -3073,6 +3242,22 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      schema: "{}"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      site_id: 0
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  site_data_schema_create:
+    type: "object"
+    required:
+    - "schema"
+    - "site_id"
+    properties:
+      site_id:
+        type: "integer"
+      schema:
+        type: "object"
+        properties: {}
   site_data_schema_update:
     type: "object"
     properties:
@@ -3107,6 +3292,31 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      data: "{}"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      data_processing_consent_provided: true
+      site_id: 0
+      created_at: "2000-01-23T04:56:07.000+00:00"
+  user_site_data_create:
+    type: "object"
+    required:
+    - "data"
+    - "data_processing_consent_provided"
+    - "site_id"
+    - "user_id"
+    properties:
+      user_id:
+        type: "string"
+        format: "uuid"
+      site_id:
+        type: "integer"
+      data_processing_consent_provided:
+        type: "boolean"
+      data:
+        type: "object"
+        properties: {}
   user_site_data_update:
     type: "object"
     properties:
@@ -3116,6 +3326,74 @@ definitions:
         type: "object"
         properties: {}
   client:
+    type: "object"
+    required:
+    - "client_id"
+    - "id"
+    - "response_type"
+    properties:
+      id:
+        type: "integer"
+        readOnly: true
+      _post_logout_redirect_uris:
+        type: "string"
+        description: "New-line delimited list of post-logout redirect URIs"
+      _redirect_uris:
+        type: "string"
+        description: "New-line delimited list of redirect URIs"
+      client_id:
+        type: "string"
+        description: ""
+      client_type:
+        type: "string"
+        description: "<b>Confidential</b> clients are capable of maintaining the confidentiality\
+          \ of their credentials. <b>Public</b> clients are incapable."
+      contact_email:
+        type: "string"
+        description: ""
+      jwt_alg:
+        type: "string"
+        description: "Algorithm used to encode ID Tokens."
+      logo:
+        type: "string"
+        format: "uri"
+        description: ""
+      name:
+        type: "string"
+        description: ""
+      require_consent:
+        type: "boolean"
+        description: "If disabled, the Server will NEVER ask the user for consent."
+      response_type:
+        type: "string"
+        description: ""
+      reuse_consent:
+        type: "boolean"
+        description: "If enabled, the Server will save the user consent given to a\
+          \ specific client, so that user won't be prompted for the same authorization\
+          \ multiple times."
+      terms_url:
+        type: "string"
+        description: "External reference to the privacy policy of the client."
+      website_url:
+        type: "string"
+        description: ""
+    example:
+      _redirect_uris: "_redirect_uris"
+      require_consent: true
+      _post_logout_redirect_uris: "_post_logout_redirect_uris"
+      response_type: "response_type"
+      client_type: "client_type"
+      client_id: "client_id"
+      contact_email: "contact_email"
+      jwt_alg: "jwt_alg"
+      website_url: "website_url"
+      terms_url: "terms_url"
+      reuse_consent: true
+      name: "name"
+      logo: "http://example.com/aeiou"
+      id: 0
+  client_create:
     type: "object"
     required:
     - "client_id"
@@ -3233,6 +3511,24 @@ definitions:
         type: "string"
         format: "date-time"
         readOnly: true
+    example:
+      is_active: true
+      email_verified: true
+      gender: "gender"
+      last_login: "last_login"
+      birth_date: "2000-01-23"
+      last_name: "last_name"
+      created_at: "2000-01-23T04:56:07.000+00:00"
+      avatar: "http://example.com/aeiou"
+      msisdn_verified: true
+      country_code: "country_code"
+      updated_at: "2000-01-23T04:56:07.000+00:00"
+      id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
+      date_joined: "2000-01-23"
+      msisdn: "msisdn"
+      first_name: "first_name"
+      email: "email"
+      username: "username"
   user_update:
     type: "object"
     properties:
