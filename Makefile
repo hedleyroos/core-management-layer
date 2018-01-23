@@ -2,6 +2,7 @@ VENV=./ve
 PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 FLAKE8=$(VENV)/bin/flake8
+PYTEST=$(VENV)/bin/pytest
 CODEGEN_VERSION=2.2.3
 CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
 USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
@@ -15,7 +16,7 @@ GREEN=\033[0;32m
 CYAN=\033[0;36m
 
 .SILENT: docs-build
-.PHONY: check
+.PHONY: check test
 
 help:
 	@echo "usage: make <target>"
@@ -76,7 +77,7 @@ validate-swagger: prism
 	@./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
 
 swagger-codegen-cli-$(CODEGEN_VERSION).jar:
-	        wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
+	wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
 
 # Generate the client code to interface with the User Data Store
 user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
@@ -110,3 +111,9 @@ $(FLAKE8): $(VENV)
 
 check: $(FLAKE8)
 	$(FLAKE8)
+
+$(PYTEST): $(VENV)
+	$(PIP) install pytest pytest-cov
+
+test: $(PYTEST)
+	$(PYTEST) --verbose --cov=management_layer management_layer/

@@ -26,3 +26,6 @@ Dockerfile
 .dockerignore
 .gitignore
 setup.py
+tox.ini
+.travis.yml
+requirements.txt
