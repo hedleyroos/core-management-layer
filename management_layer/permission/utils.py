@@ -56,10 +56,6 @@ OA = OperationalApi()
 AA = AccessControlApi()
 
 
-# Name to id mappings. TODO: Populate via API on startup. Move somewhere
-# more appropriate.
-
-
 class Forbidden(Exception):
     """
     An exception raised when a user does not have the required permission(s)
@@ -157,7 +153,7 @@ def user_has_permissions(
     :param nocache: Bypass the cache if True
     :return: True if the user is has the required permissions on the resources
     """
-    # Either a site or domain needs to be provided
+    # Either a site or domain needs to be provided, but not both.
     if bool(site) == bool(domain):
         raise RuntimeError("Either a site or a domain needs to be provided")
 
@@ -186,7 +182,7 @@ def get_user_roles_for_site_or_domain(
     :param nocache: Bypass the cache if True
     :return: A list of roles ids
     """
-    # Either a site or domain needs to be provided
+    # Either a site or domain needs to be provided, but not both.
     if bool(site) == bool(domain):
         raise RuntimeError("Either a site or a domain needs to be provided")
 

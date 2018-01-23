@@ -4,7 +4,7 @@ formats.
 
 In order to prevent repeated API lookups, data can be loaded when the
 application is started and refreshed as necessary. We typically store
-dictionaries where the key is the id of the entity and the value the entity
+dictionaries where the key is the id of the entity, and the value is the entity
 itself, as well as a dictionary which maps the text identifier of the entity
 to its id.
 """

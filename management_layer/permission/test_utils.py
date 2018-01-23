@@ -71,7 +71,7 @@ class TestRequirePermissionsDecorator(TestCase):
         Check that positional argument lookups of the user and site
         information works.
         We mock a response for the get_user_roles_for_site() function in
-        order check that it was called with the appropriate values.
+        order to check that it was called with the appropriate values.
         """
         @require_permissions(all, [], user_field=2, site_field=1)
         def positional_args(_arg1, _site, _user):
@@ -91,7 +91,7 @@ class TestRequirePermissionsDecorator(TestCase):
         """
         Check that keyword-based lookups of the user and site information works.
         We mock a response for the get_user_roles_for_site() function in
-        order check that it was called with the appropriate values.
+        order to check that it was called with the appropriate values.
         """
         @require_permissions(all, [], user_field="user_id", site_field="site_id")
         def keyword_args(**kwargs):
@@ -112,7 +112,7 @@ class TestRequirePermissionsDecorator(TestCase):
         Check that a mix of positional and keyword-based lookups of user and
         site information works.
         We mock a response for the get_user_roles_for_site() function in
-        order check that it was called with the appropriate values.
+        order to check that it was called with the appropriate values.
         """
         @require_permissions(all, [], user_field="user_id", site_field=1,
                              nocache=True)
