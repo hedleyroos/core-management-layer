@@ -196,6 +196,19 @@ definitions:
       - created_at
       - updated_at
 
+  domain_create:
+    type: object
+    properties:
+      parent_id:
+        type: integer
+      name:
+        type: string
+        maxLength: 100
+      description:
+        type: string
+    required:
+      - name
+
   domain_update:
     type: object
     properties:
@@ -243,6 +256,23 @@ definitions:
       - created_at
       - updated_at
 
+  site_create:
+    type: object
+    properties:
+      client_id:
+        type: string
+        format: uuid
+      domain_id:
+        type: integer
+      name:
+        type: string
+        maxLength: 100
+      description:
+        type: string
+    required:
+      - domain_id
+      - name
+
   site_update:
     type: object
     properties:
@@ -285,6 +315,19 @@ definitions:
       - created_at
       - updated_at
 
+  role_create:
+    type: object
+    properties:
+      label:
+        $ref: '#/definitions/role_label'
+      is_admin_role:
+        type: boolean
+      description:
+        type: string
+    required:
+      - label
+      - is_admin_role
+
   role_update:
     type: object
     properties:
@@ -321,6 +364,19 @@ definitions:
       - created_at
       - updated_at
 
+  site_role_create:
+    type: object
+    properties:
+      site_id:
+        type: integer
+      role_id:
+        type: integer
+      grant_implicitly:
+        type: boolean
+    required:
+      - site_id
+      - role_id
+
   site_role_update:
     type: object
     properties:
@@ -351,6 +407,19 @@ definitions:
       - grant_implicitly
       - created_at
       - updated_at
+
+  domain_role_create:
+    type: object
+    properties:
+      domain_id:
+        type: integer
+      role_id:
+        type: integer
+      grant_implicitly:
+        type: boolean
+    required:
+      - domain_id
+      - role_id
 
   domain_role_update:
     type: object
@@ -384,6 +453,21 @@ definitions:
       - created_at
       - updated_at
 
+  user_domain_role_create:
+    type: object
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      domain_id:
+        type: integer
+      role_id:
+        type: integer
+    required:
+      - user_id
+      - domain_id
+      - role_id
+
   user_site_role:
     type: object
     properties:
@@ -409,6 +493,21 @@ definitions:
       - created_at
       - updated_at
 
+  user_site_role_create:
+    type: object
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      site_id:
+        type: integer
+      role_id:
+        type: integer
+    required:
+      - user_id
+      - site_id
+      - role_id
+
   permission:
     type: object
     properties:
@@ -433,6 +532,17 @@ definitions:
       - name
       - created_at
       - updated_at
+
+  permission_create:
+    type: object
+    properties:
+      name:
+        type: string
+        maxLength: 50
+      description:
+        type: string
+    required:
+      - name
 
   permission_update:
     type: object
@@ -469,6 +579,17 @@ definitions:
       - created_at
       - updated_at
 
+  resource_create:
+    type: object
+    properties:
+      urn:
+        type: string
+        format: uri
+      description:
+        type: string
+    required:
+      - urn
+
   resource_update:
     type: object
     properties:
@@ -502,6 +623,20 @@ definitions:
       - permission_id
       - created_at
       - updated_at
+
+  role_resource_permission_create:
+    type: object
+    properties:
+      role_id:
+        type: integer
+      resource_id:
+        type: integer
+      permission_id:
+        type: integer
+    required:
+      - role_id
+      - resource_id
+      - permission_id
 
   invitation:
     type: object
@@ -543,6 +678,31 @@ definitions:
       - expires_at
       - created_at
       - updated_at
+
+  invitation_create:
+    type: object
+    properties:
+      invitor_id:
+        type: string
+        format: uuid
+        description: The user that created the invitation
+      first_name:
+        type: string
+        maxLength: 100
+      last_name:
+        type: string
+        maxLength: 100
+      email:
+        type: string
+        format: email
+      expires_at:
+        type: string
+        format: 'date-time'
+    required:
+      - invitor_id
+      - first_name
+      - last_name
+      - email
 
   invitation_update:
     type: object
@@ -586,6 +746,21 @@ definitions:
       - created_at
       - updated_at
 
+  invitation_domain_role_create:
+    type: object
+    properties:
+      invitation_id:
+        type: string
+        format: uuid
+      domain_id:
+        type: integer
+      role_id:
+        type: integer
+    required:
+      - invitation_id
+      - domain_id
+      - role_id
+
   invitation_site_role:
     type: object
     properties:
@@ -610,6 +785,21 @@ definitions:
       - role_id
       - created_at
       - updated_at
+
+  invitation_site_role_create:
+    type: object
+    properties:
+      invitation_id:
+        type: string
+        format: uuid
+      site_id:
+        type: integer
+      role_id:
+        type: integer
+    required:
+      - invitation_id
+      - site_id
+      - role_id
 
   site_role_labels_aggregated:
     description: 'An object containing a site ID and an aggregated list of all the role labels supported
@@ -735,43 +925,30 @@ definitions:
       - created_at
       - updated_at
 
+  admin_note_create:
+    type: object
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      creator_id:
+        type: string
+        format: uuid
+        readOnly: true
+        description: The user making the request will be considered the creator and thus this field is not available
+          when creating admin note.
+      note:
+        type: string
+    required:
+      - user_id
+      - creator_id
+      - note
+
   admin_note_update:
     type: object
     properties:
       note:
         type: string
-    minProperties: 1
-
-  country:
-    type: object
-    properties:
-      code:
-        type: string
-        minLength: 2
-        maxLength: 2
-      name:
-        type: string
-        maxLength: 256
-      created_at:
-        type: string
-        format: 'date-time'
-        readOnly: true
-      updated_at:
-        type: string
-        format: 'date-time'
-        readOnly: true
-    required:
-      - code
-      - name
-      - created_at
-      - updated_at
-
-  country_update:
-    type: object
-    properties:
-      name:
-        type: string
-        maxLength: 256
     minProperties: 1
 
   site_data_schema:
@@ -794,6 +971,17 @@ definitions:
       - schema
       - created_at
       - updated_at
+
+  site_data_schema_create:
+    type: object
+    properties:
+      site_id:
+        type: integer
+      schema:
+        type: object
+    required:
+      - site_id
+      - schema
 
   site_data_schema_update:
     type: object
@@ -830,6 +1018,24 @@ definitions:
       - created_at
       - updated_at
 
+  user_site_data_create:
+    type: object
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      site_id:
+        type: integer
+      data_processing_consent_provided:
+        type: boolean
+      data:
+        type: object
+    required:
+      - user_id
+      - site_id
+      - data_processing_consent_provided
+      - data
+
   user_site_data_update:
     type: object
     properties:
@@ -839,6 +1045,63 @@ definitions:
         type: object
 
   client:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      _post_logout_redirect_uris:
+        description: New-line delimited list of post-logout redirect URIs
+        type: string
+      _redirect_uris:
+        description: New-line delimited list of redirect URIs
+        type: string
+      client_id:
+        description: ''
+        type: string
+      client_type:
+        description: >-
+          <b>Confidential</b> clients are capable of maintaining the
+          confidentiality of their credentials. <b>Public</b> clients
+          are incapable.
+        type: string
+      contact_email:
+        description: ''
+        type: string
+      jwt_alg:
+        description: Algorithm used to encode ID Tokens.
+        type: string
+      logo:
+        description: ''
+        type: string
+        format: uri
+      name:
+        description: ''
+        type: string
+      require_consent:
+        description: 'If disabled, the Server will NEVER ask the user for consent.'
+        type: boolean
+      response_type:
+        description: ''
+        type: string
+      reuse_consent:
+        description: >-
+          If enabled, the Server will save the user consent given to a
+          specific client, so that user won't be prompted for the same
+          authorization multiple times.
+        type: boolean
+      terms_url:
+        description: External reference to the privacy policy of the client.
+        type: string
+      website_url:
+        description: ''
+        type: string
+    required:
+      - id
+      - client_id
+      - response_type
+
+  client_create:
     type: object
     properties:
       _post_logout_redirect_uris:
@@ -1210,7 +1473,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/domain'
+            $ref: '#/definitions/domain_create'
       produces:
         - application/json
       responses:
@@ -1288,7 +1551,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/domain_role'
+            $ref: '#/definitions/domain_role_create'
       produces:
         - application/json
       responses:
@@ -1379,7 +1642,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/invitation'
+            $ref: '#/definitions/invitation_create'
       produces:
         - application/json
       responses:
@@ -1458,7 +1721,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/invitation_domain_role'
+            $ref: '#/definitions/invitation_domain_role_create'
       produces:
         - application/json
       responses:
@@ -1523,7 +1786,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/invitation_site_role'
+            $ref: '#/definitions/invitation_site_role_create'
       produces:
         - application/json
       responses:
@@ -1590,7 +1853,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/permission'
+            $ref: '#/definitions/permission_create'
       produces:
         - application/json
       responses:
@@ -1678,7 +1941,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/resource'
+            $ref: '#/definitions/resource_create'
       produces:
         - application/json
       responses:
@@ -1761,7 +2024,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/role'
+            $ref: '#/definitions/role_create'
       produces:
         - application/json
       responses:
@@ -1848,7 +2111,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/role_resource_permission'
+            $ref: '#/definitions/role_resource_permission_create'
       produces:
         - application/json
       responses:
@@ -1915,7 +2178,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/site'
+            $ref: '#/definitions/site_create'
       produces:
         - application/json
       responses:
@@ -1993,7 +2256,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/site_role'
+            $ref: '#/definitions/site_role_create'
       produces:
         - application/json
       responses:
@@ -2073,7 +2336,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/user_domain_role'
+            $ref: '#/definitions/user_domain_role_create'
       produces:
         - application/json
       responses:
@@ -2136,7 +2399,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/user_site_role'
+            $ref: '#/definitions/user_site_role_create'
       produces:
         - application/json
       responses:
@@ -2172,7 +2435,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/user_site_data'
+            $ref: '#/definitions/user_site_data_create'
       consumes:
         - application/json
       produces:
@@ -2260,7 +2523,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/admin_note'
+            $ref: '#/definitions/admin_note_create'
       produces:
         - application/json
       responses:
@@ -2331,91 +2594,6 @@ paths:
       tags:
         - user_data
 
-  /countries/:
-    get:
-      operationId: country_list
-      parameters:
-        - $ref: '#/parameters/optional_limit'
-        - $ref: '#/parameters/optional_offset'
-        - name: country_codes
-          description: An optional list of country codes
-          in: query
-          type: array
-          items:
-            type: string
-            minLength: 2
-            maxLength: 2
-          required: false
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: ''
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/country'
-      tags:
-        - user_data
-    post:
-      consumes:
-        - application/json
-      operationId: country_create
-      parameters:
-        - in: body
-          name: data
-          schema:
-            $ref: '#/definitions/country'
-      produces:
-        - application/json
-      responses:
-        '201':
-          description: ''
-          schema:
-            $ref: '#/definitions/country'
-      tags:
-        - user_data
-
-  /countries/{country_code}/:
-    parameters:
-      - $ref: '#/parameters/country_code'
-    delete:
-      operationId: country_delete
-      responses:
-        '204':
-          description: ''
-      tags:
-        - user_data
-    get:
-      operationId: country_read
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: ''
-          schema:
-            $ref: '#/definitions/country'
-      tags:
-        - user_data
-    put:
-      consumes:
-        - application/json
-      operationId: country_update
-      parameters:
-        - in: body
-          name: data
-          schema:
-            $ref: '#/definitions/country_update'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: ''
-          schema:
-            $ref: '#/definitions/country'
-      tags:
-        - user_data
-
   /sitedataschemas/:
     get:
       operationId: sitedataschema_list
@@ -2448,7 +2626,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/site_data_schema'
+            $ref: '#/definitions/site_data_schema_create'
       produces:
         - application/json
       responses:
