@@ -15,7 +15,7 @@ class SiteCreate(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, client_id: str=None, domain_id: int=None, name: str=None, description: str=None):  # noqa: E501
+    def __init__(self, client_id: str=None, domain_id: int=None, name: str=None, is_active: bool=None, description: str=None):  # noqa: E501
         """SiteCreate - a model defined in Swagger
 
         :param client_id: The client_id of this SiteCreate.  # noqa: E501
@@ -24,6 +24,8 @@ class SiteCreate(Model):
         :type domain_id: int
         :param name: The name of this SiteCreate.  # noqa: E501
         :type name: str
+        :param is_active: The is_active of this SiteCreate.  # noqa: E501
+        :type is_active: bool
         :param description: The description of this SiteCreate.  # noqa: E501
         :type description: str
         """
@@ -31,6 +33,7 @@ class SiteCreate(Model):
             'client_id': str,
             'domain_id': int,
             'name': str,
+            'is_active': bool,
             'description': str
         }
 
@@ -38,12 +41,14 @@ class SiteCreate(Model):
             'client_id': 'client_id',
             'domain_id': 'domain_id',
             'name': 'name',
+            'is_active': 'is_active',
             'description': 'description'
         }
 
         self._client_id = client_id
         self._domain_id = domain_id
         self._name = name
+        self._is_active = is_active
         self._description = description
 
     @classmethod
@@ -125,6 +130,27 @@ class SiteCreate(Model):
             raise ValueError("Invalid value for `name`, length must be less than or equal to `100`")  # noqa: E501
 
         self._name = name
+
+    @property
+    def is_active(self) -> bool:
+        """Gets the is_active of this SiteCreate.
+
+
+        :return: The is_active of this SiteCreate.
+        :rtype: bool
+        """
+        return self._is_active
+
+    @is_active.setter
+    def is_active(self, is_active: bool):
+        """Sets the is_active of this SiteCreate.
+
+
+        :param is_active: The is_active of this SiteCreate.
+        :type is_active: bool
+        """
+
+        self._is_active = is_active
 
     @property
     def description(self) -> str:

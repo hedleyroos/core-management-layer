@@ -2423,6 +2423,7 @@ definitions:
     - "created_at"
     - "domain_id"
     - "id"
+    - "is_active"
     - "name"
     - "updated_at"
     properties:
@@ -2439,6 +2440,8 @@ definitions:
         maxLength: 100
       description:
         type: "string"
+      is_active:
+        type: "boolean"
       created_at:
         type: "string"
         format: "date-time"
@@ -2449,6 +2452,7 @@ definitions:
         readOnly: true
     example:
       domain_id: 6
+      is_active: true
       updated_at: "2000-01-23T04:56:07.000+00:00"
       name: "name"
       description: "description"
@@ -2469,6 +2473,8 @@ definitions:
       name:
         type: "string"
         maxLength: 100
+      is_active:
+        type: "boolean"
       description:
         type: "string"
   site_update:
@@ -2484,13 +2490,15 @@ definitions:
         maxLength: 100
       description:
         type: "string"
+      is_active:
+        type: "boolean"
   role:
     type: "object"
     required:
     - "created_at"
     - "id"
-    - "is_admin_role"
     - "label"
+    - "requires_2fa"
     - "updated_at"
     properties:
       id:
@@ -2498,7 +2506,7 @@ definitions:
         readOnly: true
       label:
         $ref: "#/definitions/role_label"
-      is_admin_role:
+      requires_2fa:
         type: "boolean"
       description:
         type: "string"
@@ -2512,20 +2520,20 @@ definitions:
         readOnly: true
     example:
       updated_at: "2000-01-23T04:56:07.000+00:00"
-      is_admin_role: true
       description: "description"
       created_at: "2000-01-23T04:56:07.000+00:00"
       id: 0
       label: {}
+      requires_2fa: true
   role_create:
     type: "object"
     required:
-    - "is_admin_role"
     - "label"
+    - "requires_2fa"
     properties:
       label:
         $ref: "#/definitions/role_label"
-      is_admin_role:
+      requires_2fa:
         type: "boolean"
       description:
         type: "string"
@@ -2535,7 +2543,7 @@ definitions:
       label:
         type: "string"
         maxLength: 100
-      is_admin_role:
+      requires_2fa:
         type: "boolean"
       description:
         type: "string"
@@ -3267,9 +3275,10 @@ definitions:
   user_site_data:
     type: "object"
     required:
+    - "blocked"
+    - "consented_at"
     - "created_at"
     - "data"
-    - "data_processing_consent_provided"
     - "site_id"
     - "updated_at"
     - "user_id"
@@ -3279,11 +3288,14 @@ definitions:
         format: "uuid"
       site_id:
         type: "integer"
-      data_processing_consent_provided:
-        type: "boolean"
+      consented_at:
+        type: "string"
+        format: "date"
       data:
         type: "object"
         properties: {}
+      blocked:
+        type: "boolean"
       created_at:
         type: "string"
         format: "date-time"
@@ -3293,17 +3305,17 @@ definitions:
         format: "date-time"
         readOnly: true
     example:
+      consented_at: "2000-01-23"
       data: "{}"
+      blocked: true
       updated_at: "2000-01-23T04:56:07.000+00:00"
       user_id: "046b6c7f-0b8a-43b9-b35d-6489e6daee91"
-      data_processing_consent_provided: true
       site_id: 0
       created_at: "2000-01-23T04:56:07.000+00:00"
   user_site_data_create:
     type: "object"
     required:
     - "data"
-    - "data_processing_consent_provided"
     - "site_id"
     - "user_id"
     properties:
@@ -3312,7 +3324,10 @@ definitions:
         format: "uuid"
       site_id:
         type: "integer"
-      data_processing_consent_provided:
+      consented_at:
+        type: "string"
+        format: "date"
+      blocked:
         type: "boolean"
       data:
         type: "object"
@@ -3320,7 +3335,10 @@ definitions:
   user_site_data_update:
     type: "object"
     properties:
-      data_processing_consent_provided:
+      consented_at:
+        type: "string"
+        format: "date"
+      blocked:
         type: "boolean"
       data:
         type: "object"

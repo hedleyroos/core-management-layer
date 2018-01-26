@@ -241,6 +241,8 @@ definitions:
         maxLength: 100
       description:
         type: string
+      is_active:
+        type: boolean
       created_at:
         type: string
         format: 'date-time'
@@ -253,6 +255,7 @@ definitions:
       - id
       - domain_id
       - name
+      - is_active
       - created_at
       - updated_at
 
@@ -267,6 +270,8 @@ definitions:
       name:
         type: string
         maxLength: 100
+      is_active:
+        type: boolean
       description:
         type: string
     required:
@@ -286,6 +291,8 @@ definitions:
         maxLength: 100
       description:
         type: string
+      is_active:
+        type: boolean
     minProperties: 1
 
   role:
@@ -296,7 +303,7 @@ definitions:
         readOnly: true
       label:
         $ref: '#/definitions/role_label'
-      is_admin_role:
+      requires_2fa:
         type: boolean
       description:
         type: string
@@ -311,7 +318,7 @@ definitions:
     required:
       - id
       - label
-      - is_admin_role
+      - requires_2fa
       - created_at
       - updated_at
 
@@ -320,13 +327,13 @@ definitions:
     properties:
       label:
         $ref: '#/definitions/role_label'
-      is_admin_role:
+      requires_2fa:
         type: boolean
       description:
         type: string
     required:
       - label
-      - is_admin_role
+      - requires_2fa
 
   role_update:
     type: object
@@ -334,7 +341,7 @@ definitions:
       label:
         type: string
         maxLength: 100
-      is_admin_role:
+      requires_2fa:
         type: boolean
       description:
         type: string
@@ -998,10 +1005,13 @@ definitions:
         format: uuid
       site_id:
         type: integer
-      data_processing_consent_provided:
-        type: boolean
+      consented_at:
+        type: string
+        format: date
       data:
         type: object
+      blocked:
+        type: boolean
       created_at:
         type: string
         format: date-time
@@ -1013,7 +1023,8 @@ definitions:
     required:
       - user_id
       - site_id
-      - data_processing_consent_provided
+      - consented_at
+      - blocked
       - data
       - created_at
       - updated_at
@@ -1026,23 +1037,29 @@ definitions:
         format: uuid
       site_id:
         type: integer
-      data_processing_consent_provided:
+      consented_at:
+        type: string
+        format: date
+      blocked:
         type: boolean
       data:
         type: object
     required:
       - user_id
       - site_id
-      - data_processing_consent_provided
       - data
 
   user_site_data_update:
     type: object
     properties:
-      data_processing_consent_provided:
+      consented_at:
+        type: string
+        format: date
+      blocked:
         type: boolean
       data:
         type: object
+    minProperties: 1
 
   client:
     type: object
