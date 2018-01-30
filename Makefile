@@ -3,11 +3,12 @@ PYTHON=$(VENV)/bin/python
 PIP=$(VENV)/bin/pip
 FLAKE8=$(VENV)/bin/flake8
 PYTEST=$(VENV)/bin/pytest
+FLASK=$(VENV)/bin/flask
 CODEGEN_VERSION=2.3.1
 CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
-USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
-ACCESS_CONTROL_CLIENT_DIR=management_layer/access_control
-AUTHENTICATION_SERVICE_CLIENT_DIR=management_layer/authentication_service
+USER_DATA_STORE_CLIENT_DIR=user_data_store
+ACCESS_CONTROL_CLIENT_DIR=access_control
+AUTHENTICATION_SERVICE_CLIENT_DIR=authentication_service
 
 # Colours.
 CLEAR=\033[0m
@@ -26,7 +27,7 @@ help:
 
 $(VENV):
 	@echo "$(CYAN)Initialise base ve...$(CLEAR)"
-	virtualenv $(VENV) -p python3.5
+	virtualenv $(VENV) -p python3
 	@echo "$(GREEN)DONE$(CLEAR)"
 
 # Creates the virtual environment.
@@ -66,6 +67,9 @@ docs-build:  $(VENV)
 	rm -rf docs/build/
 	@echo "$(GREEN)DONE$(CLEAR)"
 
+swagger-codegen-cli-$(CODEGEN_VERSION).jar:
+	wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
+
 prism:
 	curl -L https://github.com/stoplightio/prism/releases/download/v0.6.21/prism_linux_amd64 -o prism
 	chmod +x prism
@@ -76,8 +80,8 @@ mock-management-layer-api: prism
 validate-swagger: prism
 	@./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
 
-swagger-codegen-cli-$(CODEGEN_VERSION).jar:
-	wget https://oss.sonatype.org/content/repositories/releases/io/swagger/swagger-codegen-cli/$(CODEGEN_VERSION)/swagger-codegen-cli-$(CODEGEN_VERSION).jar
+$(FLAKE8): $(VENV)
+	$(PIP) install flake8
 
 # Generate the client code to interface with the User Data Store
 user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
@@ -106,8 +110,9 @@ authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
 	$(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
 
-$(FLAKE8): $(VENV)
-	$(PIP) install flake8
+runserver: $(VENV)
+	@echo "$(CYAN)Firing up server...$(CLEAR)"
+	$(PYTHON) -m swagger_server
 
 check: $(FLAKE8)
 	$(FLAKE8)
@@ -116,4 +121,4 @@ $(PYTEST): $(VENV)
 	$(PIP) install pytest pytest-cov
 
 test: $(PYTEST)
-	$(PYTEST) --verbose --cov=management_layer management_layer/
+	$(PYTEST) --verbose --cov=management_layer --cov=swagger_server/controllers/ management_layer/

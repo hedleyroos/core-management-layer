@@ -34,23 +34,26 @@ class SiteUpdate(object):
         'client_id': 'str',
         'domain_id': 'int',
         'name': 'str',
-        'description': 'str'
+        'description': 'str',
+        'is_active': 'bool'
     }
 
     attribute_map = {
         'client_id': 'client_id',
         'domain_id': 'domain_id',
         'name': 'name',
-        'description': 'description'
+        'description': 'description',
+        'is_active': 'is_active'
     }
 
-    def __init__(self, client_id=None, domain_id=None, name=None, description=None):  # noqa: E501
+    def __init__(self, client_id=None, domain_id=None, name=None, description=None, is_active=None):  # noqa: E501
         """SiteUpdate - a model defined in Swagger"""  # noqa: E501
 
         self._client_id = None
         self._domain_id = None
         self._name = None
         self._description = None
+        self._is_active = None
         self.discriminator = None
 
         if client_id is not None:
@@ -61,6 +64,8 @@ class SiteUpdate(object):
             self.name = name
         if description is not None:
             self.description = description
+        if is_active is not None:
+            self.is_active = is_active
 
     @property
     def client_id(self):
@@ -147,6 +152,27 @@ class SiteUpdate(object):
         """
 
         self._description = description
+
+    @property
+    def is_active(self):
+        """Gets the is_active of this SiteUpdate.  # noqa: E501
+
+
+        :return: The is_active of this SiteUpdate.  # noqa: E501
+        :rtype: bool
+        """
+        return self._is_active
+
+    @is_active.setter
+    def is_active(self, is_active):
+        """Sets the is_active of this SiteUpdate.
+
+
+        :param is_active: The is_active of this SiteUpdate.  # noqa: E501
+        :type: bool
+        """
+
+        self._is_active = is_active
 
     def to_dict(self):
         """Returns the model properties as a dict"""

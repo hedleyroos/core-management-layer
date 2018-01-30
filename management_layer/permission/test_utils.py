@@ -6,7 +6,7 @@ from datetime import datetime
 
 import management_layer.constants
 import management_layer.permission
-from management_layer.access_control import RoleResourcePermission
+from access_control import RoleResourcePermission
 from management_layer.permission import utils, require_permissions
 
 # Test dictionaries commonly used by tests
@@ -373,7 +373,7 @@ class TestUtils(TestCase):
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
-    @patch("management_layer.access_control.apis.access_control_api"
+    @patch("access_control.apis.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_role_has_permissions(self, mocked_roleresourcepermission_list):
         """
@@ -443,7 +443,7 @@ class TestUtils(TestCase):
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
-    @patch("management_layer.access_control.apis.access_control_api"
+    @patch("access_control.apis.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_roles_have_permissions(self, mocked_roleresourcepermission_list):
         """

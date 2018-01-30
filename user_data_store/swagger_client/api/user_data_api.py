@@ -126,47 +126,43 @@ class UserDataApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def adminnote_delete(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_delete(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_delete  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_delete(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_delete(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :return: None
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.adminnote_delete_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            return self.adminnote_delete_with_http_info(admin_note_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.adminnote_delete_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            (data) = self.adminnote_delete_with_http_info(admin_note_id, **kwargs)  # noqa: E501
             return data
 
-    def adminnote_delete_with_http_info(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_delete_with_http_info(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_delete  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_delete_with_http_info(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_delete_with_http_info(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :return: None
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['user_id', 'creator_id', 'created_at']  # noqa: E501
+        all_params = ['admin_note_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -181,28 +177,16 @@ class UserDataApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'user_id' is set
-        if ('user_id' not in params or
-                params['user_id'] is None):
-            raise ValueError("Missing the required parameter `user_id` when calling `adminnote_delete`")  # noqa: E501
-        # verify the required parameter 'creator_id' is set
-        if ('creator_id' not in params or
-                params['creator_id'] is None):
-            raise ValueError("Missing the required parameter `creator_id` when calling `adminnote_delete`")  # noqa: E501
-        # verify the required parameter 'created_at' is set
-        if ('created_at' not in params or
-                params['created_at'] is None):
-            raise ValueError("Missing the required parameter `created_at` when calling `adminnote_delete`")  # noqa: E501
+        # verify the required parameter 'admin_note_id' is set
+        if ('admin_note_id' not in params or
+                params['admin_note_id'] is None):
+            raise ValueError("Missing the required parameter `admin_note_id` when calling `adminnote_delete`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'user_id' in params:
-            path_params['user_id'] = params['user_id']  # noqa: E501
-        if 'creator_id' in params:
-            path_params['creator_id'] = params['creator_id']  # noqa: E501
-        if 'created_at' in params:
-            path_params['created_at'] = params['created_at']  # noqa: E501
+        if 'admin_note_id' in params:
+            path_params['admin_note_id'] = params['admin_note_id']  # noqa: E501
 
         query_params = []
 
@@ -216,7 +200,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{user_id}/{creator_id}/{created_at}/', 'DELETE',
+            '/adminnotes/{admin_note_id}/', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -338,47 +322,43 @@ class UserDataApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def adminnote_read(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_read(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_read  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_read(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_read(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :return: AdminNote
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.adminnote_read_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            return self.adminnote_read_with_http_info(admin_note_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.adminnote_read_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            (data) = self.adminnote_read_with_http_info(admin_note_id, **kwargs)  # noqa: E501
             return data
 
-    def adminnote_read_with_http_info(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_read_with_http_info(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_read  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_read_with_http_info(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_read_with_http_info(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :return: AdminNote
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['user_id', 'creator_id', 'created_at']  # noqa: E501
+        all_params = ['admin_note_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -393,28 +373,16 @@ class UserDataApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'user_id' is set
-        if ('user_id' not in params or
-                params['user_id'] is None):
-            raise ValueError("Missing the required parameter `user_id` when calling `adminnote_read`")  # noqa: E501
-        # verify the required parameter 'creator_id' is set
-        if ('creator_id' not in params or
-                params['creator_id'] is None):
-            raise ValueError("Missing the required parameter `creator_id` when calling `adminnote_read`")  # noqa: E501
-        # verify the required parameter 'created_at' is set
-        if ('created_at' not in params or
-                params['created_at'] is None):
-            raise ValueError("Missing the required parameter `created_at` when calling `adminnote_read`")  # noqa: E501
+        # verify the required parameter 'admin_note_id' is set
+        if ('admin_note_id' not in params or
+                params['admin_note_id'] is None):
+            raise ValueError("Missing the required parameter `admin_note_id` when calling `adminnote_read`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'user_id' in params:
-            path_params['user_id'] = params['user_id']  # noqa: E501
-        if 'creator_id' in params:
-            path_params['creator_id'] = params['creator_id']  # noqa: E501
-        if 'created_at' in params:
-            path_params['created_at'] = params['created_at']  # noqa: E501
+        if 'admin_note_id' in params:
+            path_params['admin_note_id'] = params['admin_note_id']  # noqa: E501
 
         query_params = []
 
@@ -432,7 +400,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{user_id}/{creator_id}/{created_at}/', 'GET',
+            '/adminnotes/{admin_note_id}/', 'GET',
             path_params,
             query_params,
             header_params,
@@ -447,18 +415,16 @@ class UserDataApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def adminnote_update(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_update(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_update  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_update(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_update(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :param AdminNoteUpdate data:
         :return: AdminNote
                  If the method is called asynchronously,
@@ -466,30 +432,28 @@ class UserDataApi(object):
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.adminnote_update_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            return self.adminnote_update_with_http_info(admin_note_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.adminnote_update_with_http_info(user_id, creator_id, created_at, **kwargs)  # noqa: E501
+            (data) = self.adminnote_update_with_http_info(admin_note_id, **kwargs)  # noqa: E501
             return data
 
-    def adminnote_update_with_http_info(self, user_id, creator_id, created_at, **kwargs):  # noqa: E501
+    def adminnote_update_with_http_info(self, admin_note_id, **kwargs):  # noqa: E501
         """adminnote_update  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.adminnote_update_with_http_info(user_id, creator_id, created_at, async=True)
+        >>> thread = api.adminnote_update_with_http_info(admin_note_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str user_id: A UUID value identifying the user. (required)
-        :param str creator_id: The creator_id (required)
-        :param datetime created_at: The created_at value (required)
+        :param int admin_note_id: A unique integer value identifying the admin note. (required)
         :param AdminNoteUpdate data:
         :return: AdminNote
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['user_id', 'creator_id', 'created_at', 'data']  # noqa: E501
+        all_params = ['admin_note_id', 'data']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -504,28 +468,16 @@ class UserDataApi(object):
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'user_id' is set
-        if ('user_id' not in params or
-                params['user_id'] is None):
-            raise ValueError("Missing the required parameter `user_id` when calling `adminnote_update`")  # noqa: E501
-        # verify the required parameter 'creator_id' is set
-        if ('creator_id' not in params or
-                params['creator_id'] is None):
-            raise ValueError("Missing the required parameter `creator_id` when calling `adminnote_update`")  # noqa: E501
-        # verify the required parameter 'created_at' is set
-        if ('created_at' not in params or
-                params['created_at'] is None):
-            raise ValueError("Missing the required parameter `created_at` when calling `adminnote_update`")  # noqa: E501
+        # verify the required parameter 'admin_note_id' is set
+        if ('admin_note_id' not in params or
+                params['admin_note_id'] is None):
+            raise ValueError("Missing the required parameter `admin_note_id` when calling `adminnote_update`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'user_id' in params:
-            path_params['user_id'] = params['user_id']  # noqa: E501
-        if 'creator_id' in params:
-            path_params['creator_id'] = params['creator_id']  # noqa: E501
-        if 'created_at' in params:
-            path_params['created_at'] = params['created_at']  # noqa: E501
+        if 'admin_note_id' in params:
+            path_params['admin_note_id'] = params['admin_note_id']  # noqa: E501
 
         query_params = []
 
@@ -549,7 +501,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{user_id}/{creator_id}/{created_at}/', 'PUT',
+            '/adminnotes/{admin_note_id}/', 'PUT',
             path_params,
             query_params,
             header_params,
