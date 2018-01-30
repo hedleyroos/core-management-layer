@@ -32,28 +32,28 @@ class RoleUpdate(object):
     """
     swagger_types = {
         'label': 'str',
-        'is_admin_role': 'bool',
+        'requires_2fa': 'bool',
         'description': 'str'
     }
 
     attribute_map = {
         'label': 'label',
-        'is_admin_role': 'is_admin_role',
+        'requires_2fa': 'requires_2fa',
         'description': 'description'
     }
 
-    def __init__(self, label=None, is_admin_role=None, description=None):  # noqa: E501
+    def __init__(self, label=None, requires_2fa=None, description=None):  # noqa: E501
         """RoleUpdate - a model defined in Swagger"""  # noqa: E501
 
         self._label = None
-        self._is_admin_role = None
+        self._requires_2fa = None
         self._description = None
         self.discriminator = None
 
         if label is not None:
             self.label = label
-        if is_admin_role is not None:
-            self.is_admin_role = is_admin_role
+        if requires_2fa is not None:
+            self.requires_2fa = requires_2fa
         if description is not None:
             self.description = description
 
@@ -81,25 +81,25 @@ class RoleUpdate(object):
         self._label = label
 
     @property
-    def is_admin_role(self):
-        """Gets the is_admin_role of this RoleUpdate.  # noqa: E501
+    def requires_2fa(self):
+        """Gets the requires_2fa of this RoleUpdate.  # noqa: E501
 
 
-        :return: The is_admin_role of this RoleUpdate.  # noqa: E501
+        :return: The requires_2fa of this RoleUpdate.  # noqa: E501
         :rtype: bool
         """
-        return self._is_admin_role
+        return self._requires_2fa
 
-    @is_admin_role.setter
-    def is_admin_role(self, is_admin_role):
-        """Sets the is_admin_role of this RoleUpdate.
+    @requires_2fa.setter
+    def requires_2fa(self, requires_2fa):
+        """Sets the requires_2fa of this RoleUpdate.
 
 
-        :param is_admin_role: The is_admin_role of this RoleUpdate.  # noqa: E501
+        :param requires_2fa: The requires_2fa of this RoleUpdate.  # noqa: E501
         :type: bool
         """
 
-        self._is_admin_role = is_admin_role
+        self._requires_2fa = requires_2fa
 
     @property
     def description(self):

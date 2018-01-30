@@ -9,8 +9,7 @@ itself, as well as a dictionary which maps the text identifier of the entity
 to its id.
 """
 from typing import Callable, Tuple, List, Dict, TypeVar
-from management_layer.access_control.apis.access_control_api import \
-    AccessControlApi
+from access_control.apis.access_control_api import AccessControlApi
 
 # Internal copies of definitions
 DOMAINS = {}

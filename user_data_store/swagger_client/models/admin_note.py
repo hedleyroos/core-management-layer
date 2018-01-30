@@ -31,6 +31,7 @@ class AdminNote(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'id': 'int',
         'user_id': 'str',
         'creator_id': 'str',
         'note': 'str',
@@ -39,6 +40,7 @@ class AdminNote(object):
     }
 
     attribute_map = {
+        'id': 'id',
         'user_id': 'user_id',
         'creator_id': 'creator_id',
         'note': 'note',
@@ -46,9 +48,10 @@ class AdminNote(object):
         'updated_at': 'updated_at'
     }
 
-    def __init__(self, user_id=None, creator_id=None, note=None, created_at=None, updated_at=None):  # noqa: E501
+    def __init__(self, id=None, user_id=None, creator_id=None, note=None, created_at=None, updated_at=None):  # noqa: E501
         """AdminNote - a model defined in Swagger"""  # noqa: E501
 
+        self._id = None
         self._user_id = None
         self._creator_id = None
         self._note = None
@@ -56,11 +59,35 @@ class AdminNote(object):
         self._updated_at = None
         self.discriminator = None
 
+        self.id = id
         self.user_id = user_id
         self.creator_id = creator_id
         self.note = note
         self.created_at = created_at
         self.updated_at = updated_at
+
+    @property
+    def id(self):
+        """Gets the id of this AdminNote.  # noqa: E501
+
+
+        :return: The id of this AdminNote.  # noqa: E501
+        :rtype: int
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        """Sets the id of this AdminNote.
+
+
+        :param id: The id of this AdminNote.  # noqa: E501
+        :type: int
+        """
+        if id is None:
+            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
+
+        self._id = id
 
     @property
     def user_id(self):

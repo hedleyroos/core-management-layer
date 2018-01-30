@@ -6,9 +6,9 @@ PYTEST=$(VENV)/bin/pytest
 FLASK=$(VENV)/bin/flask
 CODEGEN_VERSION=2.3.1
 CODEGEN=java -jar swagger-codegen-cli-$(CODEGEN_VERSION).jar generate
-USER_DATA_STORE_CLIENT_DIR=management_layer/user_data_store
-ACCESS_CONTROL_CLIENT_DIR=management_layer/access_control
-AUTHENTICATION_SERVICE_CLIENT_DIR=management_layer/authentication_service
+USER_DATA_STORE_CLIENT_DIR=user_data_store
+ACCESS_CONTROL_CLIENT_DIR=access_control
+AUTHENTICATION_SERVICE_CLIENT_DIR=authentication_service
 
 # Colours.
 CLEAR=\033[0m
