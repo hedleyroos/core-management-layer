@@ -1,9 +1,18 @@
 # ref: https://docs.travis-ci.com/user/languages/python
 language: python
 python:
-  - "3.5"
   - "3.6"
-# command to install dependencies
-install: "pip install -r requirements.txt -r test-requirements.txt"
-# command to run tests
-script: pytest --verbose --cov=management_layer management_layer/
+services:
+  - docker
+
+install: 
+  - pip install -r requirements.txt -r test-requirements.txt
+  - pip install coveralls
+
+script: tox
+
+after_success:
+  - coveralls
+  - export REPO=dockerhubowner/core-management-layer
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH_CLEAN ; fi`
+  - docker build -t $REPO:$TAG .
