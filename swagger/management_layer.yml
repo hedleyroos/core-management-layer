@@ -1365,7 +1365,7 @@ definitions:
     minProperties: 1
 
 paths:
-  /ops/site_role_labels_aggregated/{site_id}/:
+  /ops/site_role_labels_aggregated/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'
     get:
@@ -1383,7 +1383,7 @@ paths:
       tags:
         - operational
 
-  /ops/user_site_role_labels_aggregated/{user_id}/{site_id}/:
+  /ops/user_site_role_labels_aggregated/{user_id}/{site_id}:
     parameters:
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
@@ -1402,7 +1402,7 @@ paths:
       tags:
         - operational
 
-  /ops/domain_roles/{domain_id}/:
+  /ops/domain_roles/{domain_id}:
     parameters:
       - $ref: '#/parameters/domain_id'
     get:
@@ -1420,7 +1420,7 @@ paths:
       tags:
         - operational
 
-  /ops/site_and_domain_roles/{site_id}/:
+  /ops/site_and_domain_roles/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'
     get:
@@ -1438,7 +1438,7 @@ paths:
       tags:
         - operational
 
-  /ops/all_user_roles/{user_id}/:
+  /ops/all_user_roles/{user_id}:
     parameters:
       - $ref: '#/parameters/user_id'
     get:
@@ -1458,7 +1458,7 @@ paths:
       tags:
         - operational
 
-  /domains/:
+  /domains:
     get:
       operationId: domain_list
       parameters:
@@ -1501,7 +1501,7 @@ paths:
       tags:
         - access_control
 
-  /domains/{domain_id}/:
+  /domains/{domain_id}:
     parameters:
       - $ref: '#/parameters/domain_id'
     delete:
@@ -1541,7 +1541,7 @@ paths:
       tags:
         - access_control
 
-  /domainroles/:
+  /domainroles:
     get:
       operationId: domainrole_list
       parameters:
@@ -1579,7 +1579,7 @@ paths:
       tags:
         - access_control
 
-  '/domainroles/{domain_id}/{role_id}/':
+  '/domainroles/{domain_id}/{role_id}':
     parameters:
       - $ref: '#/parameters/domain_id'
       - $ref: '#/parameters/role_id'
@@ -1620,7 +1620,7 @@ paths:
       tags:
         - access_control
 
-  /invitations/:
+  /invitations:
     get:
       operationId: invitation_list
       parameters:
@@ -1670,7 +1670,7 @@ paths:
       tags:
         - access_control
 
-  '/invitations/{invitation_id}/':
+  '/invitations/{invitation_id}':
     parameters:
       - $ref: '#/parameters/invitation_id'
     delete:
@@ -1710,7 +1710,7 @@ paths:
       tags:
         - access_control
 
-  /invitationdomainroles/:
+  /invitationdomainroles:
     get:
       operationId: invitationdomainrole_list
       parameters:
@@ -1775,7 +1775,7 @@ paths:
       tags:
         - access_control
 
-  /invitationsiteroles/:
+  /invitationsiteroles:
     get:
       operationId: invitationsiterole_list
       parameters:
@@ -1838,7 +1838,7 @@ paths:
       tags:
         - access_control
 
-  /permissions/:
+  /permissions:
     get:
       operationId: permission_list
       parameters:
@@ -1881,7 +1881,7 @@ paths:
       tags:
         - access_control
 
-  '/permissions/{permission_id}/':
+  '/permissions/{permission_id}':
     parameters:
       - $ref: '#/parameters/permission_id'
     delete:
@@ -1921,7 +1921,7 @@ paths:
       tags:
         - access_control
 
-  /resources/:
+  /resources:
     get:
       operationId: resource_list
       parameters:
@@ -1969,7 +1969,7 @@ paths:
       tags:
         - access_control
 
-  '/resources/{resource_id}/':
+  '/resources/{resource_id}':
     parameters:
       - $ref: '#/parameters/resource_id'
     delete:
@@ -2009,7 +2009,7 @@ paths:
       tags:
         - access_control
 
-  /roles/:
+  /roles:
     get:
       operationId: role_list
       parameters:
@@ -2052,7 +2052,7 @@ paths:
       tags:
         - access_control
 
-  '/roles/{role_id}/':
+  '/roles/{role_id}':
     parameters:
       - $ref: '#/parameters/role_id'
     delete:
@@ -2092,7 +2092,7 @@ paths:
       tags:
         - access_control
 
-  /roleresourcepermissions/:
+  /roleresourcepermissions:
     get:
       operationId: roleresourcepermission_list
       parameters:
@@ -2139,7 +2139,7 @@ paths:
       tags:
         - access_control
 
-  '/roleresourcepermissions/{role_id}/{resource_id}/{permission_id}/':
+  '/roleresourcepermissions/{role_id}/{resource_id}/{permission_id}':
     parameters:
       - $ref: '#/parameters/role_id'
       - $ref: '#/parameters/resource_id'
@@ -2163,7 +2163,7 @@ paths:
       tags:
         - access_control
 
-  /sites/:
+  /sites:
     get:
       operationId: site_list
       parameters:
@@ -2206,7 +2206,7 @@ paths:
       tags:
         - access_control
 
-  '/sites/{site_id}/':
+  '/sites/{site_id}':
     parameters:
       - $ref: '#/parameters/site_id'
     delete:
@@ -2246,7 +2246,7 @@ paths:
       tags:
         - access_control
 
-  /siteroles/:
+  /siteroles:
     get:
       operationId: siterole_list
       parameters:
@@ -2284,7 +2284,7 @@ paths:
       tags:
         - access_control
 
-  '/siteroles/{site_id}/{role_id}/':
+  '/siteroles/{site_id}/{role_id}':
     parameters:
       - $ref: '#/parameters/site_id'
       - $ref: '#/parameters/role_id'
@@ -2325,7 +2325,7 @@ paths:
       tags:
         - access_control
 
-  /userdomainroles/:
+  /userdomainroles:
     get:
       operationId: userdomainrole_list
       parameters:
@@ -2364,7 +2364,7 @@ paths:
       tags:
         - access_control
 
-  '/userdomainroles/{user_id}/{domain_id}/{role_id}/':
+  '/userdomainroles/{user_id}/{domain_id}/{role_id}':
     parameters:
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/domain_id'
@@ -2388,7 +2388,7 @@ paths:
       tags:
         - access_control
 
-  /usersiteroles/:
+  /usersiteroles:
     get:
       operationId: usersiterole_list
       parameters:
@@ -2427,7 +2427,7 @@ paths:
       tags:
         - access_control
 
-  /usersitedata/:
+  /usersitedata:
     get:
       operationId: usersitedata_list
       parameters:
@@ -2465,7 +2465,7 @@ paths:
       tags:
         - user_data
 
-  /usersitedata/{user_id}/{site_id}/:
+  /usersitedata/{user_id}/{site_id}:
     parameters:
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
@@ -2506,7 +2506,7 @@ paths:
       tags:
         - user_data
 
-  /adminnotes/:
+  /adminnotes:
     get:
       operationId: adminnote_list
       parameters:
@@ -2553,7 +2553,7 @@ paths:
       tags:
         - user_data
 
-  /adminnotes/{user_id}/{creator_id}/{created_at}/:
+  /adminnotes/{user_id}/{creator_id}/{created_at}:
     parameters:
       - $ref: '#/parameters/user_id'
       - description: The creator_id
@@ -2611,7 +2611,7 @@ paths:
       tags:
         - user_data
 
-  /sitedataschemas/:
+  /sitedataschemas:
     get:
       operationId: sitedataschema_list
       parameters:
@@ -2654,7 +2654,7 @@ paths:
       tags:
         - user_data
 
-  /sitedataschemas/{site_id}/:
+  /sitedataschemas/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'
     delete:
@@ -2694,7 +2694,7 @@ paths:
       tags:
         - user_data
 
-  /clients/:
+  /clients:
     get:
       operationId: client_list
       parameters:
@@ -2720,7 +2720,7 @@ paths:
       tags:
         - oidc_provider
 
-  /clients/{client_id}/:
+  /clients/{client_id}:
     parameters:
       - $ref: '#/parameters/client_id'
     get:
@@ -2735,7 +2735,7 @@ paths:
       tags:
         - oidc_provider
 
-  /users/:
+  /users:
     get:
       operationId: user_list
       parameters:
@@ -2767,7 +2767,7 @@ paths:
       tags:
         - oidc_provider
 
-  '/users/{user_id}/':
+  '/users/{user_id}':
     parameters:
       - $ref: '#/parameters/user_id'
     delete:
@@ -2806,7 +2806,7 @@ paths:
       tags:
         - oidc_provider
 
-  '/users/{user_id}/activate/':
+  '/users/{user_id}/activate':
     parameters:
       - $ref: '#/parameters/user_id'
     get:
@@ -2819,7 +2819,7 @@ paths:
          404:
            description: User not found
 
-  '/users/{user_id}/deactivate/':
+  '/users/{user_id}/deactivate':
     parameters:
       - $ref: '#/parameters/user_id'
     get:
@@ -2832,7 +2832,7 @@ paths:
          404:
            description: User not found
 
-  '/sites/{site_id}/activate/':
+  '/sites/{site_id}/activate':
     parameters:
       - $ref: '#/parameters/site_id'
     get:
@@ -2845,7 +2845,7 @@ paths:
          404:
            description: Site not found
 
-  '/sites/{site_id}/deactivate/':
+  '/sites/{site_id}/deactivate':
     parameters:
       - $ref: '#/parameters/site_id'
     get:
