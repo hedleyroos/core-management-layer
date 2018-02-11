@@ -373,7 +373,7 @@ class TestUtils(TestCase):
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
-    @patch("access_control.apis.access_control_api"
+    @patch("access_control.api.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_role_has_permissions(self, mocked_roleresourcepermission_list):
         """
@@ -443,7 +443,7 @@ class TestUtils(TestCase):
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
-    @patch("access_control.apis.access_control_api"
+    @patch("access_control.api.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
     def test_roles_have_permissions(self, mocked_roleresourcepermission_list):
         """

@@ -88,31 +88,33 @@ user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 	echo "Generating the client for the User Data Store API..."
 	# curl https://github.com/girleffect/core-user-data-store/blob/develop/swagger/user_data_store.yml -o user_data_store.yml
 	#$(CODEGEN) -l python -i user_data_store.yml -o $(USER_DATA_STORE_CLIENT_DIR)
-	$(CODEGEN) -l python -i ../core-user-data-store/swagger/user_data_store.yml -o /tmp/$(USER_DATA_STORE_CLIENT_DIR)
-	cp -r /tmp/$(USER_DATA_STORE_CLIENT_DIR)/swagger_client* $(USER_DATA_STORE_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i ../core-user-data-store/swagger/user_data_store.yml -D packageName=user_data_store -o /tmp/$(USER_DATA_STORE_CLIENT_DIR)
+	cp -r /tmp/$(USER_DATA_STORE_CLIENT_DIR)/user_data_store/* $(USER_DATA_STORE_CLIENT_DIR)
 
 # Generate the client code to interface with the Access Control component
 access-control-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 	echo "Generating the client for the Access Control API..."
 	# curl https://github.com/girleffect/core-access-control/blob/develop/swagger/access_control.yml -o access_control.yml
 	#$(CODEGEN) -l python -i access_control.yml -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
-	$(CODEGEN) -l python -i ../core-access-control/swagger/access_control.yml -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
-	cp -r /tmp/$(ACCESS_CONTROL_CLIENT_DIR)/swagger_client* $(ACCESS_CONTROL_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i ../core-access-control/swagger/access_control.yml -D packageName=access_control -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
+	cp -r /tmp/$(ACCESS_CONTROL_CLIENT_DIR)/access_control/* $(ACCESS_CONTROL_CLIENT_DIR)
 
 # Generate the client code to interface with the Authentication Service
 authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 	echo "Generating the client for the Authentication Service API..."
 	# curl https://github.com/girleffect/core-authentication-service/blob/develop/swagger/authentication_service.yml -o authentication_service.yml
 	#$(CODEGEN) -l python -i authentication_service.yml -o $(AUTHENTICATION_SERVICE_CLIENT_DIR)
-	$(CODEGEN) -l python -i ../core-authentication-service/swagger/authentication_service.yml -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
-	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/swagger_client* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i ../core-authentication-service/swagger/authentication_service.yml -D packageName=authentication_service -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
+	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/authentication_service/* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
 
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
-	$(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
+	# $(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
+	$(VENV)/bin/swagger_py_codegen --swagger-doc swagger/management_layer.yml -tlp=tornado -p swagger_server --ui --spec .
 
 runserver: $(VENV)
 	@echo "$(CYAN)Firing up server...$(CLEAR)"
-	$(PYTHON) -m swagger_server
+	# $(PYTHON) -m swagger_server
+	$(PYTHON) swagger_server/httpd.py
 
 check: $(FLAKE8)
 	$(FLAKE8)
