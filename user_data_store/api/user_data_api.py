@@ -111,7 +111,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/', 'POST',
+            '/adminnotes', 'POST',
             path_params,
             query_params,
             header_params,
@@ -200,7 +200,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{admin_note_id}/', 'DELETE',
+            '/adminnotes/{admin_note_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -307,7 +307,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/', 'GET',
+            '/adminnotes', 'GET',
             path_params,
             query_params,
             header_params,
@@ -400,7 +400,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{admin_note_id}/', 'GET',
+            '/adminnotes/{admin_note_id}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -501,7 +501,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/adminnotes/{admin_note_id}/', 'PUT',
+            '/adminnotes/{admin_note_id}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -594,7 +594,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/sitedataschemas/', 'POST',
+            '/sitedataschemas', 'POST',
             path_params,
             query_params,
             header_params,
@@ -683,7 +683,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/sitedataschemas/{site_id}/', 'DELETE',
+            '/sitedataschemas/{site_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -782,7 +782,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/sitedataschemas/', 'GET',
+            '/sitedataschemas', 'GET',
             path_params,
             query_params,
             header_params,
@@ -875,7 +875,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/sitedataschemas/{site_id}/', 'GET',
+            '/sitedataschemas/{site_id}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -976,7 +976,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/sitedataschemas/{site_id}/', 'PUT',
+            '/sitedataschemas/{site_id}', 'PUT',
             path_params,
             query_params,
             header_params,
@@ -1069,7 +1069,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/usersitedata/', 'POST',
+            '/usersitedata', 'POST',
             path_params,
             query_params,
             header_params,
@@ -1166,7 +1166,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/usersitedata/{user_id}/{site_id}/', 'DELETE',
+            '/usersitedata/{user_id}/{site_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -1273,7 +1273,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/usersitedata/', 'GET',
+            '/usersitedata', 'GET',
             path_params,
             query_params,
             header_params,
@@ -1374,7 +1374,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/usersitedata/{user_id}/{site_id}/', 'GET',
+            '/usersitedata/{user_id}/{site_id}', 'GET',
             path_params,
             query_params,
             header_params,
@@ -1483,7 +1483,7 @@ class UserDataApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/usersitedata/{user_id}/{site_id}/', 'PUT',
+            '/usersitedata/{user_id}/{site_id}', 'PUT',
             path_params,
             query_params,
             header_params,
