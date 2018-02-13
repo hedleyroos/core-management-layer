@@ -41,6 +41,7 @@ def main():
     import socket
     AsyncIOMainLoop().install()
 
+    tornado.options.parse_command_line()
     socket.setdefaulttimeout(2)
     url_list = []
     url_list.extend(config.URIS)
@@ -51,7 +52,6 @@ def main():
         "default_handler_args": dict(status_code=404)
 
     }
-
     app = Application(url_list,
                       debug=config.DEBUG,
                       **app_settings)
