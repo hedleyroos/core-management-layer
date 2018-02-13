@@ -9,8 +9,8 @@ import json
 import typing
 from uuid import UUID
 from pymemcache.client.base import PooledClient
-from access_control.apis.access_control_api import AccessControlApi
-from access_control.apis.operational_api import OperationalApi
+from access_control.api.access_control_api import AccessControlApi
+from access_control.api.operational_api import OperationalApi
 
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
     MKP_USER_ROLES, TECH_ADMIN

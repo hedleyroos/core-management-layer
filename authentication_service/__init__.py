@@ -1,9 +1,11 @@
 # coding: utf-8
 
+# flake8: noqa
+
 """
     Authentication Service API
 
-    This is the API that will be exposed by the Authentication Service.  The Authentication service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification. 
+    This is the API that will be exposed by the Authentication Service.  The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
 
     OpenAPI spec version: 1.0
     
@@ -13,25 +15,22 @@
 
 from __future__ import absolute_import
 
-# import models into sdk package
-from .models.address import Address
-from .models.client import Client
-from .models.content import Content
-from .models.o_auth2_error import OAuth2Error
-from .models.problem_detail import ProblemDetail
-from .models.session import Session
-from .models.token import Token
-from .models.user import User
-from .models.user_info import UserInfo
-
 # import apis into sdk package
-from .apis.authentication_api import AuthenticationApi
-from .apis.experimental_api import ExperimentalApi
-from .apis.oidc_provider_api import OidcProviderApi
+from authentication_service.api.authentication_api import AuthenticationApi
+from authentication_service.api.experimental_api import ExperimentalApi
+from authentication_service.api.oidc_provider_api import OidcProviderApi
 
 # import ApiClient
-from .api_client import ApiClient
-
-from .configuration import Configuration
-
-configuration = Configuration()
+from authentication_service.api_client import ApiClient
+from authentication_service.configuration import Configuration
+# import models into sdk package
+from authentication_service.models.address import Address
+from authentication_service.models.client import Client
+from authentication_service.models.content import Content
+from authentication_service.models.o_auth2_error import OAuth2Error
+from authentication_service.models.problem_detail import ProblemDetail
+from authentication_service.models.session import Session
+from authentication_service.models.token import Token
+from authentication_service.models.user import User
+from authentication_service.models.user_info import UserInfo
+from authentication_service.models.user_update import UserUpdate

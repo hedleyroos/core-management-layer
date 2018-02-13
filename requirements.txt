@@ -2,3 +2,6 @@ connexion == 1.1.15
 python_dateutil == 2.6.0
 setuptools >= 21.0.0
 pymemcache < 2.0.0
+swagger-py-codegen
+tornado
+aiohttp
