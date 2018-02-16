@@ -1,13 +1,24 @@
 from management_layer.api.stubs import AbstractStubClass
 from authentication_service.api.authentication_api import AuthenticationApi
-from management_layer.transformations import datetime_to_string
 from user_data_store.api.user_data_api import UserDataApi
 from access_control.api.access_control_api import AccessControlApi
 from management_layer import transformations
 
-auth_api = AuthenticationApi()
+authentication_api = AuthenticationApi()
 user_data_api = UserDataApi()
 access_control_api = AccessControlApi()
+
+# An example of using aiobravado for API clients.
+# Do not remove yet. (cobusc)
+
+# from aiobravado.client import SwaggerClient
+# from aiobravado.swagger_model import load_file
+# async def get_client():
+#     spec = await load_file("../core-access-control/swagger/access_control.yml")
+#     client = SwaggerClient.from_spec(spec, config={"use_models": False})
+#     return client
+#
+# client = asyncio.get_event_loop().run_until_complete(get_client())
 
 
 class Implementation(AbstractStubClass):
