@@ -28,7 +28,7 @@ class Implementation(AbstractStubClass):
     """
 
     @staticmethod
-    async def adminnote_list(request, offset=None, limit=None, user_id=None, creator_id=None, *args, **kwargs):
+    async def adminnote_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -39,7 +39,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_create(request, body, *args, **kwargs):
+    async def adminnote_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -47,7 +47,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_delete(request, user_id, creator_id, created_at, *args, **kwargs):
+    async def adminnote_delete(request, user_id, creator_id, created_at, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -57,7 +57,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_read(request, user_id, creator_id, created_at, *args, **kwargs):
+    async def adminnote_read(request, user_id, creator_id, created_at, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -67,7 +67,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_update(request, body, user_id, creator_id, created_at, *args, **kwargs):
+    async def adminnote_update(request, body, user_id, creator_id, created_at, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -78,7 +78,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def client_list(request, offset=None, limit=None, client_ids=None, *args, **kwargs):
+    async def client_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -88,7 +88,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def client_read(request, client_id, *args, **kwargs):
+    async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
         :param client_id: string A UUID value identifying the client
@@ -96,7 +96,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def domainrole_list(request, offset=None, limit=None, domain_id=None, role_id=None, *args, **params):
+    async def domainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -104,16 +104,9 @@ class Implementation(AbstractStubClass):
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        params = {}
-        if offset:
-            params["offset"] = int(offset)
-        if limit:
-            params["limit"] = int(limit)
-        if domain_id:
-            params["domain_id"] = domain_id
-        if role_id:
-            params["role_id"] = role_id
-        domain_roles = await access_control_api.domainrole_list(**params)
+        # All optional args integers:
+        kwargs = {k: int(v) for k, v in kwargs.items()}
+        domain_roles = await access_control_api.domainrole_list(**kwargs)
         if domain_roles:
             transform = transformations.DOMAIN_ROLE
             result = [transform.apply(dr.to_dict()) for dr in domain_roles]
@@ -122,7 +115,7 @@ class Implementation(AbstractStubClass):
         return []
 
     @staticmethod
-    async def domainrole_create(request, body, *args, **kwargs):
+    async def domainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -136,7 +129,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
-    async def domainrole_delete(request, domain_id, role_id, *args, **kwargs):
+    async def domainrole_delete(request, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
@@ -146,7 +139,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
-    async def domainrole_read(request, domain_id, role_id, *args, **kwargs):
+    async def domainrole_read(request, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
@@ -161,7 +154,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
-    async def domainrole_update(request, body, domain_id, role_id, *args, **kwargs):
+    async def domainrole_update(request, body, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -177,7 +170,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
-    async def domain_list(request, offset=None, limit=None, domain_ids=None, *args, **kwargs):
+    async def domain_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -187,7 +180,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def domain_create(request, body, *args, **kwargs):
+    async def domain_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -195,7 +188,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def domain_delete(request, domain_id, *args, **kwargs):
+    async def domain_delete(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
@@ -203,7 +196,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def domain_read(request, domain_id, *args, **kwargs):
+    async def domain_read(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
@@ -211,7 +204,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def domain_update(request, body, domain_id, *args, **kwargs):
+    async def domain_update(request, body, domain_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -220,7 +213,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationdomainrole_list(request, offset=None, limit=None, invitation_id=None, domain_id=None, role_id=None, *args, **kwargs):
+    async def invitationdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -232,7 +225,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationdomainrole_create(request, body, *args, **kwargs):
+    async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -240,7 +233,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, *args, **kwargs):
+    async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -250,7 +243,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationdomainrole_read(request, invitation_id, domain_id, role_id, *args, **kwargs):
+    async def invitationdomainrole_read(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -260,7 +253,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitation_list(request, offset=None, limit=None, invitor_id=None, invitation_ids=None, *args, **kwargs):
+    async def invitation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -271,7 +264,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitation_create(request, body, *args, **kwargs):
+    async def invitation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -279,7 +272,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitation_delete(request, invitation_id, *args, **kwargs):
+    async def invitation_delete(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -287,7 +280,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitation_read(request, invitation_id, *args, **kwargs):
+    async def invitation_read(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -295,7 +288,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitation_update(request, body, invitation_id, *args, **kwargs):
+    async def invitation_update(request, body, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -304,7 +297,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationsiterole_list(request, offset=None, limit=None, invitation_id=None, site_id=None, role_id=None, *args, **kwargs):
+    async def invitationsiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -316,7 +309,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationsiterole_create(request, body, *args, **kwargs):
+    async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -324,7 +317,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationsiterole_delete(request, invitation_id, site_id, role_id, *args, **kwargs):
+    async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -334,7 +327,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def invitationsiterole_read(request, invitation_id, site_id, role_id, *args, **kwargs):
+    async def invitationsiterole_read(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
@@ -344,7 +337,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get_all_user_roles(request, user_id, *args, **kwargs):
+    async def get_all_user_roles(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -352,7 +345,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get_domain_roles(request, domain_id, *args, **kwargs):
+    async def get_domain_roles(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
@@ -360,7 +353,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get_site_and_domain_roles(request, site_id, *args, **kwargs):
+    async def get_site_and_domain_roles(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -368,7 +361,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get_site_role_labels_aggregated(request, site_id, *args, **kwargs):
+    async def get_site_role_labels_aggregated(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -376,7 +369,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get_user_site_role_labels_aggregated(request, user_id, site_id, *args, **kwargs):
+    async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -385,7 +378,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def permission_list(request, offset=None, limit=None, permission_ids=None, *args, **kwargs):
+    async def permission_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -395,7 +388,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def permission_create(request, body, *args, **kwargs):
+    async def permission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -403,7 +396,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def permission_delete(request, permission_id, *args, **kwargs):
+    async def permission_delete(request, permission_id, **kwargs):
         """
         :param request: An HttpRequest
         :param permission_id: integer A unique integer value identifying the permission.
@@ -411,7 +404,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def permission_read(request, permission_id, *args, **kwargs):
+    async def permission_read(request, permission_id, **kwargs):
         """
         :param request: An HttpRequest
         :param permission_id: integer A unique integer value identifying the permission.
@@ -419,7 +412,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def permission_update(request, body, permission_id, *args, **kwargs):
+    async def permission_update(request, body, permission_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -428,7 +421,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def resource_list(request, offset=None, limit=None, prefix=None, resource_ids=None, *args, **kwargs):
+    async def resource_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -439,7 +432,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def resource_create(request, body, *args, **kwargs):
+    async def resource_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -447,7 +440,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def resource_delete(request, resource_id, *args, **kwargs):
+    async def resource_delete(request, resource_id, **kwargs):
         """
         :param request: An HttpRequest
         :param resource_id: integer A unique integer value identifying the resource.
@@ -455,7 +448,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def resource_read(request, resource_id, *args, **kwargs):
+    async def resource_read(request, resource_id, **kwargs):
         """
         :param request: An HttpRequest
         :param resource_id: integer A unique integer value identifying the resource.
@@ -463,7 +456,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def resource_update(request, body, resource_id, *args, **kwargs):
+    async def resource_update(request, body, resource_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -472,7 +465,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def roleresourcepermission_list(request, offset=None, limit=None, role_id=None, resource_id=None, permission_id=None, *args, **kwargs):
+    async def roleresourcepermission_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -484,7 +477,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def roleresourcepermission_create(request, body, *args, **kwargs):
+    async def roleresourcepermission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -492,7 +485,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def roleresourcepermission_delete(request, role_id, resource_id, permission_id, *args, **kwargs):
+    async def roleresourcepermission_delete(request, role_id, resource_id, permission_id, **kwargs):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
@@ -502,7 +495,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def roleresourcepermission_read(request, role_id, resource_id, permission_id, *args, **kwargs):
+    async def roleresourcepermission_read(request, role_id, resource_id, permission_id, **kwargs):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
@@ -512,7 +505,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def role_list(request, offset=None, limit=None, role_ids=None, *args, **kwargs):
+    async def role_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -522,7 +515,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def role_create(request, body, *args, **kwargs):
+    async def role_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -530,7 +523,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def role_delete(request, role_id, *args, **kwargs):
+    async def role_delete(request, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
@@ -538,7 +531,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def role_read(request, role_id, *args, **kwargs):
+    async def role_read(request, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
@@ -546,7 +539,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def role_update(request, body, role_id, *args, **kwargs):
+    async def role_update(request, body, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -555,7 +548,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def sitedataschema_list(request, offset=None, limit=None, site_ids=None, *args, **kwargs):
+    async def sitedataschema_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -565,7 +558,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def sitedataschema_create(request, body, *args, **kwargs):
+    async def sitedataschema_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -573,7 +566,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def sitedataschema_delete(request, site_id, *args, **kwargs):
+    async def sitedataschema_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -581,7 +574,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def sitedataschema_read(request, site_id, *args, **kwargs):
+    async def sitedataschema_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -589,7 +582,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def sitedataschema_update(request, body, site_id, *args, **kwargs):
+    async def sitedataschema_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -598,7 +591,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def siterole_list(request, offset=None, limit=None, site_id=None, role_id=None, *args, **kwargs):
+    async def siterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -609,7 +602,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def siterole_create(request, body, *args, **kwargs):
+    async def siterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -617,7 +610,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def siterole_delete(request, site_id, role_id, *args, **kwargs):
+    async def siterole_delete(request, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -626,7 +619,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def siterole_read(request, site_id, role_id, *args, **kwargs):
+    async def siterole_read(request, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -635,7 +628,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def siterole_update(request, body, site_id, role_id, *args, **kwargs):
+    async def siterole_update(request, body, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -645,7 +638,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def site_list(request, offset=None, limit=None, site_ids=None, *args, **kwargs):
+    async def site_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -655,7 +648,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def site_create(request, body, *args, **kwargs):
+    async def site_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -663,7 +656,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def site_delete(request, site_id, *args, **kwargs):
+    async def site_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -671,7 +664,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def site_read(request, site_id, *args, **kwargs):
+    async def site_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -679,7 +672,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def site_update(request, body, site_id, *args, **kwargs):
+    async def site_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -688,7 +681,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get__api_v1_sites_site_id_activate(request, site_id, *args, **kwargs):
+    async def get__api_v1_sites_site_id_activate(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -696,7 +689,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get__api_v1_sites_site_id_deactivate(request, site_id, *args, **kwargs):
+    async def get__api_v1_sites_site_id_deactivate(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
@@ -704,7 +697,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def userdomainrole_list(request, offset=None, limit=None, user_id=None, domain_id=None, role_id=None, *args, **kwargs):
+    async def userdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -716,7 +709,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def userdomainrole_create(request, body, *args, **kwargs):
+    async def userdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -724,7 +717,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def userdomainrole_delete(request, user_id, domain_id, role_id, *args, **kwargs):
+    async def userdomainrole_delete(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -734,7 +727,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def userdomainrole_read(request, user_id, domain_id, role_id, *args, **kwargs):
+    async def userdomainrole_read(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -744,7 +737,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def user_list(request, offset=None, limit=None, email=None, user_ids=None, *args, **kwargs):
+    async def user_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -755,7 +748,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def user_delete(request, user_id, *args, **kwargs):
+    async def user_delete(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -763,7 +756,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def user_read(request, user_id, *args, **kwargs):
+    async def user_read(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -771,7 +764,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def user_update(request, body, user_id, *args, **kwargs):
+    async def user_update(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -780,7 +773,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get__api_v1_users_user_id_activate(request, user_id, *args, **kwargs):
+    async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -788,7 +781,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def get__api_v1_users_user_id_deactivate(request, user_id, *args, **kwargs):
+    async def get__api_v1_users_user_id_deactivate(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -796,7 +789,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersitedata_list(request, offset=None, limit=None, user_id=None, site_id=None, *args, **kwargs):
+    async def usersitedata_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -807,7 +800,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersitedata_create(request, body, *args, **kwargs):
+    async def usersitedata_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -815,7 +808,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersitedata_delete(request, user_id, site_id, *args, **kwargs):
+    async def usersitedata_delete(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -824,7 +817,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersitedata_read(request, user_id, site_id, *args, **kwargs):
+    async def usersitedata_read(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
@@ -833,7 +826,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersitedata_update(request, body, user_id, site_id, *args, **kwargs):
+    async def usersitedata_update(request, body, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
@@ -843,7 +836,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersiterole_list(request, offset=None, limit=None, user_id=None, site_id=None, role_id=None, *args, **kwargs):
+    async def usersiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
@@ -855,7 +848,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
-    async def usersiterole_create(request, body, *args, **kwargs):
+    async def usersiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
