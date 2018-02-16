@@ -98,7 +98,7 @@ class Adminnotes(View):
         # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
         creator_id = self.request.query.get("creator_id", None)
 
-        result = Stubs.adminnote_list(self.request, offset, limit, user_id, creator_id, )
+        result = await Stubs.adminnote_list(self.request, offset, limit, user_id, creator_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -120,7 +120,7 @@ class Adminnotes(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.adminnote_create(self.request, body, )
+        result = await Stubs.adminnote_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -145,7 +145,7 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
         # created_at: string The created_at value
         created_at = self.request.match_info["created_at"]
 
-        result = Stubs.adminnote_delete(self.request, user_id, creator_id, created_at, )
+        result = await Stubs.adminnote_delete(self.request, user_id, creator_id, created_at, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -162,7 +162,7 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
         # created_at: string The created_at value
         created_at = self.request.match_info["created_at"]
 
-        result = Stubs.adminnote_read(self.request, user_id, creator_id, created_at, )
+        result = await Stubs.adminnote_read(self.request, user_id, creator_id, created_at, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -190,7 +190,7 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.adminnote_update(self.request, body, user_id, creator_id, created_at, )
+        result = await Stubs.adminnote_update(self.request, body, user_id, creator_id, created_at, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -284,7 +284,7 @@ class Clients(View):
         # client_ids (optional): array An optional list of client ids
         client_ids = self.request.query.get("client_ids", None)
 
-        result = Stubs.client_list(self.request, offset, limit, client_ids, )
+        result = await Stubs.client_list(self.request, offset, limit, client_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -302,7 +302,7 @@ class ClientsClientId(View):
         # client_id: string A UUID value identifying the client
         client_id = self.request.match_info["client_id"]
 
-        result = Stubs.client_read(self.request, client_id, )
+        result = await Stubs.client_read(self.request, client_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -364,7 +364,7 @@ class Domainroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.domainrole_list(self.request, offset, limit, domain_id, role_id, )
+        result = await Stubs.domainrole_list(self.request, offset, limit, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -386,7 +386,7 @@ class Domainroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.domainrole_create(self.request, body, )
+        result = await Stubs.domainrole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -409,7 +409,7 @@ class DomainrolesDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.domainrole_delete(self.request, domain_id, role_id, )
+        result = await Stubs.domainrole_delete(self.request, domain_id, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -424,7 +424,7 @@ class DomainrolesDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.domainrole_read(self.request, domain_id, role_id, )
+        result = await Stubs.domainrole_read(self.request, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -450,7 +450,7 @@ class DomainrolesDomainIdRoleId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.domainrole_update(self.request, body, domain_id, role_id, )
+        result = await Stubs.domainrole_update(self.request, body, domain_id, role_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -514,7 +514,7 @@ class Domains(View):
         # domain_ids (optional): array An optional list of domain ids
         domain_ids = self.request.query.get("domain_ids", None)
 
-        result = Stubs.domain_list(self.request, offset, limit, domain_ids, )
+        result = await Stubs.domain_list(self.request, offset, limit, domain_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -536,7 +536,7 @@ class Domains(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.domain_create(self.request, body, )
+        result = await Stubs.domain_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -557,7 +557,7 @@ class DomainsDomainId(View):
         # domain_id: integer A unique integer value identifying the domain.
         domain_id = self.request.match_info["domain_id"]
 
-        result = Stubs.domain_delete(self.request, domain_id, )
+        result = await Stubs.domain_delete(self.request, domain_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -570,7 +570,7 @@ class DomainsDomainId(View):
         # domain_id: integer A unique integer value identifying the domain.
         domain_id = self.request.match_info["domain_id"]
 
-        result = Stubs.domain_read(self.request, domain_id, )
+        result = await Stubs.domain_read(self.request, domain_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -594,7 +594,7 @@ class DomainsDomainId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.domain_update(self.request, body, domain_id, )
+        result = await Stubs.domain_update(self.request, body, domain_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -659,7 +659,7 @@ class Invitationdomainroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.invitationdomainrole_list(self.request, offset, limit, invitation_id, domain_id, role_id, )
+        result = await Stubs.invitationdomainrole_list(self.request, offset, limit, invitation_id, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -681,7 +681,7 @@ class Invitationdomainroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.invitationdomainrole_create(self.request, body, )
+        result = await Stubs.invitationdomainrole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -704,7 +704,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.invitationdomainrole_delete(self.request, invitation_id, domain_id, role_id, )
+        result = await Stubs.invitationdomainrole_delete(self.request, invitation_id, domain_id, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -721,7 +721,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.invitationdomainrole_read(self.request, invitation_id, domain_id, role_id, )
+        result = await Stubs.invitationdomainrole_read(self.request, invitation_id, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -803,7 +803,7 @@ class Invitations(View):
         # invitation_ids (optional): array An optional list of invitation ids
         invitation_ids = self.request.query.get("invitation_ids", None)
 
-        result = Stubs.invitation_list(self.request, offset, limit, invitor_id, invitation_ids, )
+        result = await Stubs.invitation_list(self.request, offset, limit, invitor_id, invitation_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -825,7 +825,7 @@ class Invitations(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.invitation_create(self.request, body, )
+        result = await Stubs.invitation_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -846,7 +846,7 @@ class InvitationsInvitationId(View):
         # invitation_id: string A UUID value identifying the invitation.
         invitation_id = self.request.match_info["invitation_id"]
 
-        result = Stubs.invitation_delete(self.request, invitation_id, )
+        result = await Stubs.invitation_delete(self.request, invitation_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -859,7 +859,7 @@ class InvitationsInvitationId(View):
         # invitation_id: string A UUID value identifying the invitation.
         invitation_id = self.request.match_info["invitation_id"]
 
-        result = Stubs.invitation_read(self.request, invitation_id, )
+        result = await Stubs.invitation_read(self.request, invitation_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -883,7 +883,7 @@ class InvitationsInvitationId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.invitation_update(self.request, body, invitation_id, )
+        result = await Stubs.invitation_update(self.request, body, invitation_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -948,7 +948,7 @@ class Invitationsiteroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.invitationsiterole_list(self.request, offset, limit, invitation_id, site_id, role_id, )
+        result = await Stubs.invitationsiterole_list(self.request, offset, limit, invitation_id, site_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -970,7 +970,7 @@ class Invitationsiteroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.invitationsiterole_create(self.request, body, )
+        result = await Stubs.invitationsiterole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -993,7 +993,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.invitationsiterole_delete(self.request, invitation_id, site_id, role_id, )
+        result = await Stubs.invitationsiterole_delete(self.request, invitation_id, site_id, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1010,7 +1010,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.invitationsiterole_read(self.request, invitation_id, site_id, role_id, )
+        result = await Stubs.invitationsiterole_read(self.request, invitation_id, site_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1028,7 +1028,7 @@ class OpsAllUserRolesUserId(View):
         # user_id: string A UUID value identifying the user.
         user_id = self.request.match_info["user_id"]
 
-        result = Stubs.get_all_user_roles(self.request, user_id, )
+        result = await Stubs.get_all_user_roles(self.request, user_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1046,7 +1046,7 @@ class OpsDomainRolesDomainId(View):
         # domain_id: integer A unique integer value identifying the domain.
         domain_id = self.request.match_info["domain_id"]
 
-        result = Stubs.get_domain_roles(self.request, domain_id, )
+        result = await Stubs.get_domain_roles(self.request, domain_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1064,7 +1064,7 @@ class OpsSiteAndDomainRolesSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.get_site_and_domain_roles(self.request, site_id, )
+        result = await Stubs.get_site_and_domain_roles(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1082,7 +1082,7 @@ class OpsSiteRoleLabelsAggregatedSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.get_site_role_labels_aggregated(self.request, site_id, )
+        result = await Stubs.get_site_role_labels_aggregated(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1102,7 +1102,7 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.get_user_site_role_labels_aggregated(self.request, user_id, site_id, )
+        result = await Stubs.get_user_site_role_labels_aggregated(self.request, user_id, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1163,7 +1163,7 @@ class Permissions(View):
         # permission_ids (optional): array An optional list of permission ids
         permission_ids = self.request.query.get("permission_ids", None)
 
-        result = Stubs.permission_list(self.request, offset, limit, permission_ids, )
+        result = await Stubs.permission_list(self.request, offset, limit, permission_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1185,7 +1185,7 @@ class Permissions(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.permission_create(self.request, body, )
+        result = await Stubs.permission_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1206,7 +1206,7 @@ class PermissionsPermissionId(View):
         # permission_id: integer A unique integer value identifying the permission.
         permission_id = self.request.match_info["permission_id"]
 
-        result = Stubs.permission_delete(self.request, permission_id, )
+        result = await Stubs.permission_delete(self.request, permission_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1219,7 +1219,7 @@ class PermissionsPermissionId(View):
         # permission_id: integer A unique integer value identifying the permission.
         permission_id = self.request.match_info["permission_id"]
 
-        result = Stubs.permission_read(self.request, permission_id, )
+        result = await Stubs.permission_read(self.request, permission_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1243,7 +1243,7 @@ class PermissionsPermissionId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.permission_update(self.request, body, permission_id, )
+        result = await Stubs.permission_update(self.request, body, permission_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1306,7 +1306,7 @@ class Resources(View):
         # resource_ids (optional): array An optional list of resource ids
         resource_ids = self.request.query.get("resource_ids", None)
 
-        result = Stubs.resource_list(self.request, offset, limit, prefix, resource_ids, )
+        result = await Stubs.resource_list(self.request, offset, limit, prefix, resource_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1328,7 +1328,7 @@ class Resources(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.resource_create(self.request, body, )
+        result = await Stubs.resource_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1349,7 +1349,7 @@ class ResourcesResourceId(View):
         # resource_id: integer A unique integer value identifying the resource.
         resource_id = self.request.match_info["resource_id"]
 
-        result = Stubs.resource_delete(self.request, resource_id, )
+        result = await Stubs.resource_delete(self.request, resource_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1362,7 +1362,7 @@ class ResourcesResourceId(View):
         # resource_id: integer A unique integer value identifying the resource.
         resource_id = self.request.match_info["resource_id"]
 
-        result = Stubs.resource_read(self.request, resource_id, )
+        result = await Stubs.resource_read(self.request, resource_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1386,7 +1386,7 @@ class ResourcesResourceId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.resource_update(self.request, body, resource_id, )
+        result = await Stubs.resource_update(self.request, body, resource_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1450,7 +1450,7 @@ class Roleresourcepermissions(View):
         # permission_id (optional): integer An optional permission filter
         permission_id = self.request.query.get("permission_id", None)
 
-        result = Stubs.roleresourcepermission_list(self.request, offset, limit, role_id, resource_id, permission_id, )
+        result = await Stubs.roleresourcepermission_list(self.request, offset, limit, role_id, resource_id, permission_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1472,7 +1472,7 @@ class Roleresourcepermissions(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.roleresourcepermission_create(self.request, body, )
+        result = await Stubs.roleresourcepermission_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1495,7 +1495,7 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
         # permission_id: integer A unique integer value identifying the permission.
         permission_id = self.request.match_info["permission_id"]
 
-        result = Stubs.roleresourcepermission_delete(self.request, role_id, resource_id, permission_id, )
+        result = await Stubs.roleresourcepermission_delete(self.request, role_id, resource_id, permission_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1512,7 +1512,7 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
         # permission_id: integer A unique integer value identifying the permission.
         permission_id = self.request.match_info["permission_id"]
 
-        result = Stubs.roleresourcepermission_read(self.request, role_id, resource_id, permission_id, )
+        result = await Stubs.roleresourcepermission_read(self.request, role_id, resource_id, permission_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1581,7 +1581,7 @@ class Roles(View):
         # role_ids (optional): array An optional list of role ids
         role_ids = self.request.query.get("role_ids", None)
 
-        result = Stubs.role_list(self.request, offset, limit, role_ids, )
+        result = await Stubs.role_list(self.request, offset, limit, role_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1603,7 +1603,7 @@ class Roles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.role_create(self.request, body, )
+        result = await Stubs.role_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1624,7 +1624,7 @@ class RolesRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.role_delete(self.request, role_id, )
+        result = await Stubs.role_delete(self.request, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1637,7 +1637,7 @@ class RolesRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.role_read(self.request, role_id, )
+        result = await Stubs.role_read(self.request, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1661,7 +1661,7 @@ class RolesRoleId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.role_update(self.request, body, role_id, )
+        result = await Stubs.role_update(self.request, body, role_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1717,7 +1717,7 @@ class Sitedataschemas(View):
         # site_ids (optional): array An optional list of site ids
         site_ids = self.request.query.get("site_ids", None)
 
-        result = Stubs.sitedataschema_list(self.request, offset, limit, site_ids, )
+        result = await Stubs.sitedataschema_list(self.request, offset, limit, site_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1739,7 +1739,7 @@ class Sitedataschemas(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.sitedataschema_create(self.request, body, )
+        result = await Stubs.sitedataschema_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1760,7 +1760,7 @@ class SitedataschemasSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.sitedataschema_delete(self.request, site_id, )
+        result = await Stubs.sitedataschema_delete(self.request, site_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1773,7 +1773,7 @@ class SitedataschemasSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.sitedataschema_read(self.request, site_id, )
+        result = await Stubs.sitedataschema_read(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1797,7 +1797,7 @@ class SitedataschemasSiteId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.sitedataschema_update(self.request, body, site_id, )
+        result = await Stubs.sitedataschema_update(self.request, body, site_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1859,7 +1859,7 @@ class Siteroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.siterole_list(self.request, offset, limit, site_id, role_id, )
+        result = await Stubs.siterole_list(self.request, offset, limit, site_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1881,7 +1881,7 @@ class Siteroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.siterole_create(self.request, body, )
+        result = await Stubs.siterole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1904,7 +1904,7 @@ class SiterolesSiteIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.siterole_delete(self.request, site_id, role_id, )
+        result = await Stubs.siterole_delete(self.request, site_id, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1919,7 +1919,7 @@ class SiterolesSiteIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.siterole_read(self.request, site_id, role_id, )
+        result = await Stubs.siterole_read(self.request, site_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -1945,7 +1945,7 @@ class SiterolesSiteIdRoleId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.siterole_update(self.request, body, site_id, role_id, )
+        result = await Stubs.siterole_update(self.request, body, site_id, role_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2018,7 +2018,7 @@ class Sites(View):
         # site_ids (optional): array An optional list of site ids
         site_ids = self.request.query.get("site_ids", None)
 
-        result = Stubs.site_list(self.request, offset, limit, site_ids, )
+        result = await Stubs.site_list(self.request, offset, limit, site_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2040,7 +2040,7 @@ class Sites(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.site_create(self.request, body, )
+        result = await Stubs.site_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2061,7 +2061,7 @@ class SitesSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.site_delete(self.request, site_id, )
+        result = await Stubs.site_delete(self.request, site_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2074,7 +2074,7 @@ class SitesSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.site_read(self.request, site_id, )
+        result = await Stubs.site_read(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2098,7 +2098,7 @@ class SitesSiteId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.site_update(self.request, body, site_id, )
+        result = await Stubs.site_update(self.request, body, site_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2116,7 +2116,7 @@ class SitesSiteIdActivate(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.get__api_v1_sites_site_id_activate(self.request, site_id, )
+        result = await Stubs.get__api_v1_sites_site_id_activate(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2134,7 +2134,7 @@ class SitesSiteIdDeactivate(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.get__api_v1_sites_site_id_deactivate(self.request, site_id, )
+        result = await Stubs.get__api_v1_sites_site_id_deactivate(self.request, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2199,7 +2199,7 @@ class Userdomainroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.userdomainrole_list(self.request, offset, limit, user_id, domain_id, role_id, )
+        result = await Stubs.userdomainrole_list(self.request, offset, limit, user_id, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2221,7 +2221,7 @@ class Userdomainroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.userdomainrole_create(self.request, body, )
+        result = await Stubs.userdomainrole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2244,7 +2244,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.userdomainrole_delete(self.request, user_id, domain_id, role_id, )
+        result = await Stubs.userdomainrole_delete(self.request, user_id, domain_id, role_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2261,7 +2261,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
         # role_id: integer A unique integer value identifying the role.
         role_id = self.request.match_info["role_id"]
 
-        result = Stubs.userdomainrole_read(self.request, user_id, domain_id, role_id, )
+        result = await Stubs.userdomainrole_read(self.request, user_id, domain_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2377,7 +2377,7 @@ class Users(View):
         # user_ids (optional): array An optional list of user ids
         user_ids = self.request.query.get("user_ids", None)
 
-        result = Stubs.user_list(self.request, offset, limit, email, user_ids, )
+        result = await Stubs.user_list(self.request, offset, limit, email, user_ids, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2398,7 +2398,7 @@ class UsersUserId(View):
         # user_id: string A UUID value identifying the user.
         user_id = self.request.match_info["user_id"]
 
-        result = Stubs.user_delete(self.request, user_id, )
+        result = await Stubs.user_delete(self.request, user_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2411,7 +2411,7 @@ class UsersUserId(View):
         # user_id: string A UUID value identifying the user.
         user_id = self.request.match_info["user_id"]
 
-        result = Stubs.user_read(self.request, user_id, )
+        result = await Stubs.user_read(self.request, user_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2435,7 +2435,7 @@ class UsersUserId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.user_update(self.request, body, user_id, )
+        result = await Stubs.user_update(self.request, body, user_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2453,7 +2453,7 @@ class UsersUserIdActivate(View):
         # user_id: string A UUID value identifying the user.
         user_id = self.request.match_info["user_id"]
 
-        result = Stubs.get__api_v1_users_user_id_activate(self.request, user_id, )
+        result = await Stubs.get__api_v1_users_user_id_activate(self.request, user_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2471,7 +2471,7 @@ class UsersUserIdDeactivate(View):
         # user_id: string A UUID value identifying the user.
         user_id = self.request.match_info["user_id"]
 
-        result = Stubs.get__api_v1_users_user_id_deactivate(self.request, user_id, )
+        result = await Stubs.get__api_v1_users_user_id_deactivate(self.request, user_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2543,7 +2543,7 @@ class Usersitedata(View):
         # site_id (optional): integer An optional query parameter to filter by site_id
         site_id = self.request.query.get("site_id", None)
 
-        result = Stubs.usersitedata_list(self.request, offset, limit, user_id, site_id, )
+        result = await Stubs.usersitedata_list(self.request, offset, limit, user_id, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2565,7 +2565,7 @@ class Usersitedata(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.usersitedata_create(self.request, body, )
+        result = await Stubs.usersitedata_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2588,7 +2588,7 @@ class UsersitedataUserIdSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.usersitedata_delete(self.request, user_id, site_id, )
+        result = await Stubs.usersitedata_delete(self.request, user_id, site_id, )
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2603,7 +2603,7 @@ class UsersitedataUserIdSiteId(View):
         # site_id: integer A unique integer value identifying the site.
         site_id = self.request.match_info["site_id"]
 
-        result = Stubs.usersitedata_read(self.request, user_id, site_id, )
+        result = await Stubs.usersitedata_read(self.request, user_id, site_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2629,7 +2629,7 @@ class UsersitedataUserIdSiteId(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.usersitedata_update(self.request, body, user_id, site_id, )
+        result = await Stubs.usersitedata_update(self.request, body, user_id, site_id, )
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2694,7 +2694,7 @@ class Usersiteroles(View):
         # role_id (optional): integer An optional query parameter to filter by role_id
         role_id = self.request.query.get("role_id", None)
 
-        result = Stubs.usersiterole_list(self.request, offset, limit, user_id, site_id, role_id, )
+        result = await Stubs.usersiterole_list(self.request, offset, limit, user_id, site_id, role_id, )
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -2716,7 +2716,7 @@ class Usersiteroles(View):
             return Response(status=400, text="JSON body expected")
 
 
-        result = Stubs.usersiterole_create(self.request, body, )
+        result = await Stubs.usersiterole_create(self.request, body, )
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result)
