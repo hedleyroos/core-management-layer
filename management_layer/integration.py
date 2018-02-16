@@ -1,18 +1,13 @@
-from datetime import datetime
-
 from management_layer.api.stubs import AbstractStubClass
 from authentication_service.api.authentication_api import AuthenticationApi
+from management_layer.transformations import datetime_to_string
 from user_data_store.api.user_data_api import UserDataApi
 from access_control.api.access_control_api import AccessControlApi
-from management_layer.transformation import Transformation, Mapping
+from management_layer import transformations
 
 auth_api = AuthenticationApi()
 user_data_api = UserDataApi()
 access_control_api = AccessControlApi()
-
-
-def datetime_to_string(x: datetime) -> str:
-    return x.strftime("%Y:%M:%DT%h:%m:%sZ")
 
 
 class Implementation(AbstractStubClass):
@@ -109,13 +104,7 @@ class Implementation(AbstractStubClass):
             params["role_id"] = role_id
         domain_roles = await access_control_api.domainrole_list(**params)
         if domain_roles:
-            transform = Transformation(
-                mappings=[
-                    Mapping("created_at", conversion=datetime_to_string),
-                    Mapping("updated_at", conversion=datetime_to_string)
-                ],
-                copy_fields=["domain_id", "role_id", "grant_implicitly"]
-            )
+            transform = transformations.DOMAIN_ROLE
             result = [transform.apply(dr.to_dict()) for dr in domain_roles]
             return result
 
@@ -129,13 +118,7 @@ class Implementation(AbstractStubClass):
         """
         domain_role = await access_control_api.domainrole_create(data=body)
         if domain_role:
-            transform = Transformation(
-                mappings=[
-                    Mapping("created_at", conversion=datetime_to_string),
-                    Mapping("updated_at", conversion=datetime_to_string)
-                ],
-                copy_fields=["domain_id", "role_id", "grant_implicitly"]
-            )
+            transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
             return result
 
@@ -160,13 +143,7 @@ class Implementation(AbstractStubClass):
         """
         domain_role = await access_control_api.domainrole_read(domain_id, role_id)
         if domain_role:
-            transform = Transformation(
-                mappings=[
-                    Mapping("created_at", conversion=datetime_to_string),
-                    Mapping("updated_at", conversion=datetime_to_string)
-                ],
-                copy_fields=["domain_id", "role_id", "grant_implicitly"]
-            )
+            transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
             return result
 
@@ -182,13 +159,7 @@ class Implementation(AbstractStubClass):
         """
         domain_role = await access_control_api.domainrole_update(domain_id, role_id, data=body)
         if domain_role:
-            transform = Transformation(
-                mappings=[
-                    Mapping("created_at", conversion=datetime_to_string),
-                    Mapping("updated_at", conversion=datetime_to_string)
-                ],
-                copy_fields=["domain_id", "role_id", "grant_implicitly"]
-            )
+            transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
             return result
 
