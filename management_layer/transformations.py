@@ -4,11 +4,11 @@ from management_layer.transformation import Transformation, Mapping
 
 
 def datetime_to_string(x: datetime) -> str:
-    return x.strftime("%Y:%m:%dT%H:%M:%SZ")
+    return x.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def datetime_to_string(x: date) -> str:
-    return x.strftime("%Y:%m:%d")
+def date_to_string(x: date) -> str:
+    return x.strftime("%Y-%m-%d")
 
 
 ADMIN_NOTE = Transformation(
