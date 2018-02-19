@@ -15,4 +15,12 @@ DOMAIN_ROLE = Transformation(
     copy_fields=["domain_id", "role_id", "grant_implicitly"]
 )
 
+DOMAIN = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["id", "parent_id", "name", "description"]
+)
+
 

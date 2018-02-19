@@ -109,7 +109,7 @@ class Implementation(AbstractStubClass):
         domain_roles = await access_control_api.domainrole_list(**kwargs)
         if domain_roles:
             transform = transformations.DOMAIN_ROLE
-            result = [transform.apply(dr.to_dict()) for dr in domain_roles]
+            result = [transform.apply(domain_role.to_dict()) for domain_role in domain_roles]
             return result
 
         return []
@@ -177,7 +177,14 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_ids (optional): array An optional list of domain ids
         """
-        raise NotImplementedError()
+        kwargs = {k: int(v) for k, v in kwargs.items()}
+        domains = await access_control_api.domain_list(**kwargs)
+        if domains:
+            transform = transformations.DOMAIN
+            result = [transform.apply(domain.to_dict()) for domain in domains]
+            return result
+
+        return []
 
     @staticmethod
     async def domain_create(request, body, **kwargs):
@@ -185,7 +192,13 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         """
-        raise NotImplementedError()
+        domain = await access_control_api.domain_create(data=body)
+        if domain:
+            transform = transformations.DOMAIN
+            result = transform.apply(domain.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def domain_delete(request, domain_id, **kwargs):
@@ -193,7 +206,8 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        raise NotImplementedError()
+        result = await access_control_api.domain_delete(domain_id)
+        return result
 
     @staticmethod
     async def domain_read(request, domain_id, **kwargs):
@@ -201,7 +215,13 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        raise NotImplementedError()
+        domain = await access_control_api.domain_read(domain_id)
+        if domain:
+            transform = transformations.DOMAIN
+            result = transform.apply(domain.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def domain_update(request, body, domain_id, **kwargs):
@@ -210,7 +230,13 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        raise NotImplementedError()
+        domain = await access_control_api.domain_update(domain_id, data=body)
+        if domain:
+            transform = transformations.DOMAIN_ROLE
+            result = transform.apply(domain.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def invitationdomainrole_list(request, **kwargs):
