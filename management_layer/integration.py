@@ -1,12 +1,11 @@
 from management_layer.api.stubs import AbstractStubClass
-from authentication_service.api.authentication_api import AuthenticationApi
-from user_data_store.api.user_data_api import UserDataApi
-from access_control.api.access_control_api import AccessControlApi
+from management_layer.configuration import access_control_api, user_data_api
+from management_layer.transformation import Transformation, Mapping
 from management_layer import transformations
 
-authentication_api = AuthenticationApi()
-user_data_api = UserDataApi()
-access_control_api = AccessControlApi()
+
+# API clients generated from the Swagger specifications of the
+# respective components.
 
 # An example of using aiobravado for API clients.
 # Do not remove yet. (cobusc)
@@ -36,7 +35,20 @@ class Implementation(AbstractStubClass):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
         """
-        raise NotImplementedError()
+        transform = Transformation(
+            mappings=[
+               Mapping("offset", conversion=int),
+               Mapping("limit", conversion=int),
+            ],
+            copy_fields=["user_id", "creator_id"]
+        )
+        admin_notes = await user_data_api.adminnote_list(**transform.apply(kwargs))
+        if admin_notes:
+            transform = transformations.ADMIN_NOTE
+            result = [transform.apply(note.to_dict()) for note in admin_notes]
+            return result
+
+        return []
 
     @staticmethod
     async def adminnote_create(request, body, **kwargs):
@@ -98,7 +110,7 @@ class Implementation(AbstractStubClass):
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        # All optional args integers:
+        # All optional args are integers:
         kwargs = {k: int(v) for k, v in kwargs.items()}
         domain_roles = await access_control_api.domainrole_list(**kwargs)
         if domain_roles:

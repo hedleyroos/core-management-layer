@@ -1,7 +1,7 @@
-from management_layer import integration
+import management_layer.configuration
 from aiohttp import web
 from management_layer.api.urls import add_routes
-from management_layer.integration import user_data_api, authentication_api, access_control_api
+
 
 async def hello(request):
     return web.Response(text="Hello, world")
@@ -9,9 +9,9 @@ async def hello(request):
 
 async def on_shutdown(app):
     print("Waiting for clients to finish up...")
-    await integration.access_control_api.api_client.rest_client.pool_manager.close()
-    await integration.user_data_api.api_client.rest_client.pool_manager.close()
-    await integration.authentication_api.api_client.rest_client.pool_manager.close()
+    await management_layer.configuration.access_control_api.api_client.rest_client.pool_manager.close()
+    await management_layer.configuration.user_data_api.api_client.rest_client.pool_manager.close()
+    await management_layer.configuration.authentication_api.api_client.rest_client.pool_manager.close()
     print("Done.")
 
 

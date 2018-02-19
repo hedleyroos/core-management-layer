@@ -17,6 +17,8 @@ import copy
 import logging
 import multiprocessing
 import sys
+
+import os
 import urllib3
 
 import six
@@ -47,7 +49,7 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
     def __init__(self):
         """Constructor"""
         # Default Base url
-        self.host = "http://localhost:8080/api/v1"
+        self.host = os.getenv("USER_DATA_STORE_API", "http://localhost:8083/api/v1")
         # Temp file folder for downloading files
         self.temp_folder_path = None
 
