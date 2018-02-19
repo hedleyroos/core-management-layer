@@ -179,6 +179,10 @@ admin_note = json.loads("""
             "readOnly": true,
             "type": "string"
         },
+        "id": {
+            "readOnly": true,
+            "type": "integer"
+        },
         "note": {
             "type": "string"
         },
@@ -193,6 +197,7 @@ admin_note = json.loads("""
         }
     },
     "required": [
+        "id",
         "user_id",
         "creator_id",
         "note",

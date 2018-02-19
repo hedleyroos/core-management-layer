@@ -32,33 +32,27 @@ class AbstractStubClass(object):
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_delete(request, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_delete(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_read(request, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_read(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         raise NotImplementedError()
 
     @staticmethod
-    async def adminnote_update(request, body, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_update(request, body, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         raise NotImplementedError()
 
@@ -844,6 +838,10 @@ class MockedStubClass(AbstractStubClass):
                 "readOnly": true,
                 "type": "string"
             },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
             "note": {
                 "type": "string"
             },
@@ -858,6 +856,7 @@ class MockedStubClass(AbstractStubClass):
             }
         },
         "required": [
+            "id",
             "user_id",
             "creator_id",
             "note",
@@ -895,12 +894,10 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def adminnote_delete(request, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_delete(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
@@ -912,12 +909,10 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def adminnote_read(request, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_read(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         response_schema = schemas.admin_note
         if "type" not in response_schema:
@@ -929,13 +924,11 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def adminnote_update(request, body, user_id, creator_id, created_at, **kwargs):
+    async def adminnote_update(request, body, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
-        :param user_id: string A UUID value identifying the user.
-        :param creator_id: string The creator_id
-        :param created_at: string The created_at value
+        :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         response_schema = schemas.admin_note
         if "type" not in response_schema:

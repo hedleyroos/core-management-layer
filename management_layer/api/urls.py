@@ -48,7 +48,7 @@ def add_routes(app):
     app.router.add_view(r"/domainroles", views.Domainroles)
     app.router.add_view(r"/clients/{client_id}", views.ClientsClientId)
     app.router.add_view(r"/clients", views.Clients)
-    app.router.add_view(r"/adminnotes/{user_id}/{creator_id}/{created_at}", views.AdminnotesUserIdCreatorIdCreatedAt)
+    app.router.add_view(r"/adminnotes/{admin_note_id}", views.AdminnotesAdminNoteId)
     app.router.add_view(r"/adminnotes", views.Adminnotes)
     # if settings.DEBUG:
     app.router.add_view(r"/the_specification", views.__SWAGGER_SPEC__)

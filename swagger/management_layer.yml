@@ -906,6 +906,9 @@ definitions:
   admin_note:
     type: object
     properties:
+      id:
+        type: integer
+        readOnly: true
       user_id:
         type: string
         format: uuid
@@ -926,6 +929,7 @@ definitions:
         format: 'date-time'
         readOnly: true
     required:
+      - id
       - user_id
       - creator_id
       - note
@@ -2556,21 +2560,9 @@ paths:
       tags:
         - user_data
 
-  /adminnotes/{user_id}/{creator_id}/{created_at}:
+  /adminnotes/{admin_note_id}:
     parameters:
-      - $ref: '#/parameters/user_id'
-      - description: The creator_id
-        name: creator_id
-        in: path
-        required: true
-        type: string
-        format: uuid
-      - description: The created_at value
-        name: created_at
-        in: path
-        required: true
-        type: string
-        format: 'date-time'
+      - $ref: '#/parameters/admin_note_id'
     delete:
       operationId: adminnote_delete
       responses:

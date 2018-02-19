@@ -54,6 +54,10 @@ class Adminnotes(View):
                 "readOnly": true,
                 "type": "string"
             },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
             "note": {
                 "type": "string"
             },
@@ -68,6 +72,7 @@ class Adminnotes(View):
             }
         },
         "required": [
+            "id",
             "user_id",
             "creator_id",
             "note",
@@ -138,7 +143,7 @@ class Adminnotes(View):
         return json_response(result)
 
 
-class AdminnotesUserIdCreatorIdCreatedAt(View):
+class AdminnotesAdminNoteId(View):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.admin_note
@@ -148,18 +153,14 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
     async def delete(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A AdminnotesUserIdCreatorIdCreatedAt instance
+        :param self: A AdminnotesAdminNoteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # creator_id: string The creator_id
-        creator_id = self.request.match_info["creator_id"]
-        # created_at: string The created_at value
-        created_at = self.request.match_info["created_at"]
+        # admin_note_id: integer A unique integer value identifying the admin note.
+        admin_note_id = self.request.match_info["admin_note_id"]
         optional_args = {}
 
         result = await Stubs.adminnote_delete(
-            self.request, user_id, creator_id, created_at, **optional_args)
+            self.request, admin_note_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -167,18 +168,14 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A AdminnotesUserIdCreatorIdCreatedAt instance
+        :param self: A AdminnotesAdminNoteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # creator_id: string The creator_id
-        creator_id = self.request.match_info["creator_id"]
-        # created_at: string The created_at value
-        created_at = self.request.match_info["created_at"]
+        # admin_note_id: integer A unique integer value identifying the admin note.
+        admin_note_id = self.request.match_info["admin_note_id"]
         optional_args = {}
 
         result = await Stubs.adminnote_read(
-            self.request, user_id, creator_id, created_at, **optional_args)
+            self.request, admin_note_id, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -186,14 +183,10 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
     async def put(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A AdminnotesUserIdCreatorIdCreatedAt instance
+        :param self: A AdminnotesAdminNoteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # creator_id: string The creator_id
-        creator_id = self.request.match_info["creator_id"]
-        # created_at: string The created_at value
-        created_at = self.request.match_info["created_at"]
+        # admin_note_id: integer A unique integer value identifying the admin note.
+        admin_note_id = self.request.match_info["admin_note_id"]
         optional_args = {}
         try:
             body = await self.request.json()
@@ -208,7 +201,7 @@ class AdminnotesUserIdCreatorIdCreatedAt(View):
 
 
         result = await Stubs.adminnote_update(
-            self.request, body, user_id, creator_id, created_at, **optional_args)
+            self.request, body, admin_note_id, **optional_args)
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result)
@@ -3185,6 +3178,10 @@ class __SWAGGER_SPEC__(View):
                     "readOnly": true,
                     "type": "string"
                 },
+                "id": {
+                    "readOnly": true,
+                    "type": "integer"
+                },
                 "note": {
                     "type": "string"
                 },
@@ -3199,6 +3196,7 @@ class __SWAGGER_SPEC__(View):
                 }
             },
             "required": [
+                "id",
                 "user_id",
                 "creator_id",
                 "note",
@@ -4873,7 +4871,7 @@ class __SWAGGER_SPEC__(View):
                 ]
             }
         },
-        "/adminnotes/{user_id}/{creator_id}/{created_at}": {
+        "/adminnotes/{admin_note_id}": {
             "delete": {
                 "operationId": "adminnote_delete",
                 "responses": {
@@ -4913,26 +4911,10 @@ class __SWAGGER_SPEC__(View):
             },
             "parameters": [
                 {
-                    "$ref": "#/parameters/user_id",
+                    "$ref": "#/parameters/admin_note_id",
                     "x-scope": [
                         ""
                     ]
-                },
-                {
-                    "description": "The creator_id",
-                    "format": "uuid",
-                    "in": "path",
-                    "name": "creator_id",
-                    "required": true,
-                    "type": "string"
-                },
-                {
-                    "description": "The created_at value",
-                    "format": "date-time",
-                    "in": "path",
-                    "name": "created_at",
-                    "required": true,
-                    "type": "string"
                 }
             ],
             "put": {
