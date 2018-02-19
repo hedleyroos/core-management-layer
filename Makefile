@@ -112,8 +112,7 @@ management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagge
 
 runserver: $(VENV)
 	@echo "$(CYAN)Firing up server...$(CLEAR)"
-	# $(PYTHON) -m swagger_server
-	$(PYTHON) swagger_server/httpd.py
+	STUBS_CLASS=management_layer.integration.Implementation PYTHONASYNCIODEBUG=1 $(PYTHON) httpd.py
 
 check: $(FLAKE8)
 	$(FLAKE8)
