@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY requirements.txt /app/requirements/
 
+RUN apt-get update
+RUN apt-get install -y git
 RUN pip3 install --no-cache-dir -r /app/requirements/requirements.txt
 
 COPY . /app/
