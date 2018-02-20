@@ -5,7 +5,7 @@ Routing module.
 """
 import management_layer.api.views as views
 
-def add_routes(app):
+def add_routes(app, with_ui=False):
     app.router.add_view(r"/usersiteroles", views.Usersiteroles)
     app.router.add_view(r"/usersitedata/{user_id}/{site_id}", views.UsersitedataUserIdSiteId)
     app.router.add_view(r"/usersitedata", views.Usersitedata)
@@ -50,6 +50,6 @@ def add_routes(app):
     app.router.add_view(r"/clients", views.Clients)
     app.router.add_view(r"/adminnotes/{admin_note_id}", views.AdminnotesAdminNoteId)
     app.router.add_view(r"/adminnotes", views.Adminnotes)
-    # if settings.DEBUG:
-    app.router.add_view(r"/the_specification", views.__SWAGGER_SPEC__)
-    app.router.add_static(r"/ui", path="ui")
+    if with_ui:
+        app.router.add_view(r"/the_specification", views.__SWAGGER_SPEC__)
+        app.router.add_static(r"/ui", path="ui")

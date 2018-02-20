@@ -130,8 +130,8 @@ class Adminnotes(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -194,8 +194,8 @@ class AdminnotesAdminNoteId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -412,8 +412,8 @@ class Domainroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -482,8 +482,8 @@ class DomainrolesDomainIdRoleId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -578,8 +578,8 @@ class Domains(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -642,8 +642,8 @@ class DomainsDomainId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -743,8 +743,8 @@ class Invitationdomainroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -903,8 +903,8 @@ class Invitations(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -967,8 +967,8 @@ class InvitationsInvitationId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1068,8 +1068,8 @@ class Invitationsiteroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1307,8 +1307,8 @@ class Permissions(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1371,8 +1371,8 @@ class PermissionsPermissionId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1468,8 +1468,8 @@ class Resources(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1532,8 +1532,8 @@ class ResourcesResourceId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1632,8 +1632,8 @@ class Roleresourcepermissions(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1777,8 +1777,8 @@ class Roles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1841,8 +1841,8 @@ class RolesRoleId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1929,8 +1929,8 @@ class Sitedataschemas(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -1993,8 +1993,8 @@ class SitedataschemasSiteId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2089,8 +2089,8 @@ class Siteroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2159,8 +2159,8 @@ class SiterolesSiteIdRoleId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2264,8 +2264,8 @@ class Sites(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2328,8 +2328,8 @@ class SitesSiteId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2469,8 +2469,8 @@ class Userdomainroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2703,8 +2703,8 @@ class UsersUserId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2849,8 +2849,8 @@ class Usersitedata(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -2919,8 +2919,8 @@ class UsersitedataUserIdSiteId(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
@@ -3020,8 +3020,8 @@ class Usersiteroles(View):
                 return Response(status=400, text="Body required")
 
             jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
-        except ValidationError:
-            return Response(status=400, text="Body validation failed")
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
 
