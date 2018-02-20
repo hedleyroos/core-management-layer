@@ -1,8 +1,6 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@cobusc-aiohttp-capability#egg=swagger-django-generator
-connexion == 1.1.15
 python_dateutil == 2.6.0
-setuptools >= 21.0.0
-pymemcache < 2.0.0
+pymemcache < 2.0.0 # To be replaced by aiomcache
 aiohttp
 aiodns    # For use with aiohttp
 cchardet  # For use with aiohttp
