@@ -121,4 +121,4 @@ $(PYTEST): $(VENV)
 	$(PIP) install pytest pytest-cov
 
 test: $(PYTEST)
-	$(PYTEST) --verbose --cov=management_layer --cov=swagger_server/controllers/ management_layer/
+	$(PYTEST) --verbose --cov=management_layer management_layer/
