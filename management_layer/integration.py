@@ -2,7 +2,7 @@ from management_layer.api.stubs import AbstractStubClass
 from management_layer.configuration import access_control_api, user_data_api
 from management_layer.transformation import Transformation, Mapping
 from management_layer import transformations
-
+from management_layer.utils import client_exception_handler
 
 # API clients generated from the Swagger specifications of the
 # respective components.
@@ -42,7 +42,9 @@ class Implementation(AbstractStubClass):
             ],
             copy_fields=["user_id", "creator_id"]
         )
-        admin_notes = await user_data_api.adminnote_list(**transform.apply(kwargs))
+        with client_exception_handler():
+            admin_notes = await user_data_api.adminnote_list(**transform.apply(kwargs))
+
         if admin_notes:
             transform = transformations.ADMIN_NOTE
             result = [transform.apply(note.to_dict()) for note in admin_notes]
@@ -56,7 +58,14 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            admin_note = await user_data_api.adminnote_create(data=body)
+
+        if admin_note:
+            transform = transformations.ADMIN_NOTE
+            return transform.apply(admin_note.to_dict())
+
+        return None
 
     @staticmethod
     async def adminnote_delete(request, admin_note_id, **kwargs):
@@ -64,7 +73,10 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await user_data_api.adminnote_delete(admin_note_id)
+
+        return result
 
     @staticmethod
     async def adminnote_read(request, admin_note_id, **kwargs):
@@ -72,7 +84,14 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            admin_note = await user_data_api.adminnote_read(admin_note_id)
+
+        if admin_note:
+            transform = transformations.ADMIN_NOTE
+            return transform.apply(admin_note.to_dict())
+
+        return None
 
     @staticmethod
     async def adminnote_update(request, body, admin_note_id, **kwargs):
@@ -81,7 +100,14 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            admin_note = await user_data_api.adminnote_update(admin_note_id, data=body)
+
+        if admin_note:
+            transform = transformations.ADMIN_NOTE
+            return transform.apply(admin_note.to_dict())
+
+        return None
 
     @staticmethod
     async def client_list(request, **kwargs):
@@ -112,7 +138,9 @@ class Implementation(AbstractStubClass):
         """
         # All optional args are integers:
         kwargs = {k: int(v) for k, v in kwargs.items()}
-        domain_roles = await access_control_api.domainrole_list(**kwargs)
+        with client_exception_handler():
+            domain_roles = await access_control_api.domainrole_list(**kwargs)
+
         if domain_roles:
             transform = transformations.DOMAIN_ROLE
             result = [transform.apply(domain_role.to_dict()) for domain_role in domain_roles]
@@ -126,7 +154,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         """
-        domain_role = await access_control_api.domainrole_create(data=body)
+        with client_exception_handler():
+            domain_role = await access_control_api.domainrole_create(data=body)
+
         if domain_role:
             transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
@@ -141,7 +171,9 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
         """
-        result = await access_control_api.domainrole_delete(domain_id, role_id)
+        with client_exception_handler():
+            result = await access_control_api.domainrole_delete(domain_id, role_id)
+
         return result
 
     @staticmethod
@@ -151,7 +183,9 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
         """
-        domain_role = await access_control_api.domainrole_read(domain_id, role_id)
+        with client_exception_handler():
+            domain_role = await access_control_api.domainrole_read(domain_id, role_id)
+
         if domain_role:
             transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
@@ -167,7 +201,9 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
         """
-        domain_role = await access_control_api.domainrole_update(domain_id, role_id, data=body)
+        with client_exception_handler():
+            domain_role = await access_control_api.domainrole_update(domain_id, role_id, data=body)
+
         if domain_role:
             transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain_role.to_dict())
@@ -184,7 +220,9 @@ class Implementation(AbstractStubClass):
         :param domain_ids (optional): array An optional list of domain ids
         """
         kwargs = {k: int(v) for k, v in kwargs.items()}
-        domains = await access_control_api.domain_list(**kwargs)
+        with client_exception_handler():
+            domains = await access_control_api.domain_list(**kwargs)
+
         if domains:
             transform = transformations.DOMAIN
             result = [transform.apply(domain.to_dict()) for domain in domains]
@@ -198,7 +236,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         """
-        domain = await access_control_api.domain_create(data=body)
+        with client_exception_handler():
+            domain = await access_control_api.domain_create(data=body)
+
         if domain:
             transform = transformations.DOMAIN
             result = transform.apply(domain.to_dict())
@@ -212,7 +252,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        result = await access_control_api.domain_delete(domain_id)
+        with client_exception_handler():
+            result = await access_control_api.domain_delete(domain_id)
+
         return result
 
     @staticmethod
@@ -221,7 +263,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        domain = await access_control_api.domain_read(domain_id)
+        with client_exception_handler():
+            domain = await access_control_api.domain_read(domain_id)
+
         if domain:
             transform = transformations.DOMAIN
             result = transform.apply(domain.to_dict())
@@ -236,7 +280,9 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        domain = await access_control_api.domain_update(domain_id, data=body)
+        with client_exception_handler():
+            domain = await access_control_api.domain_update(domain_id, data=body)
+
         if domain:
             transform = transformations.DOMAIN_ROLE
             result = transform.apply(domain.to_dict())
