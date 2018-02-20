@@ -1299,3 +1299,34 @@ class Implementation(AbstractStubClass):
             return result
 
         return None
+
+    @staticmethod
+    async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
+        """
+        with client_exception_handler():
+            result = access_control_api.usersiterole_delete(user_id, site_id, role_id)
+
+        return result
+
+    @staticmethod
+    async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
+        """
+        with client_exception_handler():
+            usr = access_control_api.usersiterole_read(user_id, site_id, role_id)
+
+        if usr:
+            transform = transformations.USER_SITE_ROLE
+            result = transform.apply(usr.to_dict())
+            return result
+
+        return None

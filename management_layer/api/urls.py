@@ -6,6 +6,7 @@ Routing module.
 import management_layer.api.views as views
 
 def add_routes(app, with_ui=False):
+    app.router.add_view(r"/usersiteroles/{user_id}/{site_id}/{role_id}", views.UsersiterolesUserIdSiteIdRoleId)
     app.router.add_view(r"/usersiteroles", views.Usersiteroles)
     app.router.add_view(r"/usersitedata/{user_id}/{site_id}", views.UsersitedataUserIdSiteId)
     app.router.add_view(r"/usersitedata", views.Usersitedata)

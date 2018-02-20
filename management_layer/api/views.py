@@ -3033,6 +3033,50 @@ class Usersiteroles(View):
         return json_response(result)
 
 
+class UsersiterolesUserIdSiteIdRoleId(View):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.user_site_role
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A UsersiterolesUserIdSiteIdRoleId instance
+        """
+        # user_id: string A UUID value identifying the user.
+        user_id = self.request.match_info["user_id"]
+        # site_id: integer A unique integer value identifying the site.
+        site_id = self.request.match_info["site_id"]
+        # role_id: integer A unique integer value identifying the role.
+        role_id = self.request.match_info["role_id"]
+        optional_args = {}
+
+        result = await Stubs.usersiterole_delete(
+            self.request, user_id, site_id, role_id, **optional_args)
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return json_response(result)
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A UsersiterolesUserIdSiteIdRoleId instance
+        """
+        # user_id: string A UUID value identifying the user.
+        user_id = self.request.match_info["user_id"]
+        # site_id: integer A unique integer value identifying the site.
+        site_id = self.request.match_info["site_id"]
+        # role_id: integer A unique integer value identifying the role.
+        role_id = self.request.match_info["role_id"]
+        optional_args = {}
+
+        result = await Stubs.usersiterole_read(
+            self.request, user_id, site_id, role_id, **optional_args)
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result)
+
+
 class __SWAGGER_SPEC__(View):
 
     async def get(self):
@@ -7754,6 +7798,59 @@ class __SWAGGER_SPEC__(View):
                     "access_control"
                 ]
             }
+        },
+        "/usersiteroles/{user_id}/{site_id}/{role_id}": {
+            "delete": {
+                "operationId": "usersiterole_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            },
+            "get": {
+                "operationId": "usersiterole_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/user_site_role",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/site_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/role_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         }
     },
     "schemes": [
