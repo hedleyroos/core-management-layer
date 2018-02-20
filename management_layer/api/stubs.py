@@ -807,6 +807,26 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    @staticmethod
+    async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
+        """
+        raise NotImplementedError()
+
 
 class MockedStubClass(AbstractStubClass):
     """
@@ -3023,6 +3043,40 @@ class MockedStubClass(AbstractStubClass):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.user_site_role
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param role_id: integer A unique integer value identifying the role.
         """
         response_schema = schemas.user_site_role
         if "type" not in response_schema:
