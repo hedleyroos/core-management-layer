@@ -12,18 +12,23 @@ from management_layer.configuration.user_data_store import \
 # which made it slightly more convenient to manage.
 # For now we control the client configuration by explicitly pointing it to
 # our own copies of the (modified) default configuration.
+access_control_configuration = AccessControlConfiguration()
 access_control_api = AccessControlApi(
     api_client=AccessControlApiClient(
-        configuration=AccessControlConfiguration()
+        configuration=access_control_configuration
     )
 )
+
+authentication_configuration = AuthenticationServiceConfiguration()
 authentication_api = AuthenticationApi(
     api_client=AuthenticationServiceApiClient(
-        configuration=AuthenticationServiceConfiguration()
+        configuration=authentication_configuration
     )
 )
+
+user_data_store_configuration = UserDataStoreConfiguration()
 user_data_api = UserDataApi(
     api_client=UserDataApiClient(
-        configuration=UserDataStoreConfiguration()
+        configuration=user_data_store_configuration
     )
 )
