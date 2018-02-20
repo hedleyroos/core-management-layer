@@ -75,7 +75,7 @@ prism:
 	chmod +x prism
 
 mock-management-layer-api: prism
-	./prism run --mockDynamic --list -s swagger/management_layer.yml -p 8010
+	./prism run --cors --mockDynamic --list -s swagger/management_layer.yml -p 8010
 
 validate-swagger: prism
 	@./prism validate -s swagger/management_layer.yml && echo "The Swagger spec contains no errors"
@@ -108,13 +108,11 @@ authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
 	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/authentication_service/* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
 
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
-	# $(CODEGEN) -i swagger/management_layer.yml -l python-flask -o .
-	$(VENV)/bin/swagger_py_codegen --swagger-doc swagger/management_layer.yml -tlp=tornado -p swagger_server --ui --spec .
+	$(PYTHON) $(VENV)/src/swagger-django-generator/swagger_django_generator/generator.py swagger/management_layer.yml --output-dir management_layer/api --module-name management_layer.api --backend aiohttp
 
 runserver: $(VENV)
 	@echo "$(CYAN)Firing up server...$(CLEAR)"
-	# $(PYTHON) -m swagger_server
-	$(PYTHON) swagger_server/httpd.py
+	STUBS_CLASS=management_layer.integration.Implementation PYTHONASYNCIODEBUG=1 $(PYTHON) httpd.py
 
 check: $(FLAKE8)
 	$(FLAKE8)

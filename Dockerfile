@@ -4,6 +4,9 @@ WORKDIR /app
 
 COPY requirements.txt /app/requirements/
 
+# Git is required because one of the pip requirements is pulled from github.
+RUN apt-get update && apt-get install -y git
+
 RUN pip3 install --no-cache-dir -r /app/requirements/requirements.txt
 
 COPY . /app/

@@ -836,7 +836,7 @@ definitions:
           $ref: '#/definitions/role_label'
 
   domain_roles:
-    description: 'An object containing the domain roles defined for a given domain and it''s lineage.'
+    description: "An object containing the domain roles defined for a given domain and its lineage."
     type: object
     properties:
       domain_id:
@@ -906,6 +906,9 @@ definitions:
   admin_note:
     type: object
     properties:
+      id:
+        type: integer
+        readOnly: true
       user_id:
         type: string
         format: uuid
@@ -926,6 +929,7 @@ definitions:
         format: 'date-time'
         readOnly: true
     required:
+      - id
       - user_id
       - creator_id
       - note
@@ -1104,7 +1108,7 @@ definitions:
       reuse_consent:
         description: >-
           If enabled, the Server will save the user consent given to a
-          specific client, so that user won't be prompted for the same
+          specific client, so that user wont be prompted for the same
           authorization multiple times.
         type: boolean
       terms_url:
@@ -1158,7 +1162,7 @@ definitions:
       reuse_consent:
         description: >-
           If enabled, the Server will save the user consent given to a
-          specific client, so that user won't be prompted for the same
+          specific client, so that user wont be prompted for the same
           authorization multiple times.
         type: boolean
       terms_url:
@@ -1285,6 +1289,7 @@ definitions:
     description: OIDC UserInfo structure
     required:
       - sub
+    type: object
     properties:
       sub:
         type: string
@@ -1307,6 +1312,7 @@ definitions:
 
   Address:
     description: OIDC Address structure
+    type: object
     properties:
       street_address:
         type: string
@@ -1324,6 +1330,7 @@ definitions:
     required:
       - client_name
       - client_uri
+    type: object
     properties:
       client_id:
         type: string
@@ -1369,7 +1376,7 @@ paths:
     parameters:
       - $ref: '#/parameters/site_id'
     get:
-      description: 'Get a list of all possible role labels that a user can have from the specified site''s perspective.'
+      description: "Get a list of all possible role labels that a user can have from the specified sites perspective."
       operationId: get_site_role_labels_aggregated
       produces:
         - application/json
@@ -1388,7 +1395,7 @@ paths:
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
     get:
-      description: 'Get a list of all role labels that the specified user has from the specified site''s perspective.'
+      description: "Get a list of all role labels that the specified user has from the specified sites perspective."
       operationId: get_user_site_role_labels_aggregated
       produces:
         - application/json
@@ -1406,7 +1413,7 @@ paths:
     parameters:
       - $ref: '#/parameters/domain_id'
     get:
-      description: 'Get the domain and its lineage''s roles defined for a domain.'
+      description: "Get the domain and its lineages roles defined for a domain."
       operationId: get_domain_roles
       produces:
         - application/json
@@ -2145,7 +2152,7 @@ paths:
       - $ref: '#/parameters/resource_id'
       - $ref: '#/parameters/permission_id'
     delete:
-      operationId: access_control-roleresourcepermission_delete
+      operationId: roleresourcepermission_delete
       responses:
         '204':
           description: ''
@@ -2553,21 +2560,9 @@ paths:
       tags:
         - user_data
 
-  /adminnotes/{user_id}/{creator_id}/{created_at}:
+  /adminnotes/{admin_note_id}:
     parameters:
-      - $ref: '#/parameters/user_id'
-      - description: The creator_id
-        name: creator_id
-        in: path
-        required: true
-        type: string
-        format: uuid
-      - description: The created_at value
-        name: created_at
-        in: path
-        required: true
-        type: string
-        format: 'date-time'
+      - $ref: '#/parameters/admin_note_id'
     delete:
       operationId: adminnote_delete
       responses:
@@ -2810,7 +2805,7 @@ paths:
     parameters:
       - $ref: '#/parameters/user_id'
     get:
-       description: Activate the user's account.
+       description: "Activate the user account."
        responses:
          200:
            description: Acccount successfully activated
@@ -2823,7 +2818,7 @@ paths:
     parameters:
       - $ref: '#/parameters/user_id'
     get:
-       description: Deactivate the user's account.
+       description: "Deactivate the user account."
        responses:
          200:
            description: Acccount successfully deactivated
