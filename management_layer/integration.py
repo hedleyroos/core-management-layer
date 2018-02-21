@@ -57,10 +57,6 @@ class Implementation(AbstractStubClass):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
         """
-        for key in ["offset", "limit"]:
-            if key in kwargs:
-                kwargs[key] = int(kwargs[key])
-
         with client_exception_handler():
             admin_notes = await request.app["user_data_api"].adminnote_list(**kwargs)
 
@@ -156,8 +152,6 @@ class Implementation(AbstractStubClass):
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        # All optional args are integers:
-        kwargs = {k: int(v) for k, v in kwargs.items()}
         with client_exception_handler():
             domain_roles = await request.app["access_control_api"].domainrole_list(**kwargs)
 
@@ -239,10 +233,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_ids (optional): array An optional list of domain ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "domain_ids" in kwargs:
             kwargs["domain_ids"] = [int(did) for did in kwargs["domain_ids"]]
 
@@ -489,10 +479,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param permission_ids (optional): array An optional list of permission ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "permission_ids" in kwargs:
             kwargs["permission_ids"] = [int(pid) for pid in kwargs["permission_ids"]]
 
@@ -575,10 +561,6 @@ class Implementation(AbstractStubClass):
         :param prefix (optional): string An optional URN prefix filter
         :param resource_ids (optional): array An optional list of resource ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "resource_ids" in kwargs:
             kwargs["resource_ids"] = [int(rid) for rid in kwargs["resource_ids"]]
 
@@ -662,8 +644,6 @@ class Implementation(AbstractStubClass):
         :param resource_id (optional): integer An optional resource filter
         :param permission_id (optional): integer An optional permission filter
         """
-        # All optional parameters are integers
-        kwargs = {k: int(v) for k, v in kwargs.items()}
         with client_exception_handler():
             rrps = await request.app["access_control_api"].roleresourcepermission_list(**kwargs)
 
@@ -730,10 +710,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param role_ids (optional): array An optional list of role ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "role_ids" in kwargs:
             kwargs["role_ids"] = [int(role_id) for role_id in kwargs["role_ids"]]
 
@@ -815,10 +791,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "site_ids" in kwargs:
             kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
 
@@ -901,8 +873,6 @@ class Implementation(AbstractStubClass):
         :param site_id (optional): integer An optional query parameter to filter by site_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        # All optional params are integers
-        kwargs = {k: int(v) for k, v in kwargs}
         with client_exception_handler():
             site_roles = await request.app["access_control_api"].siterole_list(**kwargs)
 
@@ -984,10 +954,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
         if "site_ids" in kwargs:
             kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
 
@@ -1087,11 +1053,6 @@ class Implementation(AbstractStubClass):
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        # All but one parameter is an integer
-        for key in ["offset", "limit", "domain_id", "role_id"]:
-            if key in kwargs:
-                kwargs[key] = int(kwargs[key])
-
         with client_exception_handler():
             udrs = await request.app["access_control_api"].userdomainrole_list(**kwargs)
 
@@ -1158,11 +1119,6 @@ class Implementation(AbstractStubClass):
         :param email (optional): string An optional email filter
         :param user_ids (optional): array An optional list of user ids
         """
-        if "offset" in kwargs:
-            kwargs["offset"] = int(kwargs["offset"])
-        if "limit" in kwargs:
-            kwargs["limit"] = int(kwargs["limit"])
-
         raise NotImplementedError()
 
     @staticmethod
@@ -1215,11 +1171,6 @@ class Implementation(AbstractStubClass):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param site_id (optional): integer An optional query parameter to filter by site_id
         """
-        # All but one parameter is an integer
-        for key in ["offset", "limit", "site_id"]:
-            if key in kwargs:
-                kwargs[key] = int(kwargs[key])
-
         with client_exception_handler():
             usds = await request.app["user_data_api"].usersitedata_list(**kwargs)
 
@@ -1301,11 +1252,6 @@ class Implementation(AbstractStubClass):
         :param site_id (optional): integer An optional query parameter to filter by site_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
         """
-        # All but one parameter is an integer
-        for key in ["offset", "limit", "site_id", "role_id"]:
-            if key in kwargs:
-                kwargs[key] = int(kwargs[key])
-
         with client_exception_handler():
             usrs = await request.app["access_control_api"].usersiterole_list(**kwargs)
 
