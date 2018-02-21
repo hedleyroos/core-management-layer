@@ -94,23 +94,32 @@ class Adminnotes(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Adminnotes instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # user_id (optional): string An optional query parameter to filter by user_id
-        value = self.request.query.get("user_id", None)
-        if value is not None:
-            optional_args["user_id"] = value
-        # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
-        value = self.request.query.get("creator_id", None)
-        if value is not None:
-            optional_args["creator_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # user_id (optional): string An optional query parameter to filter by user_id
+            value = self.request.query.get("user_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["user_id"] = value
+            # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+            value = self.request.query.get("creator_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["creator_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.adminnote_list(
             self.request, **optional_args)
@@ -123,7 +132,13 @@ class Adminnotes(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Adminnotes instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -134,7 +149,6 @@ class Adminnotes(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.adminnote_create(
             self.request, body, **optional_args)
@@ -155,9 +169,15 @@ class AdminnotesAdminNoteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A AdminnotesAdminNoteId instance
         """
-        # admin_note_id: integer A unique integer value identifying the admin note.
-        admin_note_id = self.request.match_info["admin_note_id"]
-        optional_args = {}
+        try:
+            # admin_note_id: integer A unique integer value identifying the admin note.
+            admin_note_id = self.request.match_info["admin_note_id"]
+            admin_note_id = int(admin_note_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.adminnote_delete(
             self.request, admin_note_id, **optional_args)
@@ -170,9 +190,15 @@ class AdminnotesAdminNoteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A AdminnotesAdminNoteId instance
         """
-        # admin_note_id: integer A unique integer value identifying the admin note.
-        admin_note_id = self.request.match_info["admin_note_id"]
-        optional_args = {}
+        try:
+            # admin_note_id: integer A unique integer value identifying the admin note.
+            admin_note_id = self.request.match_info["admin_note_id"]
+            admin_note_id = int(admin_note_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.adminnote_read(
             self.request, admin_note_id, **optional_args)
@@ -185,9 +211,16 @@ class AdminnotesAdminNoteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A AdminnotesAdminNoteId instance
         """
-        # admin_note_id: integer A unique integer value identifying the admin note.
-        admin_note_id = self.request.match_info["admin_note_id"]
-        optional_args = {}
+        try:
+            # admin_note_id: integer A unique integer value identifying the admin note.
+            admin_note_id = self.request.match_info["admin_note_id"]
+            admin_note_id = int(admin_note_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -198,7 +231,6 @@ class AdminnotesAdminNoteId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.adminnote_update(
             self.request, body, admin_note_id, **optional_args)
@@ -288,19 +320,27 @@ class Clients(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Clients instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # client_ids (optional): array An optional list of client ids
-        value = self.request.query.get("client_ids", None)
-        if value is not None:
-            optional_args["client_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # client_ids (optional): array An optional list of client ids
+            value = self.request.query.get("client_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["client_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.client_list(
             self.request, **optional_args)
@@ -318,9 +358,15 @@ class ClientsClientId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A ClientsClientId instance
         """
-        # client_id: string A UUID value identifying the client
-        client_id = self.request.match_info["client_id"]
-        optional_args = {}
+        try:
+            # client_id: string A UUID value identifying the client
+            client_id = self.request.match_info["client_id"]
+            jsonschema.validate(client_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.client_read(
             self.request, client_id, **optional_args)
@@ -376,23 +422,32 @@ class Domainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Domainroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # domain_id (optional): integer An optional query parameter to filter by domain_id
-        value = self.request.query.get("domain_id", None)
-        if value is not None:
-            optional_args["domain_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # domain_id (optional): integer An optional query parameter to filter by domain_id
+            value = self.request.query.get("domain_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["domain_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domainrole_list(
             self.request, **optional_args)
@@ -405,7 +460,13 @@ class Domainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Domainroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -416,7 +477,6 @@ class Domainroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.domainrole_create(
             self.request, body, **optional_args)
@@ -437,11 +497,18 @@ class DomainrolesDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainrolesDomainIdRoleId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domainrole_delete(
             self.request, domain_id, role_id, **optional_args)
@@ -454,11 +521,18 @@ class DomainrolesDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainrolesDomainIdRoleId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domainrole_read(
             self.request, domain_id, role_id, **optional_args)
@@ -471,11 +545,19 @@ class DomainrolesDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainrolesDomainIdRoleId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -486,7 +568,6 @@ class DomainrolesDomainIdRoleId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.domainrole_update(
             self.request, body, domain_id, role_id, **optional_args)
@@ -546,19 +627,27 @@ class Domains(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Domains instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # domain_ids (optional): array An optional list of domain ids
-        value = self.request.query.get("domain_ids", None)
-        if value is not None:
-            optional_args["domain_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # domain_ids (optional): array An optional list of domain ids
+            value = self.request.query.get("domain_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["domain_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domain_list(
             self.request, **optional_args)
@@ -571,7 +660,13 @@ class Domains(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Domains instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -582,7 +677,6 @@ class Domains(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.domain_create(
             self.request, body, **optional_args)
@@ -603,9 +697,15 @@ class DomainsDomainId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainsDomainId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domain_delete(
             self.request, domain_id, **optional_args)
@@ -618,9 +718,15 @@ class DomainsDomainId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainsDomainId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.domain_read(
             self.request, domain_id, **optional_args)
@@ -633,9 +739,16 @@ class DomainsDomainId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A DomainsDomainId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -646,7 +759,6 @@ class DomainsDomainId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.domain_update(
             self.request, body, domain_id, **optional_args)
@@ -703,27 +815,37 @@ class Invitationdomainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitationdomainroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # invitation_id (optional): string An optional query parameter to filter by invitation_id
-        value = self.request.query.get("invitation_id", None)
-        if value is not None:
-            optional_args["invitation_id"] = value
-        # domain_id (optional): integer An optional query parameter to filter by domain_id
-        value = self.request.query.get("domain_id", None)
-        if value is not None:
-            optional_args["domain_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # invitation_id (optional): string An optional query parameter to filter by invitation_id
+            value = self.request.query.get("invitation_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["invitation_id"] = value
+            # domain_id (optional): integer An optional query parameter to filter by domain_id
+            value = self.request.query.get("domain_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["domain_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationdomainrole_list(
             self.request, **optional_args)
@@ -736,7 +858,13 @@ class Invitationdomainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitationdomainroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -747,7 +875,6 @@ class Invitationdomainroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.invitationdomainrole_create(
             self.request, body, **optional_args)
@@ -766,13 +893,21 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationdomainrolesInvitationIdDomainIdRoleId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationdomainrole_delete(
             self.request, invitation_id, domain_id, role_id, **optional_args)
@@ -785,13 +920,21 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationdomainrolesInvitationIdDomainIdRoleId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationdomainrole_read(
             self.request, invitation_id, domain_id, role_id, **optional_args)
@@ -867,23 +1010,32 @@ class Invitations(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitations instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
-        value = self.request.query.get("invitor_id", None)
-        if value is not None:
-            optional_args["invitor_id"] = value
-        # invitation_ids (optional): array An optional list of invitation ids
-        value = self.request.query.get("invitation_ids", None)
-        if value is not None:
-            optional_args["invitation_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
+            value = self.request.query.get("invitor_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["invitor_id"] = value
+            # invitation_ids (optional): array An optional list of invitation ids
+            value = self.request.query.get("invitation_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["invitation_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitation_list(
             self.request, **optional_args)
@@ -896,7 +1048,13 @@ class Invitations(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitations instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -907,7 +1065,6 @@ class Invitations(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.invitation_create(
             self.request, body, **optional_args)
@@ -928,9 +1085,15 @@ class InvitationsInvitationId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationsInvitationId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitation_delete(
             self.request, invitation_id, **optional_args)
@@ -943,9 +1106,15 @@ class InvitationsInvitationId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationsInvitationId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitation_read(
             self.request, invitation_id, **optional_args)
@@ -958,9 +1127,16 @@ class InvitationsInvitationId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationsInvitationId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -971,7 +1147,6 @@ class InvitationsInvitationId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.invitation_update(
             self.request, body, invitation_id, **optional_args)
@@ -1028,27 +1203,37 @@ class Invitationsiteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitationsiteroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # invitation_id (optional): string An optional query parameter to filter by invitation_id
-        value = self.request.query.get("invitation_id", None)
-        if value is not None:
-            optional_args["invitation_id"] = value
-        # site_id (optional): integer An optional query parameter to filter by site_id
-        value = self.request.query.get("site_id", None)
-        if value is not None:
-            optional_args["site_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # invitation_id (optional): string An optional query parameter to filter by invitation_id
+            value = self.request.query.get("invitation_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["invitation_id"] = value
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            value = self.request.query.get("site_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["site_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationsiterole_list(
             self.request, **optional_args)
@@ -1061,7 +1246,13 @@ class Invitationsiteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Invitationsiteroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1072,7 +1263,6 @@ class Invitationsiteroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.invitationsiterole_create(
             self.request, body, **optional_args)
@@ -1091,13 +1281,21 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationsiterolesInvitationIdSiteIdRoleId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationsiterole_delete(
             self.request, invitation_id, site_id, role_id, **optional_args)
@@ -1110,13 +1308,21 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A InvitationsiterolesInvitationIdSiteIdRoleId instance
         """
-        # invitation_id: string A UUID value identifying the invitation.
-        invitation_id = self.request.match_info["invitation_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # invitation_id: string A UUID value identifying the invitation.
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.invitationsiterole_read(
             self.request, invitation_id, site_id, role_id, **optional_args)
@@ -1134,9 +1340,15 @@ class OpsAllUserRolesUserId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A OpsAllUserRolesUserId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get_all_user_roles(
             self.request, user_id, **optional_args)
@@ -1154,9 +1366,15 @@ class OpsDomainRolesDomainId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A OpsDomainRolesDomainId instance
         """
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        optional_args = {}
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get_domain_roles(
             self.request, domain_id, **optional_args)
@@ -1174,9 +1392,15 @@ class OpsSiteAndDomainRolesSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A OpsSiteAndDomainRolesSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get_site_and_domain_roles(
             self.request, site_id, **optional_args)
@@ -1194,9 +1418,15 @@ class OpsSiteRoleLabelsAggregatedSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A OpsSiteRoleLabelsAggregatedSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get_site_role_labels_aggregated(
             self.request, site_id, **optional_args)
@@ -1214,11 +1444,18 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A OpsUserSiteRoleLabelsAggregatedUserIdSiteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get_user_site_role_labels_aggregated(
             self.request, user_id, site_id, **optional_args)
@@ -1275,19 +1512,27 @@ class Permissions(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Permissions instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # permission_ids (optional): array An optional list of permission ids
-        value = self.request.query.get("permission_ids", None)
-        if value is not None:
-            optional_args["permission_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # permission_ids (optional): array An optional list of permission ids
+            value = self.request.query.get("permission_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["permission_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.permission_list(
             self.request, **optional_args)
@@ -1300,7 +1545,13 @@ class Permissions(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Permissions instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1311,7 +1562,6 @@ class Permissions(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.permission_create(
             self.request, body, **optional_args)
@@ -1332,9 +1582,15 @@ class PermissionsPermissionId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A PermissionsPermissionId instance
         """
-        # permission_id: integer A unique integer value identifying the permission.
-        permission_id = self.request.match_info["permission_id"]
-        optional_args = {}
+        try:
+            # permission_id: integer A unique integer value identifying the permission.
+            permission_id = self.request.match_info["permission_id"]
+            permission_id = int(permission_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.permission_delete(
             self.request, permission_id, **optional_args)
@@ -1347,9 +1603,15 @@ class PermissionsPermissionId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A PermissionsPermissionId instance
         """
-        # permission_id: integer A unique integer value identifying the permission.
-        permission_id = self.request.match_info["permission_id"]
-        optional_args = {}
+        try:
+            # permission_id: integer A unique integer value identifying the permission.
+            permission_id = self.request.match_info["permission_id"]
+            permission_id = int(permission_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.permission_read(
             self.request, permission_id, **optional_args)
@@ -1362,9 +1624,16 @@ class PermissionsPermissionId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A PermissionsPermissionId instance
         """
-        # permission_id: integer A unique integer value identifying the permission.
-        permission_id = self.request.match_info["permission_id"]
-        optional_args = {}
+        try:
+            # permission_id: integer A unique integer value identifying the permission.
+            permission_id = self.request.match_info["permission_id"]
+            permission_id = int(permission_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1375,7 +1644,6 @@ class PermissionsPermissionId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.permission_update(
             self.request, body, permission_id, **optional_args)
@@ -1432,23 +1700,32 @@ class Resources(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Resources instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # prefix (optional): string An optional URN prefix filter
-        value = self.request.query.get("prefix", None)
-        if value is not None:
-            optional_args["prefix"] = value
-        # resource_ids (optional): array An optional list of resource ids
-        value = self.request.query.get("resource_ids", None)
-        if value is not None:
-            optional_args["resource_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # prefix (optional): string An optional URN prefix filter
+            value = self.request.query.get("prefix", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["prefix"] = value
+            # resource_ids (optional): array An optional list of resource ids
+            value = self.request.query.get("resource_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["resource_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.resource_list(
             self.request, **optional_args)
@@ -1461,7 +1738,13 @@ class Resources(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Resources instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1472,7 +1755,6 @@ class Resources(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.resource_create(
             self.request, body, **optional_args)
@@ -1493,9 +1775,15 @@ class ResourcesResourceId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A ResourcesResourceId instance
         """
-        # resource_id: integer A unique integer value identifying the resource.
-        resource_id = self.request.match_info["resource_id"]
-        optional_args = {}
+        try:
+            # resource_id: integer A unique integer value identifying the resource.
+            resource_id = self.request.match_info["resource_id"]
+            resource_id = int(resource_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.resource_delete(
             self.request, resource_id, **optional_args)
@@ -1508,9 +1796,15 @@ class ResourcesResourceId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A ResourcesResourceId instance
         """
-        # resource_id: integer A unique integer value identifying the resource.
-        resource_id = self.request.match_info["resource_id"]
-        optional_args = {}
+        try:
+            # resource_id: integer A unique integer value identifying the resource.
+            resource_id = self.request.match_info["resource_id"]
+            resource_id = int(resource_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.resource_read(
             self.request, resource_id, **optional_args)
@@ -1523,9 +1817,16 @@ class ResourcesResourceId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A ResourcesResourceId instance
         """
-        # resource_id: integer A unique integer value identifying the resource.
-        resource_id = self.request.match_info["resource_id"]
-        optional_args = {}
+        try:
+            # resource_id: integer A unique integer value identifying the resource.
+            resource_id = self.request.match_info["resource_id"]
+            resource_id = int(resource_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1536,7 +1837,6 @@ class ResourcesResourceId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.resource_update(
             self.request, body, resource_id, **optional_args)
@@ -1592,27 +1892,37 @@ class Roleresourcepermissions(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Roleresourcepermissions instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
-        # resource_id (optional): integer An optional resource filter
-        value = self.request.query.get("resource_id", None)
-        if value is not None:
-            optional_args["resource_id"] = value
-        # permission_id (optional): integer An optional permission filter
-        value = self.request.query.get("permission_id", None)
-        if value is not None:
-            optional_args["permission_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+            # resource_id (optional): integer An optional resource filter
+            value = self.request.query.get("resource_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["resource_id"] = value
+            # permission_id (optional): integer An optional permission filter
+            value = self.request.query.get("permission_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["permission_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.roleresourcepermission_list(
             self.request, **optional_args)
@@ -1625,7 +1935,13 @@ class Roleresourcepermissions(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Roleresourcepermissions instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1636,7 +1952,6 @@ class Roleresourcepermissions(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.roleresourcepermission_create(
             self.request, body, **optional_args)
@@ -1655,13 +1970,21 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A RoleresourcepermissionsRoleIdResourceIdPermissionId instance
         """
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        # resource_id: integer A unique integer value identifying the resource.
-        resource_id = self.request.match_info["resource_id"]
-        # permission_id: integer A unique integer value identifying the permission.
-        permission_id = self.request.match_info["permission_id"]
-        optional_args = {}
+        try:
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            # resource_id: integer A unique integer value identifying the resource.
+            resource_id = self.request.match_info["resource_id"]
+            resource_id = int(resource_id)
+            # permission_id: integer A unique integer value identifying the permission.
+            permission_id = self.request.match_info["permission_id"]
+            permission_id = int(permission_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.roleresourcepermission_delete(
             self.request, role_id, resource_id, permission_id, **optional_args)
@@ -1674,13 +1997,21 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A RoleresourcepermissionsRoleIdResourceIdPermissionId instance
         """
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        # resource_id: integer A unique integer value identifying the resource.
-        resource_id = self.request.match_info["resource_id"]
-        # permission_id: integer A unique integer value identifying the permission.
-        permission_id = self.request.match_info["permission_id"]
-        optional_args = {}
+        try:
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            # resource_id: integer A unique integer value identifying the resource.
+            resource_id = self.request.match_info["resource_id"]
+            resource_id = int(resource_id)
+            # permission_id: integer A unique integer value identifying the permission.
+            permission_id = self.request.match_info["permission_id"]
+            permission_id = int(permission_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.roleresourcepermission_read(
             self.request, role_id, resource_id, permission_id, **optional_args)
@@ -1745,19 +2076,27 @@ class Roles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Roles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # role_ids (optional): array An optional list of role ids
-        value = self.request.query.get("role_ids", None)
-        if value is not None:
-            optional_args["role_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # role_ids (optional): array An optional list of role ids
+            value = self.request.query.get("role_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["role_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.role_list(
             self.request, **optional_args)
@@ -1770,7 +2109,13 @@ class Roles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Roles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1781,7 +2126,6 @@ class Roles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.role_create(
             self.request, body, **optional_args)
@@ -1802,9 +2146,15 @@ class RolesRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A RolesRoleId instance
         """
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.role_delete(
             self.request, role_id, **optional_args)
@@ -1817,9 +2167,15 @@ class RolesRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A RolesRoleId instance
         """
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.role_read(
             self.request, role_id, **optional_args)
@@ -1832,9 +2188,16 @@ class RolesRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A RolesRoleId instance
         """
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1845,7 +2208,6 @@ class RolesRoleId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.role_update(
             self.request, body, role_id, **optional_args)
@@ -1897,19 +2259,27 @@ class Sitedataschemas(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Sitedataschemas instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # site_ids (optional): array An optional list of site ids
-        value = self.request.query.get("site_ids", None)
-        if value is not None:
-            optional_args["site_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # site_ids (optional): array An optional list of site ids
+            value = self.request.query.get("site_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["site_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.sitedataschema_list(
             self.request, **optional_args)
@@ -1922,7 +2292,13 @@ class Sitedataschemas(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Sitedataschemas instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1933,7 +2309,6 @@ class Sitedataschemas(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.sitedataschema_create(
             self.request, body, **optional_args)
@@ -1954,9 +2329,15 @@ class SitedataschemasSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitedataschemasSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.sitedataschema_delete(
             self.request, site_id, **optional_args)
@@ -1969,9 +2350,15 @@ class SitedataschemasSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitedataschemasSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.sitedataschema_read(
             self.request, site_id, **optional_args)
@@ -1984,9 +2371,16 @@ class SitedataschemasSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitedataschemasSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -1997,7 +2391,6 @@ class SitedataschemasSiteId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.sitedataschema_update(
             self.request, body, site_id, **optional_args)
@@ -2053,23 +2446,32 @@ class Siteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Siteroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # site_id (optional): integer An optional query parameter to filter by site_id
-        value = self.request.query.get("site_id", None)
-        if value is not None:
-            optional_args["site_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            value = self.request.query.get("site_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["site_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.siterole_list(
             self.request, **optional_args)
@@ -2082,7 +2484,13 @@ class Siteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Siteroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2093,7 +2501,6 @@ class Siteroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.siterole_create(
             self.request, body, **optional_args)
@@ -2114,11 +2521,18 @@ class SiterolesSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SiterolesSiteIdRoleId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.siterole_delete(
             self.request, site_id, role_id, **optional_args)
@@ -2131,11 +2545,18 @@ class SiterolesSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SiterolesSiteIdRoleId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.siterole_read(
             self.request, site_id, role_id, **optional_args)
@@ -2148,11 +2569,19 @@ class SiterolesSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SiterolesSiteIdRoleId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2163,7 +2592,6 @@ class SiterolesSiteIdRoleId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.siterole_update(
             self.request, body, site_id, role_id, **optional_args)
@@ -2232,19 +2660,27 @@ class Sites(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Sites instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # site_ids (optional): array An optional list of site ids
-        value = self.request.query.get("site_ids", None)
-        if value is not None:
-            optional_args["site_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # site_ids (optional): array An optional list of site ids
+            value = self.request.query.get("site_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["site_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.site_list(
             self.request, **optional_args)
@@ -2257,7 +2693,13 @@ class Sites(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Sites instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2268,7 +2710,6 @@ class Sites(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.site_create(
             self.request, body, **optional_args)
@@ -2289,9 +2730,15 @@ class SitesSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitesSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.site_delete(
             self.request, site_id, **optional_args)
@@ -2304,9 +2751,15 @@ class SitesSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitesSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.site_read(
             self.request, site_id, **optional_args)
@@ -2319,9 +2772,16 @@ class SitesSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitesSiteId instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2332,7 +2792,6 @@ class SitesSiteId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.site_update(
             self.request, body, site_id, **optional_args)
@@ -2350,9 +2809,15 @@ class SitesSiteIdActivate(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitesSiteIdActivate instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get__api_v1_sites_site_id_activate(
             self.request, site_id, **optional_args)
@@ -2370,9 +2835,15 @@ class SitesSiteIdDeactivate(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A SitesSiteIdDeactivate instance
         """
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get__api_v1_sites_site_id_deactivate(
             self.request, site_id, **optional_args)
@@ -2429,27 +2900,37 @@ class Userdomainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Userdomainroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # user_id (optional): string An optional query parameter to filter by user_id
-        value = self.request.query.get("user_id", None)
-        if value is not None:
-            optional_args["user_id"] = value
-        # domain_id (optional): integer An optional query parameter to filter by domain_id
-        value = self.request.query.get("domain_id", None)
-        if value is not None:
-            optional_args["domain_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # user_id (optional): string An optional query parameter to filter by user_id
+            value = self.request.query.get("user_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["user_id"] = value
+            # domain_id (optional): integer An optional query parameter to filter by domain_id
+            value = self.request.query.get("domain_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["domain_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.userdomainrole_list(
             self.request, **optional_args)
@@ -2462,7 +2943,13 @@ class Userdomainroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Userdomainroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2473,7 +2960,6 @@ class Userdomainroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.userdomainrole_create(
             self.request, body, **optional_args)
@@ -2492,13 +2978,21 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UserdomainrolesUserIdDomainIdRoleId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.userdomainrole_delete(
             self.request, user_id, domain_id, role_id, **optional_args)
@@ -2511,13 +3005,21 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UserdomainrolesUserIdDomainIdRoleId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # domain_id: integer A unique integer value identifying the domain.
-        domain_id = self.request.match_info["domain_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.userdomainrole_read(
             self.request, user_id, domain_id, role_id, **optional_args)
@@ -2627,23 +3129,32 @@ class Users(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Users instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # email (optional): string An optional email filter
-        value = self.request.query.get("email", None)
-        if value is not None:
-            optional_args["email"] = value
-        # user_ids (optional): array An optional list of user ids
-        value = self.request.query.get("user_ids", None)
-        if value is not None:
-            optional_args["user_ids"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # email (optional): string An optional email filter
+            value = self.request.query.get("email", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["email"] = value
+            # user_ids (optional): array An optional list of user ids
+            value = self.request.query.get("user_ids", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "array"})
+                optional_args["user_ids"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.user_list(
             self.request, **optional_args)
@@ -2664,9 +3175,15 @@ class UsersUserId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersUserId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.user_delete(
             self.request, user_id, **optional_args)
@@ -2679,9 +3196,15 @@ class UsersUserId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersUserId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.user_read(
             self.request, user_id, **optional_args)
@@ -2694,9 +3217,16 @@ class UsersUserId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersUserId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2707,7 +3237,6 @@ class UsersUserId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.user_update(
             self.request, body, user_id, **optional_args)
@@ -2725,9 +3254,15 @@ class UsersUserIdActivate(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersUserIdActivate instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get__api_v1_users_user_id_activate(
             self.request, user_id, **optional_args)
@@ -2745,9 +3280,15 @@ class UsersUserIdDeactivate(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersUserIdDeactivate instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.get__api_v1_users_user_id_deactivate(
             self.request, user_id, **optional_args)
@@ -2813,23 +3354,32 @@ class Usersitedata(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Usersitedata instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # user_id (optional): string An optional query parameter to filter by user_id
-        value = self.request.query.get("user_id", None)
-        if value is not None:
-            optional_args["user_id"] = value
-        # site_id (optional): integer An optional query parameter to filter by site_id
-        value = self.request.query.get("site_id", None)
-        if value is not None:
-            optional_args["site_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # user_id (optional): string An optional query parameter to filter by user_id
+            value = self.request.query.get("user_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["user_id"] = value
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            value = self.request.query.get("site_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["site_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersitedata_list(
             self.request, **optional_args)
@@ -2842,7 +3392,13 @@ class Usersitedata(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Usersitedata instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2853,7 +3409,6 @@ class Usersitedata(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.usersitedata_create(
             self.request, body, **optional_args)
@@ -2874,11 +3429,18 @@ class UsersitedataUserIdSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersitedataUserIdSiteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersitedata_delete(
             self.request, user_id, site_id, **optional_args)
@@ -2891,11 +3453,18 @@ class UsersitedataUserIdSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersitedataUserIdSiteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersitedata_read(
             self.request, user_id, site_id, **optional_args)
@@ -2908,11 +3477,19 @@ class UsersitedataUserIdSiteId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersitedataUserIdSiteId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -2923,7 +3500,6 @@ class UsersitedataUserIdSiteId(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.usersitedata_update(
             self.request, body, user_id, site_id, **optional_args)
@@ -2980,27 +3556,37 @@ class Usersiteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Usersiteroles instance
         """
-        optional_args = {}
-        # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-        value = self.request.query.get("offset", None)
-        if value is not None:
-            optional_args["offset"] = value
-        # limit (optional): integer An optional query parameter to limit the number of results returned.
-        value = self.request.query.get("limit", None)
-        if value is not None:
-            optional_args["limit"] = value
-        # user_id (optional): string An optional query parameter to filter by user_id
-        value = self.request.query.get("user_id", None)
-        if value is not None:
-            optional_args["user_id"] = value
-        # site_id (optional): integer An optional query parameter to filter by site_id
-        value = self.request.query.get("site_id", None)
-        if value is not None:
-            optional_args["site_id"] = value
-        # role_id (optional): integer An optional query parameter to filter by role_id
-        value = self.request.query.get("role_id", None)
-        if value is not None:
-            optional_args["role_id"] = value
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            value = self.request.query.get("offset", None)
+            if value is not None:
+                value = int(value)
+                optional_args["offset"] = value
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            value = self.request.query.get("limit", None)
+            if value is not None:
+                value = int(value)
+                optional_args["limit"] = value
+            # user_id (optional): string An optional query parameter to filter by user_id
+            value = self.request.query.get("user_id", None)
+            if value is not None:
+                jsonschema.validate(value, {"type": "string"})
+                optional_args["user_id"] = value
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            value = self.request.query.get("site_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["site_id"] = value
+            # role_id (optional): integer An optional query parameter to filter by role_id
+            value = self.request.query.get("role_id", None)
+            if value is not None:
+                value = int(value)
+                optional_args["role_id"] = value
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersiterole_list(
             self.request, **optional_args)
@@ -3013,7 +3599,13 @@ class Usersiteroles(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A Usersiteroles instance
         """
-        optional_args = {}
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
         try:
             body = await self.request.json()
             if not body:
@@ -3024,7 +3616,6 @@ class Usersiteroles(View):
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
             return Response(status=400, text="JSON body expected")
-
 
         result = await Stubs.usersiterole_create(
             self.request, body, **optional_args)
@@ -3043,13 +3634,21 @@ class UsersiterolesUserIdSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersiterolesUserIdSiteIdRoleId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersiterole_delete(
             self.request, user_id, site_id, role_id, **optional_args)
@@ -3062,13 +3661,21 @@ class UsersiterolesUserIdSiteIdRoleId(View):
         No parameters are passed explicitly. We unpack it from the request.
         :param self: A UsersiterolesUserIdSiteIdRoleId instance
         """
-        # user_id: string A UUID value identifying the user.
-        user_id = self.request.match_info["user_id"]
-        # site_id: integer A unique integer value identifying the site.
-        site_id = self.request.match_info["site_id"]
-        # role_id: integer A unique integer value identifying the role.
-        role_id = self.request.match_info["role_id"]
-        optional_args = {}
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            # role_id: integer A unique integer value identifying the role.
+            role_id = self.request.match_info["role_id"]
+            role_id = int(role_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.usersiterole_read(
             self.request, user_id, site_id, role_id, **optional_args)
