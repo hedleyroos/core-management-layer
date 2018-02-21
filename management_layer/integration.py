@@ -35,15 +35,12 @@ class Implementation(AbstractStubClass):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
         """
-        transform = Transformation(
-            mappings=[
-               Mapping("offset", conversion=int),
-               Mapping("limit", conversion=int),
-            ],
-            copy_fields=["user_id", "creator_id"]
-        )
+        for key in ["offset", "limit"]:
+            if key in kwargs:
+                kwargs[key] = int(kwargs[key])
+
         with client_exception_handler():
-            admin_notes = await user_data_api.adminnote_list(**transform.apply(kwargs))
+            admin_notes = await user_data_api.adminnote_list(**kwargs)
 
         if admin_notes:
             transform = transformations.ADMIN_NOTE
@@ -219,7 +216,13 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_ids (optional): array An optional list of domain ids
         """
-        kwargs = {k: int(v) for k, v in kwargs.items()}
+        if "offset" in kwargs:
+            kwargs["offset"] = int(kwargs["offset"])
+        if "limit" in kwargs:
+            kwargs["limit"] = int(kwargs["limit"])
+        if "domain_ids" in kwargs:
+            kwargs["domain_ids"] = [int(did) for did in kwargs["domain_ids"]]
+
         with client_exception_handler():
             domains = await access_control_api.domain_list(**kwargs)
 
@@ -463,7 +466,13 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param permission_ids (optional): array An optional list of permission ids
         """
-        kwargs = {k: int(v) for k, v in kwargs.items()}
+        if "offset" in kwargs:
+            kwargs["offset"] = int(kwargs["offset"])
+        if "limit" in kwargs:
+            kwargs["limit"] = int(kwargs["limit"])
+        if "permission_ids" in kwargs:
+            kwargs["permission_ids"] = [int(pid) for pid in kwargs["permission_ids"]]
+
         with client_exception_handler():
             permissions = await access_control_api.permission_list(**kwargs)
 
