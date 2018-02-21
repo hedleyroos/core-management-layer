@@ -30,31 +30,32 @@ _MOCKED_ACCESS_CONTROL_API = None
 _MOCKED_AUTHENTICATION_SERVICE_API = None
 _MOCKED_USER_DATA_STORE_API = None
 
-_PRISM_COMMAND = "./prism run --validate --mock -s {} -p {}"
+_PRISM_COMMAND = "./prism run --validate --mock -s {}/{} -p {}"
 
 
 def setUpModule():
     """
     This function is used to launch mocked backend APIs.
     """
+    workdir = os.getenv("TRAVIS_BUILD_DIR", ".")
     global _MOCKED_ACCESS_CONTROL_API
     _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
         _PRISM_COMMAND.format(
-            "./swagger/access_control.yml", ACCESS_CONTROL_PORT
+           workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
         ).split()
     )
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
     _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
         _PRISM_COMMAND.format(
-            "./swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
+            workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
         ).split()
     )
 
     global _MOCKED_USER_DATA_STORE_API
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
         _PRISM_COMMAND.format(
-            "./swagger/user_data_store.yml", USER_DATA_STORE_PORT
+            workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
         ).split()
     )
     # Prism needs some time to start up
