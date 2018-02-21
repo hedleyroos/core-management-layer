@@ -9,9 +9,8 @@ import json
 import typing
 from uuid import UUID
 from pymemcache.client.base import PooledClient
-from access_control.api.access_control_api import AccessControlApi
-from access_control.api.operational_api import OperationalApi
 
+import access_control
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
     MKP_USER_ROLES, TECH_ADMIN
 from management_layer.mappings import SITE_NAME_TO_ID_MAP, \
@@ -51,8 +50,9 @@ MEMCACHE = PooledClient(("127.0.0.1", 11211),
                         deserializer=json_deserializer,
                         no_delay=True, connect_timeout=0.5, timeout=1.0)
 
-OA = OperationalApi()
-AA = AccessControlApi()
+# TODO: These need to be pulled from a request.app["foo"] !! (cobusc)
+OA = access_control.api.OperationalApi()
+AA = access_control.api.AccessControlApi()
 
 
 class Forbidden(Exception):

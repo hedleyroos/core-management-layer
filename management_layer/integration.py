@@ -1,6 +1,4 @@
 from management_layer.api.stubs import AbstractStubClass
-from management_layer.configuration import access_control_api, user_data_api, authentication_api
-from management_layer.transformation import Transformation, Mapping
 from management_layer import transformations
 from management_layer.utils import client_exception_handler
 
@@ -12,12 +10,14 @@ from management_layer.utils import client_exception_handler
 
 # from aiobravado.client import SwaggerClient
 # from aiobravado.swagger_model import load_file
+#
+#
 # async def get_client():
-#     spec = await load_file("../core-access-control/swagger/access_control.yml")
+#     spec = await load_file("../core-user-data-store/swagger/user_data_store.yml")
 #     client = SwaggerClient.from_spec(spec, config={"use_models": False})
 #     return client
 #
-# client = asyncio.get_event_loop().run_until_complete(get_client())
+# bravado_client = asyncio.get_event_loop().run_until_complete(get_client())
 
 
 class Implementation(AbstractStubClass):
@@ -25,6 +25,28 @@ class Implementation(AbstractStubClass):
     The implementation linking calls made the Management Layer
     to the Authentication-, Access Control- and User Data Store services.
     """
+    # @staticmethod
+    # async def adminnote_list(request, **kwargs):
+    #     """
+    #     :param request: An HttpRequest
+    #     :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+    #     :param limit (optional): integer An optional query parameter to limit the number of results returned.
+    #     :param user_id (optional): string An optional query parameter to filter by user_id
+    #     :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+    #     """
+    #     for key in ["offset", "limit"]:
+    #         if key in kwargs:
+    #             kwargs[key] = int(kwargs[key])
+    #
+    #     with client_exception_handler():
+    #         admin_notes = await bravado_client.user_data.adminnote_list(**kwargs).result()
+    #
+    #     if admin_notes:
+    #         transform = transformations.ADMIN_NOTE
+    #         result = [transform.apply(note) for note in admin_notes]
+    #         return result
+    #
+    #     return []
 
     @staticmethod
     async def adminnote_list(request, **kwargs):
@@ -40,7 +62,7 @@ class Implementation(AbstractStubClass):
                 kwargs[key] = int(kwargs[key])
 
         with client_exception_handler():
-            admin_notes = await user_data_api.adminnote_list(**kwargs)
+            admin_notes = await request.app["user_data_api"].adminnote_list(**kwargs)
 
         if admin_notes:
             transform = transformations.ADMIN_NOTE
@@ -56,7 +78,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            admin_note = await user_data_api.adminnote_create(data=body)
+            admin_note = await request.app["user_data_api"].adminnote_create(data=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -71,7 +93,7 @@ class Implementation(AbstractStubClass):
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         with client_exception_handler():
-            result = await user_data_api.adminnote_delete(admin_note_id)
+            result = await request.app["user_data_api"].adminnote_delete(admin_note_id)
 
         return result
 
@@ -82,7 +104,7 @@ class Implementation(AbstractStubClass):
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         with client_exception_handler():
-            admin_note = await user_data_api.adminnote_read(admin_note_id)
+            admin_note = await request.app["user_data_api"].adminnote_read(admin_note_id)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -98,7 +120,8 @@ class Implementation(AbstractStubClass):
         :param admin_note_id: integer A unique integer value identifying the admin note.
         """
         with client_exception_handler():
-            admin_note = await user_data_api.adminnote_update(admin_note_id, data=body)
+            admin_note = await request.app["user_data_api"].adminnote_update(admin_note_id,
+                                                                             data=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -136,7 +159,7 @@ class Implementation(AbstractStubClass):
         # All optional args are integers:
         kwargs = {k: int(v) for k, v in kwargs.items()}
         with client_exception_handler():
-            domain_roles = await access_control_api.domainrole_list(**kwargs)
+            domain_roles = await request.app["access_control_api"].domainrole_list(**kwargs)
 
         if domain_roles:
             transform = transformations.DOMAIN_ROLE
@@ -152,7 +175,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            domain_role = await access_control_api.domainrole_create(data=body)
+            domain_role = await request.app["access_control_api"].domainrole_create(data=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -169,7 +192,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            result = await access_control_api.domainrole_delete(domain_id, role_id)
+            result = await request.app["access_control_api"].domainrole_delete(domain_id, role_id)
 
         return result
 
@@ -181,7 +204,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            domain_role = await access_control_api.domainrole_read(domain_id, role_id)
+            domain_role = await request.app["access_control_api"].domainrole_read(domain_id, role_id)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -199,7 +222,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            domain_role = await access_control_api.domainrole_update(domain_id, role_id, data=body)
+            domain_role = await request.app["access_control_api"].domainrole_update(domain_id, role_id, data=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -224,7 +247,7 @@ class Implementation(AbstractStubClass):
             kwargs["domain_ids"] = [int(did) for did in kwargs["domain_ids"]]
 
         with client_exception_handler():
-            domains = await access_control_api.domain_list(**kwargs)
+            domains = await request.app["access_control_api"].domain_list(**kwargs)
 
         if domains:
             transform = transformations.DOMAIN
@@ -240,7 +263,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            domain = await access_control_api.domain_create(data=body)
+            domain = await request.app["access_control_api"].domain_create(data=body)
 
         if domain:
             transform = transformations.DOMAIN
@@ -256,7 +279,7 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         """
         with client_exception_handler():
-            result = await access_control_api.domain_delete(domain_id)
+            result = await request.app["access_control_api"].domain_delete(domain_id)
 
         return result
 
@@ -267,7 +290,7 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         """
         with client_exception_handler():
-            domain = await access_control_api.domain_read(domain_id)
+            domain = await request.app["access_control_api"].domain_read(domain_id)
 
         if domain:
             transform = transformations.DOMAIN
@@ -284,7 +307,7 @@ class Implementation(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         """
         with client_exception_handler():
-            domain = await access_control_api.domain_update(domain_id, data=body)
+            domain = await request.app["access_control_api"].domain_update(domain_id, data=body)
 
         if domain:
             transform = transformations.DOMAIN_ROLE
@@ -474,7 +497,7 @@ class Implementation(AbstractStubClass):
             kwargs["permission_ids"] = [int(pid) for pid in kwargs["permission_ids"]]
 
         with client_exception_handler():
-            permissions = await access_control_api.permission_list(**kwargs)
+            permissions = await request.app["access_control_api"].permission_list(**kwargs)
 
         if permissions:
             transform = transformations.PERMISSION
@@ -490,7 +513,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            permission = await access_control_api.permission_create(data=body)
+            permission = await request.app["access_control_api"].permission_create(data=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -506,7 +529,7 @@ class Implementation(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         with client_exception_handler():
-            result = await access_control_api.permission_delete(permission_id)
+            result = await request.app["access_control_api"].permission_delete(permission_id)
 
         return result
 
@@ -517,7 +540,7 @@ class Implementation(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         with client_exception_handler():
-            permission = await access_control_api.permission_read(permission_id)
+            permission = await request.app["access_control_api"].permission_read(permission_id)
 
         if permission:
             transform = transformations.PERMISSION
@@ -534,7 +557,7 @@ class Implementation(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         with client_exception_handler():
-            permission = await access_control_api.permission_update(permission_id, data=body)
+            permission = await request.app["access_control_api"].permission_update(permission_id, data=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -560,7 +583,7 @@ class Implementation(AbstractStubClass):
             kwargs["resource_ids"] = [int(rid) for rid in kwargs["resource_ids"]]
 
         with client_exception_handler():
-            resources = await access_control_api.resource_list(**kwargs)
+            resources = await request.app["access_control_api"].resource_list(**kwargs)
 
         if resources:
             transform = transformations.RESOURCE
@@ -576,7 +599,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            resource = await access_control_api.resource_create(data=body)
+            resource = await request.app["access_control_api"].resource_create(data=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -592,7 +615,7 @@ class Implementation(AbstractStubClass):
         :param resource_id: integer A unique integer value identifying the resource.
         """
         with client_exception_handler():
-            result = await access_control_api.resource_delete(resource_id)
+            result = await request.app["access_control_api"].resource_delete(resource_id)
 
         return result
 
@@ -603,7 +626,7 @@ class Implementation(AbstractStubClass):
         :param resource_id: integer A unique integer value identifying the resource.
         """
         with client_exception_handler():
-            resource = await access_control_api.resource_read(resource_id)
+            resource = await request.app["access_control_api"].resource_read(resource_id)
 
         if resource:
             transform = transformations.RESOURCE
@@ -620,7 +643,7 @@ class Implementation(AbstractStubClass):
         :param resource_id: integer A unique integer value identifying the resource.
         """
         with client_exception_handler():
-            resource = await access_control_api.resource_update(resource_id, data=body)
+            resource = await request.app["access_control_api"].resource_update(resource_id, data=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -642,7 +665,7 @@ class Implementation(AbstractStubClass):
         # All optional parameters are integers
         kwargs = {k: int(v) for k, v in kwargs.items()}
         with client_exception_handler():
-            rrps = await access_control_api.roleresourcepermission_list(**kwargs)
+            rrps = await request.app["access_control_api"].roleresourcepermission_list(**kwargs)
 
         if rrps:
             transform = transformations.ROLE_RESOURCE_PERMISSION
@@ -658,7 +681,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            rrp = await access_control_api.roleresourcepermission_create(data=body)
+            rrp = await request.app["access_control_api"].roleresourcepermission_create(data=body)
 
         if rrp:
             transform = transformations.ROLE_RESOURCE_PERMISSION
@@ -676,7 +699,7 @@ class Implementation(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         with client_exception_handler():
-            result = await access_control_api.access_control_roleresourcepermission_delete(
+            result = await request.app["access_control_api"].access_control_roleresourcepermission_delete(
                 role_id, resource_id, permission_id)
 
         return result
@@ -690,7 +713,7 @@ class Implementation(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         with client_exception_handler():
-            rrp = await access_control_api.roleresourcepermission_read(role_id, resource_id, permission_id)
+            rrp = await request.app["access_control_api"].roleresourcepermission_read(role_id, resource_id, permission_id)
 
         if rrp:
             transform = transformations.ROLE_RESOURCE_PERMISSION
@@ -715,7 +738,7 @@ class Implementation(AbstractStubClass):
             kwargs["role_ids"] = [int(role_id) for role_id in kwargs["role_ids"]]
 
         with client_exception_handler():
-            roles = await access_control_api.role_list(**kwargs)
+            roles = await request.app["access_control_api"].role_list(**kwargs)
 
         if roles:
             transform = transformations.ROLE
@@ -731,7 +754,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            role = await access_control_api.role_create(data=body)
+            role = await request.app["access_control_api"].role_create(data=body)
 
         if role:
             transform = transformations.ROLE
@@ -747,7 +770,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            result = await access_control_api.role_delete(role_id)
+            result = await request.app["access_control_api"].role_delete(role_id)
 
         return result
 
@@ -758,7 +781,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            role = await access_control_api.role_read(role_id)
+            role = await request.app["access_control_api"].role_read(role_id)
 
         if role:
             transform = transformations.ROLE
@@ -775,7 +798,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            role = await access_control_api.role_update(role_id, data=body)
+            role = await request.app["access_control_api"].role_update(role_id, data=body)
 
         if role:
             transform = transformations.ROLE
@@ -800,7 +823,7 @@ class Implementation(AbstractStubClass):
             kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
 
         with client_exception_handler():
-            sdss = await user_data_api.sitedataschema_list(**kwargs)
+            sdss = await request.app["user_data_api"].sitedataschema_list(**kwargs)
 
         if sdss:
             transform = transformations.SITE_DATA_SCHEMA
@@ -816,7 +839,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            sds = await user_data_api.sitedataschema_create(data=body)
+            sds = await request.app["user_data_api"].sitedataschema_create(data=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -832,7 +855,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            result = await user_data_api.sitedataschema_delete(site_id)
+            result = await request.app["user_data_api"].sitedataschema_delete(site_id)
 
         return result
 
@@ -843,7 +866,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            sds = await user_data_api.sitedataschema_read(site_id)
+            sds = await request.app["user_data_api"].sitedataschema_read(site_id)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -860,7 +883,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            sds = await user_data_api.sitedataschema_update(site_id, data=body)
+            sds = await request.app["user_data_api"].sitedataschema_update(site_id, data=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -881,7 +904,7 @@ class Implementation(AbstractStubClass):
         # All optional params are integers
         kwargs = {k: int(v) for k, v in kwargs}
         with client_exception_handler():
-            site_roles = await access_control_api.siterole_list(**kwargs)
+            site_roles = await request.app["access_control_api"].siterole_list(**kwargs)
 
         if site_roles:
             transform = transformations.SITE_ROLE
@@ -897,7 +920,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            site_role = await access_control_api.siterole_create(data=body)
+            site_role = await request.app["access_control_api"].siterole_create(data=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -914,7 +937,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            result = await access_control_api.siterole_delete(site_id, role_id)
+            result = await request.app["access_control_api"].siterole_delete(site_id, role_id)
 
         return result
 
@@ -926,7 +949,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            site_role = await access_control_api.siterole_read(site_id, role_id)
+            site_role = await request.app["access_control_api"].siterole_read(site_id, role_id)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -944,7 +967,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            site_role = await access_control_api.siterole_update(site_id, role_id, data=body)
+            site_role = await request.app["access_control_api"].siterole_update(site_id, role_id, data=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -969,7 +992,7 @@ class Implementation(AbstractStubClass):
             kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
 
         with client_exception_handler():
-            sites = await access_control_api.site_list(**kwargs)
+            sites = await request.app["access_control_api"].site_list(**kwargs)
 
         if sites:
             transform = transformations.SITE
@@ -985,7 +1008,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            site = await access_control_api.site_create(data=body)
+            site = await request.app["access_control_api"].site_create(data=body)
 
         if site:
             transform = transformations.SITE
@@ -1001,7 +1024,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            result = await access_control_api.site_delete(site_id)
+            result = await request.app["access_control_api"].site_delete(site_id)
 
         return result
 
@@ -1012,7 +1035,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            site = await access_control_api.site_read(site_id)
+            site = await request.app["access_control_api"].site_read(site_id)
 
         if site:
             transform = transformations.SITE
@@ -1029,7 +1052,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            site = await access_control_api.site_update(site_id, data=body)
+            site = await request.app["access_control_api"].site_update(site_id, data=body)
 
         if site:
             transform = transformations.SITE
@@ -1070,7 +1093,7 @@ class Implementation(AbstractStubClass):
                 kwargs[key] = int(kwargs[key])
 
         with client_exception_handler():
-            udrs = await access_control_api.userdomainrole_list(**kwargs)
+            udrs = await request.app["access_control_api"].userdomainrole_list(**kwargs)
 
         if udrs:
             transform = transformations.USER_DOMAIN_ROLE
@@ -1086,7 +1109,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            udr = await access_control_api.userdomainrole_create(data=body)
+            udr = await request.app["access_control_api"].userdomainrole_create(data=body)
 
         if udr:
             transform = transformations.USER_DOMAIN_ROLE
@@ -1104,7 +1127,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            result = await access_control_api.userdomainrole_delete(user_id, domain_id, role_id)
+            result = await request.app["access_control_api"].userdomainrole_delete(user_id, domain_id, role_id)
 
         return result
 
@@ -1117,7 +1140,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            udr = await access_control_api.userdomainrole_read(user_id, domain_id, role_id)
+            udr = await request.app["access_control_api"].userdomainrole_read(user_id, domain_id, role_id)
 
         if udr:
             transform = transformations.USER_DOMAIN_ROLE
@@ -1198,7 +1221,7 @@ class Implementation(AbstractStubClass):
                 kwargs[key] = int(kwargs[key])
 
         with client_exception_handler():
-            usds = await user_data_api.usersitedata_list(**kwargs)
+            usds = await request.app["user_data_api"].usersitedata_list(**kwargs)
 
         if usds:
             transform = transformations.USER_SITE_DATA
@@ -1214,7 +1237,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            usd = await user_data_api.usersitedata_create(data=body)
+            usd = await request.app["user_data_api"].usersitedata_create(data=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -1231,7 +1254,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            result = await user_data_api.usersitedata_delete(user_id, site_id)
+            result = await request.app["user_data_api"].usersitedata_delete(user_id, site_id)
 
         return result
 
@@ -1243,7 +1266,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            usd = await user_data_api.usersitedata_read(user_id, site_id)
+            usd = await request.app["user_data_api"].usersitedata_read(user_id, site_id)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -1261,7 +1284,7 @@ class Implementation(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         with client_exception_handler():
-            usd = await user_data_api.usersitedata_update(user_id, site_id, data=body)
+            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id, data=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -1284,7 +1307,7 @@ class Implementation(AbstractStubClass):
                 kwargs[key] = int(kwargs[key])
 
         with client_exception_handler():
-            usrs = await access_control_api.usersiterole_list(**kwargs)
+            usrs = await request.app["access_control_api"].usersiterole_list(**kwargs)
 
         if usrs:
             transform = transformations.USER_SITE_ROLE
@@ -1300,7 +1323,7 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         """
         with client_exception_handler():
-            usr = await access_control_api.usersiterole_create(data=body)
+            usr = await request.app["access_control_api"].usersiterole_create(data=body)
 
         if usr:
             transform = transformations.USER_SITE_ROLE
@@ -1318,7 +1341,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            result = await access_control_api.usersiterole_delete(user_id, site_id, role_id)
+            result = await request.app["access_control_api"].usersiterole_delete(user_id, site_id, role_id)
 
         return result
 
@@ -1331,7 +1354,7 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         with client_exception_handler():
-            usr = await access_control_api.usersiterole_read(user_id, site_id, role_id)
+            usr = await request.app["access_control_api"].usersiterole_read(user_id, site_id, role_id)
 
         if usr:
             transform = transformations.USER_SITE_ROLE

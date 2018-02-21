@@ -1,10 +1,8 @@
-from contextlib import contextmanager
-
-from aiohttp import web
-
 import access_control.rest
 import authentication_service.rest
 import user_data_store.rest
+from contextlib import contextmanager
+from aiohttp import web
 
 
 @contextmanager
