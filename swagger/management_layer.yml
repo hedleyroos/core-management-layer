@@ -16,8 +16,8 @@ security:
   - OAuth2: []
 
 schemes:
-  - https
   - http
+  - https
 
 host: 'localhost:5000'
 
@@ -1478,6 +1478,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -1647,6 +1650,9 @@ paths:
             type: integer
             format: uuid
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -1858,6 +1864,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -1946,6 +1955,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -2029,6 +2041,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -2183,6 +2198,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -2434,6 +2452,30 @@ paths:
       tags:
         - access_control
 
+  /usersiteroles/{user_id}/{site_id}/{role_id}:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - $ref: '#/parameters/site_id'
+      - $ref: '#/parameters/role_id'
+    delete:
+      operationId: usersiterole_delete
+      responses:
+        '204':
+          description: ''
+      tags:
+        - access_control
+    get:
+      operationId: usersiterole_read
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_role'
+      tags:
+        - access_control
+
   /usersitedata:
     get:
       operationId: usersitedata_list
@@ -2619,6 +2661,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -2702,6 +2747,9 @@ paths:
           items:
             type: integer
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:
@@ -2750,6 +2798,9 @@ paths:
             type: string
             format: uuid
           required: false
+          minItems: 0
+          collectionFormat: multi
+          uniqueItems: true
       produces:
         - application/json
       responses:

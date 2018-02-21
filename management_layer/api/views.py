@@ -5017,14 +5017,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of client ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "client_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -5264,14 +5267,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of domain ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "domain_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -5580,15 +5586,18 @@ class __SWAGGER_SPEC__(View):
                         "type": "string"
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of invitation ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "invitation_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -6065,14 +6074,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of permission ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "permission_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -6232,14 +6244,17 @@ class __SWAGGER_SPEC__(View):
                         "type": "string"
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of resource ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "resource_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -6539,14 +6554,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of role ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "role_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -6699,14 +6717,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "site_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -7027,14 +7048,17 @@ class __SWAGGER_SPEC__(View):
                         ]
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
+                        "minItems": 0,
                         "name": "site_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -7388,15 +7412,18 @@ class __SWAGGER_SPEC__(View):
                         "type": "string"
                     },
                     {
+                        "collectionFormat": "multi",
                         "description": "An optional list of user ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "string"
                         },
+                        "minItems": 0,
                         "name": "user_ids",
                         "required": false,
-                        "type": "array"
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -7854,8 +7881,8 @@ class __SWAGGER_SPEC__(View):
         }
     },
     "schemes": [
-        "https",
-        "http"
+        "http",
+        "https"
     ],
     "security": [
         {
