@@ -12,11 +12,15 @@ import access_control
 import user_data_store
 from user_data_store import UserDataApi
 
+ACCESS_CONTROL_PORT = 9000
+AUTHENTICATION_SERVICE_PORT = 9001
+USER_DATA_STORE_PORT = 9002
+
 with patch.dict(os.environ, {
     "STUBS_CLASS": "management_layer.integration.Implementation",
-    "ACCESS_CONTROL_API": "http://localhost:9000/api/v1",
-    "AUTHENTICATION_SERVICE_API": "http://localhost:9001/api/v1",
-    "USER_DATA_STORE_API": "http://localhost:9002/api/v1",
+    "ACCESS_CONTROL_API": "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT),
+    "AUTHENTICATION_SERVICE_API": "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT),
+    "USER_DATA_STORE_API": "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT),
 }):
     # We can only import add_routes once we have mocked the environment
     from management_layer.api.urls import add_routes
@@ -35,20 +39,23 @@ def setUpModule():
     """
     global _MOCKED_ACCESS_CONTROL_API
     _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
-        _PRISM_COMMAND.format("../core-access-control/swagger/access_control.yml",
-                              9000).split()
+        _PRISM_COMMAND.format(
+            "./swagger/access_control.yml", ACCESS_CONTROL_PORT
+        ).split()
     )
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
     _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
-        _PRISM_COMMAND.format("../core-authentication-service/swagger/authentication_service.yml",
-                              9001).split()
+        _PRISM_COMMAND.format(
+            "./swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
+        ).split()
     )
 
     global _MOCKED_USER_DATA_STORE_API
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
-        _PRISM_COMMAND.format("../core-user-data-store/swagger/user_data_store.yml",
-                              9002).split()
+        _PRISM_COMMAND.format(
+            "./swagger/user_data_store.yml", USER_DATA_STORE_PORT
+        ).split()
     )
     # Prism needs some time to start up
     time.sleep(8)
