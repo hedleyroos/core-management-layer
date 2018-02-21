@@ -83,28 +83,31 @@ validate-swagger: prism
 $(FLAKE8): $(VENV)
 	$(PIP) install flake8
 
+swagger/user_data_store.yml:
+	curl https://raw.githubusercontent.com/girleffect/core-user-data-store/develop/swagger/user_data_store.yml -o swagger/user_data_store.yml
+
+swagger/access_control.yml:
+	curl https://raw.githubusercontent.com/girleffect/core-access-control/develop/swagger/access_control.yml -o swagger/access_control.yml
+
+swagger/authentication_service.yml:
+	curl https://raw.githubusercontent.com/girleffect/core-authentication-service/develop/swagger/authentication_service.yml -o swagger/authentication_service.yml
+
 # Generate the client code to interface with the User Data Store
-user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+user-data-store-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar swagger/user_data_store.yml
 	echo "Generating the client for the User Data Store API..."
-	# curl https://github.com/girleffect/core-user-data-store/blob/develop/swagger/user_data_store.yml -o user_data_store.yml
-	#$(CODEGEN) -l python -i user_data_store.yml -o $(USER_DATA_STORE_CLIENT_DIR)
-	$(CODEGEN) --lang python --library asyncio -i ../core-user-data-store/swagger/user_data_store.yml -D packageName=user_data_store -o /tmp/$(USER_DATA_STORE_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i swagger/user_data_store.yml -D packageName=user_data_store -o /tmp/$(USER_DATA_STORE_CLIENT_DIR)
 	cp -r /tmp/$(USER_DATA_STORE_CLIENT_DIR)/user_data_store/* $(USER_DATA_STORE_CLIENT_DIR)
 
 # Generate the client code to interface with the Access Control component
-access-control-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+access-control-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar swagger/access_control.yml
 	echo "Generating the client for the Access Control API..."
-	# curl https://github.com/girleffect/core-access-control/blob/develop/swagger/access_control.yml -o access_control.yml
-	#$(CODEGEN) -l python -i access_control.yml -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
-	$(CODEGEN) --lang python --library asyncio -i ../core-access-control/swagger/access_control.yml -D packageName=access_control -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i swagger/access_control.yml -D packageName=access_control -o /tmp/$(ACCESS_CONTROL_CLIENT_DIR)
 	cp -r /tmp/$(ACCESS_CONTROL_CLIENT_DIR)/access_control/* $(ACCESS_CONTROL_CLIENT_DIR)
 
 # Generate the client code to interface with the Authentication Service
-authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar
+authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar swagger/authentication_service.yml
 	echo "Generating the client for the Authentication Service API..."
-	# curl https://github.com/girleffect/core-authentication-service/blob/develop/swagger/authentication_service.yml -o authentication_service.yml
-	#$(CODEGEN) -l python -i authentication_service.yml -o $(AUTHENTICATION_SERVICE_CLIENT_DIR)
-	$(CODEGEN) --lang python --library asyncio -i ../core-authentication-service/swagger/authentication_service.yml -D packageName=authentication_service -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
+	$(CODEGEN) --lang python --library asyncio -i swagger/authentication_service.yml -D packageName=authentication_service -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
 	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/authentication_service/* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
 
 management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
