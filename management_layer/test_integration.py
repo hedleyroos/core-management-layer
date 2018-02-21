@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import subprocess
 import time
@@ -9,9 +10,13 @@ from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from aiohttp import web
 
 import access_control
+import authentication_service
 import user_data_store
 from user_data_store import UserDataApi
 
+LOGGER = logging.getLogger(__name__)
+
+# Mocked service ports
 ACCESS_CONTROL_PORT = 9000
 AUTHENTICATION_SERVICE_PORT = 9001
 USER_DATA_STORE_PORT = 9002
@@ -39,25 +44,25 @@ def setUpModule():
     """
     workdir = os.getenv("TRAVIS_BUILD_DIR", ".")
     global _MOCKED_ACCESS_CONTROL_API
-    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
-        _PRISM_COMMAND.format(
-           workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
-        ).split()
+    cmd = _PRISM_COMMAND.format(
+        workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
     )
+    LOGGER.info("Starting mock server using: {}".format(cmd))
+    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(cmd.split())
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
-    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
-        _PRISM_COMMAND.format(
-            workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
-        ).split()
+    cmd = _PRISM_COMMAND.format(
+        workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
     )
+    LOGGER.info("Starting mock server using: {}".format(cmd))
+    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(cmd.split())
 
     global _MOCKED_USER_DATA_STORE_API
-    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
-        _PRISM_COMMAND.format(
-            workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
-        ).split()
+    cmd = _PRISM_COMMAND.format(
+        workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
     )
+    LOGGER.info("Starting mock server using: {}".format(cmd))
+    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(cmd.split())
     # Prism needs some time to start up
     time.sleep(8)
 
@@ -123,7 +128,7 @@ class IntegrationTest(AioHTTPTestCase):
         app = web.Application(loop=self.loop)
 
         user_data_store_configuration = user_data_store.configuration.Configuration()
-        user_data_store_configuration.host = "http://localhost:9002/api/v1"
+        user_data_store_configuration.host = "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT)
         app["user_data_api"] = UserDataApi(
             api_client=user_data_store.ApiClient(
                 configuration=user_data_store_configuration
@@ -131,15 +136,20 @@ class IntegrationTest(AioHTTPTestCase):
         )
 
         access_control_configuration = access_control.configuration.Configuration()
-        access_control_configuration.host = "http://localhost:9000/api/v1"
+        access_control_configuration.host = "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT)
         app["access_control_api"] = access_control.api.AccessControlApi(
             api_client=access_control.ApiClient(
                 configuration=access_control_configuration
             )
         )
-        # app["user_data_api"] = await utils.get_client(
-        #    "../core-access-control/swagger/access_control.yml",
-        #    loop=self.loop, host="http://localhost:9002")
+
+        authentication_service_configuration = authentication_service.configuration.Configuration()
+        authentication_service_configuration.host = "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT)
+        app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
+            api_client=authentication_service.ApiClient(
+                configuration=authentication_service_configuration
+            )
+        )
 
         add_routes(app, with_ui=False)
         return app
@@ -166,6 +176,10 @@ class IntegrationTest(AioHTTPTestCase):
         data = await reply.json()
         # Always get a list back
         self.assertIsInstance(data, list)
+
+        # With bad arguments
+        reply = await self.client.request("GET", "/adminnotes?offset=a")
+        self.assertEqual(reply.status, 400)
 
     @unittest_run_loop
     async def test_adminnote_create(self):
