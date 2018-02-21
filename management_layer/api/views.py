@@ -8,7 +8,7 @@ import json
 import jsonschema
 import os
 from jsonschema import ValidationError
-from aiohttp.web import View, json_response, Response
+from aiohttp.web import View, json_response, Response, HTTPNoContent
 
 import management_layer.api.schemas as schemas
 import management_layer.api.utils as utils
@@ -140,7 +140,7 @@ class Adminnotes(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class AdminnotesAdminNoteId(View):
@@ -163,7 +163,7 @@ class AdminnotesAdminNoteId(View):
             self.request, admin_note_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -422,7 +422,7 @@ class Domainroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class DomainrolesDomainIdRoleId(View):
@@ -447,7 +447,7 @@ class DomainrolesDomainIdRoleId(View):
             self.request, domain_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -588,7 +588,7 @@ class Domains(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class DomainsDomainId(View):
@@ -611,7 +611,7 @@ class DomainsDomainId(View):
             self.request, domain_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -753,7 +753,7 @@ class Invitationdomainroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
@@ -778,7 +778,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
             self.request, invitation_id, domain_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -913,7 +913,7 @@ class Invitations(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class InvitationsInvitationId(View):
@@ -936,7 +936,7 @@ class InvitationsInvitationId(View):
             self.request, invitation_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1078,7 +1078,7 @@ class Invitationsiteroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class InvitationsiterolesInvitationIdSiteIdRoleId(View):
@@ -1103,7 +1103,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
             self.request, invitation_id, site_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1317,7 +1317,7 @@ class Permissions(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class PermissionsPermissionId(View):
@@ -1340,7 +1340,7 @@ class PermissionsPermissionId(View):
             self.request, permission_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1478,7 +1478,7 @@ class Resources(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class ResourcesResourceId(View):
@@ -1501,7 +1501,7 @@ class ResourcesResourceId(View):
             self.request, resource_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1642,7 +1642,7 @@ class Roleresourcepermissions(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
@@ -1667,7 +1667,7 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
             self.request, role_id, resource_id, permission_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1787,7 +1787,7 @@ class Roles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class RolesRoleId(View):
@@ -1810,7 +1810,7 @@ class RolesRoleId(View):
             self.request, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -1939,7 +1939,7 @@ class Sitedataschemas(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class SitedataschemasSiteId(View):
@@ -1962,7 +1962,7 @@ class SitedataschemasSiteId(View):
             self.request, site_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2099,7 +2099,7 @@ class Siteroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class SiterolesSiteIdRoleId(View):
@@ -2124,7 +2124,7 @@ class SiterolesSiteIdRoleId(View):
             self.request, site_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2274,7 +2274,7 @@ class Sites(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class SitesSiteId(View):
@@ -2297,7 +2297,7 @@ class SitesSiteId(View):
             self.request, site_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2479,7 +2479,7 @@ class Userdomainroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class UserdomainrolesUserIdDomainIdRoleId(View):
@@ -2504,7 +2504,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
             self.request, user_id, domain_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2672,7 +2672,7 @@ class UsersUserId(View):
             self.request, user_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2859,7 +2859,7 @@ class Usersitedata(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class UsersitedataUserIdSiteId(View):
@@ -2884,7 +2884,7 @@ class UsersitedataUserIdSiteId(View):
             self.request, user_id, site_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -3030,7 +3030,7 @@ class Usersiteroles(View):
             self.request, body, **optional_args)
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, status=201)
 
 
 class UsersiterolesUserIdSiteIdRoleId(View):
@@ -3055,7 +3055,7 @@ class UsersiterolesUserIdSiteIdRoleId(View):
             self.request, user_id, site_id, role_id, **optional_args)
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return HTTPNoContent()
 
     async def get(self):
         """
