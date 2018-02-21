@@ -4,8 +4,10 @@ import os
 import subprocess
 import time
 import uuid
+from collections import namedtuple
 
 from unittest.mock import patch
+from parameterized import parameterized
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from aiohttp import web
 
@@ -37,6 +39,27 @@ _MOCKED_USER_DATA_STORE_API = None
 
 _PRISM_COMMAND = "./prism run --validate --mock -s {}/{} -p {}"
 
+Resource = namedtuple("Resource", ["num_identifying_parts"])
+# A list of resources. Used to parameterise tests.
+RESOURCES = {
+    "adminnotes": Resource(1),
+    "domains": Resource(1),
+    "domainroles": Resource(2),
+    # TODO: Uncomment when these are implemented
+    # "invitations": Resource(1),
+    # "invitationdomainroles": Resource(3),
+    # "invitationsiteroles": Resource(3),
+    "permissions": Resource(1),
+    "resources": Resource(1),
+    "roles": Resource(1),
+    "roleresourcepermissions": Resource(3),
+    "sites": Resource(1),
+    "sitedataschemas": Resource(1),
+    "siteroles": Resource(2),
+    "userdomainroles": Resource(3),
+    "usersitedata": Resource(2),
+    "usersiteroles": Resource(3),
+}
 
 def setUpModule():
     """
@@ -154,31 +177,32 @@ class IntegrationTest(AioHTTPTestCase):
         add_routes(app, with_ui=False)
         return app
 
+    @parameterized.expand(RESOURCES.keys())
     @unittest_run_loop
-    async def test_adminnote_list(self):
+    async def test_list(self, resource):
         # Default call
-        reply = await self.client.request("GET", "/adminnotes")
+        reply = await self.client.request("GET", "/{}".format(resource))
         self.assertEqual(reply.status, 200)
         data = await reply.json()
         # Always get a list back
         self.assertIsInstance(data, list)
 
         # With arguments
-        reply = await self.client.request("GET", "/adminnotes?offset=1&limit=10")
+        reply = await self.client.request("GET", "/{}?offset=1&limit=10".format(resource))
         self.assertEqual(reply.status, 200)
         data = await reply.json()
         # Always get a list back
         self.assertIsInstance(data, list)
 
         # With arguments
-        reply = await self.client.request("GET", "/adminnotes?user_id=foo")
+        reply = await self.client.request("GET", "/{}?user_id=foo".format(resource))
         self.assertEqual(reply.status, 200)
         data = await reply.json()
         # Always get a list back
         self.assertIsInstance(data, list)
 
         # With bad arguments
-        reply = await self.client.request("GET", "/adminnotes?offset=a")
+        reply = await self.client.request("GET", "/{}?offset=a".format(resource))
         self.assertEqual(reply.status, 400)
 
     @unittest_run_loop
@@ -196,9 +220,16 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIsInstance(admin_note, dict)
         print(admin_note)
 
+    @parameterized.expand([
+        (resource, info) for resource, info in RESOURCES.items()
+    ])
     @unittest_run_loop
-    async def test_adminnote_delete(self):
-        request = await self.client.delete("/adminnotes/1")
+    async def test_delete(self, resource, info):
+        request = await self.client.delete("/{}{}".format(
+            resource, "/1" * info.num_identifying_parts)
+        )
+        if request.status != 204:
+            print(resource)
         self.assertEqual(request.status, 204)
 
     @unittest_run_loop
@@ -228,25 +259,3 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn("created_at", admin_note)
         self.assertIn("updated_at", admin_note)
 
-    @unittest_run_loop
-    async def test_domainrole_list(self):
-        # Default call
-        reply = await self.client.request("GET", "/domainroles")
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
-
-        # With arguments
-        reply = await self.client.request("GET", "/domainroles?offset=1&limit=10")
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
-
-        # With arguments
-        reply = await self.client.request("GET", "/domainroles?domain_id=1")
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
