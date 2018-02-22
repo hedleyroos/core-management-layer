@@ -50,9 +50,9 @@ RESOURCES = {
     "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
     "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
     # TODO: Uncomment when these are implemented
-    # "invitations": Resource(1),
-    # "invitationdomainroles": Resource(3),
-    # "invitationsiteroles": Resource(3),
+    # "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
+    # "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
+    # "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
     "permissions": Resource(1, schemas.permission, schemas.permission_create, schemas.permission_update),
     "resources": Resource(1, schemas.resource, schemas.resource_create, schemas.resource_update),
     "roles": Resource(1, schemas.role, schemas.role_create, schemas.role_update),
@@ -60,7 +60,7 @@ RESOURCES = {
     "sites": Resource(1, schemas.site, schemas.site_create, schemas.site_update),
     "sitedataschemas": Resource(1, schemas.site_data_schema, schemas.site_data_schema_create, schemas.site_data_schema_update),
     "siteroles": Resource(2, schemas.site_role, schemas.site_role_create, schemas.site_role_update),
-    "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create., None),
+    "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create, None),
     "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
     "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
 }
