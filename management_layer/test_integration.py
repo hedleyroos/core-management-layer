@@ -1,13 +1,11 @@
 import json
-import uuid
-from unittest import skip
-
 import jsonschema
 import logging
 import os
 import socket
 import subprocess
 import time
+import uuid
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from apitools.datagenerator import DataGenerator
@@ -23,6 +21,8 @@ from management_layer.api import schemas
 
 LOGGER = logging.getLogger(__name__)
 DATA_GENERATOR = DataGenerator()
+# The data generated drops object parameters even if they are required.
+# the workaround for now is to set the value below.
 DATA_GENERATOR.not_required_probability = 1.0
 
 # Mocked service ports
