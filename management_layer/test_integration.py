@@ -88,7 +88,7 @@ def setUpModule():
     LOGGER.info("Starting mock server using: {}".format(cmd))
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(cmd.split())
     # Prism needs some time to start up
-    sleep_seconds = 30 if os.getenv("TRAVIS", "false") == "true" else 5
+    sleep_seconds = 60 if os.getenv("TRAVIS", "false") == "true" else 5
     LOGGER.info("Waiting {} seconds for background processes to start".format(sleep_seconds))
     time.sleep(sleep_seconds)
 
