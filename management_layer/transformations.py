@@ -142,4 +142,3 @@ USER_SITE_DATA = Transformation(
     ],
     copy_fields=["user_id", "site_id", "data", "blocked"]
 )
-

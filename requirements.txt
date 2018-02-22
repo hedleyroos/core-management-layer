@@ -1,4 +1,5 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@cobusc-aiohttp-capability#egg=swagger-django-generator
+-e git+https://github.com/cobusc/apitools@master#egg=apitools
 python_dateutil == 2.6.0
 pymemcache < 2.0.0 # To be replaced by aiomcache
 jsonschema
