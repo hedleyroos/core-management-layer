@@ -167,6 +167,10 @@ def clean_response_data(data):
     if "urn" in data:
         data["urn"] = "urn:ge:this:is:a:test"
 
+    for k, v in data.items():
+        if v is None:
+            print("Removing field {} from response because it is None")
+
     return {k: v for k, v in data.items() if v is not None}
 
 

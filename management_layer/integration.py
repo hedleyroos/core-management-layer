@@ -300,7 +300,7 @@ class Implementation(AbstractStubClass):
             domain = await request.app["access_control_api"].domain_update(domain_id, data=body)
 
         if domain:
-            transform = transformations.DOMAIN_ROLE
+            transform = transformations.DOMAIN
             result = transform.apply(domain.to_dict())
             return result
 
