@@ -19,9 +19,9 @@ from user_data_store import UserDataApi
 LOGGER = logging.getLogger(__name__)
 
 # Mocked service ports
-ACCESS_CONTROL_PORT = 9000
-AUTHENTICATION_SERVICE_PORT = 9001
-USER_DATA_STORE_PORT = 9002
+ACCESS_CONTROL_PORT = 60000
+AUTHENTICATION_SERVICE_PORT = 60001
+USER_DATA_STORE_PORT = 60002
 
 with patch.dict(os.environ, {
     "STUBS_CLASS": "management_layer.integration.Implementation",
