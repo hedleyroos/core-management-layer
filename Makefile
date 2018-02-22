@@ -124,4 +124,4 @@ $(PYTEST): $(VENV)
 	$(PIP) install pytest pytest-cov
 
 test: $(PYTEST)
-	$(PYTEST) --verbose --cov=management_layer management_layer/
+	$(PYTEST) --verbose --cov=management_layer management_layer/ --log-level=DEBUG
