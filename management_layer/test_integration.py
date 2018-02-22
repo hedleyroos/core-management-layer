@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import socket
 import subprocess
 import time
 import uuid
@@ -62,6 +63,22 @@ RESOURCES = {
 }
 
 
+def wait_for_server(ip, port):
+    """
+    Wait until a server is
+    :param ip: The IP address to connect to
+    :param port: The port to connect to
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    while True:
+        try:
+            s.connect((ip, int(port)))
+            s.shutdown(2)
+            break
+        except Exception:
+            time.sleep(1)
+
+
 def setUpModule():
     """
     This function is used to launch mocked backend APIs.
@@ -87,10 +104,9 @@ def setUpModule():
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(cmd.split())
-    # Prism needs some time to start up
-    sleep_seconds = 60 if os.getenv("TRAVIS", "false") == "true" else 5
-    LOGGER.info("Waiting {} seconds for background processes to start".format(sleep_seconds))
-    time.sleep(sleep_seconds)
+
+    for port in [ACCESS_CONTROL_PORT, AUTHENTICATION_SERVICE_PORT, USER_DATA_STORE_PORT]:
+        wait_for_server("127.0.0.1", port)
 
 
 def tearDownModule():
