@@ -16,6 +16,7 @@ import access_control
 import authentication_service
 import user_data_store
 from user_data_store import UserDataApi
+from management_layer.api import schemas
 
 LOGGER = logging.getLogger(__name__)
 
@@ -40,26 +41,28 @@ _MOCKED_USER_DATA_STORE_API = None
 
 _PRISM_COMMAND = "./prism run --validate --mock -s {}/{} -p {}"
 
-Resource = namedtuple("Resource", ["num_identifying_parts"])
+Resource = namedtuple("Resource", [
+    "num_identifying_parts", "schema", "create_schema", "update_schema"
+])
 # A list of resources. Used to parameterise tests.
 RESOURCES = {
-    "adminnotes": Resource(1),
-    "domains": Resource(1),
-    "domainroles": Resource(2),
+    "adminnotes": Resource(1, schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
+    "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
+    "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
     # TODO: Uncomment when these are implemented
     # "invitations": Resource(1),
     # "invitationdomainroles": Resource(3),
     # "invitationsiteroles": Resource(3),
-    "permissions": Resource(1),
-    "resources": Resource(1),
-    "roles": Resource(1),
-    "roleresourcepermissions": Resource(3),
-    "sites": Resource(1),
-    "sitedataschemas": Resource(1),
-    "siteroles": Resource(2),
-    "userdomainroles": Resource(3),
-    "usersitedata": Resource(2),
-    "usersiteroles": Resource(3),
+    "permissions": Resource(1, schemas.permission, schemas.permission_create, schemas.permission_update),
+    "resources": Resource(1, schemas.resource, schemas.resource_create, schemas.resource_update),
+    "roles": Resource(1, schemas.role, schemas.role_create, schemas.role_update),
+    "roleresourcepermissions": Resource(3, schemas.role_resource_permission, schemas.role_resource_permission_create, None),
+    "sites": Resource(1, schemas.site, schemas.site_create, schemas.site_update),
+    "sitedataschemas": Resource(1, schemas.site_data_schema, schemas.site_data_schema_create, schemas.site_data_schema_update),
+    "siteroles": Resource(2, schemas.site_role, schemas.site_role_create, schemas.site_role_update),
+    "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create., None),
+    "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
+    "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
 }
 
 
