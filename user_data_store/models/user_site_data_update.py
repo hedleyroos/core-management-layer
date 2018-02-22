@@ -31,52 +31,31 @@ class UserSiteDataUpdate(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'data': 'object',
         'consented_at': 'date',
-        'blocked': 'bool'
+        'blocked': 'bool',
+        'data': 'object'
     }
 
     attribute_map = {
-        'data': 'data',
         'consented_at': 'consented_at',
-        'blocked': 'blocked'
+        'blocked': 'blocked',
+        'data': 'data'
     }
 
-    def __init__(self, data=None, consented_at=None, blocked=None):  # noqa: E501
+    def __init__(self, consented_at=None, blocked=None, data=None):  # noqa: E501
         """UserSiteDataUpdate - a model defined in Swagger"""  # noqa: E501
 
-        self._data = None
         self._consented_at = None
         self._blocked = None
+        self._data = None
         self.discriminator = None
 
-        if data is not None:
-            self.data = data
         if consented_at is not None:
             self.consented_at = consented_at
         if blocked is not None:
             self.blocked = blocked
-
-    @property
-    def data(self):
-        """Gets the data of this UserSiteDataUpdate.  # noqa: E501
-
-
-        :return: The data of this UserSiteDataUpdate.  # noqa: E501
-        :rtype: object
-        """
-        return self._data
-
-    @data.setter
-    def data(self, data):
-        """Sets the data of this UserSiteDataUpdate.
-
-
-        :param data: The data of this UserSiteDataUpdate.  # noqa: E501
-        :type: object
-        """
-
-        self._data = data
+        if data is not None:
+            self.data = data
 
     @property
     def consented_at(self):
@@ -119,6 +98,27 @@ class UserSiteDataUpdate(object):
         """
 
         self._blocked = blocked
+
+    @property
+    def data(self):
+        """Gets the data of this UserSiteDataUpdate.  # noqa: E501
+
+
+        :return: The data of this UserSiteDataUpdate.  # noqa: E501
+        :rtype: object
+        """
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        """Sets the data of this UserSiteDataUpdate.
+
+
+        :param data: The data of this UserSiteDataUpdate.  # noqa: E501
+        :type: object
+        """
+
+        self._data = data
 
     def to_dict(self):
         """Returns the model properties as a dict"""

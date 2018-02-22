@@ -382,6 +382,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `domain_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `domain_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('domain_ids' in params and
+                len(params['domain_ids']) < 0):
+            raise ValueError("Invalid value for parameter `domain_ids` when calling `domain_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -393,7 +396,7 @@ class AccessControlApi(object):
             query_params.append(('limit', params['limit']))  # noqa: E501
         if 'domain_ids' in params:
             query_params.append(('domain_ids', params['domain_ids']))  # noqa: E501
-            collection_formats['domain_ids'] = 'csv'  # noqa: E501
+            collection_formats['domain_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
@@ -1371,6 +1374,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `invitation_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `invitation_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('invitation_ids' in params and
+                len(params['invitation_ids']) < 0):
+            raise ValueError("Invalid value for parameter `invitation_ids` when calling `invitation_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -1384,7 +1390,7 @@ class AccessControlApi(object):
             query_params.append(('invitor_id', params['invitor_id']))  # noqa: E501
         if 'invitation_ids' in params:
             query_params.append(('invitation_ids', params['invitation_ids']))  # noqa: E501
-            collection_formats['invitation_ids'] = 'csv'  # noqa: E501
+            collection_formats['invitation_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
@@ -2796,6 +2802,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `permission_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `permission_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('permission_ids' in params and
+                len(params['permission_ids']) < 0):
+            raise ValueError("Invalid value for parameter `permission_ids` when calling `permission_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -2807,7 +2816,7 @@ class AccessControlApi(object):
             query_params.append(('limit', params['limit']))  # noqa: E501
         if 'permission_ids' in params:
             query_params.append(('permission_ids', params['permission_ids']))  # noqa: E501
-            collection_formats['permission_ids'] = 'csv'  # noqa: E501
+            collection_formats['permission_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
@@ -3278,6 +3287,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `resource_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `resource_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('resource_ids' in params and
+                len(params['resource_ids']) < 0):
+            raise ValueError("Invalid value for parameter `resource_ids` when calling `resource_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3291,7 +3303,7 @@ class AccessControlApi(object):
             query_params.append(('prefix', params['prefix']))  # noqa: E501
         if 'resource_ids' in params:
             query_params.append(('resource_ids', params['resource_ids']))  # noqa: E501
-            collection_formats['resource_ids'] = 'csv'  # noqa: E501
+            collection_formats['resource_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
@@ -3760,6 +3772,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `role_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `role_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('role_ids' in params and
+                len(params['role_ids']) < 0):
+            raise ValueError("Invalid value for parameter `role_ids` when calling `role_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -3771,7 +3786,7 @@ class AccessControlApi(object):
             query_params.append(('limit', params['limit']))  # noqa: E501
         if 'role_ids' in params:
             query_params.append(('role_ids', params['role_ids']))  # noqa: E501
-            collection_formats['role_ids'] = 'csv'  # noqa: E501
+            collection_formats['role_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
@@ -4553,6 +4568,9 @@ class AccessControlApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `site_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `site_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('site_ids' in params and
+                len(params['site_ids']) < 0):
+            raise ValueError("Invalid value for parameter `site_ids` when calling `site_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -4564,7 +4582,7 @@ class AccessControlApi(object):
             query_params.append(('limit', params['limit']))  # noqa: E501
         if 'site_ids' in params:
             query_params.append(('site_ids', params['site_ids']))  # noqa: E501
-            collection_formats['site_ids'] = 'csv'  # noqa: E501
+            collection_formats['site_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 
