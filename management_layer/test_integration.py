@@ -61,6 +61,7 @@ RESOURCES = {
     "usersiteroles": Resource(3),
 }
 
+
 def setUpModule():
     """
     This function is used to launch mocked backend APIs.
