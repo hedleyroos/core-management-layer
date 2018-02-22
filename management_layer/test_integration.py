@@ -1,16 +1,19 @@
 import json
+import uuid
+from unittest import skip
+
+import jsonschema
 import logging
 import os
 import socket
 import subprocess
 import time
-import uuid
+from aiohttp import web
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
+from apitools.datagenerator import DataGenerator
 from collections import namedtuple
-
 from unittest.mock import patch
 from parameterized import parameterized
-from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
-from aiohttp import web
 
 import access_control
 import authentication_service
@@ -19,6 +22,8 @@ from user_data_store import UserDataApi
 from management_layer.api import schemas
 
 LOGGER = logging.getLogger(__name__)
+DATA_GENERATOR = DataGenerator()
+DATA_GENERATOR.not_required_probability = 1.0
 
 # Mocked service ports
 ACCESS_CONTROL_PORT = 60000
@@ -39,7 +44,7 @@ _MOCKED_ACCESS_CONTROL_API = None
 _MOCKED_AUTHENTICATION_SERVICE_API = None
 _MOCKED_USER_DATA_STORE_API = None
 
-_PRISM_COMMAND = "./prism run --validate --mock -s {}/{} -p {}"
+_PRISM_COMMAND = "./prism run --validate --mockDynamic -s {}/{} -p {}"
 
 Resource = namedtuple("Resource", [
     "num_identifying_parts", "schema", "create_schema", "update_schema"
@@ -121,6 +126,50 @@ def tearDownModule():
     _MOCKED_USER_DATA_STORE_API.terminate()
 
 
+def get_test_data(schema):
+    """
+    The utility used to generate test data is not feature-complete.
+    This function is an attempt to fix the gotchas.
+    :param schema:
+    :return:
+    """
+    data = DATA_GENERATOR.random_value(schema)
+    # Overwrite fields that expect a UUID
+    for field in ["user_id", "creator_id", "invitation_id", "client_id"]:
+        if field in data:
+            data[field] = str(uuid.uuid1())
+    # Overwrite fields that expect a date
+    for field in ["consented_at"]:
+        if field in data:
+            data[field] = "2000-01-01"
+
+    if "urn" in data:
+        data["urn"] = "urn:ge:test:resource"
+
+    if "name" in data:
+        data["name"] = data["name"][:30]
+
+    return data
+
+
+def validate_response_schema(response_body, schema):
+    try:
+        jsonschema.validate(response_body, schema)
+    except jsonschema.ValidationError:
+        print(response_body)
+        raise
+
+
+def clean_response_data(data):
+    if type(data) is list:
+        return [clean_response_data(d) for d in data]
+
+    if "urn" in data:
+        data["urn"] = "urn:ge:this:is:a:test"
+
+    return {k: v for k, v in data.items() if v is not None}
+
+
 class ExampleTestCase(AioHTTPTestCase):
     """
     This is the example test case as provided in the aiohttp documentation:
@@ -165,6 +214,19 @@ class IntegrationTest(AioHTTPTestCase):
     Test functionality in integration.py
     """
 
+    async def assertStatus(self, response, status):
+        """
+        Convenience function that will dump the response body in the event
+        that an unexpected response code is received.
+        :param response: The response
+        :param status: The expected status
+        """
+        if response.status != status:
+            body = await response.text()
+            print(body)
+
+        self.assertEqual(response.status, status)
+
     async def get_application(self):
         """
         Set up the application used by the tests
@@ -199,85 +261,85 @@ class IntegrationTest(AioHTTPTestCase):
         add_routes(app, with_ui=False)
         return app
 
-    @parameterized.expand(RESOURCES.keys())
+    @parameterized.expand([
+        (resource, info) for resource, info in RESOURCES.items()
+    ])
     @unittest_run_loop
-    async def test_list(self, resource):
+    async def test_list(self, resource, info):
         # Default call
-        reply = await self.client.request("GET", "/{}".format(resource))
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
+        response = await self.client.request("GET", "/{}".format(resource))
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, {"type": "array", "items": info.schema})
 
         # With arguments
-        reply = await self.client.request("GET", "/{}?offset=1&limit=10".format(resource))
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
+        response = await self.client.request("GET", "/{}?offset=1&limit=10".format(resource))
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, {"type": "array", "items": info.schema})
 
         # With arguments
-        reply = await self.client.request("GET", "/{}?user_id=foo".format(resource))
-        self.assertEqual(reply.status, 200)
-        data = await reply.json()
-        # Always get a list back
-        self.assertIsInstance(data, list)
+        response = await self.client.request("GET", "/{}?user_id=foo".format(resource))
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, {"type": "array", "items": info.schema})
 
         # With bad arguments
-        reply = await self.client.request("GET", "/{}?offset=a".format(resource))
-        self.assertEqual(reply.status, 400)
+        response = await self.client.request("GET", "/{}?offset=a".format(resource))
+        await self.assertStatus(response, 400)
 
+    @parameterized.expand([
+        (resource, info) for resource, info in RESOURCES.items()
+    ])
     @unittest_run_loop
-    async def test_adminnote_create(self):
-        data = {
-            "user_id": str(uuid.uuid1()),
-            "creator_id": str(uuid.uuid1()),
-            "note": "A test note"
-        }
-        # Default call
-        request = await self.client.post("/adminnotes", data=json.dumps(data))
-        self.assertEqual(request.status, 201)
-        admin_note = await request.json()
-        # Always get a list back
-        self.assertIsInstance(admin_note, dict)
-        print(admin_note)
+    async def test_create(self, resource, info):
+        data = get_test_data(info.create_schema)
+        response = await self.client.post("/{}".format(resource), data=json.dumps(data))
+        await self.assertStatus(response, 201)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, info.schema)
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
     ])
     @unittest_run_loop
     async def test_delete(self, resource, info):
-        request = await self.client.delete("/{}{}".format(
+        response = await self.client.delete("/{}{}".format(
             resource, "/1" * info.num_identifying_parts)
         )
-        if request.status != 204:
-            print(resource)
-        self.assertEqual(request.status, 204)
+        await self.assertStatus(response, 204)
 
+    @parameterized.expand([
+        (resource, info) for resource, info in RESOURCES.items()
+    ])
     @unittest_run_loop
-    async def test_adminnote_read(self):
-        request = await self.client.get("/adminnotes/1")
-        self.assertEqual(request.status, 200)
-        data = await request.json()
-        print(data)
-        self.assertIn("id", data)
-        self.assertIn("creator_id", data)
-        self.assertIn("user_id", data)
-        self.assertIn("created_at", data)
-        self.assertIn("updated_at", data)
+    async def test_read(self, resource, info):
+        response = await self.client.get("/{}{}".format(
+            resource, "/1" * info.num_identifying_parts)
+        )
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, info.schema)
 
+    @parameterized.expand([
+        (resource, info) for resource, info in RESOURCES.items()
+    ])
     @unittest_run_loop
-    async def test_adminnote_update(self):
-        data = {
-            "note": "An updated note"
-        }
-        request = await self.client.put("/adminnotes/1", data=json.dumps(data))
-        self.assertEqual(request.status, 200)
-        admin_note = await request.json()
-        print(admin_note)
-        self.assertIn("id", admin_note)
-        self.assertIn("creator_id", admin_note)
-        self.assertIn("user_id", admin_note)
-        self.assertIn("created_at", admin_note)
-        self.assertIn("updated_at", admin_note)
+    async def test_update(self, resource, info):
+        if info.update_schema is None:  # Some resources cannot be updated
+            return
 
+        data = get_test_data(info.update_schema)
+        response = await self.client.put(
+            "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            data=json.dumps(data)
+        )
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, info.schema)
