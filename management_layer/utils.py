@@ -1,3 +1,5 @@
+import json
+
 import access_control.rest
 import authentication_service.rest
 import user_data_store.rest
@@ -17,5 +19,10 @@ def client_exception_handler():
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
         raise web.HTTPBadGateway(
-            text="Exception Type: {}.{}\nStatus: {}\nReason: {}\nBody: {}".format(
-                re.__module__, re.__class__.__name__, re.status, re.reason, re.body))
+            headers={"content-type": "application/json"},
+            text=json.dumps({
+                "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
+                "status": re.status,
+                "reason": re.reason,
+                "body": re.body
+            }))
