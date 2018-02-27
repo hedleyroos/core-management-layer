@@ -8502,7 +8502,12 @@ class __SWAGGER_SPEC__(View):
             "flow": "accessCode",
             "scopes": {
                 "roles": "Grants access to user roles",
-                "site": "Grants access to site-specific data"
+                "site": "Grants access to site-specific data",
+                "openid": "Grants access to fields required by OpenID",
+                "profile": "Profile fields",
+                "email": "Email",
+                "address": "Addresses",
+                "phone": "Phone numbers"
             },
             "tokenUrl": "http:///localhost:8000/openid/token",
             "type": "oauth2"
@@ -8511,10 +8516,17 @@ class __SWAGGER_SPEC__(View):
     "swagger": "2.0"
 }""")
         # Mod spec to point to demo application
+        from management_layer import settings
         spec["basePath"] = "/"
-        spec["host"] = "localhost:8000"
+        spec["host"] = "localhost:{}".format(settings.PORT)
         # Add basic auth as a security definition
         security_definitions = spec.get("securityDefinitions", {})
         security_definitions["basic_auth"] = {"type": "basic"}
+
+        # security_definitions["OAuth2"]["flow"] = "implicit"
+        security_definitions["OAuth2"]["authorizationUrl"] = \
+            settings.AUTHENTICATION_SERVICE_API.replace("/api/v1", "/openid/authorize")
+        security_definitions["OAuth2"]["tokenUrl"] = \
+            settings.AUTHENTICATION_SERVICE_API.replace("/api/v1", "/openid/token")
         spec["securityDefinitions"] = security_definitions
         return json_response(spec)
