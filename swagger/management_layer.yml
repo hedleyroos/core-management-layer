@@ -9,6 +9,11 @@ securityDefinitions:
     authorizationUrl: http://localhost:8000/openid/authorize
     tokenUrl: http:///localhost:8000/openid/token
     scopes:
+      openid: Grants access to fields required by OpenID
+      profile: Profile fields
+      email: Email
+      address: Addresses
+      phone: Phone numbers
       roles: Grants access to user roles
       site: Grants access to site-specific data
 
