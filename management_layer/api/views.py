@@ -3685,9 +3685,7 @@ class UsersiterolesUserIdSiteIdRoleId(View):
 
 
 class __SWAGGER_SPEC__(View):
-
-    async def get(self):
-        spec = json.loads("""{
+    SPEC = json.loads("""{
     "basePath": "/api/v1",
     "definitions": {
         "Address": {
@@ -8494,20 +8492,29 @@ class __SWAGGER_SPEC__(View):
     "security": [
         {
             "OAuth2": []
+        },
+        {
+            "ApiKeyAuth": []
         }
     ],
     "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Workaround for lack of OIDC support. Use \\"Bearer id_token_goes_here\\" as the value.",
+            "in": "header",
+            "name": "Authorization",
+            "type": "apiKey"
+        },
         "OAuth2": {
             "authorizationUrl": "http://localhost:8000/openid/authorize",
             "flow": "accessCode",
             "scopes": {
-                "roles": "Grants access to user roles",
-                "site": "Grants access to site-specific data",
-                "openid": "Grants access to fields required by OpenID",
-                "profile": "Profile fields",
-                "email": "Email",
                 "address": "Addresses",
-                "phone": "Phone numbers"
+                "email": "Email",
+                "openid": "Grants access to fields required by OpenID",
+                "phone": "Phone numbers",
+                "profile": "Profile fields",
+                "roles": "Grants access to user roles",
+                "site": "Grants access to site-specific data"
             },
             "tokenUrl": "http:///localhost:8000/openid/token",
             "type": "oauth2"
@@ -8515,18 +8522,17 @@ class __SWAGGER_SPEC__(View):
     },
     "swagger": "2.0"
 }""")
+
+    async def get(self):
+        """
+        Override this function if further customisation to the spec is required.
+        """
         # Mod spec to point to demo application
-        from management_layer import settings
+        spec = self.SPEC.copy()
         spec["basePath"] = "/"
-        spec["host"] = "localhost:{}".format(settings.PORT)
+        spec["host"] = "localhost:8000"
         # Add basic auth as a security definition
         security_definitions = spec.get("securityDefinitions", {})
         security_definitions["basic_auth"] = {"type": "basic"}
-
-        # security_definitions["OAuth2"]["flow"] = "implicit"
-        security_definitions["OAuth2"]["authorizationUrl"] = \
-            settings.AUTHENTICATION_SERVICE_API.replace("/api/v1", "/openid/authorize")
-        security_definitions["OAuth2"]["tokenUrl"] = \
-            settings.AUTHENTICATION_SERVICE_API.replace("/api/v1", "/openid/token")
         spec["securityDefinitions"] = security_definitions
         return json_response(spec)
