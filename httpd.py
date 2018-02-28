@@ -4,7 +4,7 @@ from aiohttp import web
 import access_control
 import authentication_service
 import user_data_store
-from management_layer import settings
+from management_layer import settings, views
 from management_layer.api.urls import add_routes
 from management_layer.middleware import auth_middleware
 
@@ -63,6 +63,13 @@ if __name__ == "__main__":
 
     app.on_shutdown.append(on_shutdown)
     add_routes(app, with_ui=settings.WITH_UI)
+    if settings.WITH_UI:
+        # Override default spec view.
+        app.router._resources = [
+            resource for resource in app.router._resources
+            if not hasattr(resource, "_path") or resource._path != "/the_specification"
+        ]
+        app.router.add_view(r"/the_specification", views.SwaggerSpec)
 
     print("Listening on port {}".format(settings.PORT))
     web.run_app(app, port=settings.PORT)
