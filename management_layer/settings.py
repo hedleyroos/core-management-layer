@@ -5,9 +5,9 @@ import os
 CACHE_TIME = 5 * 60
 
 # Authentication middleware related settings
-JWT_SECRET = os.getenv("JWT_SECRET", "b33c6a4757a389802bd81f91bc8986dc5d80773083b99b547e3899db")  # TODO: Remove default value
+JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-AUDIENCE = os.getenv("JWT_AUDIENCE", "886994")  # TODO: Remove default value
+AUDIENCE = os.getenv("JWT_AUDIENCE")
 
 # Warning: Never set this to true on a production system as it
 # bypasses token authentication.
