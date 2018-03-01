@@ -9,11 +9,22 @@ securityDefinitions:
     authorizationUrl: http://localhost:8000/openid/authorize
     tokenUrl: http:///localhost:8000/openid/token
     scopes:
+      openid: Grants access to fields required by OpenID
+      profile: Profile fields
+      email: Email
+      address: Addresses
+      phone: Phone numbers
       roles: Grants access to user roles
       site: Grants access to site-specific data
+  ApiKeyAuth:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: Workaround for lack of OIDC support. Use "Bearer id_token_goes_here" as the value.
 
 security:
   - OAuth2: []
+  - ApiKeyAuth: []
 
 schemes:
   - http

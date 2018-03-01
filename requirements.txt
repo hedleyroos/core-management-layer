@@ -10,3 +10,4 @@ apitools  # For mock class in generated server code.
 rstr      # For mock class in generated server code.
 urllib3
 certifi
+pyjwt

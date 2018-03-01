@@ -3685,9 +3685,7 @@ class UsersiterolesUserIdSiteIdRoleId(View):
 
 
 class __SWAGGER_SPEC__(View):
-
-    async def get(self):
-        spec = json.loads("""{
+    SPEC = json.loads("""{
     "basePath": "/api/v1",
     "definitions": {
         "Address": {
@@ -8494,13 +8492,27 @@ class __SWAGGER_SPEC__(View):
     "security": [
         {
             "OAuth2": []
+        },
+        {
+            "ApiKeyAuth": []
         }
     ],
     "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Workaround for lack of OIDC support. Use \\"Bearer id_token_goes_here\\" as the value.",
+            "in": "header",
+            "name": "Authorization",
+            "type": "apiKey"
+        },
         "OAuth2": {
             "authorizationUrl": "http://localhost:8000/openid/authorize",
             "flow": "accessCode",
             "scopes": {
+                "address": "Addresses",
+                "email": "Email",
+                "openid": "Grants access to fields required by OpenID",
+                "phone": "Phone numbers",
+                "profile": "Profile fields",
                 "roles": "Grants access to user roles",
                 "site": "Grants access to site-specific data"
             },
@@ -8510,7 +8522,13 @@ class __SWAGGER_SPEC__(View):
     },
     "swagger": "2.0"
 }""")
+
+    async def get(self):
+        """
+        Override this function if further customisation to the spec is required.
+        """
         # Mod spec to point to demo application
+        spec = self.SPEC.copy()
         spec["basePath"] = "/"
         spec["host"] = "localhost:8000"
         # Add basic auth as a security definition
