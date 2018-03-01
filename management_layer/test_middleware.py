@@ -95,9 +95,9 @@ class MiddlewareTest(AioHTTPTestCase):
 
         # Fiddle with the audience
         tweaked_data = self.id_token_data.copy()
-        tweaked_data["audience"] = "someone_else"
+        tweaked_data["aud"] = "someone_else"
         id_token = jwt.encode(
-            payload=self.id_token_data,
+            payload=tweaked_data,
             key=TEST_SECRET,
             algorithm=TEST_ALGORITHM,
         ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
