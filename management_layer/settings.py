@@ -7,7 +7,7 @@ CACHE_TIME = 5 * 60
 # Authentication middleware related settings
 JWT_SECRET = os.getenv("JWT_SECRET")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-AUDIENCE = os.getenv("JWT_AUDIENCE")
+JWT_AUDIENCE = os.getenv("JWT_AUDIENCE")
 
 # Warning: Never set this to true on a production system as it
 # bypasses token authentication.

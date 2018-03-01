@@ -42,22 +42,33 @@ To obtain a key that be used to demonstrate the API functionality via
 the Swagger UI, do the following:
 
 ```
-curl -d grant_type=password -d username=admin -d password=local -d client_id=client_id_1 -d client_secret=super_client_secret_1 -d scope=openid%20profile%20email%20address%20phone%20site%20roles -X POST "http://172.18.0.3:8000/openid/token/"
+curl -d grant_type=password -d username=admin -d password=local -d client_id=management_layer_workaround -d client_secret=management_layer_workaround -d scope=openid%20profile%20email%20address%20phone%20site%20roles -X POST "http://172.18.0.3:8000/openid/token/" --proxy "http://localhost:3128" | python -m json.tool
 ```
 The response will look like this:
 ```json
 {
-    "access_token": "a229b25953874582849298c69ec9d7f8",
+    "access_token": "875d64bae0284ab9849badb7d419acf1",
     "expires_in": 3600,
-    "id_token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTcyLjE4LjAuMzo4MDAwL29wZW5pZCIsInN1YiI6ImJjMzZiNDM2LTEwOTEtMTFlOC1iYzBmLTAyNDJhYzEyMDAwMyIsImF1ZCI6ImNsaWVudF9pZF8xIiwiZXhwIjoxNTE5ODQyMzkzLCJpYXQiOjE1MTk4NDE3OTMsImF1dGhfdGltZSI6MTUxOTgxNTM2Nywibm9uY2UiOiJzZWxmLmNvZGUubm9uY2UiLCJhdF9oYXNoIjoiS1VxUTV1UTFhWncxcjRHeTZQblNmdyJ9.D-_Ww_dwF1uXHw-Vpfa808S3s46386D5FACLfczfqPs",
-    "refresh_token": "3f3f53de8f1f49d9851902aca0f9add8",
+    "id_token": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTcyLjE4LjAuMzo4MDAwL29wZW5pZCIsInN1YiI6ImJjMzZiNDM2LTEwOTEtMTFlOC1iYzBmLTAyNDJhYzEyMDAwMyIsImF1ZCI6Im1hbmFnZW1lbnRfbGF5ZXJfd29ya2Fyb3VuZCIsImV4cCI6MTUxOTg5MzIzNiwiaWF0IjoxNTE5ODkyNjM2LCJhdXRoX3RpbWUiOjE1MTk4NDY5MTAsIm5vbmNlIjoic2VsZi5jb2RlLm5vbmNlIiwiYXRfaGFzaCI6IlFCVzBvMUZUb196TXpyTWM3YWY5NHcifQ.keXF-fXtRosaU-C9GKE60JPYERTjR_l6f9EEHppolys",
+    "refresh_token": "e2c0c5458a2b4ea4bed5ffca4c825af8",
     "token_type": "bearer"
 }
 ```
 Copy the `id_token` and use it with the API Key Authentication method of
 the Swagger UI. The value of the field must be `bearer <id_token>`.
 
+### Checking identity tokens
 
+Paste the token into form provided by [https://jwt.io](jwt.io).
 
+### Checking timestamps
+
+The `exp`, `iat` and `issued_at` fields are seconds since the Epoch.
+To quickly convert to a human readable datetime, use the following bash
+command :
+```
+printf "%(%F %T)T" 1519893236
+2018-03-01 10:33:56
+```
 
 

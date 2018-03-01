@@ -1,3 +1,4 @@
+import os
 from aiohttp.web_response import json_response
 
 from management_layer import settings
@@ -9,7 +10,7 @@ class SwaggerSpec(__SWAGGER_SPEC__):
     async def get(self):
         spec = self.SPEC.copy()
         spec["basePath"] = "/"
-        spec["host"] = "localhost:{}".format(settings.PORT)
+        spec["host"] = "{}:{}".format(os.getenv("UI_HOST", "localhost"), settings.PORT)
         # Add basic auth as a security definition
         security_definitions = spec.get("securityDefinitions", {})
         security_definitions["OAuth2"]["authorizationUrl"] = \
