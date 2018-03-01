@@ -9,24 +9,34 @@ LOGGER = logging.getLogger(__name__)
 INVALID_TOKEN_STATUS = 401
 MISSING_TOKEN_STATUS = 400
 
+TOKEN_PREFIX = "bearer "
+TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
+
 
 async def auth_middleware(app, handler):
     async def middleware(request):
-        jwt_token = request.headers.get("authorization", None)
-        if jwt_token:
-            jwt_token = jwt_token.split(" ")[1]  # Strip the "bearer " prefix
-            LOGGER.debug("JWT Token: {}".format(jwt_token))
-            LOGGER.debug(jwt.get_unverified_header(jwt_token))
+        authorization_header = request.headers.get("authorization", None)
+        if authorization_header:
+            if not authorization_header.lower().startswith(TOKEN_PREFIX):
+                return json_response({"message": "Malformed authorization header"},
+                                     status=INVALID_TOKEN_STATUS)
+
+            jwt_token = authorization_header[TOKEN_PREFIX_LENGTH:]
             try:
+                LOGGER.debug("JWT Token: {}".format(jwt_token.encode("utf-8")))
+                LOGGER.debug(jwt.get_unverified_header(jwt_token))
                 payload = jwt.decode(
                     jwt_token,
-                    settings.JWT_SECRET,
+                    key=settings.JWT_SECRET,
                     algorithms=[settings.JWT_ALGORITHM],
-                    audience=settings.JWT_AUDIENCE
+                    audience=settings.JWT_AUDIENCE,
+                    options={
+                        "verify_aud": True
+                    }
                 )
                 LOGGER.debug("Token payload: {}".format(payload))
-            except jwt.DecodeError:
-                return json_response({"message": "Token is invalid"},
+            except jwt.DecodeError as e:
+                return json_response({"message": "Token is invalid: {}".format(e)},
                                      status=INVALID_TOKEN_STATUS)
             except jwt.ExpiredSignatureError:
                 return json_response({"message": "Token expired"},
