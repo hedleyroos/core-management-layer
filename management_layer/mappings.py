@@ -24,6 +24,7 @@ PERMISSION_NAME_TO_ID_MAP = {}
 RESOURCE_URN_TO_ID_MAP = {}
 ROLE_LABEL_TO_ID_MAP = {}
 SITE_NAME_TO_ID_MAP = {}
+SITE_CLIENT_ID_TO_ID_MAP = {}
 
 # The API client used to load the data
 API = AccessControlApi()
@@ -95,6 +96,10 @@ def refresh_sites():
     global SITES
     global SITE_NAME_TO_ID_MAP
     SITES, SITE_NAME_TO_ID_MAP = _load(API.site_list, "name")
+    global SITE_CLIENT_ID_TO_ID_MAP
+    SITE_CLIENT_ID_TO_ID_MAP = {
+        detail["client_id"]: id_ for id_, detail in SITES.items()
+    }
 
 
 def refresh_all():
