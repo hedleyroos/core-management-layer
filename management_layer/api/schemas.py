@@ -12,159 +12,6 @@ import json
 # When no schema is provided in the definition, we use an empty schema
 __UNSPECIFIED__ = {}
 
-Address = json.loads("""
-{
-    "description": "OIDC Address structure",
-    "properties": {
-        "country": {
-            "type": "string"
-        },
-        "locality": {
-            "type": "string"
-        },
-        "postal_code": {
-            "type": "string"
-        },
-        "region": {
-            "type": "string"
-        },
-        "street_address": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-""")
-
-Client = json.loads("""
-{
-    "description": "Client object",
-    "minProperties": 1,
-    "properties": {
-        "application_type": {
-            "type": "string"
-        },
-        "client_id": {
-            "type": "string"
-        },
-        "client_name": {
-            "type": "string"
-        },
-        "client_uri": {
-            "type": "string"
-        },
-        "contacts": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "default_max_age": {
-            "format": "int64",
-            "type": "integer"
-        },
-        "default_scopes": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "grant_types": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "logo_uri": {
-            "type": "string"
-        },
-        "policy_uri": {
-            "type": "string"
-        },
-        "redirect_uris": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "response_types": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "tos_uri": {
-            "type": "string"
-        }
-    },
-    "required": [
-        "client_name",
-        "client_uri"
-    ],
-    "type": "object"
-}
-""")
-
-UserInfo = json.loads("""
-{
-    "description": "OIDC UserInfo structure",
-    "properties": {
-        "address": {
-            "description": "OIDC Address structure",
-            "properties": {
-                "country": {
-                    "type": "string"
-                },
-                "locality": {
-                    "type": "string"
-                },
-                "postal_code": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "street_address": {
-                    "type": "string"
-                }
-            },
-            "type": "object",
-            "x-scope": [
-                ""
-            ]
-        },
-        "email": {
-            "type": "string"
-        },
-        "email_verified": {
-            "type": "boolean"
-        },
-        "family_name": {
-            "type": "string"
-        },
-        "given_name": {
-            "type": "string"
-        },
-        "name": {
-            "type": "string"
-        },
-        "phone_number": {
-            "type": "string"
-        },
-        "phone_number_verified": {
-            "type": "boolean"
-        },
-        "sub": {
-            "type": "string"
-        }
-    },
-    "required": [
-        "sub"
-    ],
-    "type": "object"
-}
-""")
-
 admin_note = json.loads("""
 {
     "properties": {
@@ -302,10 +149,6 @@ client = json.loads("""
             "description": "",
             "type": "string"
         },
-        "client_type": {
-            "description": "<b>Confidential</b> clients are capable of maintaining the confidentiality of their credentials. <b>Public</b> clients are incapable.",
-            "type": "string"
-        },
         "contact_email": {
             "description": "",
             "type": "string"
@@ -313,10 +156,6 @@ client = json.loads("""
         "id": {
             "readOnly": true,
             "type": "integer"
-        },
-        "jwt_alg": {
-            "description": "Algorithm used to encode ID Tokens.",
-            "type": "string"
         },
         "logo": {
             "description": "",
@@ -350,71 +189,6 @@ client = json.loads("""
     },
     "required": [
         "id",
-        "client_id",
-        "response_type"
-    ],
-    "type": "object"
-}
-""")
-
-client_create = json.loads("""
-{
-    "properties": {
-        "_post_logout_redirect_uris": {
-            "description": "New-line delimited list of post-logout redirect URIs",
-            "type": "string"
-        },
-        "_redirect_uris": {
-            "description": "New-line delimited list of redirect URIs",
-            "type": "string"
-        },
-        "client_id": {
-            "description": "",
-            "type": "string"
-        },
-        "client_type": {
-            "description": "<b>Confidential</b> clients are capable of maintaining the confidentiality of their credentials. <b>Public</b> clients are incapable.",
-            "type": "string"
-        },
-        "contact_email": {
-            "description": "",
-            "type": "string"
-        },
-        "jwt_alg": {
-            "description": "Algorithm used to encode ID Tokens.",
-            "type": "string"
-        },
-        "logo": {
-            "description": "",
-            "format": "uri",
-            "type": "string"
-        },
-        "name": {
-            "description": "",
-            "type": "string"
-        },
-        "require_consent": {
-            "description": "If disabled, the Server will NEVER ask the user for consent.",
-            "type": "boolean"
-        },
-        "response_type": {
-            "description": "",
-            "type": "string"
-        },
-        "reuse_consent": {
-            "description": "If enabled, the Server will save the user consent given to a specific client, so that user wont be prompted for the same authorization multiple times.",
-            "type": "boolean"
-        },
-        "terms_url": {
-            "description": "External reference to the privacy policy of the client.",
-            "type": "string"
-        },
-        "website_url": {
-            "description": "",
-            "type": "string"
-        }
-    },
-    "required": [
         "client_id",
         "response_type"
     ],

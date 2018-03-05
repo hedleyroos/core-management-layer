@@ -2,7 +2,7 @@
 """
     Authentication Service API
 
-    This is the API that will be exposed by the Authentication Service.  The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
+    This is the API that will be exposed by the Authentication Service. The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
 
     OpenAPI spec version: 1.0
     

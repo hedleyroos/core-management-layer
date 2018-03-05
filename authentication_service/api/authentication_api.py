@@ -3,7 +3,7 @@
 """
     Authentication Service API
 
-    This is the API that will be exposed by the Authentication Service.  The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
+    This is the API that will be exposed by the Authentication Service. The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
 
     OpenAPI spec version: 1.0
     
@@ -33,65 +33,49 @@ class AuthenticationApi(object):
             api_client = ApiClient()
         self.api_client = api_client
 
-    def authorize(self, client_id, response_type, scope, redirect_uri, state, **kwargs):  # noqa: E501
-        """Authenticate a user  # noqa: E501
+    def client_list(self, **kwargs):  # noqa: E501
+        """client_list  # noqa: E501
 
-        Example: ``` GET https://localhost:8000/authorize?client_id=<your-client-id>&response_type=code+id_token&scope=openid+email&redirect_uri=<your-redirect-uri>&state=0123456789 ``` This endpoint is compatible with OpenID Connect and also supports the POST method, in which case the parameters are passed as a form post. See also:   - [OAuth 2.0 Authorization Endpoint](http://tools.ietf.org/html/rfc6749#section-3.1)   - [OIDC Authentication request](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)   - [OIDC Successful Authentication response](http://openid.net/specs/openid-connect-core-1_0.html#AuthResponse)   - [OIDC Error Authentication response](http://openid.net/specs/openid-connect-core-1_0.html#AuthError)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.authorize(client_id, response_type, scope, redirect_uri, state, async=True)
+        >>> thread = api.client_list(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str client_id: A client ID obtained from the [Dashboard](https://localhost:8000/admin/).  (required)
-        :param str response_type: The OIDC response type to use for this authentication flow. Valid choices are `code`, `id_token`, `token`, `token id_token`, `code id_token` `code token` and `code token id_token`, but a client can be configured with a more restricted set.  (required)
-        :param str scope: The space-separated identity claims to request from the end-user. Always include `openid` as a scope for compatibility with OIDC.  (required)
-        :param str redirect_uri: The location to redirect to after (un)successful authentication. See OIDC for the parameters passed in the query string (`response_mode=query`) or as fragments (`response_mode=fragment`). This must be one of the registered redirect URLs.  (required)
-        :param str state: An opaque string that will be passed back to the redirect URL and therefore can be used to communicate client side state and prevent CSRF attacks.  (required)
-        :param str response_mode: Whether to append parameters to the redirect URL in the query string (`query`) or as fragments (`fragment`). This option usually has a sensible default for each of the response types. 
-        :param str nonce: An nonce provided by the client that will be included in any ID Token generated for this session. Clients should use the nonce to mitigate replay attacks. 
-        :param str display: The authentication display mode, which can be one of `page`, `popup` or `modal`. Defaults to `page`. 
-        :param str prompt: Space-delimited, case sensitive list of ASCII string values that specifies whether the Authorization Server prompts the End-User for re-authentication and consent. The supported values are: `none`, `login`, `consent`. If `consent` the end-user is asked to (re)confirm what claims they share. Use `none` to check for an active session. 
-        :param int max_age: Specifies the allowable elapsed time in seconds since the last time the end-user was actively authenticated. 
-        :param str ui_locales: Specifies the preferred language to use on the authorization page, as a space-separated list of BCP47 language tags. Ignored at the moment. 
-        :return: None
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] client_ids: An optional list of client ids
+        :param str client_id: An optional client id to filter on. This is not the primary key.
+        :return: list[Client]
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.authorize_with_http_info(client_id, response_type, scope, redirect_uri, state, **kwargs)  # noqa: E501
+            return self.client_list_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.authorize_with_http_info(client_id, response_type, scope, redirect_uri, state, **kwargs)  # noqa: E501
+            (data) = self.client_list_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def authorize_with_http_info(self, client_id, response_type, scope, redirect_uri, state, **kwargs):  # noqa: E501
-        """Authenticate a user  # noqa: E501
+    def client_list_with_http_info(self, **kwargs):  # noqa: E501
+        """client_list  # noqa: E501
 
-        Example: ``` GET https://localhost:8000/authorize?client_id=<your-client-id>&response_type=code+id_token&scope=openid+email&redirect_uri=<your-redirect-uri>&state=0123456789 ``` This endpoint is compatible with OpenID Connect and also supports the POST method, in which case the parameters are passed as a form post. See also:   - [OAuth 2.0 Authorization Endpoint](http://tools.ietf.org/html/rfc6749#section-3.1)   - [OIDC Authentication request](http://openid.net/specs/openid-connect-core-1_0.html#AuthRequest)   - [OIDC Successful Authentication response](http://openid.net/specs/openid-connect-core-1_0.html#AuthResponse)   - [OIDC Error Authentication response](http://openid.net/specs/openid-connect-core-1_0.html#AuthError)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.authorize_with_http_info(client_id, response_type, scope, redirect_uri, state, async=True)
+        >>> thread = api.client_list_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str client_id: A client ID obtained from the [Dashboard](https://localhost:8000/admin/).  (required)
-        :param str response_type: The OIDC response type to use for this authentication flow. Valid choices are `code`, `id_token`, `token`, `token id_token`, `code id_token` `code token` and `code token id_token`, but a client can be configured with a more restricted set.  (required)
-        :param str scope: The space-separated identity claims to request from the end-user. Always include `openid` as a scope for compatibility with OIDC.  (required)
-        :param str redirect_uri: The location to redirect to after (un)successful authentication. See OIDC for the parameters passed in the query string (`response_mode=query`) or as fragments (`response_mode=fragment`). This must be one of the registered redirect URLs.  (required)
-        :param str state: An opaque string that will be passed back to the redirect URL and therefore can be used to communicate client side state and prevent CSRF attacks.  (required)
-        :param str response_mode: Whether to append parameters to the redirect URL in the query string (`query`) or as fragments (`fragment`). This option usually has a sensible default for each of the response types. 
-        :param str nonce: An nonce provided by the client that will be included in any ID Token generated for this session. Clients should use the nonce to mitigate replay attacks. 
-        :param str display: The authentication display mode, which can be one of `page`, `popup` or `modal`. Defaults to `page`. 
-        :param str prompt: Space-delimited, case sensitive list of ASCII string values that specifies whether the Authorization Server prompts the End-User for re-authentication and consent. The supported values are: `none`, `login`, `consent`. If `consent` the end-user is asked to (re)confirm what claims they share. Use `none` to check for an active session. 
-        :param int max_age: Specifies the allowable elapsed time in seconds since the last time the end-user was actively authenticated. 
-        :param str ui_locales: Specifies the preferred language to use on the authorization page, as a space-separated list of BCP47 language tags. Ignored at the moment. 
-        :return: None
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] client_ids: An optional list of client ids
+        :param str client_id: An optional client id to filter on. This is not the primary key.
+        :return: list[Client]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['client_id', 'response_type', 'scope', 'redirect_uri', 'state', 'response_mode', 'nonce', 'display', 'prompt', 'max_age', 'ui_locales']  # noqa: E501
+        all_params = ['offset', 'limit', 'client_ids', 'client_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -102,58 +86,220 @@ class AuthenticationApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method authorize" % key
+                    " to method client_list" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        if 'offset' in params and params['offset'] < 0:  # noqa: E501
+            raise ValueError("Invalid value for parameter `offset` when calling `client_list`, must be a value greater than or equal to `0`")  # noqa: E501
+        if 'limit' in params and params['limit'] > 100:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `client_list`, must be a value less than or equal to `100`")  # noqa: E501
+        if 'limit' in params and params['limit'] < 1:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `client_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('client_ids' in params and
+                len(params['client_ids']) < 0):
+            raise ValueError("Invalid value for parameter `client_ids` when calling `client_list`, number of items must be greater than or equal to `0`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'offset' in params:
+            query_params.append(('offset', params['offset']))  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'client_ids' in params:
+            query_params.append(('client_ids', params['client_ids']))  # noqa: E501
+            collection_formats['client_ids'] = 'multi'  # noqa: E501
+        if 'client_id' in params:
+            query_params.append(('client_id', params['client_id']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/clients', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[Client]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def client_read(self, client_id, **kwargs):  # noqa: E501
+        """client_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.client_read(client_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str client_id: A string value identifying the client (required)
+        :return: Client
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.client_read_with_http_info(client_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.client_read_with_http_info(client_id, **kwargs)  # noqa: E501
+            return data
+
+    def client_read_with_http_info(self, client_id, **kwargs):  # noqa: E501
+        """client_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.client_read_with_http_info(client_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str client_id: A string value identifying the client (required)
+        :return: Client
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['client_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method client_read" % key
                 )
             params[key] = val
         del params['kwargs']
         # verify the required parameter 'client_id' is set
         if ('client_id' not in params or
                 params['client_id'] is None):
-            raise ValueError("Missing the required parameter `client_id` when calling `authorize`")  # noqa: E501
-        # verify the required parameter 'response_type' is set
-        if ('response_type' not in params or
-                params['response_type'] is None):
-            raise ValueError("Missing the required parameter `response_type` when calling `authorize`")  # noqa: E501
-        # verify the required parameter 'scope' is set
-        if ('scope' not in params or
-                params['scope'] is None):
-            raise ValueError("Missing the required parameter `scope` when calling `authorize`")  # noqa: E501
-        # verify the required parameter 'redirect_uri' is set
-        if ('redirect_uri' not in params or
-                params['redirect_uri'] is None):
-            raise ValueError("Missing the required parameter `redirect_uri` when calling `authorize`")  # noqa: E501
-        # verify the required parameter 'state' is set
-        if ('state' not in params or
-                params['state'] is None):
-            raise ValueError("Missing the required parameter `state` when calling `authorize`")  # noqa: E501
+            raise ValueError("Missing the required parameter `client_id` when calling `client_read`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'client_id' in params:
+            path_params['client_id'] = params['client_id']  # noqa: E501
 
         query_params = []
-        if 'client_id' in params:
-            query_params.append(('client_id', params['client_id']))  # noqa: E501
-        if 'response_type' in params:
-            query_params.append(('response_type', params['response_type']))  # noqa: E501
-        if 'scope' in params:
-            query_params.append(('scope', params['scope']))  # noqa: E501
-        if 'redirect_uri' in params:
-            query_params.append(('redirect_uri', params['redirect_uri']))  # noqa: E501
-        if 'state' in params:
-            query_params.append(('state', params['state']))  # noqa: E501
-        if 'response_mode' in params:
-            query_params.append(('response_mode', params['response_mode']))  # noqa: E501
-        if 'nonce' in params:
-            query_params.append(('nonce', params['nonce']))  # noqa: E501
-        if 'display' in params:
-            query_params.append(('display', params['display']))  # noqa: E501
-        if 'prompt' in params:
-            query_params.append(('prompt', params['prompt']))  # noqa: E501
-        if 'max_age' in params:
-            query_params.append(('max_age', params['max_age']))  # noqa: E501
-        if 'ui_locales' in params:
-            query_params.append(('ui_locales', params['ui_locales']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/clients/{client_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Client',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def user_delete(self, user_id, **kwargs):  # noqa: E501
+        """user_delete  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.user_delete(user_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str user_id: A UUID value identifying the user. (required)
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.user_delete_with_http_info(user_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.user_delete_with_http_info(user_id, **kwargs)  # noqa: E501
+            return data
+
+    def user_delete_with_http_info(self, user_id, **kwargs):  # noqa: E501
+        """user_delete  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.user_delete_with_http_info(user_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str user_id: A UUID value identifying the user. (required)
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['user_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method user_delete" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'user_id' is set
+        if ('user_id' not in params or
+                params['user_id'] is None):
+            raise ValueError("Missing the required parameter `user_id` when calling `user_delete`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'user_id' in params:
+            path_params['user_id'] = params['user_id']  # noqa: E501
+
+        query_params = []
 
         header_params = {}
 
@@ -165,7 +311,7 @@ class AuthenticationApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/openid/authorize', 'GET',
+            '/users/{user_id}', 'DELETE',
             path_params,
             query_params,
             header_params,
@@ -180,47 +326,51 @@ class AuthenticationApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def token(self, **kwargs):  # noqa: E501
-        """Obtain an ID Token  # noqa: E501
+    def user_list(self, **kwargs):  # noqa: E501
+        """user_list  # noqa: E501
 
-        Exchange an authorization code for an ID Token or Access Token. This endpoint supports both `client_secret_post` and `client_secret_basic` authentication methods, as specified by the client's `token_endpoint_auth_method`. See also:   - [OIDC Token Endpoint](http://openid.net/specs/openid-connect-core-1_0.html#TokenRequest)   - [OIDC Successful Token response](http://openid.net/specs/openid-connect-core-1_0.html#TokenResponse)   - [OIDC Token Error response](http://openid.net/specs/openid-connect-core-1_0.html#TokenError)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.token(async=True)
+        >>> thread = api.user_list(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str authorization: HTTP Basic authorization header. 
-        :param Content content:
-        :return: Token
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param str email: An optional email filter
+        :param str username_prefix: An optional username prefix filter
+        :param list[str] user_ids: An optional list of user ids
+        :return: list[User]
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.token_with_http_info(**kwargs)  # noqa: E501
+            return self.user_list_with_http_info(**kwargs)  # noqa: E501
         else:
-            (data) = self.token_with_http_info(**kwargs)  # noqa: E501
+            (data) = self.user_list_with_http_info(**kwargs)  # noqa: E501
             return data
 
-    def token_with_http_info(self, **kwargs):  # noqa: E501
-        """Obtain an ID Token  # noqa: E501
+    def user_list_with_http_info(self, **kwargs):  # noqa: E501
+        """user_list  # noqa: E501
 
-        Exchange an authorization code for an ID Token or Access Token. This endpoint supports both `client_secret_post` and `client_secret_basic` authentication methods, as specified by the client's `token_endpoint_auth_method`. See also:   - [OIDC Token Endpoint](http://openid.net/specs/openid-connect-core-1_0.html#TokenRequest)   - [OIDC Successful Token response](http://openid.net/specs/openid-connect-core-1_0.html#TokenResponse)   - [OIDC Token Error response](http://openid.net/specs/openid-connect-core-1_0.html#TokenError)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.token_with_http_info(async=True)
+        >>> thread = api.user_list_with_http_info(async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param str authorization: HTTP Basic authorization header. 
-        :param Content content:
-        :return: Token
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param str email: An optional email filter
+        :param str username_prefix: An optional username prefix filter
+        :param list[str] user_ids: An optional list of user ids
+        :return: list[User]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['authorization', 'content']  # noqa: E501
+        all_params = ['offset', 'limit', 'email', 'username_prefix', 'user_ids']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -231,27 +381,43 @@ class AuthenticationApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method token" % key
+                    " to method user_list" % key
                 )
             params[key] = val
         del params['kwargs']
 
+        if 'offset' in params and params['offset'] < 0:  # noqa: E501
+            raise ValueError("Invalid value for parameter `offset` when calling `user_list`, must be a value greater than or equal to `0`")  # noqa: E501
+        if 'limit' in params and params['limit'] > 100:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `user_list`, must be a value less than or equal to `100`")  # noqa: E501
+        if 'limit' in params and params['limit'] < 1:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `user_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('user_ids' in params and
+                len(params['user_ids']) < 0):
+            raise ValueError("Invalid value for parameter `user_ids` when calling `user_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
 
         query_params = []
+        if 'offset' in params:
+            query_params.append(('offset', params['offset']))  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'email' in params:
+            query_params.append(('email', params['email']))  # noqa: E501
+        if 'username_prefix' in params:
+            query_params.append(('username_prefix', params['username_prefix']))  # noqa: E501
+        if 'user_ids' in params:
+            query_params.append(('user_ids', params['user_ids']))  # noqa: E501
+            collection_formats['user_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
-        if 'authorization' in params:
-            header_params['Authorization'] = params['authorization']  # noqa: E501
 
         form_params = []
         local_var_files = {}
 
         body_params = None
-        if 'content' in params:
-            body_params = params['content']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -260,14 +426,14 @@ class AuthenticationApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/openid/token', 'POST',
+            '/users', 'GET',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Token',  # noqa: E501
+            response_type='list[User]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -275,43 +441,43 @@ class AuthenticationApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def user_info(self, **kwargs):  # noqa: E501
-        """Retrieve their user profile  # noqa: E501
+    def user_read(self, user_id, **kwargs):  # noqa: E501
+        """user_read  # noqa: E501
 
-        Use this endpoint to retrieve a user's profile in case you've not already obtained enough details from the ID Token via the Token Endpoint.  See also:  - [OIDC UserInfo endpoint](http://openid.net/specs/openid-connect-core-1_0.html#UserInfo)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.user_info(async=True)
+        >>> thread = api.user_read(user_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :return: UserInfo
+        :param str user_id: A UUID value identifying the user. (required)
+        :return: User
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.user_info_with_http_info(**kwargs)  # noqa: E501
+            return self.user_read_with_http_info(user_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.user_info_with_http_info(**kwargs)  # noqa: E501
+            (data) = self.user_read_with_http_info(user_id, **kwargs)  # noqa: E501
             return data
 
-    def user_info_with_http_info(self, **kwargs):  # noqa: E501
-        """Retrieve their user profile  # noqa: E501
+    def user_read_with_http_info(self, user_id, **kwargs):  # noqa: E501
+        """user_read  # noqa: E501
 
-        Use this endpoint to retrieve a user's profile in case you've not already obtained enough details from the ID Token via the Token Endpoint.  See also:  - [OIDC UserInfo endpoint](http://openid.net/specs/openid-connect-core-1_0.html#UserInfo)   # noqa: E501
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.user_info_with_http_info(async=True)
+        >>> thread = api.user_read_with_http_info(user_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :return: UserInfo
+        :param str user_id: A UUID value identifying the user. (required)
+        :return: User
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = []  # noqa: E501
+        all_params = ['user_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -322,14 +488,20 @@ class AuthenticationApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method user_info" % key
+                    " to method user_read" % key
                 )
             params[key] = val
         del params['kwargs']
+        # verify the required parameter 'user_id' is set
+        if ('user_id' not in params or
+                params['user_id'] is None):
+            raise ValueError("Missing the required parameter `user_id` when calling `user_read`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
+        if 'user_id' in params:
+            path_params['user_id'] = params['user_id']  # noqa: E501
 
         query_params = []
 
@@ -344,17 +516,118 @@ class AuthenticationApi(object):
             ['application/json'])  # noqa: E501
 
         # Authentication setting
-        auth_settings = ['oauth_code', 'oauth_implicit']  # noqa: E501
+        auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/openid/userinfo', 'GET',
+            '/users/{user_id}', 'GET',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='UserInfo',  # noqa: E501
+            response_type='User',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def user_update(self, user_id, **kwargs):  # noqa: E501
+        """user_update  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.user_update(user_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str user_id: A UUID value identifying the user. (required)
+        :param UserUpdate data:
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.user_update_with_http_info(user_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.user_update_with_http_info(user_id, **kwargs)  # noqa: E501
+            return data
+
+    def user_update_with_http_info(self, user_id, **kwargs):  # noqa: E501
+        """user_update  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.user_update_with_http_info(user_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str user_id: A UUID value identifying the user. (required)
+        :param UserUpdate data:
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['user_id', 'data']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method user_update" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'user_id' is set
+        if ('user_id' not in params or
+                params['user_id'] is None):
+            raise ValueError("Missing the required parameter `user_id` when calling `user_update`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'user_id' in params:
+            path_params['user_id'] = params['user_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'data' in params:
+            body_params = params['data']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/users/{user_id}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type=None,  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),

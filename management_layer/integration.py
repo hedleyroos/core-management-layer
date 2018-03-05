@@ -132,6 +132,7 @@ class Implementation(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
+        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
         """
         raise NotImplementedError()
 
@@ -139,7 +140,7 @@ class Implementation(AbstractStubClass):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A UUID value identifying the client
+        :param client_id: string A string value identifying the client
         """
         raise NotImplementedError()
 
@@ -1117,6 +1118,7 @@ class Implementation(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param email (optional): string An optional email filter
+        :param username_prefix (optional): string An optional username prefix filter
         :param user_ids (optional): array An optional list of user ids
         """
         raise NotImplementedError()
