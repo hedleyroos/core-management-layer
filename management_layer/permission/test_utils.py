@@ -145,10 +145,6 @@ class TestRequirePermissionsDecorator(TestCase):
 
     @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
-                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
-                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
