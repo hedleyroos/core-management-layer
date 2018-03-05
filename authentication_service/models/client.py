@@ -3,7 +3,7 @@
 """
     Authentication Service API
 
-    This is the API that will be exposed by the Authentication Service.  The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
+    This is the API that will be exposed by the Authentication Service. The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
 
     OpenAPI spec version: 1.0
     
@@ -31,84 +31,149 @@ class Client(object):
                             and the value is json key in definition.
     """
     swagger_types = {
+        'id': 'int',
+        'post_logout_redirect_uris': 'str',
+        'redirect_uris': 'str',
         'client_id': 'str',
-        'redirect_uris': 'list[str]',
-        'response_types': 'list[str]',
-        'grant_types': 'list[str]',
-        'application_type': 'str',
-        'contacts': 'list[str]',
-        'client_name': 'str',
-        'logo_uri': 'str',
-        'client_uri': 'str',
-        'policy_uri': 'str',
-        'tos_uri': 'str',
-        'default_max_age': 'int',
-        'default_scopes': 'list[str]'
+        'contact_email': 'str',
+        'logo': 'str',
+        'name': 'str',
+        'require_consent': 'bool',
+        'response_type': 'str',
+        'reuse_consent': 'bool',
+        'terms_url': 'str',
+        'website_url': 'str'
     }
 
     attribute_map = {
+        'id': 'id',
+        'post_logout_redirect_uris': '_post_logout_redirect_uris',
+        'redirect_uris': '_redirect_uris',
         'client_id': 'client_id',
-        'redirect_uris': 'redirect_uris',
-        'response_types': 'response_types',
-        'grant_types': 'grant_types',
-        'application_type': 'application_type',
-        'contacts': 'contacts',
-        'client_name': 'client_name',
-        'logo_uri': 'logo_uri',
-        'client_uri': 'client_uri',
-        'policy_uri': 'policy_uri',
-        'tos_uri': 'tos_uri',
-        'default_max_age': 'default_max_age',
-        'default_scopes': 'default_scopes'
+        'contact_email': 'contact_email',
+        'logo': 'logo',
+        'name': 'name',
+        'require_consent': 'require_consent',
+        'response_type': 'response_type',
+        'reuse_consent': 'reuse_consent',
+        'terms_url': 'terms_url',
+        'website_url': 'website_url'
     }
 
-    def __init__(self, client_id=None, redirect_uris=None, response_types=None, grant_types=None, application_type=None, contacts=None, client_name=None, logo_uri=None, client_uri=None, policy_uri=None, tos_uri=None, default_max_age=None, default_scopes=None):  # noqa: E501
+    def __init__(self, id=None, post_logout_redirect_uris=None, redirect_uris=None, client_id=None, contact_email=None, logo=None, name=None, require_consent=None, response_type=None, reuse_consent=None, terms_url=None, website_url=None):  # noqa: E501
         """Client - a model defined in Swagger"""  # noqa: E501
 
-        self._client_id = None
+        self._id = None
+        self._post_logout_redirect_uris = None
         self._redirect_uris = None
-        self._response_types = None
-        self._grant_types = None
-        self._application_type = None
-        self._contacts = None
-        self._client_name = None
-        self._logo_uri = None
-        self._client_uri = None
-        self._policy_uri = None
-        self._tos_uri = None
-        self._default_max_age = None
-        self._default_scopes = None
+        self._client_id = None
+        self._contact_email = None
+        self._logo = None
+        self._name = None
+        self._require_consent = None
+        self._response_type = None
+        self._reuse_consent = None
+        self._terms_url = None
+        self._website_url = None
         self.discriminator = None
 
-        if client_id is not None:
-            self.client_id = client_id
+        if id is not None:
+            self.id = id
+        if post_logout_redirect_uris is not None:
+            self.post_logout_redirect_uris = post_logout_redirect_uris
         if redirect_uris is not None:
             self.redirect_uris = redirect_uris
-        if response_types is not None:
-            self.response_types = response_types
-        if grant_types is not None:
-            self.grant_types = grant_types
-        if application_type is not None:
-            self.application_type = application_type
-        if contacts is not None:
-            self.contacts = contacts
-        self.client_name = client_name
-        if logo_uri is not None:
-            self.logo_uri = logo_uri
-        self.client_uri = client_uri
-        if policy_uri is not None:
-            self.policy_uri = policy_uri
-        if tos_uri is not None:
-            self.tos_uri = tos_uri
-        if default_max_age is not None:
-            self.default_max_age = default_max_age
-        if default_scopes is not None:
-            self.default_scopes = default_scopes
+        self.client_id = client_id
+        if contact_email is not None:
+            self.contact_email = contact_email
+        if logo is not None:
+            self.logo = logo
+        if name is not None:
+            self.name = name
+        if require_consent is not None:
+            self.require_consent = require_consent
+        self.response_type = response_type
+        if reuse_consent is not None:
+            self.reuse_consent = reuse_consent
+        if terms_url is not None:
+            self.terms_url = terms_url
+        if website_url is not None:
+            self.website_url = website_url
+
+    @property
+    def id(self):
+        """Gets the id of this Client.  # noqa: E501
+
+          # noqa: E501
+
+        :return: The id of this Client.  # noqa: E501
+        :rtype: int
+        """
+        return self._id
+
+    @id.setter
+    def id(self, id):
+        """Sets the id of this Client.
+
+          # noqa: E501
+
+        :param id: The id of this Client.  # noqa: E501
+        :type: int
+        """
+
+        self._id = id
+
+    @property
+    def post_logout_redirect_uris(self):
+        """Gets the post_logout_redirect_uris of this Client.  # noqa: E501
+
+        New-line delimited list of post-logout redirect URIs  # noqa: E501
+
+        :return: The post_logout_redirect_uris of this Client.  # noqa: E501
+        :rtype: str
+        """
+        return self._post_logout_redirect_uris
+
+    @post_logout_redirect_uris.setter
+    def post_logout_redirect_uris(self, post_logout_redirect_uris):
+        """Sets the post_logout_redirect_uris of this Client.
+
+        New-line delimited list of post-logout redirect URIs  # noqa: E501
+
+        :param post_logout_redirect_uris: The post_logout_redirect_uris of this Client.  # noqa: E501
+        :type: str
+        """
+
+        self._post_logout_redirect_uris = post_logout_redirect_uris
+
+    @property
+    def redirect_uris(self):
+        """Gets the redirect_uris of this Client.  # noqa: E501
+
+        New-line delimited list of redirect URIs  # noqa: E501
+
+        :return: The redirect_uris of this Client.  # noqa: E501
+        :rtype: str
+        """
+        return self._redirect_uris
+
+    @redirect_uris.setter
+    def redirect_uris(self, redirect_uris):
+        """Sets the redirect_uris of this Client.
+
+        New-line delimited list of redirect URIs  # noqa: E501
+
+        :param redirect_uris: The redirect_uris of this Client.  # noqa: E501
+        :type: str
+        """
+
+        self._redirect_uris = redirect_uris
 
     @property
     def client_id(self):
         """Gets the client_id of this Client.  # noqa: E501
 
+          # noqa: E501
 
         :return: The client_id of this Client.  # noqa: E501
         :rtype: str
@@ -119,268 +184,201 @@ class Client(object):
     def client_id(self, client_id):
         """Sets the client_id of this Client.
 
+          # noqa: E501
 
         :param client_id: The client_id of this Client.  # noqa: E501
         :type: str
         """
+        if client_id is None:
+            raise ValueError("Invalid value for `client_id`, must not be `None`")  # noqa: E501
 
         self._client_id = client_id
 
     @property
-    def redirect_uris(self):
-        """Gets the redirect_uris of this Client.  # noqa: E501
+    def contact_email(self):
+        """Gets the contact_email of this Client.  # noqa: E501
 
+          # noqa: E501
 
-        :return: The redirect_uris of this Client.  # noqa: E501
-        :rtype: list[str]
-        """
-        return self._redirect_uris
-
-    @redirect_uris.setter
-    def redirect_uris(self, redirect_uris):
-        """Sets the redirect_uris of this Client.
-
-
-        :param redirect_uris: The redirect_uris of this Client.  # noqa: E501
-        :type: list[str]
-        """
-
-        self._redirect_uris = redirect_uris
-
-    @property
-    def response_types(self):
-        """Gets the response_types of this Client.  # noqa: E501
-
-
-        :return: The response_types of this Client.  # noqa: E501
-        :rtype: list[str]
-        """
-        return self._response_types
-
-    @response_types.setter
-    def response_types(self, response_types):
-        """Sets the response_types of this Client.
-
-
-        :param response_types: The response_types of this Client.  # noqa: E501
-        :type: list[str]
-        """
-
-        self._response_types = response_types
-
-    @property
-    def grant_types(self):
-        """Gets the grant_types of this Client.  # noqa: E501
-
-
-        :return: The grant_types of this Client.  # noqa: E501
-        :rtype: list[str]
-        """
-        return self._grant_types
-
-    @grant_types.setter
-    def grant_types(self, grant_types):
-        """Sets the grant_types of this Client.
-
-
-        :param grant_types: The grant_types of this Client.  # noqa: E501
-        :type: list[str]
-        """
-
-        self._grant_types = grant_types
-
-    @property
-    def application_type(self):
-        """Gets the application_type of this Client.  # noqa: E501
-
-
-        :return: The application_type of this Client.  # noqa: E501
+        :return: The contact_email of this Client.  # noqa: E501
         :rtype: str
         """
-        return self._application_type
+        return self._contact_email
 
-    @application_type.setter
-    def application_type(self, application_type):
-        """Sets the application_type of this Client.
+    @contact_email.setter
+    def contact_email(self, contact_email):
+        """Sets the contact_email of this Client.
 
+          # noqa: E501
 
-        :param application_type: The application_type of this Client.  # noqa: E501
+        :param contact_email: The contact_email of this Client.  # noqa: E501
         :type: str
         """
 
-        self._application_type = application_type
+        self._contact_email = contact_email
 
     @property
-    def contacts(self):
-        """Gets the contacts of this Client.  # noqa: E501
+    def logo(self):
+        """Gets the logo of this Client.  # noqa: E501
 
+          # noqa: E501
 
-        :return: The contacts of this Client.  # noqa: E501
-        :rtype: list[str]
-        """
-        return self._contacts
-
-    @contacts.setter
-    def contacts(self, contacts):
-        """Sets the contacts of this Client.
-
-
-        :param contacts: The contacts of this Client.  # noqa: E501
-        :type: list[str]
-        """
-
-        self._contacts = contacts
-
-    @property
-    def client_name(self):
-        """Gets the client_name of this Client.  # noqa: E501
-
-
-        :return: The client_name of this Client.  # noqa: E501
+        :return: The logo of this Client.  # noqa: E501
         :rtype: str
         """
-        return self._client_name
+        return self._logo
 
-    @client_name.setter
-    def client_name(self, client_name):
-        """Sets the client_name of this Client.
+    @logo.setter
+    def logo(self, logo):
+        """Sets the logo of this Client.
 
+          # noqa: E501
 
-        :param client_name: The client_name of this Client.  # noqa: E501
-        :type: str
-        """
-        if client_name is None:
-            raise ValueError("Invalid value for `client_name`, must not be `None`")  # noqa: E501
-
-        self._client_name = client_name
-
-    @property
-    def logo_uri(self):
-        """Gets the logo_uri of this Client.  # noqa: E501
-
-
-        :return: The logo_uri of this Client.  # noqa: E501
-        :rtype: str
-        """
-        return self._logo_uri
-
-    @logo_uri.setter
-    def logo_uri(self, logo_uri):
-        """Sets the logo_uri of this Client.
-
-
-        :param logo_uri: The logo_uri of this Client.  # noqa: E501
+        :param logo: The logo of this Client.  # noqa: E501
         :type: str
         """
 
-        self._logo_uri = logo_uri
+        self._logo = logo
 
     @property
-    def client_uri(self):
-        """Gets the client_uri of this Client.  # noqa: E501
+    def name(self):
+        """Gets the name of this Client.  # noqa: E501
 
+          # noqa: E501
 
-        :return: The client_uri of this Client.  # noqa: E501
+        :return: The name of this Client.  # noqa: E501
         :rtype: str
         """
-        return self._client_uri
+        return self._name
 
-    @client_uri.setter
-    def client_uri(self, client_uri):
-        """Sets the client_uri of this Client.
+    @name.setter
+    def name(self, name):
+        """Sets the name of this Client.
 
+          # noqa: E501
 
-        :param client_uri: The client_uri of this Client.  # noqa: E501
-        :type: str
-        """
-        if client_uri is None:
-            raise ValueError("Invalid value for `client_uri`, must not be `None`")  # noqa: E501
-
-        self._client_uri = client_uri
-
-    @property
-    def policy_uri(self):
-        """Gets the policy_uri of this Client.  # noqa: E501
-
-
-        :return: The policy_uri of this Client.  # noqa: E501
-        :rtype: str
-        """
-        return self._policy_uri
-
-    @policy_uri.setter
-    def policy_uri(self, policy_uri):
-        """Sets the policy_uri of this Client.
-
-
-        :param policy_uri: The policy_uri of this Client.  # noqa: E501
+        :param name: The name of this Client.  # noqa: E501
         :type: str
         """
 
-        self._policy_uri = policy_uri
+        self._name = name
 
     @property
-    def tos_uri(self):
-        """Gets the tos_uri of this Client.  # noqa: E501
+    def require_consent(self):
+        """Gets the require_consent of this Client.  # noqa: E501
 
+        If disabled, the Server will NEVER ask the user for consent.  # noqa: E501
 
-        :return: The tos_uri of this Client.  # noqa: E501
+        :return: The require_consent of this Client.  # noqa: E501
+        :rtype: bool
+        """
+        return self._require_consent
+
+    @require_consent.setter
+    def require_consent(self, require_consent):
+        """Sets the require_consent of this Client.
+
+        If disabled, the Server will NEVER ask the user for consent.  # noqa: E501
+
+        :param require_consent: The require_consent of this Client.  # noqa: E501
+        :type: bool
+        """
+
+        self._require_consent = require_consent
+
+    @property
+    def response_type(self):
+        """Gets the response_type of this Client.  # noqa: E501
+
+          # noqa: E501
+
+        :return: The response_type of this Client.  # noqa: E501
         :rtype: str
         """
-        return self._tos_uri
+        return self._response_type
 
-    @tos_uri.setter
-    def tos_uri(self, tos_uri):
-        """Sets the tos_uri of this Client.
+    @response_type.setter
+    def response_type(self, response_type):
+        """Sets the response_type of this Client.
 
+          # noqa: E501
 
-        :param tos_uri: The tos_uri of this Client.  # noqa: E501
+        :param response_type: The response_type of this Client.  # noqa: E501
+        :type: str
+        """
+        if response_type is None:
+            raise ValueError("Invalid value for `response_type`, must not be `None`")  # noqa: E501
+
+        self._response_type = response_type
+
+    @property
+    def reuse_consent(self):
+        """Gets the reuse_consent of this Client.  # noqa: E501
+
+        If enabled, the Server will save the user consent given to a specific client, so that user won't be prompted for the same authorization multiple times.  # noqa: E501
+
+        :return: The reuse_consent of this Client.  # noqa: E501
+        :rtype: bool
+        """
+        return self._reuse_consent
+
+    @reuse_consent.setter
+    def reuse_consent(self, reuse_consent):
+        """Sets the reuse_consent of this Client.
+
+        If enabled, the Server will save the user consent given to a specific client, so that user won't be prompted for the same authorization multiple times.  # noqa: E501
+
+        :param reuse_consent: The reuse_consent of this Client.  # noqa: E501
+        :type: bool
+        """
+
+        self._reuse_consent = reuse_consent
+
+    @property
+    def terms_url(self):
+        """Gets the terms_url of this Client.  # noqa: E501
+
+        External reference to the privacy policy of the client.  # noqa: E501
+
+        :return: The terms_url of this Client.  # noqa: E501
+        :rtype: str
+        """
+        return self._terms_url
+
+    @terms_url.setter
+    def terms_url(self, terms_url):
+        """Sets the terms_url of this Client.
+
+        External reference to the privacy policy of the client.  # noqa: E501
+
+        :param terms_url: The terms_url of this Client.  # noqa: E501
         :type: str
         """
 
-        self._tos_uri = tos_uri
+        self._terms_url = terms_url
 
     @property
-    def default_max_age(self):
-        """Gets the default_max_age of this Client.  # noqa: E501
+    def website_url(self):
+        """Gets the website_url of this Client.  # noqa: E501
 
+          # noqa: E501
 
-        :return: The default_max_age of this Client.  # noqa: E501
-        :rtype: int
+        :return: The website_url of this Client.  # noqa: E501
+        :rtype: str
         """
-        return self._default_max_age
+        return self._website_url
 
-    @default_max_age.setter
-    def default_max_age(self, default_max_age):
-        """Sets the default_max_age of this Client.
+    @website_url.setter
+    def website_url(self, website_url):
+        """Sets the website_url of this Client.
 
+          # noqa: E501
 
-        :param default_max_age: The default_max_age of this Client.  # noqa: E501
-        :type: int
-        """
-
-        self._default_max_age = default_max_age
-
-    @property
-    def default_scopes(self):
-        """Gets the default_scopes of this Client.  # noqa: E501
-
-
-        :return: The default_scopes of this Client.  # noqa: E501
-        :rtype: list[str]
-        """
-        return self._default_scopes
-
-    @default_scopes.setter
-    def default_scopes(self, default_scopes):
-        """Sets the default_scopes of this Client.
-
-
-        :param default_scopes: The default_scopes of this Client.  # noqa: E501
-        :type: list[str]
+        :param website_url: The website_url of this Client.  # noqa: E501
+        :type: str
         """
 
-        self._default_scopes = default_scopes
+        self._website_url = website_url
 
     def to_dict(self):
         """Returns the model properties as a dict"""

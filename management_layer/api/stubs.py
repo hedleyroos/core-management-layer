@@ -63,6 +63,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
+        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
         """
         raise NotImplementedError()
 
@@ -70,7 +71,7 @@ class AbstractStubClass(object):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A UUID value identifying the client
+        :param client_id: string A string value identifying the client
         """
         raise NotImplementedError()
 
@@ -695,6 +696,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param email (optional): string An optional email filter
+        :param username_prefix (optional): string An optional username prefix filter
         :param user_ids (optional): array An optional list of user ids
         """
         raise NotImplementedError()
@@ -966,6 +968,7 @@ class MockedStubClass(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
+        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
         """
         response_schema = json.loads("""{
     "items": {
@@ -982,10 +985,6 @@ class MockedStubClass(AbstractStubClass):
                 "description": "",
                 "type": "string"
             },
-            "client_type": {
-                "description": "<b>Confidential</b> clients are capable of maintaining the confidentiality of their credentials. <b>Public</b> clients are incapable.",
-                "type": "string"
-            },
             "contact_email": {
                 "description": "",
                 "type": "string"
@@ -993,10 +992,6 @@ class MockedStubClass(AbstractStubClass):
             "id": {
                 "readOnly": true,
                 "type": "integer"
-            },
-            "jwt_alg": {
-                "description": "Algorithm used to encode ID Tokens.",
-                "type": "string"
             },
             "logo": {
                 "description": "",
@@ -1052,7 +1047,7 @@ class MockedStubClass(AbstractStubClass):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A UUID value identifying the client
+        :param client_id: string A string value identifying the client
         """
         response_schema = schemas.client
         if "type" not in response_schema:
@@ -2675,6 +2670,7 @@ class MockedStubClass(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param email (optional): string An optional email filter
+        :param username_prefix (optional): string An optional username prefix filter
         :param user_ids (optional): array An optional list of user ids
         """
         response_schema = json.loads("""{

@@ -172,12 +172,12 @@ parameters:
     maxLength: 2
 
   client_id:
-    description: A UUID value identifying the client
+    description: A string value identifying the client
     in: path
     name: client_id
     required: true
     type: string
-    format: uuid
+    format: string
 
 definitions:
   domain:
@@ -1091,17 +1091,8 @@ definitions:
       client_id:
         description: ''
         type: string
-      client_type:
-        description: >-
-          <b>Confidential</b> clients are capable of maintaining the
-          confidentiality of their credentials. <b>Public</b> clients
-          are incapable.
-        type: string
       contact_email:
         description: ''
-        type: string
-      jwt_alg:
-        description: Algorithm used to encode ID Tokens.
         type: string
       logo:
         description: ''
@@ -1130,59 +1121,6 @@ definitions:
         type: string
     required:
       - id
-      - client_id
-      - response_type
-
-  client_create:
-    type: object
-    properties:
-      _post_logout_redirect_uris:
-        description: New-line delimited list of post-logout redirect URIs
-        type: string
-      _redirect_uris:
-        description: New-line delimited list of redirect URIs
-        type: string
-      client_id:
-        description: ''
-        type: string
-      client_type:
-        description: >-
-          <b>Confidential</b> clients are capable of maintaining the
-          confidentiality of their credentials. <b>Public</b> clients
-          are incapable.
-        type: string
-      contact_email:
-        description: ''
-        type: string
-      jwt_alg:
-        description: Algorithm used to encode ID Tokens.
-        type: string
-      logo:
-        description: ''
-        type: string
-        format: uri
-      name:
-        description: ''
-        type: string
-      require_consent:
-        description: 'If disabled, the Server will NEVER ask the user for consent.'
-        type: boolean
-      response_type:
-        description: ''
-        type: string
-      reuse_consent:
-        description: >-
-          If enabled, the Server will save the user consent given to a
-          specific client, so that user wont be prompted for the same
-          authorization multiple times.
-        type: boolean
-      terms_url:
-        description: External reference to the privacy policy of the client.
-        type: string
-      website_url:
-        description: ''
-        type: string
-    required:
       - client_id
       - response_type
 
@@ -1294,92 +1232,6 @@ definitions:
       country_code:
         type: string
         maxLength: 2
-    minProperties: 1
-
-  UserInfo:
-    description: OIDC UserInfo structure
-    required:
-      - sub
-    type: object
-    properties:
-      sub:
-        type: string
-      name:
-        type: string
-      given_name:
-        type: string
-      family_name:
-        type: string
-      email:
-        type: string
-      email_verified:
-        type: boolean
-      phone_number:
-        type: string
-      phone_number_verified:
-        type: boolean
-      address:
-        $ref: '#/definitions/Address'
-
-  Address:
-    description: OIDC Address structure
-    type: object
-    properties:
-      street_address:
-        type: string
-      locality:
-        type: string
-      region:
-        type: string
-      postal_code:
-        type: string
-      country:
-        type: string
-
-  Client:
-    description: Client object
-    required:
-      - client_name
-      - client_uri
-    type: object
-    properties:
-      client_id:
-        type: string
-      redirect_uris:
-        type: array
-        items:
-          type: string
-      response_types:
-        type: array
-        items:
-          type: string
-      grant_types:
-        type: array
-        items:
-          type: string
-      application_type:
-        type: string
-      contacts:
-        type: array
-        items:
-          type: string
-      client_name:
-        type: string
-      logo_uri:
-        type: string
-      client_uri:
-        type: string
-      policy_uri:
-        type: string
-      tos_uri:
-        type: string
-      default_max_age:
-        type: integer
-        format: int64
-      default_scopes:
-        type: array
-        items:
-          type: string
     minProperties: 1
 
 paths:
@@ -2761,6 +2613,11 @@ paths:
           minItems: 0
           collectionFormat: multi
           uniqueItems: true
+        - description: An optional client id to filter on. This is not the primary key.
+          in: query
+          name: client_id
+          required: false
+          type: string
       produces:
         - application/json
       responses:
@@ -2801,6 +2658,11 @@ paths:
           required: false
           type: string
           format: email
+        - name: username_prefix
+          description: An optional username prefix filter
+          in: query
+          required: false
+          type: string
         - name: user_ids
           description: An optional list of user ids
           in: query

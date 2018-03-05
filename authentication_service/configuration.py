@@ -3,7 +3,7 @@
 """
     Authentication Service API
 
-    This is the API that will be exposed by the Authentication Service.  The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
+    This is the API that will be exposed by the Authentication Service. The Authentication Service facilitates user registration and login via web-based flows as defined for the OpenID Connect specification.   # noqa: E501
 
     OpenAPI spec version: 1.0
     
@@ -60,21 +60,6 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
         self.username = ""
         # Password for HTTP basic authentication
         self.password = ""
-
-        # access token for OAuth
-        self.access_token = ""
-
-        # access token for OAuth
-        self.access_token = ""
-
-        # access token for OAuth
-        self.access_token = ""
-
-        # access token for OAuth
-        self.access_token = ""
-
-        # access token for OAuth
-        self.access_token = ""
 
         # Logging Settings
         self.logger = {}
@@ -245,53 +230,6 @@ class Configuration(six.with_metaclass(TypeWithDefault, object)):
                     'in': 'header',
                     'key': 'X-API-Key',
                     'value': self.get_api_key_with_prefix('X-API-Key')
-                },
-
-            'OAuth2':
-                {
-                    'type': 'oauth2',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
-                },
-            'client_registration_token':
-                {
-                    'type': 'api_key',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': self.get_api_key_with_prefix('Authorization')
-                },
-
-            'client_secret':
-                {
-                    'type': 'oauth2',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
-                },
-
-            'oauth_code':
-                {
-                    'type': 'oauth2',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
-                },
-
-            'oauth_implicit':
-                {
-                    'type': 'oauth2',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
-                },
-
-            'user_jwt':
-                {
-                    'type': 'oauth2',
-                    'in': 'header',
-                    'key': 'Authorization',
-                    'value': 'Bearer ' + self.access_token
                 },
 
         }
