@@ -1016,7 +1016,7 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "reuse_consent": {
-                "description": "If enabled, the Server will save the user consent given to a specific client, so that user wont be prompted for the same authorization multiple times.",
+                "description": "If enabled, the Server will save the user consent given to a specific client, so that user will not be prompted for the same authorization multiple times.",
                 "type": "boolean"
             },
             "terms_url": {
