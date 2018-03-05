@@ -30,25 +30,27 @@ Domain = typing.Union[str, int]
 Role = typing.Union[str, int]
 
 
-def json_serializer(key, value):
+def json_serializer(_key, value):
     if type(value) == str:
         return value, 1
     return json.dumps(value), 2
 
 
-def json_deserializer(key, value, flags):
+def json_deserializer(_key, value, flags):
     if flags == 1:
-        return value.decode('utf-8')
+        return value.decode("utf-8")
     if flags == 2:
-        return json.loads(value.decode('utf-8'))
+        return json.loads(value.decode("utf-8"))
     raise Exception("Unknown serialization format")
 
 
 # TODO: Tweak MemCache params
-MEMCACHE = PooledClient(("127.0.0.1", 11211),
-                        serializer=json_serializer,
-                        deserializer=json_deserializer,
-                        no_delay=True, connect_timeout=0.5, timeout=1.0)
+MEMCACHE = PooledClient(
+    ("127.0.0.1", 11211),
+    serializer=json_serializer,
+    deserializer=json_deserializer,
+    no_delay=True, connect_timeout=0.5, timeout=1.0
+)
 
 # TODO: These need to be pulled from a request.app["foo"] !! (cobusc)
 OA = access_control.api.OperationalApi()
@@ -64,8 +66,8 @@ class Forbidden(Exception):
 
 
 def role_has_permission(
-        role: Role, permission: Permission, resource: Resource,
-        nocache: bool = False
+    role: Role, permission: Permission, resource: Resource,
+    nocache: bool = False
 ) -> bool:
     """
     Check if a role has a specified resource permission.
@@ -91,10 +93,10 @@ def role_has_permission(
 
 
 def roles_have_permissions(
-        roles: typing.List[Role],
-        operator: Operator,
-        resource_permissions: ResourcePermissions,
-        nocache: bool = False
+    roles: typing.List[Role],
+    operator: Operator,
+    resource_permissions: ResourcePermissions,
+    nocache: bool = False
 ) -> bool:
     """
     Check whether the specified roles has any or all (as per the operator) of
@@ -131,12 +133,12 @@ def roles_have_permissions(
 
 
 def user_has_permissions(
-        user: UserId,
-        operator: Operator,
-        resource_permissions: ResourcePermissions,
-        site: SiteId = None,
-        domain: Domain = None,
-        nocache: bool = False
+    user: UserId,
+    operator: Operator,
+    resource_permissions: ResourcePermissions,
+    site: SiteId = None,
+    domain: Domain = None,
+    nocache: bool = False
 ) -> bool:
     """
     Check whether the specified user has any or all (as per the operator) of
@@ -167,8 +169,8 @@ def user_has_permissions(
 
 
 def get_user_roles_for_site_or_domain(
-        user: UserId, site: SiteId = None, domain: Domain = None, nocache:
-        bool = False
+    user: UserId, site: SiteId = None, domain: Domain = None, nocache:
+    bool = False
 ) -> typing.List[Role]:
     """
     Get the roles assigned to the user for the specified site or domain.
@@ -194,7 +196,7 @@ def get_user_roles_for_site_or_domain(
 
 
 def get_role_resource_permissions(
-        role: Role, resource: Resource, nocache: bool = False
+    role: Role, resource: Resource, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the permission granted on a resource for a specified role.
@@ -228,7 +230,7 @@ def get_role_resource_permissions(
 
 
 def get_all_user_roles(
-        user: UserId, nocache: bool = False
+    user: UserId, nocache: bool = False
 ) -> typing.Dict[str, typing.List[int]]:
     """
     This function returns all the roles that a user has on all sites and
@@ -275,7 +277,7 @@ def get_all_user_roles(
 
 
 def get_user_roles_for_domain(
-        user: UserId, domain: Domain, nocache: bool = False
+    user: UserId, domain: Domain, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified domain.
@@ -295,7 +297,7 @@ def get_user_roles_for_domain(
 
 
 def get_user_roles_for_site(
-        user: UserId, site: SiteId, nocache: bool = False
+    user: UserId, site: SiteId, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified site.

@@ -13,6 +13,10 @@ from management_layer.permission import utils, require_permissions
 TEST_ROLE_LABEL_TO_ID_MAP = {"role{}".format(i): i for i in range(1, 11)}
 TEST_PERMISSION_NAME_TO_ID_MAP = {"permission{}".format(i): i for i in range(1, 11)}
 TEST_RESOURCE_URN_TO_ID_MAP = {"urn:resource{}".format(i): i for i in range(1, 11)}
+TEST_SITES = {1: {"client_id": "test_client"}}
+TEST_SITE_CLIENT_ID_TO_ID_MAP = {
+    detail["client_id"]: id_ for id_, detail in TEST_SITES.items()
+}
 
 
 class TestRequirePermissionsDecorator(TestCase):
@@ -20,6 +24,16 @@ class TestRequirePermissionsDecorator(TestCase):
     These tests exercise the functionality provided by the @require_permissions
     decorator.
     """
+    def setUp(self):
+        self.user = uuid1()
+        self.site_id = 1
+        self.client_id = TEST_SITES[self.site_id]["client_id"]
+        self.dummy_request = {
+            "token": {
+                "sub": self.user.hex,
+                "aud": self.client_id
+            }
+        }
 
     def test_name_and_docstring(self):
         """
@@ -27,13 +41,15 @@ class TestRequirePermissionsDecorator(TestCase):
         the same when the decorator is implemented properly.
         """
         @require_permissions(all, [("urn:ge:test:foo", "read")])
-        def simple(_user, _site, **_kwargs):
+        def simple(_request, **_kwargs):
             """This docstring is checked."""
             pass
 
         self.assertEqual(simple.__name__, "simple")
         self.assertEqual(simple.__doc__, "This docstring is checked.")
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_empty_resource_permissions_lists(self, mocked_function):
         """
@@ -46,46 +62,45 @@ class TestRequirePermissionsDecorator(TestCase):
         # require_permissions(all, []) always succeeds, regardless of which
         # roles the user has.
         @require_permissions(all, [])
-        def empty_all(_user, _site):
+        def empty_all(_request):
             return True
 
         # require_permissions(any, []) always fails, regardless of which roles
         # the user has.
         @require_permissions(any, [])
-        def empty_any(_user, _site):
+        def empty_any(_request):
             raise RuntimeError("This should never get executed")
 
         mocked_function.return_value = ["some_role"]
-        valid_uuid = uuid1()
 
         # Always gets allowed, regardless of the user's roles
-        self.assertTrue(empty_all(valid_uuid, valid_uuid))
+        self.assertTrue(empty_all(self.dummy_request))
 
         # Never gets allowed, regardless of the user's roles
         with self.assertRaises(utils.Forbidden):
-            empty_any(valid_uuid, valid_uuid)
+            empty_any(self.dummy_request)
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_positional_args(self, mocked_function):
         """
-        Check that positional argument lookups of the user and site
-        information works.
+        Check that positional argument lookups of the request works.
         We mock a response for the get_user_roles_for_site() function in
         order to check that it was called with the appropriate values.
         """
-        @require_permissions(all, [], user_field=2, site_field=1)
-        def positional_args(_arg1, _site, _user):
+        @require_permissions(all, [], request_field=1)
+        def positional_args(_arg1, _request):
             return True
 
-        user = uuid1()
-        site = uuid1()
-
         # Call the test function...
-        positional_args("some_value", site, user)
+        positional_args("some_value", self.dummy_request)
         # ...and verify that the mocked function was called with the right
         # arguments.
-        mocked_function.assert_called_with(user, site, False)
+        mocked_function.assert_called_with(self.user, self.site_id, False)
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_keyword_args(self, mocked_function):
         """
@@ -93,40 +108,15 @@ class TestRequirePermissionsDecorator(TestCase):
         We mock a response for the get_user_roles_for_site() function in
         order to check that it was called with the appropriate values.
         """
-        @require_permissions(all, [], user_field="user_id", site_field="site_id")
+        @require_permissions(all, [], request_field="i_am_a_request")
         def keyword_args(**kwargs):
             return True
 
-        user = uuid1()
-        site = uuid1()
-
         # Call the test function...
-        keyword_args(site_id=site, arg=123, user_id=user)
+        keyword_args(arg=123, i_am_a_request=self.dummy_request)
         # ...and verify that the mocked function was called with the right
         # arguments.
-        mocked_function.assert_called_with(user, site, False)
-
-    @patch("management_layer.permission.utils.get_user_roles_for_site")
-    def test_mixed_args_nocache(self, mocked_function):
-        """
-        Check that a mix of positional and keyword-based lookups of user and
-        site information works.
-        We mock a response for the get_user_roles_for_site() function in
-        order to check that it was called with the appropriate values.
-        """
-        @require_permissions(all, [], user_field="user_id", site_field=1,
-                             nocache=True)
-        def mixed_args(_arg1, _site, **_kwargs):
-            return True
-
-        user = uuid1()
-        site = uuid1()
-
-        # Call the test function...
-        mixed_args(123, site, user_id=user)
-        # ...and verify that the mocked function was called with the right
-        # arguments.
-        mocked_function.assert_called_with(user, site, True)
+        mocked_function.assert_called_with(self.user, self.site_id, False)
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     def test_stacked_decorators(self, mocked_function):
@@ -137,23 +127,24 @@ class TestRequirePermissionsDecorator(TestCase):
         """
         @require_permissions(all, [])
         @require_permissions(any, [])
-        def stack(_user, _site):
+        def stack(_request):
             raise RuntimeError("This should never get executed")
 
         @require_permissions(any, [])
         @require_permissions(all, [])
-        def reverse_stack(_user, _site):
+        def reverse_stack(_request):
             raise RuntimeError("This should never get executed")
 
         mocked_function.return_value = ["some_role"]
-        valid_uuid = uuid1()
 
         with self.assertRaises(utils.Forbidden):
-            stack(valid_uuid, valid_uuid)
+            stack(self.dummy_request)
 
         with self.assertRaises(utils.Forbidden):
-            reverse_stack(valid_uuid, valid_uuid)
+            reverse_stack(self.dummy_request)
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
@@ -180,45 +171,45 @@ class TestRequirePermissionsDecorator(TestCase):
             dummy_get_role_resource_permissions
 
         @require_permissions(all, [("urn:resource1", "permission1")])
-        def single_requirement(_user, _site):
+        def single_requirement(_request):
             return True
 
         # The values for the user and site is not important since this test
         # mocks the roles returned.
-        user = uuid1()
-        site = uuid1()
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.return_value = []
         with self.assertRaises(utils.Forbidden):
-            single_requirement(user, site)
+            single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.return_value = ["role2"]
         with self.assertRaises(utils.Forbidden):
-            single_requirement(user, site)
+            single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
         mocked_get_user_roles_for_site.return_value = ["role1"]
-        self.assertTrue(single_requirement(user, site))
+        self.assertTrue(single_requirement(self.dummy_request))
 
         @require_permissions(all, [("urn:resource1", "permission1"),
                                    ("urn:resource2", "permission2")])
-        def multiple_requirements(_user, _site):
+        def multiple_requirements(_request):
             return True
 
         # If the user has only one of the permissions, then access is
         # denied.
         mocked_get_user_roles_for_site.return_value = ["role1"]
         with self.assertRaises(utils.Forbidden):
-            multiple_requirements(user, site)
+            multiple_requirements(self.dummy_request)
 
         # If the user has all the permissions, then access is allowed.
         mocked_get_user_roles_for_site.return_value = ["role1", "role2"]
-        self.assertTrue(multiple_requirements(user, site))
+        self.assertTrue(multiple_requirements(self.dummy_request))
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
@@ -245,52 +236,52 @@ class TestRequirePermissionsDecorator(TestCase):
             dummy_get_role_resource_permissions
 
         @require_permissions(any, [("urn:resource1", "permission1")])
-        def single_requirement(_user, _site):
+        def single_requirement(_request):
             return True
 
         # The values for the user and site is not important since this test
         # mocks the roles returned.
-        user = uuid1()
-        site = uuid1()
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.return_value = []
         with self.assertRaises(utils.Forbidden):
-            single_requirement(user, site)
+            single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.return_value = ["role2"]
         with self.assertRaises(utils.Forbidden):
-            single_requirement(user, site)
+            single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
         mocked_get_user_roles_for_site.return_value = ["role1"]
-        self.assertTrue(single_requirement(user, site))
+        self.assertTrue(single_requirement(self.dummy_request))
 
         @require_permissions(any, [("urn:resource1", "permission1"),
                                    ("urn:resource2", "permission2")])
-        def multiple_requirements(_user, _site):
+        def multiple_requirements(_request):
             return True
 
         # If the user has any one of the permissions, then access is
         # allowed.
         mocked_get_user_roles_for_site.return_value = ["role1"]
-        self.assertTrue(multiple_requirements(user, site))
+        self.assertTrue(multiple_requirements(self.dummy_request))
 
         mocked_get_user_roles_for_site.return_value = ["role2"]
-        self.assertTrue(multiple_requirements(user, site))
+        self.assertTrue(multiple_requirements(self.dummy_request))
 
         mocked_get_user_roles_for_site.return_value = ["role1", "role2"]
-        self.assertTrue(multiple_requirements(user, site))
+        self.assertTrue(multiple_requirements(self.dummy_request))
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.return_value = ["role3"]
         with self.assertRaises(utils.Forbidden):
-            single_requirement(user, site)
+            single_requirement(self.dummy_request)
 
+    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+                TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
     @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
@@ -325,44 +316,42 @@ class TestRequirePermissionsDecorator(TestCase):
         @require_permissions(all, [("urn:resource1", "permission1")])
         @require_permissions(any, [("urn:resource2", "permission2"),
                                    ("urn:resource3", "permission3")])
-        def combo_requirement(_user, _site):
+        def combo_requirement(_request):
             return True
 
         # The values for the user and site is not important since this test
         # mocks the roles returned.
-        user = uuid1()
-        site = uuid1()
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.return_value = []
         with self.assertRaises(utils.Forbidden):
-            combo_requirement(user, site)
+            combo_requirement(self.dummy_request)
 
         # If the user has roles partially fulfilling the required permissions,
         # then access is denied.
         mocked_get_user_roles_for_site.return_value = ["role1"]
         with self.assertRaises(utils.Forbidden):
-            combo_requirement(user, site)
+            combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.return_value = ["role2"]
         with self.assertRaises(utils.Forbidden):
-            combo_requirement(user, site)
+            combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.return_value = ["role3"]
         with self.assertRaises(utils.Forbidden):
-            combo_requirement(user, site)
+            combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.return_value = ["role2", "role3"]
         with self.assertRaises(utils.Forbidden):
-            combo_requirement(user, site)
+            combo_requirement(self.dummy_request)
 
         # If the user has roles with the necessary permissions,
         # then access is allowed.
         mocked_get_user_roles_for_site.return_value = ["role1", "role2"]
-        self.assertTrue(combo_requirement(user, site))
+        self.assertTrue(combo_requirement(self.dummy_request))
 
         mocked_get_user_roles_for_site.return_value = ["role1", "role3"]
-        self.assertTrue(combo_requirement(user, site))
+        self.assertTrue(combo_requirement(self.dummy_request))
 
 
 class TestUtils(TestCase):

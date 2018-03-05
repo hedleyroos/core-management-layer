@@ -51,14 +51,13 @@ async def auth_middleware(app, handler):
                 return json_response({"message": "Exception: {} {}".format(type(e), str(e))},
                                      status=INVALID_TOKEN_STATUS)
 
-            request["user_id"] = payload["sub"]
-            request["client_id"] = payload["aud"]
-            request["token"] = payload
             LOGGER.debug("Token payload: {}".format(payload))
+            request["token"] = payload
         elif settings.INSECURE:
-            request["user_id"] = "40b724d6-1d33-11e8-afe3-6f15f0cf1da3"
-            request["client_id"] = "management_layer_workaround"
-            request["token"] = {}
+            request["token"] = {
+                "sub": "40b724d6-1d33-11e8-afe3-6f15f0cf1da3",
+                "aud": "management_layer_workaround"
+            }
             LOGGER.debug("Faking credentials because INSECURE is true.")
         else:
             return json_response({"message": "An authentication token is required"},
