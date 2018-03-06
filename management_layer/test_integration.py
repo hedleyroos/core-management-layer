@@ -46,6 +46,8 @@ _MOCKED_USER_DATA_STORE_API = None
 
 _PRISM_COMMAND = "./prism run --validate --mockDynamic -s {}/{} -p {}"
 
+_TOTAL_COUNT_HEADER = "X-Total-Count"
+
 Resource = namedtuple("Resource", [
     "num_identifying_parts", "schema", "create_schema", "update_schema"
 ])
@@ -276,6 +278,7 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, {"type": "array", "items": info.schema})
+        self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
         response = await self.client.request("GET", "/{}?offset=1&limit=10".format(resource))
@@ -283,6 +286,7 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, {"type": "array", "items": info.schema})
+        self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
         response = await self.client.request("GET", "/{}?user_id=foo".format(resource))
@@ -290,6 +294,7 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, {"type": "array", "items": info.schema})
+        self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With bad arguments
         response = await self.client.request("GET", "/{}?offset=a".format(resource))
