@@ -184,7 +184,7 @@ definitions:
         type: integer
       consented_at:
         type: string
-        format: date
+        format: 'date-time'
       data:
         type: object
       blocked:
@@ -216,7 +216,7 @@ definitions:
         type: integer
       consented_at:
         type: string
-        format: date
+        format: 'date-time'
       blocked:
         type: boolean
       data:
@@ -231,7 +231,7 @@ definitions:
     properties:
       consented_at:
         type: string
-        format: date
+        format: 'date-time'
       blocked:
         type: boolean
       data:

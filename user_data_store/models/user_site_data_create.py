@@ -33,7 +33,7 @@ class UserSiteDataCreate(object):
     swagger_types = {
         'user_id': 'str',
         'site_id': 'int',
-        'consented_at': 'date',
+        'consented_at': 'datetime',
         'blocked': 'bool',
         'data': 'object'
     }
@@ -116,7 +116,7 @@ class UserSiteDataCreate(object):
 
 
         :return: The consented_at of this UserSiteDataCreate.  # noqa: E501
-        :rtype: date
+        :rtype: datetime
         """
         return self._consented_at
 
@@ -126,7 +126,7 @@ class UserSiteDataCreate(object):
 
 
         :param consented_at: The consented_at of this UserSiteDataCreate.  # noqa: E501
-        :type: date
+        :type: datetime
         """
 
         self._consented_at = consented_at

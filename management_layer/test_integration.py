@@ -70,7 +70,10 @@ RESOURCES = {
     "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create, None),
     "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
     "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
+    "clients": Resource(1, schemas.client, None, None),
+    "users": Resource(1, schemas.user, None, schemas.user_update)
 }
+SKIP_DELETE_TESTS_FOR = ["clients"]
 
 
 def wait_for_server(ip, port):
@@ -140,8 +143,13 @@ def get_test_data(schema):
     for field in ["user_id", "creator_id", "invitation_id", "client_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
-    # Overwrite fields that expect a date
-    for field in ["consented_at"]:
+    # Overwrite fields that expect a datetime
+    for field in ["consented_at", "last_login"]:
+        if field in data:
+            data[field] = "2000-01-01T00:00:00Z"
+
+    # Overwrite fields that expect a datetime
+    for field in ["birth_date"]:
         if field in data:
             data[field] = "2000-01-01"
 
@@ -150,6 +158,16 @@ def get_test_data(schema):
 
     if "name" in data:
         data["name"] = data["name"][:30]
+
+    # URL fields
+    for field in ["avatar"]:
+        if field in data:
+            data[field] = "http://example.com/"
+
+    # Email fields
+    for field in ["email"]:
+        if field in data:
+            data[field] = "me@example.com"
 
     return data
 
@@ -305,6 +323,9 @@ class IntegrationTest(AioHTTPTestCase):
     ])
     @unittest_run_loop
     async def test_create(self, resource, info):
+        if info.create_schema is None:  # Some resources cannot be created
+            return
+
         data = get_test_data(info.create_schema)
         response = await self.client.post("/{}".format(resource), data=json.dumps(data))
         await self.assertStatus(response, 201)
@@ -314,6 +335,7 @@ class IntegrationTest(AioHTTPTestCase):
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
+        if resource not in SKIP_DELETE_TESTS_FOR
     ])
     @unittest_run_loop
     async def test_delete(self, resource, info):

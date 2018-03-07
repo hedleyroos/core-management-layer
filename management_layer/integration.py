@@ -132,9 +132,17 @@ class Implementation(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
-        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
+        :param client_token_id (optional): string An optional client id to filter on. This is not the primary key.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            clients = await request.app["authentication_service_api"].client_list(**kwargs)
+
+        if clients:
+            transform = transformations.CLIENT
+            result = [transform.apply(client.to_dict()) for client in clients]
+            return result
+
+        return []
 
     @staticmethod
     async def client_read(request, client_id, **kwargs):
@@ -142,7 +150,15 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param client_id: string A string value identifying the client
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            client = await request.app["authentication_service_api"].client_read(client_id)
+
+        if client:
+            transform = transformations.CLIENT
+            result = transform.apply(client.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def domainrole_list(request, **kwargs):
@@ -1121,7 +1137,15 @@ class Implementation(AbstractStubClass):
         :param username_prefix (optional): string An optional username prefix filter
         :param user_ids (optional): array An optional list of user ids
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            users = await request.app["authentication_service_api"].user_list(**kwargs)
+
+        if users:
+            transform = transformations.USER
+            result = [transform.apply(user.to_dict()) for user in users]
+            return result
+
+        return []
 
     @staticmethod
     async def user_delete(request, user_id, **kwargs):
@@ -1129,7 +1153,10 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["authentication_service_api"].user_delete(user_id)
+
+        return result
 
     @staticmethod
     async def user_read(request, user_id, **kwargs):
@@ -1137,7 +1164,15 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user = await request.app["authentication_service_api"].user_read(user_id)
+
+        if user:
+            transform = transformations.USER
+            result = transform.apply(user.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def user_update(request, body, user_id, **kwargs):
@@ -1146,7 +1181,15 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user = await request.app["authentication_service_api"].user_update(user_id, data=body)
+
+        if user:
+            transform = transformations.USER
+            result = transform.apply(user.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):

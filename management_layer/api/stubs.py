@@ -2686,6 +2686,7 @@ class MockedStubClass(AbstractStubClass):
             },
             "country_code": {
                 "maxLength": 2,
+                "minLength": 2,
                 "type": "string"
             },
             "created_at": {
@@ -2726,6 +2727,7 @@ class MockedStubClass(AbstractStubClass):
             },
             "last_login": {
                 "description": "",
+                "format": "date-time",
                 "readOnly": true,
                 "type": "string"
             },
@@ -2866,7 +2868,7 @@ class MockedStubClass(AbstractStubClass):
                 "type": "boolean"
             },
             "consented_at": {
-                "format": "date",
+                "format": "date-time",
                 "type": "string"
             },
             "created_at": {

@@ -3042,6 +3042,7 @@ class Users(View):
             },
             "country_code": {
                 "maxLength": 2,
+                "minLength": 2,
                 "type": "string"
             },
             "created_at": {
@@ -3082,6 +3083,7 @@ class Users(View):
             },
             "last_login": {
                 "description": "",
+                "format": "date-time",
                 "readOnly": true,
                 "type": "string"
             },
@@ -3172,7 +3174,7 @@ class UsersUserId(View):
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user
     PUT_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-    PUT_BODY_SCHEMA = schemas.user
+    PUT_BODY_SCHEMA = schemas.user_update
 
     async def delete(self):
         """
@@ -3310,7 +3312,7 @@ class Usersitedata(View):
                 "type": "boolean"
             },
             "consented_at": {
-                "format": "date",
+                "format": "date-time",
                 "type": "string"
             },
             "created_at": {
@@ -4755,6 +4757,7 @@ class __SWAGGER_SPEC__(View):
                 },
                 "country_code": {
                     "maxLength": 2,
+                    "minLength": 2,
                     "type": "string"
                 },
                 "created_at": {
@@ -4795,6 +4798,7 @@ class __SWAGGER_SPEC__(View):
                 },
                 "last_login": {
                     "description": "",
+                    "format": "date-time",
                     "readOnly": true,
                     "type": "string"
                 },
@@ -4888,7 +4892,7 @@ class __SWAGGER_SPEC__(View):
                     "type": "boolean"
                 },
                 "consented_at": {
-                    "format": "date",
+                    "format": "date-time",
                     "type": "string"
                 },
                 "created_at": {
@@ -5054,6 +5058,7 @@ class __SWAGGER_SPEC__(View):
                 },
                 "country_code": {
                     "maxLength": 2,
+                    "minLength": 2,
                     "type": "string"
                 },
                 "email": {
@@ -7921,7 +7926,7 @@ class __SWAGGER_SPEC__(View):
                         "in": "body",
                         "name": "data",
                         "schema": {
-                            "$ref": "#/definitions/user",
+                            "$ref": "#/definitions/user_update",
                             "x-scope": [
                                 ""
                             ]

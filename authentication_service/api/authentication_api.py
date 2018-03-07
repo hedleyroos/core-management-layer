@@ -45,7 +45,7 @@ class AuthenticationApi(object):
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
         :param list[int] client_ids: An optional list of client ids
-        :param str client_id: An optional client id to filter on. This is not the primary key.
+        :param str client_token_id: An optional client id to filter on. This is not the primary key.
         :return: list[Client]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -69,13 +69,13 @@ class AuthenticationApi(object):
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
         :param list[int] client_ids: An optional list of client ids
-        :param str client_id: An optional client id to filter on. This is not the primary key.
+        :param str client_token_id: An optional client id to filter on. This is not the primary key.
         :return: list[Client]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'client_ids', 'client_id']  # noqa: E501
+        all_params = ['offset', 'limit', 'client_ids', 'client_token_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -112,8 +112,8 @@ class AuthenticationApi(object):
         if 'client_ids' in params:
             query_params.append(('client_ids', params['client_ids']))  # noqa: E501
             collection_formats['client_ids'] = 'multi'  # noqa: E501
-        if 'client_id' in params:
-            query_params.append(('client_id', params['client_id']))  # noqa: E501
+        if 'client_token_id' in params:
+            query_params.append(('client_token_id', params['client_token_id']))  # noqa: E501
 
         header_params = {}
 
@@ -545,7 +545,7 @@ class AuthenticationApi(object):
         :param async bool
         :param str user_id: A UUID value identifying the user. (required)
         :param UserUpdate data:
-        :return: None
+        :return: User
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -567,7 +567,7 @@ class AuthenticationApi(object):
         :param async bool
         :param str user_id: A UUID value identifying the user. (required)
         :param UserUpdate data:
-        :return: None
+        :return: User
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -627,7 +627,7 @@ class AuthenticationApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type=None,  # noqa: E501
+            response_type='User',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
