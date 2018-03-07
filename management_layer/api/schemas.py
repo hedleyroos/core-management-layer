@@ -346,11 +346,6 @@ domain_roles = json.loads("""
                 "d:2": [
                     1,
                     2
-                ],
-                "s:1": [
-                    1,
-                    2,
-                    3
                 ]
             },
             "type": "object"
@@ -975,7 +970,8 @@ site_and_domain_roles = json.loads("""
                     2,
                     3
                 ]
-            }
+            },
+            "type": "object"
         },
         "site_id": {
             "description": "The site for which the request was made.",

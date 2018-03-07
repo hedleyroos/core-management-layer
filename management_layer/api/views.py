@@ -29,8 +29,6 @@ module_name, class_name = stub_class_path.rsplit(".", 1)
 Module = importlib.import_module(module_name)
 Stubs = getattr(Module, class_name)
 
-TOTAL_COUNT_HEADER = "X-Total-Count"
-
 
 def maybe_validate_result(result, schema):
     if VALIDATE_RESPONSES:
@@ -127,7 +125,7 @@ class Adminnotes(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -345,7 +343,7 @@ class Clients(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
 
 class ClientsClientId(View):
@@ -452,7 +450,7 @@ class Domainroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -652,7 +650,7 @@ class Domains(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -850,7 +848,7 @@ class Invitationdomainroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -1040,7 +1038,7 @@ class Invitations(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -1238,7 +1236,7 @@ class Invitationsiteroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -1537,7 +1535,7 @@ class Permissions(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -1730,7 +1728,7 @@ class Resources(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -1927,7 +1925,7 @@ class Roleresourcepermissions(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -2101,7 +2099,7 @@ class Roles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -2284,7 +2282,7 @@ class Sitedataschemas(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -2476,7 +2474,7 @@ class Siteroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -2685,7 +2683,7 @@ class Sites(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -2935,7 +2933,7 @@ class Userdomainroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -3164,7 +3162,7 @@ class Users(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
 
 class UsersUserId(View):
@@ -3389,7 +3387,7 @@ class Usersitedata(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -3596,7 +3594,7 @@ class Usersiteroles(View):
             self.request, **optional_args)
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result)
 
     async def post(self):
         """
@@ -3995,11 +3993,6 @@ class __SWAGGER_SPEC__(View):
                         "d:2": [
                             1,
                             2
-                        ],
-                        "s:1": [
-                            1,
-                            2,
-                            3
                         ]
                     },
                     "type": "object"
@@ -4557,7 +4550,8 @@ class __SWAGGER_SPEC__(View):
                             2,
                             3
                         ]
-                    }
+                    },
+                    "type": "object"
                 },
                 "site_id": {
                     "description": "The site for which the request was made.",
