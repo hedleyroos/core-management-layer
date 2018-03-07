@@ -1140,7 +1140,7 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             users = await request.app["authentication_service_api"].user_list(**kwargs)
 
-        if clients:
+        if users:
             transform = transformations.USER
             result = [transform.apply(user.to_dict() for user in users)]
             return result
