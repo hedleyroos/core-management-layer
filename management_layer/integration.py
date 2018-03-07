@@ -1138,7 +1138,7 @@ class Implementation(AbstractStubClass):
         :param user_ids (optional): array An optional list of user ids
         """
         with client_exception_handler():
-            users = await = request.app["authentication_service_api"].user_list(**kwargs)
+            users = await request.app["authentication_service_api"].user_list(**kwargs)
 
         if clients:
             transform = transformations.USER
