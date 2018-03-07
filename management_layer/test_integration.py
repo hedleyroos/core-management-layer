@@ -70,6 +70,7 @@ RESOURCES = {
     "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create, None),
     "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
     "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
+    "clients": Resource(1, schemas.client, None, None),
 }
 
 
