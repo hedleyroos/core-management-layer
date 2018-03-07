@@ -38,14 +38,16 @@ class User(object):
         'email': 'str',
         'is_active': 'bool',
         'date_joined': 'date',
-        'last_login': 'str',
+        'last_login': 'datetime',
         'email_verified': 'bool',
         'msisdn_verified': 'bool',
         'msisdn': 'str',
         'gender': 'str',
         'birth_date': 'date',
         'avatar': 'str',
-        'country_code': 'str'
+        'country_code': 'str',
+        'created_at': 'datetime',
+        'updated_at': 'datetime'
     }
 
     attribute_map = {
@@ -63,10 +65,12 @@ class User(object):
         'gender': 'gender',
         'birth_date': 'birth_date',
         'avatar': 'avatar',
-        'country_code': 'country_code'
+        'country_code': 'country_code',
+        'created_at': 'created_at',
+        'updated_at': 'updated_at'
     }
 
-    def __init__(self, id=None, username=None, first_name=None, last_name=None, email=None, is_active=None, date_joined=None, last_login=None, email_verified=None, msisdn_verified=None, msisdn=None, gender=None, birth_date=None, avatar=None, country_code=None):  # noqa: E501
+    def __init__(self, id=None, username=None, first_name=None, last_name=None, email=None, is_active=None, date_joined=None, last_login=None, email_verified=None, msisdn_verified=None, msisdn=None, gender=None, birth_date=None, avatar=None, country_code=None, created_at=None, updated_at=None):  # noqa: E501
         """User - a model defined in Swagger"""  # noqa: E501
 
         self._id = None
@@ -84,6 +88,8 @@ class User(object):
         self._birth_date = None
         self._avatar = None
         self._country_code = None
+        self._created_at = None
+        self._updated_at = None
         self.discriminator = None
 
         self.id = id
@@ -112,6 +118,8 @@ class User(object):
             self.avatar = avatar
         if country_code is not None:
             self.country_code = country_code
+        self.created_at = created_at
+        self.updated_at = updated_at
 
     @property
     def id(self):
@@ -289,7 +297,7 @@ class User(object):
           # noqa: E501
 
         :return: The last_login of this User.  # noqa: E501
-        :rtype: str
+        :rtype: datetime
         """
         return self._last_login
 
@@ -300,7 +308,7 @@ class User(object):
           # noqa: E501
 
         :param last_login: The last_login of this User.  # noqa: E501
-        :type: str
+        :type: datetime
         """
 
         self._last_login = last_login
@@ -453,8 +461,56 @@ class User(object):
         """
         if country_code is not None and len(country_code) > 2:
             raise ValueError("Invalid value for `country_code`, length must be less than or equal to `2`")  # noqa: E501
+        if country_code is not None and len(country_code) < 2:
+            raise ValueError("Invalid value for `country_code`, length must be greater than or equal to `2`")  # noqa: E501
 
         self._country_code = country_code
+
+    @property
+    def created_at(self):
+        """Gets the created_at of this User.  # noqa: E501
+
+
+        :return: The created_at of this User.  # noqa: E501
+        :rtype: datetime
+        """
+        return self._created_at
+
+    @created_at.setter
+    def created_at(self, created_at):
+        """Sets the created_at of this User.
+
+
+        :param created_at: The created_at of this User.  # noqa: E501
+        :type: datetime
+        """
+        if created_at is None:
+            raise ValueError("Invalid value for `created_at`, must not be `None`")  # noqa: E501
+
+        self._created_at = created_at
+
+    @property
+    def updated_at(self):
+        """Gets the updated_at of this User.  # noqa: E501
+
+
+        :return: The updated_at of this User.  # noqa: E501
+        :rtype: datetime
+        """
+        return self._updated_at
+
+    @updated_at.setter
+    def updated_at(self, updated_at):
+        """Sets the updated_at of this User.
+
+
+        :param updated_at: The updated_at of this User.  # noqa: E501
+        :type: datetime
+        """
+        if updated_at is None:
+            raise ValueError("Invalid value for `updated_at`, must not be `None`")  # noqa: E501
+
+        self._updated_at = updated_at
 
     def to_dict(self):
         """Returns the model properties as a dict"""

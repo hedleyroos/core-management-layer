@@ -1022,7 +1022,7 @@ definitions:
         type: integer
       consented_at:
         type: string
-        format: date
+        format: 'date-time'
       data:
         type: object
       blocked:
@@ -1161,6 +1161,7 @@ definitions:
       last_login:
         description: ''
         type: string
+        format: 'date-time'
         readOnly: true
       email_verified:
         type: boolean
@@ -1179,6 +1180,7 @@ definitions:
         format: uri
       country_code:
         type: string
+        minLength: 2
         maxLength: 2
       created_at:
         type: string
@@ -1231,6 +1233,7 @@ definitions:
         format: uri
       country_code:
         type: string
+        minLength: 2
         maxLength: 2
     minProperties: 1
 
@@ -2716,7 +2719,7 @@ paths:
         - in: body
           name: data
           schema:
-            $ref: '#/definitions/user'
+            $ref: '#/definitions/user_update'
       produces:
         - application/json
       responses:

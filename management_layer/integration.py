@@ -1142,10 +1142,10 @@ class Implementation(AbstractStubClass):
 
         if users:
             transform = transformations.USER
-            result = [transform.apply(user.to_dict() for user in users)]
+            result = [transform.apply(user.to_dict()) for user in users]
             return result
 
-        return  []
+        return []
 
     @staticmethod
     async def user_delete(request, user_id, **kwargs):
@@ -1182,12 +1182,14 @@ class Implementation(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         """
         with client_exception_handler():
-            user = await request.app["authetication_service_api"].user_update(user_id, body)
+            user = await request.app["authentication_service_api"].user_update(user_id, data=body)
 
         if user:
             transform = transformations.USER
             result = transform.apply(user.to_dict())
             return result
+
+        return None
 
     @staticmethod
     async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):

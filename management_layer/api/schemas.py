@@ -1204,6 +1204,7 @@ user = json.loads("""
         },
         "country_code": {
             "maxLength": 2,
+            "minLength": 2,
             "type": "string"
         },
         "created_at": {
@@ -1244,6 +1245,7 @@ user = json.loads("""
         },
         "last_login": {
             "description": "",
+            "format": "date-time",
             "readOnly": true,
             "type": "string"
         },
@@ -1346,7 +1348,7 @@ user_site_data = json.loads("""
             "type": "boolean"
         },
         "consented_at": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
         },
         "created_at": {
@@ -1531,6 +1533,7 @@ user_update = json.loads("""
         },
         "country_code": {
             "maxLength": 2,
+            "minLength": 2,
             "type": "string"
         },
         "email": {

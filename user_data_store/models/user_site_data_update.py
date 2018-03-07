@@ -31,7 +31,7 @@ class UserSiteDataUpdate(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'consented_at': 'date',
+        'consented_at': 'datetime',
         'blocked': 'bool',
         'data': 'object'
     }
@@ -63,7 +63,7 @@ class UserSiteDataUpdate(object):
 
 
         :return: The consented_at of this UserSiteDataUpdate.  # noqa: E501
-        :rtype: date
+        :rtype: datetime
         """
         return self._consented_at
 
@@ -73,7 +73,7 @@ class UserSiteDataUpdate(object):
 
 
         :param consented_at: The consented_at of this UserSiteDataUpdate.  # noqa: E501
-        :type: date
+        :type: datetime
         """
 
         self._consented_at = consented_at

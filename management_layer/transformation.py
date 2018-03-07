@@ -79,6 +79,8 @@ class Transformation(object):
         for mapping in self._mappings:
             if mapping.input_field in dictionary:
                 value = dictionary[mapping.input_field]
+                if value is None:
+                    continue
                 if mapping.conversion is not None:
                     try:
                         value = mapping.conversion(value)

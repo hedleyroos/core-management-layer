@@ -145,8 +145,8 @@ USER_SITE_DATA = Transformation(
 
 CLIENT = Transformation(
     mappings=[
-        Mapping("created_at", conversion=date_to_string),
-        Mapping("updated_at", conversion=date_to_string)
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string)
     ],
     copy_fields=["id", "_post_logout_redirect_uris", "_redirect_uris",
                  "client_id", "contact_email", "logo", "name",
@@ -156,10 +156,10 @@ CLIENT = Transformation(
 
 USER = Transformation(
     mappings=[
-        Mapping("created_at", conversion=date_to_string),
-        Mapping("updated_at", conversion=date_to_string),
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string),
         Mapping("date_joined", conversion=date_to_string),
-        Mapping("last_login", conversion=date_to_string),
+        Mapping("last_login", conversion=datetime_to_string),
         Mapping("birth_date", conversion=date_to_string)
     ],
     copy_fields=["id", "username", "first_name", "last_name", "email",

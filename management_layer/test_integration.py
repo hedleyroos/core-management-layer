@@ -143,8 +143,13 @@ def get_test_data(schema):
     for field in ["user_id", "creator_id", "invitation_id", "client_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
-    # Overwrite fields that expect a date
-    for field in ["consented_at"]:
+    # Overwrite fields that expect a datetime
+    for field in ["consented_at", "last_login"]:
+        if field in data:
+            data[field] = "2000-01-01T00:00:00Z"
+
+    # Overwrite fields that expect a datetime
+    for field in ["birth_date"]:
         if field in data:
             data[field] = "2000-01-01"
 
@@ -153,6 +158,16 @@ def get_test_data(schema):
 
     if "name" in data:
         data["name"] = data["name"][:30]
+
+    # URL fields
+    for field in ["avatar"]:
+        if field in data:
+            data[field] = "http://example.com/"
+
+    # Email fields
+    for field in ["email"]:
+        if field in data:
+            data[field] = "me@example.com"
 
     return data
 

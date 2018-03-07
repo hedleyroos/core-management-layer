@@ -33,7 +33,7 @@ class UserSiteData(object):
     swagger_types = {
         'user_id': 'str',
         'site_id': 'int',
-        'consented_at': 'date',
+        'consented_at': 'datetime',
         'data': 'object',
         'blocked': 'bool',
         'created_at': 'datetime',
@@ -122,7 +122,7 @@ class UserSiteData(object):
 
 
         :return: The consented_at of this UserSiteData.  # noqa: E501
-        :rtype: date
+        :rtype: datetime
         """
         return self._consented_at
 
@@ -132,7 +132,7 @@ class UserSiteData(object):
 
 
         :param consented_at: The consented_at of this UserSiteData.  # noqa: E501
-        :type: date
+        :type: datetime
         """
         if consented_at is None:
             raise ValueError("Invalid value for `consented_at`, must not be `None`")  # noqa: E501

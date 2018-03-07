@@ -337,6 +337,8 @@ class UserUpdate(object):
         """
         if country_code is not None and len(country_code) > 2:
             raise ValueError("Invalid value for `country_code`, length must be less than or equal to `2`")  # noqa: E501
+        if country_code is not None and len(country_code) < 2:
+            raise ValueError("Invalid value for `country_code`, length must be greater than or equal to `2`")  # noqa: E501
 
         self._country_code = country_code
 
