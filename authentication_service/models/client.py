@@ -77,8 +77,7 @@ class Client(object):
         self._website_url = None
         self.discriminator = None
 
-        if id is not None:
-            self.id = id
+        self.id = id
         if post_logout_redirect_uris is not None:
             self.post_logout_redirect_uris = post_logout_redirect_uris
         if redirect_uris is not None:
@@ -120,6 +119,8 @@ class Client(object):
         :param id: The id of this Client.  # noqa: E501
         :type: int
         """
+        if id is None:
+            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
 
         self._id = id
 

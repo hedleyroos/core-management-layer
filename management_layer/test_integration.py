@@ -72,6 +72,7 @@ RESOURCES = {
     "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
     "clients": Resource(1, schemas.client, None, None),
 }
+SKIP_DELETE_TESTS_FOR = ["clients"]
 
 
 def wait_for_server(ip, port):
@@ -306,6 +307,9 @@ class IntegrationTest(AioHTTPTestCase):
     ])
     @unittest_run_loop
     async def test_create(self, resource, info):
+        if info.create_schema is None:  # Some resources cannot be created
+            return
+
         data = get_test_data(info.create_schema)
         response = await self.client.post("/{}".format(resource), data=json.dumps(data))
         await self.assertStatus(response, 201)
@@ -315,6 +319,7 @@ class IntegrationTest(AioHTTPTestCase):
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
+        if resource not in SKIP_DELETE_TESTS_FOR
     ])
     @unittest_run_loop
     async def test_delete(self, resource, info):

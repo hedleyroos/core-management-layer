@@ -129,6 +129,7 @@ definitions:
         description: ''
         type: string
     required:
+      - id
       - client_id
       - response_type
 
