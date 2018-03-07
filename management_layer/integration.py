@@ -135,7 +135,7 @@ class Implementation(AbstractStubClass):
         :param client_token_id (optional): string An optional client id to filter on. This is not the primary key.
         """
         with client_exception_handler():
-            clients = await request.app["authentication_service_api"].client_list(**kwargs)
+            clients = await request.app["authentication_api"].client_list(**kwargs)
 
         if clients:
             transform = transformations.CLIENT
@@ -151,7 +151,7 @@ class Implementation(AbstractStubClass):
         :param client_id: string A string value identifying the client
         """
         with client_exception_handler():
-            client = await request.app["authentication_service_api"].client_read(client_id)
+            client = await request.app["authentication_api"].client_read(client_id)
 
         if client:
             transform = transformations.CLIENT
