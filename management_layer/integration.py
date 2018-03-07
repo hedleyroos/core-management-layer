@@ -1164,7 +1164,15 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user = await request.app["authentication_service_api"].user_read(user_id)
+
+        if user:
+            transform = transformations.USER
+            result = transform.apply(user.to_dict())
+            return result
+
+        return None
 
     @staticmethod
     async def user_update(request, body, user_id, **kwargs):
@@ -1173,7 +1181,13 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user = await request.app["authetication_service_api"].user_update(user_id, body)
+
+        if user:
+            transform = transformations.USER
+            result = transform.apply(user.to_dict())
+            return result
 
     @staticmethod
     async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
