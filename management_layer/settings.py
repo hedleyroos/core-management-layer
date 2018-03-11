@@ -14,7 +14,7 @@ JWT_AUDIENCE = os.getenv("JWT_AUDIENCE")
 INSECURE = os.getenv("INSECURE", "False").lower() == "true"
 
 # The port to listen on
-PORT = os.getenv("PORT", 8000)
+PORT = os.getenv("SERVER_PORT", 8000)
 WITH_UI = os.getenv("WITH_UI", "False").lower() == "true"
 
 # API locations
