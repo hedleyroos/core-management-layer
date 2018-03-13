@@ -31,20 +31,24 @@ class SiteAndDomainRoles(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'site_id': 'int'
+        'site_id': 'int',
+        'roles_map': 'dict(str, list[int])'
     }
 
     attribute_map = {
-        'site_id': 'site_id'
+        'site_id': 'site_id',
+        'roles_map': 'roles_map'
     }
 
-    def __init__(self, site_id=None):  # noqa: E501
+    def __init__(self, site_id=None, roles_map=None):  # noqa: E501
         """SiteAndDomainRoles - a model defined in Swagger"""  # noqa: E501
 
         self._site_id = None
+        self._roles_map = None
         self.discriminator = None
 
         self.site_id = site_id
+        self.roles_map = roles_map
 
     @property
     def site_id(self):
@@ -70,6 +74,31 @@ class SiteAndDomainRoles(object):
             raise ValueError("Invalid value for `site_id`, must not be `None`")  # noqa: E501
 
         self._site_id = site_id
+
+    @property
+    def roles_map(self):
+        """Gets the roles_map of this SiteAndDomainRoles.  # noqa: E501
+
+        A dictionary where the keys are site and domain ids prefixed with `s:` and `d:`, respectively and the values are lists of role ids.  # noqa: E501
+
+        :return: The roles_map of this SiteAndDomainRoles.  # noqa: E501
+        :rtype: dict(str, list[int])
+        """
+        return self._roles_map
+
+    @roles_map.setter
+    def roles_map(self, roles_map):
+        """Sets the roles_map of this SiteAndDomainRoles.
+
+        A dictionary where the keys are site and domain ids prefixed with `s:` and `d:`, respectively and the values are lists of role ids.  # noqa: E501
+
+        :param roles_map: The roles_map of this SiteAndDomainRoles.  # noqa: E501
+        :type: dict(str, list[int])
+        """
+        if roles_map is None:
+            raise ValueError("Invalid value for `roles_map`, must not be `None`")  # noqa: E501
+
+        self._roles_map = roles_map
 
     def to_dict(self):
         """Returns the model properties as a dict"""
