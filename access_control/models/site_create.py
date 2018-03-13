@@ -108,6 +108,8 @@ class SiteCreate(object):
         :param client_id: The client_id of this SiteCreate.  # noqa: E501
         :type: str
         """
+        if client_id is not None and len(client_id) > 255:
+            raise ValueError("Invalid value for `client_id`, length must be less than or equal to `255`")  # noqa: E501
 
         self._client_id = client_id
 

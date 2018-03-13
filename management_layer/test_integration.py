@@ -307,7 +307,7 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
-        response = await self.client.request("GET", "/{}?user_id=foo".format(resource))
+        response = await self.client.request("GET", "/{}?foo=bar".format(resource))
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
