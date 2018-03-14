@@ -13,8 +13,6 @@ from aiohttp.web import View, json_response, Response, HTTPNoContent
 import management_layer.api.schemas as schemas
 import management_layer.api.utils as utils
 
-TOTAL_COUNT_HEADER = "X-Total-Count"
-
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(__name__)
@@ -99,25 +97,31 @@ class Adminnotes(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
-            value = self.request.query.get("user_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["user_id"] = value
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                jsonschema.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
             # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
-            value = self.request.query.get("creator_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["creator_id"] = value
+            creator_id = self.request.query.get("creator_id", None)
+            if creator_id is not None:
+                jsonschema.validate(creator_id, {"type": "string"})
+                optional_args["creator_id"] = creator_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -125,9 +129,15 @@ class Adminnotes(View):
 
         result = await Stubs.adminnote_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -154,9 +164,15 @@ class Adminnotes(View):
 
         result = await Stubs.adminnote_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class AdminnotesAdminNoteId(View):
@@ -183,6 +199,12 @@ class AdminnotesAdminNoteId(View):
 
         result = await Stubs.adminnote_delete(
             self.request, admin_note_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -204,9 +226,15 @@ class AdminnotesAdminNoteId(View):
 
         result = await Stubs.adminnote_read(
             self.request, admin_note_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -236,9 +264,15 @@ class AdminnotesAdminNoteId(View):
 
         result = await Stubs.adminnote_update(
             self.request, body, admin_note_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Clients(View):
@@ -317,25 +351,31 @@ class Clients(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # client_ids (optional): array An optional list of client ids
-            value = self.request.query.get("client_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["client_ids"] = value
+            client_ids = self.request.query.getall("client_ids", None)
+            if client_ids is not None:
+                jsonschema.validate(client_ids, {"type": "array"})
+                optional_args["client_ids"] = client_ids
             # client_id (optional): string An optional client id to filter on. This is not the primary key.
-            value = self.request.query.get("client_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["client_id"] = value
+            client_id = self.request.query.get("client_id", None)
+            if client_id is not None:
+                jsonschema.validate(client_id, {"type": "string"})
+                optional_args["client_id"] = client_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -343,9 +383,15 @@ class Clients(View):
 
         result = await Stubs.client_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
 
 class ClientsClientId(View):
@@ -369,9 +415,15 @@ class ClientsClientId(View):
 
         result = await Stubs.client_read(
             self.request, client_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Domainroles(View):
@@ -424,25 +476,31 @@ class Domainroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # domain_id (optional): integer An optional query parameter to filter by domain_id
-            value = self.request.query.get("domain_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["domain_id"] = value
+            domain_id = self.request.query.get("domain_id", None)
+            if domain_id is not None:
+                domain_id = int(domain_id)
+                optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -450,9 +508,15 @@ class Domainroles(View):
 
         result = await Stubs.domainrole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -479,9 +543,15 @@ class Domainroles(View):
 
         result = await Stubs.domainrole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class DomainrolesDomainIdRoleId(View):
@@ -511,6 +581,12 @@ class DomainrolesDomainIdRoleId(View):
 
         result = await Stubs.domainrole_delete(
             self.request, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -535,9 +611,15 @@ class DomainrolesDomainIdRoleId(View):
 
         result = await Stubs.domainrole_read(
             self.request, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -570,9 +652,15 @@ class DomainrolesDomainIdRoleId(View):
 
         result = await Stubs.domainrole_update(
             self.request, body, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Domains(View):
@@ -629,20 +717,26 @@ class Domains(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # domain_ids (optional): array An optional list of domain ids
-            value = self.request.query.get("domain_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["domain_ids"] = value
+            domain_ids = self.request.query.getall("domain_ids", None)
+            if domain_ids is not None:
+                jsonschema.validate(domain_ids, {"type": "array"})
+                optional_args["domain_ids"] = domain_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -650,9 +744,15 @@ class Domains(View):
 
         result = await Stubs.domain_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -679,9 +779,15 @@ class Domains(View):
 
         result = await Stubs.domain_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class DomainsDomainId(View):
@@ -708,6 +814,12 @@ class DomainsDomainId(View):
 
         result = await Stubs.domain_delete(
             self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -729,9 +841,15 @@ class DomainsDomainId(View):
 
         result = await Stubs.domain_read(
             self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -761,9 +879,15 @@ class DomainsDomainId(View):
 
         result = await Stubs.domain_update(
             self.request, body, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Invitationdomainroles(View):
@@ -817,30 +941,36 @@ class Invitationdomainroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
-            value = self.request.query.get("invitation_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["invitation_id"] = value
+            invitation_id = self.request.query.get("invitation_id", None)
+            if invitation_id is not None:
+                jsonschema.validate(invitation_id, {"type": "string"})
+                optional_args["invitation_id"] = invitation_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
-            value = self.request.query.get("domain_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["domain_id"] = value
+            domain_id = self.request.query.get("domain_id", None)
+            if domain_id is not None:
+                domain_id = int(domain_id)
+                optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -848,9 +978,15 @@ class Invitationdomainroles(View):
 
         result = await Stubs.invitationdomainrole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -877,9 +1013,15 @@ class Invitationdomainroles(View):
 
         result = await Stubs.invitationdomainrole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
@@ -910,6 +1052,12 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
 
         result = await Stubs.invitationdomainrole_delete(
             self.request, invitation_id, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -937,9 +1085,15 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
 
         result = await Stubs.invitationdomainrole_read(
             self.request, invitation_id, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Invitations(View):
@@ -1012,25 +1166,31 @@ class Invitations(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
-            value = self.request.query.get("invitor_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["invitor_id"] = value
+            invitor_id = self.request.query.get("invitor_id", None)
+            if invitor_id is not None:
+                jsonschema.validate(invitor_id, {"type": "string"})
+                optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
-            value = self.request.query.get("invitation_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["invitation_ids"] = value
+            invitation_ids = self.request.query.getall("invitation_ids", None)
+            if invitation_ids is not None:
+                jsonschema.validate(invitation_ids, {"type": "array"})
+                optional_args["invitation_ids"] = invitation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -1038,9 +1198,15 @@ class Invitations(View):
 
         result = await Stubs.invitation_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -1067,9 +1233,15 @@ class Invitations(View):
 
         result = await Stubs.invitation_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class InvitationsInvitationId(View):
@@ -1096,6 +1268,12 @@ class InvitationsInvitationId(View):
 
         result = await Stubs.invitation_delete(
             self.request, invitation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -1117,9 +1295,15 @@ class InvitationsInvitationId(View):
 
         result = await Stubs.invitation_read(
             self.request, invitation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -1149,9 +1333,15 @@ class InvitationsInvitationId(View):
 
         result = await Stubs.invitation_update(
             self.request, body, invitation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Invitationsiteroles(View):
@@ -1205,30 +1395,36 @@ class Invitationsiteroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
-            value = self.request.query.get("invitation_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["invitation_id"] = value
+            invitation_id = self.request.query.get("invitation_id", None)
+            if invitation_id is not None:
+                jsonschema.validate(invitation_id, {"type": "string"})
+                optional_args["invitation_id"] = invitation_id
             # site_id (optional): integer An optional query parameter to filter by site_id
-            value = self.request.query.get("site_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["site_id"] = value
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -1236,9 +1432,15 @@ class Invitationsiteroles(View):
 
         result = await Stubs.invitationsiterole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -1265,9 +1467,15 @@ class Invitationsiteroles(View):
 
         result = await Stubs.invitationsiterole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class InvitationsiterolesInvitationIdSiteIdRoleId(View):
@@ -1298,6 +1506,12 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
 
         result = await Stubs.invitationsiterole_delete(
             self.request, invitation_id, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -1325,9 +1539,15 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
 
         result = await Stubs.invitationsiterole_read(
             self.request, invitation_id, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class OpsAllUserRolesUserId(View):
@@ -1351,9 +1571,15 @@ class OpsAllUserRolesUserId(View):
 
         result = await Stubs.get_all_user_roles(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class OpsDomainRolesDomainId(View):
@@ -1377,9 +1603,15 @@ class OpsDomainRolesDomainId(View):
 
         result = await Stubs.get_domain_roles(
             self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class OpsSiteAndDomainRolesSiteId(View):
@@ -1403,9 +1635,15 @@ class OpsSiteAndDomainRolesSiteId(View):
 
         result = await Stubs.get_site_and_domain_roles(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class OpsSiteRoleLabelsAggregatedSiteId(View):
@@ -1429,9 +1667,15 @@ class OpsSiteRoleLabelsAggregatedSiteId(View):
 
         result = await Stubs.get_site_role_labels_aggregated(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
@@ -1458,9 +1702,15 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
 
         result = await Stubs.get_user_site_role_labels_aggregated(
             self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Permissions(View):
@@ -1514,20 +1764,26 @@ class Permissions(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # permission_ids (optional): array An optional list of permission ids
-            value = self.request.query.get("permission_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["permission_ids"] = value
+            permission_ids = self.request.query.getall("permission_ids", None)
+            if permission_ids is not None:
+                jsonschema.validate(permission_ids, {"type": "array"})
+                optional_args["permission_ids"] = permission_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -1535,9 +1791,15 @@ class Permissions(View):
 
         result = await Stubs.permission_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -1564,9 +1826,15 @@ class Permissions(View):
 
         result = await Stubs.permission_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class PermissionsPermissionId(View):
@@ -1593,6 +1861,12 @@ class PermissionsPermissionId(View):
 
         result = await Stubs.permission_delete(
             self.request, permission_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -1614,9 +1888,15 @@ class PermissionsPermissionId(View):
 
         result = await Stubs.permission_read(
             self.request, permission_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -1646,9 +1926,15 @@ class PermissionsPermissionId(View):
 
         result = await Stubs.permission_update(
             self.request, body, permission_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Resources(View):
@@ -1702,25 +1988,31 @@ class Resources(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # prefix (optional): string An optional URN prefix filter
-            value = self.request.query.get("prefix", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["prefix"] = value
+            prefix = self.request.query.get("prefix", None)
+            if prefix is not None:
+                jsonschema.validate(prefix, {"type": "string"})
+                optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
-            value = self.request.query.get("resource_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["resource_ids"] = value
+            resource_ids = self.request.query.getall("resource_ids", None)
+            if resource_ids is not None:
+                jsonschema.validate(resource_ids, {"type": "array"})
+                optional_args["resource_ids"] = resource_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -1728,9 +2020,15 @@ class Resources(View):
 
         result = await Stubs.resource_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -1757,9 +2055,15 @@ class Resources(View):
 
         result = await Stubs.resource_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class ResourcesResourceId(View):
@@ -1786,6 +2090,12 @@ class ResourcesResourceId(View):
 
         result = await Stubs.resource_delete(
             self.request, resource_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -1807,9 +2117,15 @@ class ResourcesResourceId(View):
 
         result = await Stubs.resource_read(
             self.request, resource_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -1839,9 +2155,15 @@ class ResourcesResourceId(View):
 
         result = await Stubs.resource_update(
             self.request, body, resource_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Roleresourcepermissions(View):
@@ -1894,30 +2216,36 @@ class Roleresourcepermissions(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
             # resource_id (optional): integer An optional resource filter
-            value = self.request.query.get("resource_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["resource_id"] = value
+            resource_id = self.request.query.get("resource_id", None)
+            if resource_id is not None:
+                resource_id = int(resource_id)
+                optional_args["resource_id"] = resource_id
             # permission_id (optional): integer An optional permission filter
-            value = self.request.query.get("permission_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["permission_id"] = value
+            permission_id = self.request.query.get("permission_id", None)
+            if permission_id is not None:
+                permission_id = int(permission_id)
+                optional_args["permission_id"] = permission_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -1925,9 +2253,15 @@ class Roleresourcepermissions(View):
 
         result = await Stubs.roleresourcepermission_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -1954,9 +2288,15 @@ class Roleresourcepermissions(View):
 
         result = await Stubs.roleresourcepermission_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
@@ -1987,6 +2327,12 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
 
         result = await Stubs.roleresourcepermission_delete(
             self.request, role_id, resource_id, permission_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -2014,9 +2360,15 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
 
         result = await Stubs.roleresourcepermission_read(
             self.request, role_id, resource_id, permission_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Roles(View):
@@ -2078,20 +2430,26 @@ class Roles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # role_ids (optional): array An optional list of role ids
-            value = self.request.query.get("role_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["role_ids"] = value
+            role_ids = self.request.query.getall("role_ids", None)
+            if role_ids is not None:
+                jsonschema.validate(role_ids, {"type": "array"})
+                optional_args["role_ids"] = role_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -2099,9 +2457,15 @@ class Roles(View):
 
         result = await Stubs.role_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -2128,9 +2492,15 @@ class Roles(View):
 
         result = await Stubs.role_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class RolesRoleId(View):
@@ -2157,6 +2527,12 @@ class RolesRoleId(View):
 
         result = await Stubs.role_delete(
             self.request, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -2178,9 +2554,15 @@ class RolesRoleId(View):
 
         result = await Stubs.role_read(
             self.request, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -2210,9 +2592,15 @@ class RolesRoleId(View):
 
         result = await Stubs.role_update(
             self.request, body, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Sitedataschemas(View):
@@ -2261,20 +2649,26 @@ class Sitedataschemas(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
-            value = self.request.query.get("site_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["site_ids"] = value
+            site_ids = self.request.query.getall("site_ids", None)
+            if site_ids is not None:
+                jsonschema.validate(site_ids, {"type": "array"})
+                optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -2282,9 +2676,15 @@ class Sitedataschemas(View):
 
         result = await Stubs.sitedataschema_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -2311,9 +2711,15 @@ class Sitedataschemas(View):
 
         result = await Stubs.sitedataschema_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class SitedataschemasSiteId(View):
@@ -2340,6 +2746,12 @@ class SitedataschemasSiteId(View):
 
         result = await Stubs.sitedataschema_delete(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -2361,9 +2773,15 @@ class SitedataschemasSiteId(View):
 
         result = await Stubs.sitedataschema_read(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -2393,9 +2811,15 @@ class SitedataschemasSiteId(View):
 
         result = await Stubs.sitedataschema_update(
             self.request, body, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Siteroles(View):
@@ -2448,25 +2872,31 @@ class Siteroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # site_id (optional): integer An optional query parameter to filter by site_id
-            value = self.request.query.get("site_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["site_id"] = value
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -2474,9 +2904,15 @@ class Siteroles(View):
 
         result = await Stubs.siterole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -2503,9 +2939,15 @@ class Siteroles(View):
 
         result = await Stubs.siterole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class SiterolesSiteIdRoleId(View):
@@ -2535,6 +2977,12 @@ class SiterolesSiteIdRoleId(View):
 
         result = await Stubs.siterole_delete(
             self.request, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -2559,9 +3007,15 @@ class SiterolesSiteIdRoleId(View):
 
         result = await Stubs.siterole_read(
             self.request, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -2594,9 +3048,15 @@ class SiterolesSiteIdRoleId(View):
 
         result = await Stubs.siterole_update(
             self.request, body, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Sites(View):
@@ -2662,20 +3122,26 @@ class Sites(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
-            value = self.request.query.get("site_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["site_ids"] = value
+            site_ids = self.request.query.getall("site_ids", None)
+            if site_ids is not None:
+                jsonschema.validate(site_ids, {"type": "array"})
+                optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -2683,9 +3149,15 @@ class Sites(View):
 
         result = await Stubs.site_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -2712,9 +3184,15 @@ class Sites(View):
 
         result = await Stubs.site_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class SitesSiteId(View):
@@ -2741,6 +3219,12 @@ class SitesSiteId(View):
 
         result = await Stubs.site_delete(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -2762,9 +3246,15 @@ class SitesSiteId(View):
 
         result = await Stubs.site_read(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -2794,9 +3284,15 @@ class SitesSiteId(View):
 
         result = await Stubs.site_update(
             self.request, body, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class SitesSiteIdActivate(View):
@@ -2820,9 +3316,15 @@ class SitesSiteIdActivate(View):
 
         result = await Stubs.get__api_v1_sites_site_id_activate(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class SitesSiteIdDeactivate(View):
@@ -2846,9 +3348,15 @@ class SitesSiteIdDeactivate(View):
 
         result = await Stubs.get__api_v1_sites_site_id_deactivate(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Userdomainroles(View):
@@ -2902,30 +3410,36 @@ class Userdomainroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
-            value = self.request.query.get("user_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["user_id"] = value
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                jsonschema.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
-            value = self.request.query.get("domain_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["domain_id"] = value
+            domain_id = self.request.query.get("domain_id", None)
+            if domain_id is not None:
+                domain_id = int(domain_id)
+                optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -2933,9 +3447,15 @@ class Userdomainroles(View):
 
         result = await Stubs.userdomainrole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -2962,9 +3482,15 @@ class Userdomainroles(View):
 
         result = await Stubs.userdomainrole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class UserdomainrolesUserIdDomainIdRoleId(View):
@@ -2995,6 +3521,12 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
 
         result = await Stubs.userdomainrole_delete(
             self.request, user_id, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -3022,9 +3554,15 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
 
         result = await Stubs.userdomainrole_read(
             self.request, user_id, domain_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Users(View):
@@ -3133,30 +3671,36 @@ class Users(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # email (optional): string An optional email filter
-            value = self.request.query.get("email", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["email"] = value
+            email = self.request.query.get("email", None)
+            if email is not None:
+                jsonschema.validate(email, {"type": "string"})
+                optional_args["email"] = email
             # username_prefix (optional): string An optional username prefix filter
-            value = self.request.query.get("username_prefix", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["username_prefix"] = value
+            username_prefix = self.request.query.get("username_prefix", None)
+            if username_prefix is not None:
+                jsonschema.validate(username_prefix, {"type": "string"})
+                optional_args["username_prefix"] = username_prefix
             # user_ids (optional): array An optional list of user ids
-            value = self.request.query.get("user_ids", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "array"})
-                optional_args["user_ids"] = value
+            user_ids = self.request.query.getall("user_ids", None)
+            if user_ids is not None:
+                jsonschema.validate(user_ids, {"type": "array"})
+                optional_args["user_ids"] = user_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -3164,9 +3708,15 @@ class Users(View):
 
         result = await Stubs.user_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
 
 class UsersUserId(View):
@@ -3193,6 +3743,12 @@ class UsersUserId(View):
 
         result = await Stubs.user_delete(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -3214,9 +3770,15 @@ class UsersUserId(View):
 
         result = await Stubs.user_read(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -3246,9 +3808,15 @@ class UsersUserId(View):
 
         result = await Stubs.user_update(
             self.request, body, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class UsersUserIdActivate(View):
@@ -3272,9 +3840,15 @@ class UsersUserIdActivate(View):
 
         result = await Stubs.get__api_v1_users_user_id_activate(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class UsersUserIdDeactivate(View):
@@ -3298,9 +3872,15 @@ class UsersUserIdDeactivate(View):
 
         result = await Stubs.get__api_v1_users_user_id_deactivate(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Usersitedata(View):
@@ -3363,25 +3943,31 @@ class Usersitedata(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
-            value = self.request.query.get("user_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["user_id"] = value
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                jsonschema.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
-            value = self.request.query.get("site_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["site_id"] = value
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                optional_args["site_id"] = site_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -3389,9 +3975,15 @@ class Usersitedata(View):
 
         result = await Stubs.usersitedata_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -3418,9 +4010,15 @@ class Usersitedata(View):
 
         result = await Stubs.usersitedata_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class UsersitedataUserIdSiteId(View):
@@ -3450,6 +4048,12 @@ class UsersitedataUserIdSiteId(View):
 
         result = await Stubs.usersitedata_delete(
             self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -3474,9 +4078,15 @@ class UsersitedataUserIdSiteId(View):
 
         result = await Stubs.usersitedata_read(
             self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
     async def put(self):
         """
@@ -3509,9 +4119,15 @@ class UsersitedataUserIdSiteId(View):
 
         result = await Stubs.usersitedata_update(
             self.request, body, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class Usersiteroles(View):
@@ -3565,30 +4181,36 @@ class Usersiteroles(View):
         try:
             optional_args = {}
             # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-            value = self.request.query.get("offset", None)
-            if value is not None:
-                value = int(value)
-                optional_args["offset"] = value
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
-            value = self.request.query.get("limit", None)
-            if value is not None:
-                value = int(value)
-                optional_args["limit"] = value
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
-            value = self.request.query.get("user_id", None)
-            if value is not None:
-                jsonschema.validate(value, {"type": "string"})
-                optional_args["user_id"] = value
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                jsonschema.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
-            value = self.request.query.get("site_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["site_id"] = value
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
-            value = self.request.query.get("role_id", None)
-            if value is not None:
-                value = int(value)
-                optional_args["role_id"] = value
+            role_id = self.request.query.get("role_id", None)
+            if role_id is not None:
+                role_id = int(role_id)
+                optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -3596,9 +4218,15 @@ class Usersiteroles(View):
 
         result = await Stubs.usersiterole_list(
             self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result, headers={TOTAL_COUNT_HEADER: "100"})
+        return json_response(result, headers=headers)
 
     async def post(self):
         """
@@ -3625,9 +4253,15 @@ class Usersiteroles(View):
 
         result = await Stubs.usersiterole_create(
             self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201)
+        return json_response(result, status=201, headers=headers)
 
 
 class UsersiterolesUserIdSiteIdRoleId(View):
@@ -3658,6 +4292,12 @@ class UsersiterolesUserIdSiteIdRoleId(View):
 
         result = await Stubs.usersiterole_delete(
             self.request, user_id, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
 
         return HTTPNoContent()
@@ -3685,9 +4325,15 @@ class UsersiterolesUserIdSiteIdRoleId(View):
 
         result = await Stubs.usersiterole_read(
             self.request, user_id, site_id, role_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
-        return json_response(result)
+        return json_response(result, headers=headers)
 
 
 class __SWAGGER_SPEC__(View):

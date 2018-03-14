@@ -19,6 +19,8 @@ from management_layer.utils import client_exception_handler
 #
 # bravado_client = asyncio.get_event_loop().run_until_complete(get_client())
 
+TOTAL_COUNT_HEADER = "X-Total-Count"
+
 
 class Implementation(AbstractStubClass):
     """
@@ -62,10 +64,10 @@ class Implementation(AbstractStubClass):
 
         if admin_notes:
             transform = transformations.ADMIN_NOTE
-            result = [transform.apply(note.to_dict()) for note in admin_notes]
-            return result
-
-        return []
+            admin_notes = [transform.apply(note.to_dict()) for note in admin_notes]
+        headers = {TOTAL_COUNT_HEADER: str(len(admin_notes))}
+        print(admin_notes, headers)
+        return admin_notes, {TOTAL_COUNT_HEADER: str(len(admin_notes))}
 
     @staticmethod
     async def adminnote_create(request, body, **kwargs):
@@ -139,10 +141,9 @@ class Implementation(AbstractStubClass):
 
         if clients:
             transform = transformations.CLIENT
-            result = [transform.apply(client.to_dict()) for client in clients]
-            return result
+            clients = [transform.apply(client.to_dict()) for client in clients]
 
-        return []
+        return clients, {TOTAL_COUNT_HEADER: str(len(clients))}
 
     @staticmethod
     async def client_read(request, client_id, **kwargs):
@@ -174,10 +175,9 @@ class Implementation(AbstractStubClass):
 
         if domain_roles:
             transform = transformations.DOMAIN_ROLE
-            result = [transform.apply(domain_role.to_dict()) for domain_role in domain_roles]
-            return result
+            domain_roles = [transform.apply(domain_role.to_dict()) for domain_role in domain_roles]
 
-        return []
+        return domain_roles, {TOTAL_COUNT_HEADER: str(len(domain_roles))}
 
     @staticmethod
     async def domainrole_create(request, body, **kwargs):
@@ -258,10 +258,9 @@ class Implementation(AbstractStubClass):
 
         if domains:
             transform = transformations.DOMAIN
-            result = [transform.apply(domain.to_dict()) for domain in domains]
-            return result
+            domains = [transform.apply(domain.to_dict()) for domain in domains]
 
-        return []
+        return domains, {TOTAL_COUNT_HEADER: str(len(domains))}
 
     @staticmethod
     async def domain_create(request, body, **kwargs):
@@ -504,10 +503,9 @@ class Implementation(AbstractStubClass):
 
         if permissions:
             transform = transformations.PERMISSION
-            result = [transform.apply(permission.to_dict()) for permission in permissions]
-            return result
+            permissions = [transform.apply(permission.to_dict()) for permission in permissions]
 
-        return []
+        return permissions, {TOTAL_COUNT_HEADER: str(len(permissions))}
 
     @staticmethod
     async def permission_create(request, body, **kwargs):
@@ -586,10 +584,9 @@ class Implementation(AbstractStubClass):
 
         if resources:
             transform = transformations.RESOURCE
-            result = [transform.apply(resource.to_dict()) for resource in resources]
-            return result
+            resources = [transform.apply(resource.to_dict()) for resource in resources]
 
-        return []
+        return resources, {TOTAL_COUNT_HEADER: str(len(resources))}
 
     @staticmethod
     async def resource_create(request, body, **kwargs):
@@ -666,10 +663,9 @@ class Implementation(AbstractStubClass):
 
         if rrps:
             transform = transformations.ROLE_RESOURCE_PERMISSION
-            result = [transform.apply(rrp.to_dict()) for rrp in rrps]
-            return result
+            rrps = [transform.apply(rrp.to_dict()) for rrp in rrps]
 
-        return []
+        return rrps, {TOTAL_COUNT_HEADER: str(len(rrps))}
 
     @staticmethod
     async def roleresourcepermission_create(request, body, **kwargs):
@@ -735,10 +731,9 @@ class Implementation(AbstractStubClass):
 
         if roles:
             transform = transformations.ROLE
-            result = [transform.apply(role.to_dict()) for role in roles]
-            return result
+            roles = [transform.apply(role.to_dict()) for role in roles]
 
-        return []
+        return roles, {TOTAL_COUNT_HEADER: str(len(roles))}
 
     @staticmethod
     async def role_create(request, body, **kwargs):
@@ -816,10 +811,9 @@ class Implementation(AbstractStubClass):
 
         if sdss:
             transform = transformations.SITE_DATA_SCHEMA
-            result = [transform.apply(sds.to_dict()) for sds in sdss]
-            return result
+            sdss = [transform.apply(sds.to_dict()) for sds in sdss]
 
-        return []
+        return sdss, {TOTAL_COUNT_HEADER: str(len(sdss))}
 
     @staticmethod
     async def sitedataschema_create(request, body, **kwargs):
@@ -895,10 +889,9 @@ class Implementation(AbstractStubClass):
 
         if site_roles:
             transform = transformations.SITE_ROLE
-            result = [transform.apply(site_role.to_dict()) for site_role in site_roles]
-            return result
+            site_roles = [transform.apply(site_role.to_dict()) for site_role in site_roles]
 
-        return []
+        return site_roles, {TOTAL_COUNT_HEADER: str(len(site_roles))}
 
     @staticmethod
     async def siterole_create(request, body, **kwargs):
@@ -979,10 +972,9 @@ class Implementation(AbstractStubClass):
 
         if sites:
             transform = transformations.SITE
-            result = [transform.apply(site.to_dict()) for site in sites]
-            return result
+            sites = [transform.apply(site.to_dict()) for site in sites]
 
-        return []
+        return sites, {TOTAL_COUNT_HEADER: str(len(sites))}
 
     @staticmethod
     async def site_create(request, body, **kwargs):
@@ -1075,10 +1067,9 @@ class Implementation(AbstractStubClass):
 
         if udrs:
             transform = transformations.USER_DOMAIN_ROLE
-            result = [transform.apply(udr.to_dict()) for udr in udrs]
-            return result
+            udrs = [transform.apply(udr.to_dict()) for udr in udrs]
 
-        return []
+        return udrs, {TOTAL_COUNT_HEADER: str(len(udrs))}
 
     @staticmethod
     async def userdomainrole_create(request, body, **kwargs):
@@ -1142,10 +1133,9 @@ class Implementation(AbstractStubClass):
 
         if users:
             transform = transformations.USER
-            result = [transform.apply(user.to_dict()) for user in users]
-            return result
+            users = [transform.apply(user.to_dict()) for user in users]
 
-        return []
+        return users, {TOTAL_COUNT_HEADER: str(len(users))}
 
     @staticmethod
     async def user_delete(request, user_id, **kwargs):
@@ -1221,10 +1211,9 @@ class Implementation(AbstractStubClass):
 
         if usds:
             transform = transformations.USER_SITE_DATA
-            result = [transform.apply(usd.to_dict()) for usd in usds]
-            return result
+            usds = [transform.apply(usd.to_dict()) for usd in usds]
 
-        return []
+        return usds, {TOTAL_COUNT_HEADER: str(len(usds))}
 
     @staticmethod
     async def usersitedata_create(request, body, **kwargs):
@@ -1302,10 +1291,9 @@ class Implementation(AbstractStubClass):
 
         if usrs:
             transform = transformations.USER_SITE_ROLE
-            result = [transform.apply(usr.to_dict()) for usr in usrs]
-            return result
+            usrs = [transform.apply(usr.to_dict()) for usr in usrs]
 
-        return []
+        return usrs, {TOTAL_COUNT_HEADER: str(len(usrs))}
 
     @staticmethod
     async def usersiterole_create(request, body, **kwargs):
