@@ -31,6 +31,8 @@ if __name__ == "__main__":
     override_host = settings.USER_DATA_STORE_API
     if override_host:
         user_data_store_configuration.host = override_host
+    user_data_store_configuration.api_key = {
+        "X-API-KEY": settings.USER_DATA_STORE_API_KEY }
     app["user_data_api"] = user_data_store.api.UserDataApi(
         api_client=user_data_store.ApiClient(
             configuration=user_data_store_configuration
@@ -41,6 +43,8 @@ if __name__ == "__main__":
     override_host = settings.ACCESS_CONTROL_API
     if override_host:
         access_control_configuration.host = override_host
+    access_control_configuration.api_key = {
+        "X-API-KEY": settings.ACCESS_CONTROL_API_KEY }
     app["access_control_api"] = access_control.api.AccessControlApi(
         api_client=access_control.ApiClient(
             configuration=access_control_configuration
@@ -51,6 +55,8 @@ if __name__ == "__main__":
     override_host = settings.AUTHENTICATION_SERVICE_API
     if override_host:
         authentication_service_configuration.host = override_host
+    authentication_service_configuration.api_key = {
+        "X-API-KEY": settings.AUTHENTICATION_SERVICE_API_KEY }
     app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
         api_client=authentication_service.ApiClient(
             configuration=authentication_service_configuration
