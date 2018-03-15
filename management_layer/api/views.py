@@ -9,6 +9,7 @@ import jsonschema
 import os
 from jsonschema import ValidationError
 from aiohttp.web import View, json_response, Response, HTTPNoContent
+from aiohttp_cors import CorsViewMixin
 
 import management_layer.api.schemas as schemas
 import management_layer.api.utils as utils
@@ -38,7 +39,7 @@ def maybe_validate_result(result, schema):
             LOGGER.error(e.message)
 
 
-class Adminnotes(View):
+class Adminnotes(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -175,7 +176,7 @@ class Adminnotes(View):
         return json_response(result, status=201, headers=headers)
 
 
-class AdminnotesAdminNoteId(View):
+class AdminnotesAdminNoteId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.admin_note
@@ -275,7 +276,7 @@ class AdminnotesAdminNoteId(View):
         return json_response(result, headers=headers)
 
 
-class Clients(View):
+class Clients(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -394,7 +395,7 @@ class Clients(View):
         return json_response(result, headers=headers)
 
 
-class ClientsClientId(View):
+class ClientsClientId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.client
 
@@ -426,7 +427,7 @@ class ClientsClientId(View):
         return json_response(result, headers=headers)
 
 
-class Domainroles(View):
+class Domainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -554,7 +555,7 @@ class Domainroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class DomainrolesDomainIdRoleId(View):
+class DomainrolesDomainIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.domain_role
@@ -663,7 +664,7 @@ class DomainrolesDomainIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class Domains(View):
+class Domains(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -790,7 +791,7 @@ class Domains(View):
         return json_response(result, status=201, headers=headers)
 
 
-class DomainsDomainId(View):
+class DomainsDomainId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.domain
@@ -890,7 +891,7 @@ class DomainsDomainId(View):
         return json_response(result, headers=headers)
 
 
-class Invitationdomainroles(View):
+class Invitationdomainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -1024,7 +1025,7 @@ class Invitationdomainroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
+class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.invitation_domain_role
@@ -1096,7 +1097,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class Invitations(View):
+class Invitations(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -1244,7 +1245,7 @@ class Invitations(View):
         return json_response(result, status=201, headers=headers)
 
 
-class InvitationsInvitationId(View):
+class InvitationsInvitationId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.invitation
@@ -1344,7 +1345,7 @@ class InvitationsInvitationId(View):
         return json_response(result, headers=headers)
 
 
-class Invitationsiteroles(View):
+class Invitationsiteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -1478,7 +1479,7 @@ class Invitationsiteroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class InvitationsiterolesInvitationIdSiteIdRoleId(View):
+class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.invitation_site_role
@@ -1550,7 +1551,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class OpsAllUserRolesUserId(View):
+class OpsAllUserRolesUserId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.all_user_roles
 
@@ -1582,7 +1583,7 @@ class OpsAllUserRolesUserId(View):
         return json_response(result, headers=headers)
 
 
-class OpsDomainRolesDomainId(View):
+class OpsDomainRolesDomainId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.domain_roles
 
@@ -1614,7 +1615,7 @@ class OpsDomainRolesDomainId(View):
         return json_response(result, headers=headers)
 
 
-class OpsSiteAndDomainRolesSiteId(View):
+class OpsSiteAndDomainRolesSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.site_and_domain_roles
 
@@ -1646,7 +1647,7 @@ class OpsSiteAndDomainRolesSiteId(View):
         return json_response(result, headers=headers)
 
 
-class OpsSiteRoleLabelsAggregatedSiteId(View):
+class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.site_role_labels_aggregated
 
@@ -1678,7 +1679,7 @@ class OpsSiteRoleLabelsAggregatedSiteId(View):
         return json_response(result, headers=headers)
 
 
-class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
+class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.user_site_role_labels_aggregated
 
@@ -1713,7 +1714,7 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View):
         return json_response(result, headers=headers)
 
 
-class Permissions(View):
+class Permissions(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -1837,7 +1838,7 @@ class Permissions(View):
         return json_response(result, status=201, headers=headers)
 
 
-class PermissionsPermissionId(View):
+class PermissionsPermissionId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.permission
@@ -1937,7 +1938,7 @@ class PermissionsPermissionId(View):
         return json_response(result, headers=headers)
 
 
-class Resources(View):
+class Resources(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2066,7 +2067,7 @@ class Resources(View):
         return json_response(result, status=201, headers=headers)
 
 
-class ResourcesResourceId(View):
+class ResourcesResourceId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.resource
@@ -2166,7 +2167,7 @@ class ResourcesResourceId(View):
         return json_response(result, headers=headers)
 
 
-class Roleresourcepermissions(View):
+class Roleresourcepermissions(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2299,7 +2300,7 @@ class Roleresourcepermissions(View):
         return json_response(result, status=201, headers=headers)
 
 
-class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
+class RoleresourcepermissionsRoleIdResourceIdPermissionId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.role_resource_permission
@@ -2371,7 +2372,7 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View):
         return json_response(result, headers=headers)
 
 
-class Roles(View):
+class Roles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2503,7 +2504,7 @@ class Roles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class RolesRoleId(View):
+class RolesRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.role
@@ -2603,7 +2604,7 @@ class RolesRoleId(View):
         return json_response(result, headers=headers)
 
 
-class Sitedataschemas(View):
+class Sitedataschemas(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2722,7 +2723,7 @@ class Sitedataschemas(View):
         return json_response(result, status=201, headers=headers)
 
 
-class SitedataschemasSiteId(View):
+class SitedataschemasSiteId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.site_data_schema
@@ -2822,7 +2823,7 @@ class SitedataschemasSiteId(View):
         return json_response(result, headers=headers)
 
 
-class Siteroles(View):
+class Siteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2950,7 +2951,7 @@ class Siteroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class SiterolesSiteIdRoleId(View):
+class SiterolesSiteIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.site_role
@@ -3059,7 +3060,7 @@ class SiterolesSiteIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class Sites(View):
+class Sites(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -3195,7 +3196,7 @@ class Sites(View):
         return json_response(result, status=201, headers=headers)
 
 
-class SitesSiteId(View):
+class SitesSiteId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.site
@@ -3295,7 +3296,7 @@ class SitesSiteId(View):
         return json_response(result, headers=headers)
 
 
-class SitesSiteIdActivate(View):
+class SitesSiteIdActivate(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
 
@@ -3327,7 +3328,7 @@ class SitesSiteIdActivate(View):
         return json_response(result, headers=headers)
 
 
-class SitesSiteIdDeactivate(View):
+class SitesSiteIdDeactivate(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
 
@@ -3359,7 +3360,7 @@ class SitesSiteIdDeactivate(View):
         return json_response(result, headers=headers)
 
 
-class Userdomainroles(View):
+class Userdomainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -3493,7 +3494,7 @@ class Userdomainroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class UserdomainrolesUserIdDomainIdRoleId(View):
+class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user_domain_role
@@ -3565,7 +3566,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class Users(View):
+class Users(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -3719,7 +3720,7 @@ class Users(View):
         return json_response(result, headers=headers)
 
 
-class UsersUserId(View):
+class UsersUserId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user
@@ -3819,7 +3820,7 @@ class UsersUserId(View):
         return json_response(result, headers=headers)
 
 
-class UsersUserIdActivate(View):
+class UsersUserIdActivate(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
 
@@ -3851,7 +3852,7 @@ class UsersUserIdActivate(View):
         return json_response(result, headers=headers)
 
 
-class UsersUserIdDeactivate(View):
+class UsersUserIdDeactivate(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
 
@@ -3883,7 +3884,7 @@ class UsersUserIdDeactivate(View):
         return json_response(result, headers=headers)
 
 
-class Usersitedata(View):
+class Usersitedata(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -4021,7 +4022,7 @@ class Usersitedata(View):
         return json_response(result, status=201, headers=headers)
 
 
-class UsersitedataUserIdSiteId(View):
+class UsersitedataUserIdSiteId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user_site_data
@@ -4130,7 +4131,7 @@ class UsersitedataUserIdSiteId(View):
         return json_response(result, headers=headers)
 
 
-class Usersiteroles(View):
+class Usersiteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -4264,7 +4265,7 @@ class Usersiteroles(View):
         return json_response(result, status=201, headers=headers)
 
 
-class UsersiterolesUserIdSiteIdRoleId(View):
+class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user_site_role
@@ -4336,7 +4337,7 @@ class UsersiterolesUserIdSiteIdRoleId(View):
         return json_response(result, headers=headers)
 
 
-class __SWAGGER_SPEC__(View):
+class __SWAGGER_SPEC__(View, CorsViewMixin):
     SPEC = json.loads("""{
     "basePath": "/api/v1",
     "definitions": {
