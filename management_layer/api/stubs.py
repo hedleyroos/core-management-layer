@@ -20,6 +20,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -28,6 +29,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -36,6 +38,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param admin_note_id: integer A unique integer value identifying the admin note.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -44,6 +47,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param admin_note_id: integer A unique integer value identifying the admin note.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -53,6 +57,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param admin_note_id: integer A unique integer value identifying the admin note.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -64,6 +69,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
         :param client_id (optional): string An optional client id to filter on. This is not the primary key.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -72,6 +78,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param client_id: string A string value identifying the client
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -83,6 +90,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -91,6 +99,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -100,6 +109,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -109,6 +119,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -119,6 +130,7 @@ class AbstractStubClass(object):
         :param body: dict A dictionary containing the parsed and validated body
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -129,6 +141,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_ids (optional): array An optional list of domain ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -137,6 +150,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -145,6 +159,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -153,6 +168,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -162,6 +178,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -174,6 +191,7 @@ class AbstractStubClass(object):
         :param invitation_id (optional): string An optional query parameter to filter by invitation_id
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -182,6 +200,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -192,6 +211,7 @@ class AbstractStubClass(object):
         :param invitation_id: string A UUID value identifying the invitation.
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -202,6 +222,7 @@ class AbstractStubClass(object):
         :param invitation_id: string A UUID value identifying the invitation.
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -213,6 +234,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
         :param invitation_ids (optional): array An optional list of invitation ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -221,6 +243,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -229,6 +252,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -237,6 +261,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -246,6 +271,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param invitation_id: string A UUID value identifying the invitation.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -258,6 +284,7 @@ class AbstractStubClass(object):
         :param invitation_id (optional): string An optional query parameter to filter by invitation_id
         :param site_id (optional): integer An optional query parameter to filter by site_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -266,6 +293,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -276,6 +304,7 @@ class AbstractStubClass(object):
         :param invitation_id: string A UUID value identifying the invitation.
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -286,6 +315,7 @@ class AbstractStubClass(object):
         :param invitation_id: string A UUID value identifying the invitation.
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -294,6 +324,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -302,6 +333,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -310,6 +342,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -318,6 +351,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -327,6 +361,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -337,6 +372,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param permission_ids (optional): array An optional list of permission ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -345,6 +381,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -353,6 +390,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param permission_id: integer A unique integer value identifying the permission.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -361,6 +399,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param permission_id: integer A unique integer value identifying the permission.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -370,6 +409,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param permission_id: integer A unique integer value identifying the permission.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -381,6 +421,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param prefix (optional): string An optional URN prefix filter
         :param resource_ids (optional): array An optional list of resource ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -389,6 +430,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -397,6 +439,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param resource_id: integer A unique integer value identifying the resource.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -405,6 +448,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param resource_id: integer A unique integer value identifying the resource.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -414,6 +458,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param resource_id: integer A unique integer value identifying the resource.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -426,6 +471,7 @@ class AbstractStubClass(object):
         :param role_id (optional): integer An optional query parameter to filter by role_id
         :param resource_id (optional): integer An optional resource filter
         :param permission_id (optional): integer An optional permission filter
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -434,6 +480,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -444,6 +491,7 @@ class AbstractStubClass(object):
         :param role_id: integer A unique integer value identifying the role.
         :param resource_id: integer A unique integer value identifying the resource.
         :param permission_id: integer A unique integer value identifying the permission.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -454,6 +502,7 @@ class AbstractStubClass(object):
         :param role_id: integer A unique integer value identifying the role.
         :param resource_id: integer A unique integer value identifying the resource.
         :param permission_id: integer A unique integer value identifying the permission.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -464,6 +513,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param role_ids (optional): array An optional list of role ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -472,6 +522,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -480,6 +531,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -488,6 +540,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -497,6 +550,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -507,6 +561,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -515,6 +570,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -523,6 +579,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -531,6 +588,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -540,6 +598,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -551,6 +610,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_id (optional): integer An optional query parameter to filter by site_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -559,6 +619,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -568,6 +629,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -577,6 +639,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -587,6 +650,7 @@ class AbstractStubClass(object):
         :param body: dict A dictionary containing the parsed and validated body
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -597,6 +661,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -605,6 +670,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -613,6 +679,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -621,6 +688,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -630,6 +698,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -638,6 +707,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -646,6 +716,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -658,6 +729,7 @@ class AbstractStubClass(object):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param domain_id (optional): integer An optional query parameter to filter by domain_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -666,6 +738,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -676,6 +749,7 @@ class AbstractStubClass(object):
         :param user_id: string A UUID value identifying the user.
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -686,6 +760,7 @@ class AbstractStubClass(object):
         :param user_id: string A UUID value identifying the user.
         :param domain_id: integer A unique integer value identifying the domain.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -698,6 +773,7 @@ class AbstractStubClass(object):
         :param email (optional): string An optional email filter
         :param username_prefix (optional): string An optional username prefix filter
         :param user_ids (optional): array An optional list of user ids
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -706,6 +782,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -714,6 +791,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -723,6 +801,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -731,6 +810,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -739,6 +819,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -750,6 +831,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param site_id (optional): integer An optional query parameter to filter by site_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -758,6 +840,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -767,6 +850,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -776,6 +860,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -786,6 +871,7 @@ class AbstractStubClass(object):
         :param body: dict A dictionary containing the parsed and validated body
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -798,6 +884,7 @@ class AbstractStubClass(object):
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param site_id (optional): integer An optional query parameter to filter by site_id
         :param role_id (optional): integer An optional query parameter to filter by role_id
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -806,6 +893,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -816,6 +904,7 @@ class AbstractStubClass(object):
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
@@ -826,6 +915,7 @@ class AbstractStubClass(object):
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
         :param role_id: integer A unique integer value identifying the role.
+        :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 

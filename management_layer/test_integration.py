@@ -291,7 +291,7 @@ class IntegrationTest(AioHTTPTestCase):
     @unittest_run_loop
     async def test_list(self, resource, info):
         # Default call
-        response = await self.client.request("GET", "/{}".format(resource))
+        response = await self.client.get("/{}".format(resource))
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -299,7 +299,7 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
-        response = await self.client.request("GET", "/{}?offset=1&limit=10".format(resource))
+        response = await self.client.get("/{}?offset=1&limit=10".format(resource))
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -307,7 +307,7 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
-        response = await self.client.request("GET", "/{}?foo=bar".format(resource))
+        response = await self.client.get("/{}?foo=bar".format(resource))
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -315,8 +315,27 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With bad arguments
-        response = await self.client.request("GET", "/{}?offset=a".format(resource))
+        response = await self.client.get("/{}?offset=a".format(resource))
         await self.assertStatus(response, 400)
+
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", "/{}?offset=1&limit=10".format(resource),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "GET"
+            }
+        )
+        await self.assertStatus(response, 200)
+
+        response = await self.client.request(
+            "OPTIONS", "/{}?offset=1&limit=10".format(resource),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "DELETE"
+            }
+        )
+        await self.assertStatus(response, 403)
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
@@ -333,6 +352,16 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, info.schema)
 
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", "/{}".format(resource),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "POST"
+            }
+        )
+        await self.assertStatus(response, 200)
+
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
         if resource not in SKIP_DELETE_TESTS_FOR
@@ -343,6 +372,16 @@ class IntegrationTest(AioHTTPTestCase):
             resource, "/1" * info.num_identifying_parts)
         )
         await self.assertStatus(response, 204)
+
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "DELETE"
+            }
+        )
+        await self.assertStatus(response, 200)
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
@@ -356,6 +395,16 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, info.schema)
+
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "GET"
+            }
+        )
+        await self.assertStatus(response, 200)
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
@@ -374,3 +423,13 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, info.schema)
+
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "PUT"
+            }
+        )
+        await self.assertStatus(response, 200)

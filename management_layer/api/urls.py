@@ -3,6 +3,7 @@ Do not modify this file. It is generated from the Swagger specification.
 
 Routing module.
 """
+import aiohttp_cors
 import management_layer.api.views as views
 
 def add_routes(app, with_ui=False):
@@ -54,3 +55,16 @@ def add_routes(app, with_ui=False):
     if with_ui:
         app.router.add_view(r"/the_specification", views.__SWAGGER_SPEC__)
         app.router.add_static(r"/ui", path="ui")
+
+    # Configure default CORS settings.
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
+
+    # Configure CORS on all routes.
+    for route in app.router.routes():
+        cors.add(route)
