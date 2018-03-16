@@ -274,6 +274,15 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
+        # Operational API is a part of access control. It was split out by the
+        # swagger generator due to its tag. Thus allowing it to use the same
+        # client and config as access_control.
+        app["operational_api"] = access_control.api.OperationalApi(
+            api_client=access_control.ApiClient(
+                configuration=access_control_configuration
+            )
+        )
+
         authentication_service_configuration = authentication_service.configuration.Configuration()
         authentication_service_configuration.host = "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT)
         app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
@@ -281,6 +290,7 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=authentication_service_configuration
             )
         )
+
 
         add_routes(app, with_ui=False)
         return app
@@ -433,3 +443,43 @@ class IntegrationTest(AioHTTPTestCase):
             }
         )
         await self.assertStatus(response, 200)
+
+    @unittest_run_loop
+    async def test_all_user_roles(self):
+        response = await self.client.get("/ops/all_user_roles/%s" % uuid.uuid1())
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.all_user_roles)
+
+    @unittest_run_loop
+    async def test_get_domain_roles(self):
+        response = await self.client.get("/ops/domain_roles/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.domain_roles)
+
+    @unittest_run_loop
+    async def test_get_site_and_domain_roles(self):
+        response = await self.client.get("/ops/site_and_domain_roles/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.site_and_domain_roles)
+
+    @unittest_run_loop
+    async def test_get_site_role_labels_aggregated(self):
+        response = await self.client.get("/ops/site_role_labels_aggregated/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.site_role_labels_aggregated)
+
+    @unittest_run_loop
+    async def test_get_user_site_role_labels_aggregated(self):
+        response = await self.client.get("/ops/user_site_role_labels_aggregated/%s/1" % uuid.uuid1())
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.user_site_role_labels_aggregated)
