@@ -1,3 +1,4 @@
+import os
 import time
 
 import jwt
@@ -5,7 +6,13 @@ from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from unittest.mock import patch
 
-# We can only import add_routes once we have mocked the environment
+with patch.dict(os.environ, {
+    "ACCESS_CONTROL_API_KEY": "test",
+    "AUTHENTICATION_SERVICE_API_KEY": "test",
+    "USER_DATA_STORE_API_KEY": "test",
+}):
+    import management_layer.settings
+
 from management_layer import middleware
 
 TEST_AUDIENCE = "test_audience"
