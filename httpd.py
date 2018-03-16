@@ -51,6 +51,15 @@ if __name__ == "__main__":
         )
     )
 
+    # Operational API is a part of access control. It was split out by the
+    # swagger generator due to its tag. Thus allowing it to use the same client
+    # and config as access_control.
+    app["operational_api"] = access_control.api.OperationalApi(
+            api_client=access_control.ApiClient(
+            configuration=access_control_configuration
+        )
+    )
+
     authentication_service_configuration = authentication_service.configuration.Configuration()
     override_host = settings.AUTHENTICATION_SERVICE_API
     if override_host:
@@ -63,7 +72,7 @@ if __name__ == "__main__":
         )
     )
 
-    print("Access Control: {}".format(access_control_configuration.host))
+    print("Access Control/Operational: {}".format(access_control_configuration.host))
     print("Authentication Service: {}".format(authentication_service_configuration.host))
     print("User Data Store: {}".format(user_data_store_configuration.host))
 
