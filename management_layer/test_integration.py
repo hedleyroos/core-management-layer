@@ -1,4 +1,3 @@
-import copy
 import json
 import jsonschema
 import logging
@@ -274,6 +273,10 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=access_control_configuration
             )
         )
+
+        # Operational API is a part of access control. It was split out by the
+        # swagger generator due to its tag. Thus allowing it to use the same
+        # client and config as access_control.
         app["operational_api"] = access_control.api.OperationalApi(
             api_client=access_control.ApiClient(
                 configuration=access_control_configuration
