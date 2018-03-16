@@ -31,10 +31,10 @@ if __name__ == "__main__":
     override_host = settings.USER_DATA_STORE_API
     if override_host:
         user_data_store_configuration.host = override_host
-    user_data_store_configuration.api_key = {
-        "X_API_KEY": settings.USER_DATA_STORE_API_KEY }
     app["user_data_api"] = user_data_store.api.UserDataApi(
         api_client=user_data_store.ApiClient(
+            header_name="X-API-KEY",
+            header_value=settings.USER_DATA_STORE_API_KEY,
             configuration=user_data_store_configuration
         )
     )
@@ -43,10 +43,10 @@ if __name__ == "__main__":
     override_host = settings.ACCESS_CONTROL_API
     if override_host:
         access_control_configuration.host = override_host
-    access_control_configuration.api_key = {
-        "X_API_KEY": settings.ACCESS_CONTROL_API_KEY }
     app["access_control_api"] = access_control.api.AccessControlApi(
-        api_client=access_control.ApiClient(header_name="X_API_KEY", header_value=settings.ACCESS_CONTROL_API_KEY,
+        api_client=access_control.ApiClient(
+            header_name="X-API-KEY",
+            header_value=settings.ACCESS_CONTROL_API_KEY,
             configuration=access_control_configuration
         )
     )
@@ -55,11 +55,9 @@ if __name__ == "__main__":
     override_host = settings.AUTHENTICATION_SERVICE_API
     if override_host:
         authentication_service_configuration.host = override_host
-    authentication_service_configuration.api_key = {
-        "X_API_KEY": settings.AUTHENTICATION_SERVICE_API_KEY }
     app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
         api_client=authentication_service.ApiClient(
-            header_name="X_API_KEY",
+            header_name="X-API-KEY",
             header_value=settings.AUTHENTICATION_SERVICE_API_KEY,
             configuration=authentication_service_configuration
         )
