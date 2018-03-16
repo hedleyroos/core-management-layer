@@ -62,7 +62,6 @@ if __name__ == "__main__":
         )
     )
 
-
     print("Access Control: {}".format(access_control_configuration.host))
     print("Authentication Service: {}".format(authentication_service_configuration.host))
     print("User Data Store: {}".format(user_data_store_configuration.host))
