@@ -46,6 +46,11 @@ if __name__ == "__main__":
             configuration=access_control_configuration
         )
     )
+    app["operational_api"] = access_control.api.OperationalApi(
+            api_client=access_control.ApiClient(
+            configuration=access_control_configuration
+        )
+    )
 
     authentication_service_configuration = authentication_service.configuration.Configuration()
     override_host = settings.AUTHENTICATION_SERVICE_API
@@ -56,6 +61,7 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
+
 
     print("Access Control: {}".format(access_control_configuration.host))
     print("Authentication Service: {}".format(authentication_service_configuration.host))

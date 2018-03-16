@@ -463,7 +463,10 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
+            return user_roles.to_dict()
+
 
     @staticmethod
     async def get_domain_roles(request, domain_id, **kwargs):
@@ -471,7 +474,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            domain_roles = await request.app["operational_api"].get_domain_roles(domain_id)
+            return domain_roles.to_dict()
 
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
@@ -479,7 +484,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            site_and_domain_roles = await request.app["operational_api"].get_site_and_domain_roles(site_id)
+            return site_and_domain_roles.to_dict()
 
     @staticmethod
     async def get_site_role_labels_aggregated(request, site_id, **kwargs):
@@ -487,7 +494,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            site_role_labels_aggregated = await request.app["operational_api"].get_site_role_labels_aggregated(site_id)
+            return site_role_labels_aggregated.to_dict()
 
     @staticmethod
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
@@ -496,7 +505,9 @@ class Implementation(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user_site_role_labels_aggregated = await request.app["operational_api"].get_user_site_role_labels_aggregated(user_id, site_id)
+            return user_site_role_labels_aggregated.to_dict()
 
     @staticmethod
     async def permission_list(request, **kwargs):
