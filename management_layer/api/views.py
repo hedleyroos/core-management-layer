@@ -369,8 +369,15 @@ class Clients(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # client_ids (optional): array An optional list of client ids
             client_ids = self.request.query.getall("client_ids", None)
+            client_ids = [int(e) for e in client_ids]
             if client_ids is not None:
-                jsonschema.validate(client_ids, {"type": "array"})
+                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(client_ids, schema)
                 optional_args["client_ids"] = client_ids
             # client_id (optional): string An optional client id to filter on. This is not the primary key.
             client_id = self.request.query.get("client_id", None)
@@ -735,8 +742,15 @@ class Domains(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # domain_ids (optional): array An optional list of domain ids
             domain_ids = self.request.query.getall("domain_ids", None)
+            domain_ids = [int(e) for e in domain_ids]
             if domain_ids is not None:
-                jsonschema.validate(domain_ids, {"type": "array"})
+                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(domain_ids, schema)
                 optional_args["domain_ids"] = domain_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1189,8 +1203,15 @@ class Invitations(View, CorsViewMixin):
                 optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
             invitation_ids = self.request.query.getall("invitation_ids", None)
+            invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
-                jsonschema.validate(invitation_ids, {"type": "array"})
+                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(invitation_ids, schema)
                 optional_args["invitation_ids"] = invitation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1782,8 +1803,15 @@ class Permissions(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # permission_ids (optional): array An optional list of permission ids
             permission_ids = self.request.query.getall("permission_ids", None)
+            permission_ids = [int(e) for e in permission_ids]
             if permission_ids is not None:
-                jsonschema.validate(permission_ids, {"type": "array"})
+                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(permission_ids, schema)
                 optional_args["permission_ids"] = permission_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2011,8 +2039,15 @@ class Resources(View, CorsViewMixin):
                 optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
             resource_ids = self.request.query.getall("resource_ids", None)
+            resource_ids = [int(e) for e in resource_ids]
             if resource_ids is not None:
-                jsonschema.validate(resource_ids, {"type": "array"})
+                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(resource_ids, schema)
                 optional_args["resource_ids"] = resource_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2448,8 +2483,15 @@ class Roles(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # role_ids (optional): array An optional list of role ids
             role_ids = self.request.query.getall("role_ids", None)
+            role_ids = [int(e) for e in role_ids]
             if role_ids is not None:
-                jsonschema.validate(role_ids, {"type": "array"})
+                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(role_ids, schema)
                 optional_args["role_ids"] = role_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2667,8 +2709,15 @@ class Sitedataschemas(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.getall("site_ids", None)
+            site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                jsonschema.validate(site_ids, {"type": "array"})
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3140,8 +3189,15 @@ class Sites(View, CorsViewMixin):
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.getall("site_ids", None)
+            site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                jsonschema.validate(site_ids, {"type": "array"})
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3700,7 +3756,13 @@ class Users(View, CorsViewMixin):
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.getall("user_ids", None)
             if user_ids is not None:
-                jsonschema.validate(user_ids, {"type": "array"})
+                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
