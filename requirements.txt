@@ -11,3 +11,5 @@ rstr      # For mock class in generated server code.
 urllib3
 certifi
 pyjwt
+
+environs>=2.1.0,<3.0

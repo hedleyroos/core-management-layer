@@ -11,7 +11,7 @@ from unittest import TestCase
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 from aiohttp.web import HTTPBadGateway
 
-from .utils import client_exception_handler
+from management_layer.utils import client_exception_handler
 import access_control.rest
 import authentication_service.rest
 import user_data_store.rest

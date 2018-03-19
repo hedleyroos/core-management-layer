@@ -18,6 +18,7 @@ import authentication_service
 import user_data_store
 from user_data_store import UserDataApi
 from management_layer.api import schemas
+from management_layer.api.urls import add_routes
 
 LOGGER = logging.getLogger(__name__)
 DATA_GENERATOR = DataGenerator()
@@ -29,15 +30,6 @@ DATA_GENERATOR.not_required_probability = 1.0
 ACCESS_CONTROL_PORT = 60000
 AUTHENTICATION_SERVICE_PORT = 60001
 USER_DATA_STORE_PORT = 60002
-
-with patch.dict(os.environ, {
-    "STUBS_CLASS": "management_layer.integration.Implementation",
-    "ACCESS_CONTROL_API": "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT),
-    "AUTHENTICATION_SERVICE_API": "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT),
-    "USER_DATA_STORE_API": "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT),
-}):
-    # We can only import add_routes once we have mocked the environment
-    from management_layer.api.urls import add_routes
 
 
 _MOCKED_ACCESS_CONTROL_API = None
@@ -302,8 +294,6 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=authentication_service_configuration
             )
         )
-
-
         add_routes(app, with_ui=False)
         return app
 
