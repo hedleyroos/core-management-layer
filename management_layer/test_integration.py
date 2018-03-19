@@ -82,12 +82,13 @@ def wait_for_server(ip, port):
     :param ip: The IP address to connect to
     :param port: The port to connect to
     """
-    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
         try:
-            s = socket.create_connection((ip, int(port)), timeout=1)
-            # s.connect((ip, int(port)))
+            # socket.create_connection() works on MacOS, while socket.socket() with socket.connect()
+            # did not.
+            s = socket.create_connection((ip, int(port)), timeout=2)
             s.shutdown(2)
+            s.close()
             break
         except Exception as e:
             print(e)
