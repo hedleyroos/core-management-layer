@@ -1,12 +1,3 @@
-import os
-from unittest.mock import patch
-with patch.dict(os.environ, {
-    "ACCESS_CONTROL_API_KEY": "test",
-    "AUTHENTICATION_SERVICE_API_KEY": "test",
-    "USER_DATA_STORE_API_KEY": "test",
-}):
-    import management_layer.settings
-
 from unittest import TestCase
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 from aiohttp.web import HTTPBadGateway
