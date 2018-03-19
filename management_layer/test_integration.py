@@ -104,7 +104,7 @@ def setUpModule():
     LOGGER.info("Starting mock server using: {}".format(cmd))
     _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        close_fds=True
+        close_fds=True, shell=False
     )
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
@@ -114,7 +114,7 @@ def setUpModule():
     LOGGER.info("Starting mock server using: {}".format(cmd))
     _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        close_fds=True
+        close_fds=True, shell=False
     )
 
     global _MOCKED_USER_DATA_STORE_API
@@ -124,7 +124,7 @@ def setUpModule():
     LOGGER.info("Starting mock server using: {}".format(cmd))
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        close_fds=True
+        close_fds=True, shell=False
     )
 
     for port in [ACCESS_CONTROL_PORT, AUTHENTICATION_SERVICE_PORT, USER_DATA_STORE_PORT]:
