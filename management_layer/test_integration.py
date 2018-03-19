@@ -88,7 +88,8 @@ def wait_for_server(ip, port):
             s.connect((ip, int(port)))
             s.shutdown(2)
             break
-        except Exception:
+        except Exception as e:
+            print(e)
             time.sleep(1)
 
 
