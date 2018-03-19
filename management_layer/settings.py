@@ -8,9 +8,9 @@ env = Env()
 CACHE_TIME = 5 * 60
 
 # Authentication middleware related settings
-JWT_SECRET = env.str("JWT_SECRET")
+JWT_SECRET = env.str("JWT_SECRET", None)
 JWT_ALGORITHM = env.str("JWT_ALGORITHM", "HS256")
-JWT_AUDIENCE = env.str("JWT_AUDIENCE")
+JWT_AUDIENCE = env.str("JWT_AUDIENCE", None)
 
 # Warning: Never set this to true on a production system as it
 # bypasses token authentication.
@@ -21,9 +21,9 @@ PORT = env.int("SERVER_PORT", 8000)
 WITH_UI = env.bool("WITH_UI", False)
 
 # API locations
-ACCESS_CONTROL_API = env.str("ACCESS_CONTROL_API")
-AUTHENTICATION_SERVICE_API = env.str("AUTHENTICATION_SERVICE_API")
-USER_DATA_STORE_API = env.str("USER_DATA_STORE_API")
+ACCESS_CONTROL_API = env.str("ACCESS_CONTROL_API", None)
+AUTHENTICATION_SERVICE_API = env.str("AUTHENTICATION_SERVICE_API", None)
+USER_DATA_STORE_API = env.str("USER_DATA_STORE_API", None)
 
 # API KEYS
 ACCESS_CONTROL_API_KEY = env.str("ACCESS_CONTROL_API_KEY")
