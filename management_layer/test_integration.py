@@ -102,21 +102,27 @@ def setUpModule():
         workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(cmd.split())
+    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(cmd.split())
+    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
     global _MOCKED_USER_DATA_STORE_API
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(cmd.split())
+    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
 
     for port in [ACCESS_CONTROL_PORT, AUTHENTICATION_SERVICE_PORT, USER_DATA_STORE_PORT]:
         wait_for_server("127.0.0.1", port)
