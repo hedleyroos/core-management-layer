@@ -19,5 +19,8 @@ if __name__ != "__main__":
         "ACCESS_CONTROL_API": "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT),
         "AUTHENTICATION_SERVICE_API": "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT),
         "USER_DATA_STORE_API": "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT),
+        "ACCESS_CONTROL_API_KEY": "test",
+        "AUTHENTICATION_SERVICE_API_KEY": "test",
+        "USER_DATA_STORE_API_KEY": "test",
     })
     os.environ.update(orig_environ)
