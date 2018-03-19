@@ -294,8 +294,6 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=authentication_service_configuration
             )
         )
-
-
         add_routes(app, with_ui=False)
         return app
 
