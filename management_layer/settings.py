@@ -1,30 +1,33 @@
 import logging
-import os
+
+from environs import Env
+
+env = Env()
 
 
 CACHE_TIME = 5 * 60
 
 # Authentication middleware related settings
-JWT_SECRET = os.getenv("JWT_SECRET")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-JWT_AUDIENCE = os.getenv("JWT_AUDIENCE")
+JWT_SECRET = env.str("JWT_SECRET")
+JWT_ALGORITHM = env.str("JWT_ALGORITHM", "HS256")
+JWT_AUDIENCE = env.str("JWT_AUDIENCE")
 
 # Warning: Never set this to true on a production system as it
 # bypasses token authentication.
-INSECURE = os.getenv("INSECURE", "False").lower() == "true"
+INSECURE = env.bool("INSECURE", False)
 
 # The port to listen on
-PORT = os.getenv("SERVER_PORT", 8000)
-WITH_UI = os.getenv("WITH_UI", "False").lower() == "true"
+PORT = env.int("SERVER_PORT", 8000)
+WITH_UI = env.bool("WITH_UI", False)
 
 # API locations
-ACCESS_CONTROL_API = os.getenv("ACCESS_CONTROL_API")
-AUTHENTICATION_SERVICE_API = os.getenv("AUTHENTICATION_SERVICE_API")
-USER_DATA_STORE_API = os.getenv("USER_DATA_STORE_API")
+ACCESS_CONTROL_API = env.url("ACCESS_CONTROL_API")
+AUTHENTICATION_SERVICE_API = env.url("AUTHENTICATION_SERVICE_API")
+USER_DATA_STORE_API = env.url("USER_DATA_STORE_API")
 
 # API KEYS
-ACCESS_CONTROL_API_KEY = os.environ["ACCESS_CONTROL_API_KEY"]
-AUTHENTICATION_SERVICE_API_KEY = os.environ["AUTHENTICATION_SERVICE_API_KEY"]
-USER_DATA_STORE_API_KEY = os.environ["USER_DATA_STORE_API_KEY"]
+ACCESS_CONTROL_API_KEY = env.str("ACCESS_CONTROL_API_KEY")
+AUTHENTICATION_SERVICE_API_KEY = env.str("AUTHENTICATION_SERVICE_API_KEY")
+USER_DATA_STORE_API_KEY = env.str("USER_DATA_STORE_API_KEY")
 
 LOG_LEVEL = logging.DEBUG
