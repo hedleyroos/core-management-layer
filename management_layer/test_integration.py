@@ -82,10 +82,11 @@ def wait_for_server(ip, port):
     :param ip: The IP address to connect to
     :param port: The port to connect to
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
         try:
-            s.connect((ip, int(port)))
+            s = socket.create_connection((ip, int(port)), timeout=1)
+            # s.connect((ip, int(port)))
             s.shutdown(2)
             break
         except Exception as e:
