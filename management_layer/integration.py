@@ -37,10 +37,6 @@ class Implementation(AbstractStubClass):
     #     :param user_id (optional): string An optional query parameter to filter by user_id
     #     :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
     #     """
-    #     for key in ["offset", "limit"]:
-    #         if key in kwargs:
-    #             kwargs[key] = int(kwargs[key])
-    #
     #     with client_exception_handler():
     #         admin_notes = await bravado_client.user_data.adminnote_list(**kwargs).result()
     #
@@ -258,9 +254,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param domain_ids (optional): array An optional list of domain ids
         """
-        if "domain_ids" in kwargs:
-            kwargs["domain_ids"] = [int(did) for did in kwargs["domain_ids"]]
-
         with client_exception_handler():
             domains, _status, headers = await request.app[
                 "access_control_api"].domain_list_with_http_info(**kwargs)
@@ -463,7 +456,10 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
+            return user_roles.to_dict()
+
 
     @staticmethod
     async def get_domain_roles(request, domain_id, **kwargs):
@@ -471,7 +467,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param domain_id: integer A unique integer value identifying the domain.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            domain_roles = await request.app["operational_api"].get_domain_roles(domain_id)
+            return domain_roles.to_dict()
 
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
@@ -479,7 +477,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            site_and_domain_roles = await request.app["operational_api"].get_site_and_domain_roles(site_id)
+            return site_and_domain_roles.to_dict()
 
     @staticmethod
     async def get_site_role_labels_aggregated(request, site_id, **kwargs):
@@ -487,7 +487,9 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            site_role_labels_aggregated = await request.app["operational_api"].get_site_role_labels_aggregated(site_id)
+            return site_role_labels_aggregated.to_dict()
 
     @staticmethod
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
@@ -496,7 +498,9 @@ class Implementation(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         :param site_id: integer A unique integer value identifying the site.
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            user_site_role_labels_aggregated = await request.app["operational_api"].get_user_site_role_labels_aggregated(user_id, site_id)
+            return user_site_role_labels_aggregated.to_dict()
 
     @staticmethod
     async def permission_list(request, **kwargs):
@@ -506,9 +510,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param permission_ids (optional): array An optional list of permission ids
         """
-        if "permission_ids" in kwargs:
-            kwargs["permission_ids"] = [int(pid) for pid in kwargs["permission_ids"]]
-
         with client_exception_handler():
             permissions, _status, headers = await request.app[
                 "access_control_api"].permission_list_with_http_info(**kwargs)
@@ -590,9 +591,6 @@ class Implementation(AbstractStubClass):
         :param prefix (optional): string An optional URN prefix filter
         :param resource_ids (optional): array An optional list of resource ids
         """
-        if "resource_ids" in kwargs:
-            kwargs["resource_ids"] = [int(rid) for rid in kwargs["resource_ids"]]
-
         with client_exception_handler():
             resources, _status, headers = await request.app[
                 "access_control_api"].resource_list_with_http_info(**kwargs)
@@ -743,9 +741,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param role_ids (optional): array An optional list of role ids
         """
-        if "role_ids" in kwargs:
-            kwargs["role_ids"] = [int(role_id) for role_id in kwargs["role_ids"]]
-
         with client_exception_handler():
             roles, _status, headers = await request.app[
                 "access_control_api"].role_list_with_http_info(**kwargs)
@@ -826,9 +821,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
         """
-        if "site_ids" in kwargs:
-            kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
-
         with client_exception_handler():
             sdss, _status, headers = await request.app[
                 "user_data_api"].sitedataschema_list_with_http_info(**kwargs)
@@ -993,9 +985,6 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
         """
-        if "site_ids" in kwargs:
-            kwargs["site_ids"] = [int(site_id) for site_id in kwargs["site_ids"]]
-
         with client_exception_handler():
             sites, _status, headers = await request.app[
                 "access_control_api"].site_list_with_http_info(**kwargs)

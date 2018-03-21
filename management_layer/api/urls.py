@@ -3,8 +3,8 @@ Do not modify this file. It is generated from the Swagger specification.
 
 Routing module.
 """
-import aiohttp_cors
 import management_layer.api.views as views
+import aiohttp_cors
 
 def add_routes(app, with_ui=False):
     app.router.add_view(r"/usersiteroles/{user_id}/{site_id}/{role_id}", views.UsersiterolesUserIdSiteIdRoleId)

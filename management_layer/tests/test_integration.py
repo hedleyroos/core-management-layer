@@ -18,6 +18,7 @@ import authentication_service
 import user_data_store
 from user_data_store import UserDataApi
 from management_layer.api import schemas
+from management_layer.api.urls import add_routes
 
 LOGGER = logging.getLogger(__name__)
 DATA_GENERATOR = DataGenerator()
@@ -29,15 +30,6 @@ DATA_GENERATOR.not_required_probability = 1.0
 ACCESS_CONTROL_PORT = 60000
 AUTHENTICATION_SERVICE_PORT = 60001
 USER_DATA_STORE_PORT = 60002
-
-with patch.dict(os.environ, {
-    "STUBS_CLASS": "management_layer.integration.Implementation",
-    "ACCESS_CONTROL_API": "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT),
-    "AUTHENTICATION_SERVICE_API": "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT),
-    "USER_DATA_STORE_API": "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT),
-}):
-    # We can only import add_routes once we have mocked the environment
-    from management_layer.api.urls import add_routes
 
 
 _MOCKED_ACCESS_CONTROL_API = None
@@ -82,13 +74,16 @@ def wait_for_server(ip, port):
     :param ip: The IP address to connect to
     :param port: The port to connect to
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while True:
         try:
-            s.connect((ip, int(port)))
+            # socket.create_connection() works on MacOS, while socket.socket() with socket.connect()
+            # did not.
+            s = socket.create_connection((ip, int(port)), timeout=2)
             s.shutdown(2)
+            s.close()
             break
-        except Exception:
+        except Exception as e:
+            print(e)
             time.sleep(1)
 
 
@@ -102,21 +97,30 @@ def setUpModule():
         workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(cmd.split())
+    _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        close_fds=True, shell=False
+    )
 
     global _MOCKED_AUTHENTICATION_SERVICE_API
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(cmd.split())
+    _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        close_fds=True, shell=False
+    )
 
     global _MOCKED_USER_DATA_STORE_API
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
     )
     LOGGER.info("Starting mock server using: {}".format(cmd))
-    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(cmd.split())
+    _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
+        cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        close_fds=True, shell=False
+    )
 
     for port in [ACCESS_CONTROL_PORT, AUTHENTICATION_SERVICE_PORT, USER_DATA_STORE_PORT]:
         wait_for_server("127.0.0.1", port)
@@ -274,6 +278,15 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
+        # Operational API is a part of access control. It was split out by the
+        # swagger generator due to its tag. Thus allowing it to use the same
+        # client and config as access_control.
+        app["operational_api"] = access_control.api.OperationalApi(
+            api_client=access_control.ApiClient(
+                configuration=access_control_configuration
+            )
+        )
+
         authentication_service_configuration = authentication_service.configuration.Configuration()
         authentication_service_configuration.host = "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT)
         app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
@@ -281,7 +294,6 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=authentication_service_configuration
             )
         )
-
         add_routes(app, with_ui=False)
         return app
 
@@ -433,3 +445,43 @@ class IntegrationTest(AioHTTPTestCase):
             }
         )
         await self.assertStatus(response, 200)
+
+    @unittest_run_loop
+    async def test_all_user_roles(self):
+        response = await self.client.get("/ops/all_user_roles/%s" % uuid.uuid1())
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.all_user_roles)
+
+    @unittest_run_loop
+    async def test_get_domain_roles(self):
+        response = await self.client.get("/ops/domain_roles/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.domain_roles)
+
+    @unittest_run_loop
+    async def test_get_site_and_domain_roles(self):
+        response = await self.client.get("/ops/site_and_domain_roles/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.site_and_domain_roles)
+
+    @unittest_run_loop
+    async def test_get_site_role_labels_aggregated(self):
+        response = await self.client.get("/ops/site_role_labels_aggregated/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.site_role_labels_aggregated)
+
+    @unittest_run_loop
+    async def test_get_user_site_role_labels_aggregated(self):
+        response = await self.client.get("/ops/user_site_role_labels_aggregated/%s/1" % uuid.uuid1())
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.user_site_role_labels_aggregated)

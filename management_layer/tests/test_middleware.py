@@ -5,7 +5,6 @@ from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from unittest.mock import patch
 
-# We can only import add_routes once we have mocked the environment
 from management_layer import middleware
 
 TEST_AUDIENCE = "test_audience"
