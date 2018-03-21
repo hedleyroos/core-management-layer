@@ -12,4 +12,4 @@ urllib3
 certifi
 pyjwt
 raven  # Sentry
-raven-aiohttp  # aiohttp support for Sentry
+raven-aiohttp >= 0.7.0  # aiohttp support for Sentry
