@@ -1,4 +1,6 @@
 import logging
+
+import aiomcache
 from aiohttp import web
 
 import access_control
@@ -7,6 +9,7 @@ import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
 from management_layer.middleware import auth_middleware, sentry_middleware
+from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 
@@ -73,6 +76,8 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
+
+    app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
 
     print("Access Control/Operational: {}".format(access_control_configuration.host))
     print("Authentication Service: {}".format(authentication_service_configuration.host))

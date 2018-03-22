@@ -5,19 +5,18 @@ are permitted.
 Permissions are based on the roles assigned to the user making the request,
 which maps to permissions on resources.
 """
-import asyncio
 import json
 import typing
 from uuid import UUID
 
-import access_control
+from aiohttp.web import Request
+
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
     MKP_USER_ROLES, TECH_ADMIN
 from management_layer.mappings import SITE_NAME_TO_ID_MAP, \
     DOMAIN_NAME_TO_ID_MAP, ROLE_LABEL_TO_ID_MAP, RESOURCE_URN_TO_ID_MAP, \
     PERMISSION_NAME_TO_ID_MAP
 from management_layer.settings import CACHE_TIME
-from management_layer.memcache import memcache
 
 # Convenience types
 UserId = type(UUID)
@@ -31,33 +30,6 @@ Domain = typing.Union[str, int]
 Role = typing.Union[str, int]
 
 
-def json_serializer(_key, value):
-    if type(value) == str:
-        return value, 1
-    return json.dumps(value), 2
-
-
-def json_deserializer(_key, value, flags):
-    if flags == 1:
-        return value.decode("utf-8")
-    if flags == 2:
-        return json.loads(value.decode("utf-8"))
-    raise Exception("Unknown serialization format")
-
-
-# TODO: Tweak MemCache params
-# MEMCACHE = PooledClient(
-#     ("127.0.0.1", 11211),
-#     serializer=json_serializer,
-#     deserializer=json_deserializer,
-#     no_delay=True, connect_timeout=0.5, timeout=1.0
-# )
-
-# TODO: These need to be pulled from a request.app["foo"] !! (cobusc)
-OA = access_control.api.OperationalApi()
-AA = access_control.api.AccessControlApi()
-
-
 class Forbidden(Exception):
     """
     An exception raised when a user does not have the required permission(s)
@@ -67,7 +39,7 @@ class Forbidden(Exception):
 
 
 async def role_has_permission(
-    role: Role, permission: Permission, resource: Resource,
+    request: Request, role: Role, permission: Permission, resource: Resource,
     nocache: bool = False
 ) -> bool:
     """
@@ -76,6 +48,7 @@ async def role_has_permission(
     Bypassing the cache can have a significant performance impact and should
     only be used in exceptional circumstances.
 
+    :param request: The request associated with this call
     :param role: The role to check
     :param permission: The required permission
     :param resource: The resource
@@ -86,7 +59,7 @@ async def role_has_permission(
     permission_id = permission if type(permission) is int else \
         PERMISSION_NAME_TO_ID_MAP[permission]
 
-    permission_ids = await get_role_resource_permissions(role, resource, nocache)
+    permission_ids = await get_role_resource_permissions(request, role, resource, nocache=nocache)
     if permission_ids:
         result = permission_id in permission_ids
 
@@ -94,6 +67,7 @@ async def role_has_permission(
 
 
 async def roles_have_permissions(
+    request: Request,
     roles: typing.List[Role],
     operator: Operator,
     resource_permissions: ResourcePermissions,
@@ -113,6 +87,7 @@ async def roles_have_permissions(
     satisfied.
     Bypassing the cache can have a significant performance impact and should
     only be used in exceptional circumstances.
+    :param request: The request associated with this call
     :param roles: A list of role ids
     :param operator: any or all
     :param resource_permissions: The resource permissions required
@@ -135,8 +110,7 @@ async def roles_have_permissions(
         for resource, permission in resource_permissions:
             async def check_roles():
                 for role in roles:
-                    value = await role_has_permission(role, permission, resource, nocache)
-                    print(f"{role} {permission} {resource} {nocache} {value}")
+                    value = await role_has_permission(request, role, permission, resource, nocache)
                     if value:
                         return True
                 return False
@@ -160,13 +134,13 @@ async def roles_have_permissions(
 
 
 async def user_has_permissions(
+    request: Request,
     user: UserId,
     operator: Operator,
     resource_permissions: ResourcePermissions,
     site: SiteId = None,
     domain: Domain = None,
     nocache: bool = False,
-    api_clients: dict = None
 ) -> bool:
     """
     Check whether the specified user has any or all (as per the operator) of
@@ -174,16 +148,15 @@ async def user_has_permissions(
     To establish whether this is the case, we need to interrogate the roles
     associated with the user. If any of the roles has the required
     permission, the requirement is satisfied.
+    :param request: The request associated with this call
     :param user: The UUID of the user performing the action
     :param operator: any or all
     :param resource_permissions: The resource permissions required
     :param site: The site from which the user is making the request
     :param domain: The domain for which the user is making the request
     :param nocache: Bypass the cache if True
-    :param api_clients: A dictionary containing the api clients
     :return: True if the user is has the required permissions on the resources
     """
-    api_clients = api_clients or {}
     # Either a site or domain needs to be provided, but not both.
     if bool(site) == bool(domain):
         raise RuntimeError("Either a site or a domain needs to be provided")
@@ -191,53 +164,53 @@ async def user_has_permissions(
     if operator not in [all, any]:
         raise RuntimeError("The operator must be all or any")
 
-    roles = await get_user_roles_for_site_or_domain(user, site=site, domain=domain,
-                                                    nocache=nocache, api_clients=api_clients)
+    roles = await get_user_roles_for_site_or_domain(
+        request, user, site=site, domain=domain, nocache=nocache
+    )
     return await roles_have_permissions(
-        roles, operator, resource_permissions, nocache
+        request, roles, operator, resource_permissions, nocache=nocache
     )
 
 
 async def get_user_roles_for_site_or_domain(
-    user: UserId, site: SiteId = None, domain: Domain = None, nocache:
-    bool = False, api_clients: dict = None
+    request: Request, user: UserId,
+    site: SiteId = None, domain: Domain = None, nocache: bool = False
 ) -> typing.List[Role]:
     """
     Get the roles assigned to the user for the specified site or domain.
     Either a site or a domain needs to be specified.
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
+    :param request: The request associated with this call
     :param user: The user
     :param site: The site
     :param domain: The domain
     :param nocache: Bypass the cache if True
-    :param api_clients: A dictionary containing the api clients
     :return: A list of roles ids
     """
-    api_clients = api_clients or {}
     # Either a site or domain needs to be provided, but not both.
     if bool(site) == bool(domain):
         raise RuntimeError("Either a site or a domain needs to be provided")
 
     if domain:
-        result = await get_user_roles_for_domain(user, domain, nocache, api_clients=api_clients)
+        result = await get_user_roles_for_domain(request, user, domain, nocache)
     else:
-        result = await get_user_roles_for_site(user, site, nocache, api_clients=api_clients)
+        result = await get_user_roles_for_site(request, user, site, nocache)
 
     return result
 
 
 async def get_role_resource_permissions(
-    role: Role, resource: Resource, api_clients: dict, nocache: bool = False
+    request: Request, role: Role, resource: Resource, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the permission granted on a resource for a specified role.
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
 
+    :param request: The request associated with this call
     :param role: The role
     :param resource: The resource
-    :param api_clients: A dictionary containing the API clients
     :param nocache: Bypass the cache if True
     :return: A list of permission ids
     """
@@ -245,11 +218,12 @@ async def get_role_resource_permissions(
     resource_id = resource if type(resource) is int else \
         RESOURCE_URN_TO_ID_MAP[resource]
 
-    key = "{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id)
-    role_resource_permissions = None if nocache else await memcache.get(key)
+    key = bytes("{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id),
+                encoding="utf8")
+    role_resource_permissions = None if nocache else await request.app["memcache"].get(key)
     if not role_resource_permissions:
         # The API call returns a List[RoleResourcePermission]
-        role_resource_permissions = await api_clients[
+        role_resource_permissions = await request.app[
             "access_control_api"].roleresourcepermission_list(
             role_id=role_id, resource_id=resource_id
         )
@@ -258,13 +232,17 @@ async def get_role_resource_permissions(
             entry.permission_id for entry in role_resource_permissions
         ]
 
-        await memcache.set(key, role_resource_permissions, exptime=CACHE_TIME)
+        await request.app["memcache"].set(
+            key, json.dumps(role_resource_permissions).encode("utf8"), exptime=CACHE_TIME
+        )
+    else:
+        role_resource_permissions = json.loads(role_resource_permissions, encoding="utf8")
 
     return role_resource_permissions
 
 
 async def get_all_user_roles(
-    user: UserId, nocache: bool = False, api_clients: dict = None
+    request: Request, user: UserId, nocache: bool = False
 ) -> typing.Dict[str, typing.List[int]]:
     """
     This function returns all the roles that a user has on all sites and
@@ -289,68 +267,68 @@ async def get_all_user_roles(
     for sites) and an id separated by a ":".
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
+    :param request: The request associated with this call
     :param user: The user for which to get roles
     :param nocache: Bypass the cache if True
-    :param api_clients: A dictionary containing the api clients
     :return: A dictionary containing the roles assigned to the specified user on
        the domains and sites in the system.
     """
-    api_clients = api_clients or {}
-    key = "{}:{}".format(MKP_USER_ROLES, user.hex)
-    user_roles = None if nocache else await memcache.get(key)
+    key = bytes("{}:{}".format(MKP_USER_ROLES, user.hex), encoding="utf8")
+    user_roles = None if nocache else await request.app["memcache"].get(key)
     if not user_roles:
         # The API returns an AllUserRoles object
-        response = await api_clients["operational_api"].get_all_user_roles(user.hex)
+        response = await request.app["operational_api"].get_all_user_roles(user.hex)
         if response.user_id != user.hex:
             raise RuntimeError("Invalid API response: {} != {}".format(
                 response.user_id, user.hex
             ))
         # We store the roles_map part of the response
         user_roles = response.roles_map
-        await memcache.set(key, user_roles, exptime=CACHE_TIME)
+        await request.app["memcache"].set(
+            key, json.dumps(user_roles).encode("utf8"), exptime=CACHE_TIME)
+    else:
+        user_roles = json.loads(user_roles, encoding="utf8")
 
     return user_roles
 
 
 async def get_user_roles_for_domain(
-    user: UserId, domain: Domain, nocache: bool = False, api_clients: dict = None
+    request: Request, user: UserId, domain: Domain, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified domain.
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
+    :param request: The request associated with this call
     :param user: The user
     :param domain: The site
     :param nocache: Bypass the cache if True
-    :param api_clients: A dictionary containing the api clients
     :return: A list of role ids
     """
-    api_clients = api_clients or {}
     domain_id = domain if type(domain) is int else DOMAIN_NAME_TO_ID_MAP[domain]
 
-    user_roles = await get_all_user_roles(user, nocache, api_clients=api_clients)
+    user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
     # empty list of it does not exist.
     return user_roles.get("d:{}".format(domain_id), [])
 
 
 async def get_user_roles_for_site(
-    user: UserId, site: SiteId, nocache: bool = False, api_clients: dict = None
+    request: Request, user: UserId, site: SiteId, nocache: bool = False
 ) -> typing.List[int]:
     """
     Get the roles that a user has for a specified site.
     Bypassing the cache can have a significant performance and should only be
     used in exceptional circumstances.
+    :param request: The request associated with this call
     :param user: The user
     :param site: The site
     :param nocache: Bypass the cache if True
-    :param api_clients: A dictionary containing the api clients
     :return: A list of role ids
     """
-    api_clients = api_clients or {}
     site_id = site if type(site) is int else SITE_NAME_TO_ID_MAP[site]
 
-    user_roles = await get_all_user_roles(user, nocache, api_clients=api_clients)
+    user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the site key. Return an
     # empty list of it does not exist.
     return user_roles.get("s:{}".format(site_id), [])

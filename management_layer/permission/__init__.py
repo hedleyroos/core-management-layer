@@ -123,9 +123,8 @@ def require_permissions(
                 raise Forbidden("No site linked to the client ID")
 
             allowed = await user_has_permissions(
-                user, operator, resource_permissions,
+                request, user, operator, resource_permissions,
                 site=site_id, nocache=nocache,
-                api_clients={client: request[client] for client in API_CLIENTS}
             )
             if allowed:
                 if asyncio.iscoroutinefunction(f):
