@@ -1,10 +1,12 @@
 import time
 
 import jwt
+import raven
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, Mock
 
+import management_layer
 from management_layer import middleware
 
 TEST_AUDIENCE = "test_audience"
@@ -13,7 +15,7 @@ TEST_ISSUER = "http://localhost:8000/openid"
 TEST_ALGORITHM = "HS256"
 
 
-class MiddlewareTest(AioHTTPTestCase):
+class AuthMiddlewareTest(AioHTTPTestCase):
 
     async def get_application(self):
         """
@@ -131,3 +133,22 @@ class MiddlewareTest(AioHTTPTestCase):
             )
             self.assertEqual(response.status, 200)
 
+
+class SentryMiddlewareTest(AioHTTPTestCase):
+
+    async def get_application(self):
+        """
+        Set up the application used by the tests. For the middleware
+        test we only need one end-point.
+        :return:
+        """
+        async def hello(_request):
+            # Always raise an exception
+            raise Exception
+
+        app = web.Application(
+            loop=self.loop,
+            middlewares=[middleware.sentry_middleware]
+        )
+        app.router.add_get('/', hello)
+        return app

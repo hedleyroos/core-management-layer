@@ -7,11 +7,21 @@ from contextlib import contextmanager
 from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
+from management_layer.sentry import sentry
+
 
 @contextmanager
 def client_exception_handler():
     try:
-        yield
+        try:
+            yield
+        except Exception:
+            # All exceptions are logged to Sentry
+            sentry.captureException()
+            # We re-raise the exception after logging it to Sentry so that the
+            # exception handlers below can do their job.
+            raise
+
     except (access_control.rest.ApiException,
             authentication_service.rest.ApiException,
             user_data_store.rest.ApiException) as re:

@@ -6,7 +6,7 @@ import authentication_service
 import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
-from management_layer.middleware import auth_middleware
+from management_layer.middleware import auth_middleware, sentry_middleware
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 
@@ -25,7 +25,9 @@ if __name__ == "__main__":
         print("* Running in insecure mode! *")
         print("*" * 29)
 
-    app = web.Application(middlewares=[auth_middleware])
+    app = web.Application(middlewares=[
+        auth_middleware, sentry_middleware
+    ])
     print("Using the following APIs:")
     user_data_store_configuration = user_data_store.configuration.Configuration()
     override_host = settings.USER_DATA_STORE_API
