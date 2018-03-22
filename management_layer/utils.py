@@ -13,7 +13,15 @@ from management_layer.sentry import sentry
 @contextmanager
 def client_exception_handler():
     try:
-        yield
+        try:
+            yield
+        except Exception:
+            # All exceptions are logged to Sentry
+            sentry.captureException()
+            # We re-raise the exception after logging it to Sentry so that the
+            # exception handlers below can do their job.
+            raise
+
     except (access_control.rest.ApiException,
             authentication_service.rest.ApiException,
             user_data_store.rest.ApiException) as re:
@@ -21,7 +29,6 @@ def client_exception_handler():
         # The server, while acting as a gateway or proxy, received an invalid
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
-        sentry.captureException()
         raise web.HTTPBadGateway(
             headers={"content-type": "application/json"},
             text=json.dumps({
@@ -31,7 +38,6 @@ def client_exception_handler():
                 "body": re.body
             }))
     except ClientConnectorError as cce:
-        sentry.captureException()
         raise web.HTTPBadGateway(
             headers={"content-type": "application/json"},
             text=json.dumps({
@@ -41,7 +47,6 @@ def client_exception_handler():
                 "body": str(cce)
             }))
     except ClientConnectionError as cce:
-        sentry.captureException()
         raise web.HTTPBadGateway(
             headers={"content-type": "application/json"},
             text=json.dumps({
@@ -51,7 +56,6 @@ def client_exception_handler():
                 "body": str(cce)
             }))
     except ClientResponseError as cre:
-        sentry.captureException()
         raise web.HTTPBadGateway(
             headers={"content-type": "application/json"},
             text=json.dumps({
@@ -60,7 +64,4 @@ def client_exception_handler():
                 "reason": cre.message,
                 "body": str(cre)
             }))
-    except Exception:
-        sentry.captureException()
-        raise
 
