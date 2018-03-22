@@ -2,6 +2,7 @@
 The permission module exposes a decorator that can be used to protect
 function calls by specifying the permissions required to execute the function.
 """
+import asyncio
 import typing
 import uuid
 from functools import wraps
@@ -9,6 +10,13 @@ from functools import wraps
 from management_layer.permission.utils import Operator, ResourcePermissions, \
     user_has_permissions, Forbidden
 from management_layer.mappings import SITE_CLIENT_ID_TO_ID_MAP
+
+API_CLIENTS = [
+    "access_control_api",
+    "authentication_service_api",
+    "user_data_store_api",
+    "operational_api"
+]
 
 
 def require_permissions(
@@ -62,6 +70,17 @@ def require_permissions(
         pass
     ```
 
+    IMPORTANT: This decorator can be applied to both coroutines and normal functions AND it
+    always changes the decorated function into a coroutine, meaning it must be called using `await`:
+    ```
+    @require_permissions(all, [("urn:ge:test:foo", "write")])
+    def doSomething(request):
+        pass
+
+    # Call the function
+    result = await doSomething(request)  # Decorator change function to coroutine
+    ```
+
     :param operator: any or all
     :param resource_permissions: The resource permissions required
     :param nocache: Bypass the cache if True
@@ -74,7 +93,7 @@ def require_permissions(
 
     def wrap(f):
         @wraps(f)
-        def wrapped_f(*args, **kwargs):
+        async def wrapped_f(*args, **kwargs):
             """
             The purpose of the wrapper is to get the
             :param args: A list of positional arguments
@@ -103,9 +122,16 @@ def require_permissions(
             except KeyError:
                 raise Forbidden("No site linked to the client ID")
 
-            if user_has_permissions(user, operator, resource_permissions,
-                                    site=site_id, nocache=nocache):
-                return f(*args, **kwargs)
+            allowed = await user_has_permissions(
+                user, operator, resource_permissions,
+                site=site_id, nocache=nocache,
+                api_clients={client: request[client] for client in API_CLIENTS}
+            )
+            if allowed:
+                if asyncio.iscoroutinefunction(f):
+                    return await f(*args, **kwargs)
+                else:
+                    return f(*args, **kwargs)
 
             # If the necessary permissions are not available, we always raise
             # an exception.
