@@ -1,5 +1,6 @@
 import logging
 from aiohttp import web
+from aiohttp_sentry import SentryMiddleware
 
 import access_control
 import authentication_service
@@ -25,7 +26,12 @@ if __name__ == "__main__":
         print("* Running in insecure mode! *")
         print("*" * 29)
 
-    app = web.Application(middlewares=[auth_middleware])
+    app = web.Application(middlewares=[
+        auth_middleware,
+        SentryMiddleware({
+            "release": "TODO"
+        })
+    ])
     print("Using the following APIs:")
     user_data_store_configuration = user_data_store.configuration.Configuration()
     override_host = settings.USER_DATA_STORE_API
