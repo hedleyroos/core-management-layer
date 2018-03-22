@@ -3,6 +3,7 @@ import logging
 from aiohttp.web_response import json_response
 
 from management_layer import settings
+from management_layer.sentry import sentry
 
 LOGGER = logging.getLogger(__name__)
 
@@ -13,7 +14,7 @@ TOKEN_PREFIX = "bearer "
 TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
 
-async def auth_middleware(app, handler):
+async def auth_middleware(_app, handler):
     async def middleware(request):
         authorization_header = request.headers.get("authorization", None)
         if authorization_header:
@@ -64,4 +65,27 @@ async def auth_middleware(app, handler):
                                  status=MISSING_TOKEN_STATUS)
 
         return await handler(request)
+    return middleware
+
+
+async def sentry_middleware(_app, handler):
+    # Based on https://github.com/underyx/aiohttp-sentry/blob/master/aiohttp_sentry
+    async def middleware(request):
+        try:
+            return await handler(request)
+        except Exception:
+            sentry.captureException(data={
+                "request": {
+                    "query_string": request.query_string,
+                    "cookies": request.headers.get("Cookie", ""),
+                    "headers":  dict(request.headers),
+                    "url": request.path,
+                    "method": request.method,
+                    "env": {
+                        "REMOTE_ADDR": request.transport.get_extra_info("peername")[0],
+                    }
+                }
+            })
+            raise
+
     return middleware

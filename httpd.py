@@ -1,13 +1,12 @@
 import logging
 from aiohttp import web
-from aiohttp_sentry import SentryMiddleware
 
 import access_control
 import authentication_service
 import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
-from management_layer.middleware import auth_middleware
+from management_layer.middleware import auth_middleware, sentry_middleware
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 
@@ -27,10 +26,7 @@ if __name__ == "__main__":
         print("*" * 29)
 
     app = web.Application(middlewares=[
-        auth_middleware,
-        SentryMiddleware({
-            "release": "TODO"
-        })
+        auth_middleware, sentry_middleware
     ])
     print("Using the following APIs:")
     user_data_store_configuration = user_data_store.configuration.Configuration()
