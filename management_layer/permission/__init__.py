@@ -11,13 +11,6 @@ from management_layer.permission.utils import Operator, ResourcePermissions, \
     user_has_permissions, Forbidden
 from management_layer.mappings import SITE_CLIENT_ID_TO_ID_MAP
 
-API_CLIENTS = [
-    "access_control_api",
-    "authentication_service_api",
-    "user_data_store_api",
-    "operational_api"
-]
-
 
 def require_permissions(
     operator: Operator,

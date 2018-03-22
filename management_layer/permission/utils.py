@@ -106,31 +106,23 @@ async def roles_have_permissions(
     #        for role in roles)
     #    for resource, permission in resource_permissions
     #)
-    async def check_permissions():
-        for resource, permission in resource_permissions:
-            async def check_roles():
-                for role in roles:
-                    value = await role_has_permission(request, role, permission, resource, nocache)
-                    if value:
-                        return True
-                return False
+    for resource, permission in resource_permissions:
+        some_role_has_the_permission = False
+        for role in roles:
+            if await role_has_permission(request, role, permission, resource, nocache):
+                some_role_has_the_permission = True
+                break  # No need to look further
 
-            has_permission = await check_roles()
-            if operator is any and has_permission:
-                return True
-            if operator is all and not has_permission:
-                return False
+        # Short-circuit conditions
+        if operator is any and some_role_has_the_permission:
+            return True
+        if operator is all and not some_role_has_the_permission:
+            return False
 
-        return True if operator is all else False
-
-    return await check_permissions()
-
-    #return operator(
-    #    # Any role can provide the permission.
-    #    any(await role_has_permission(role, permission, resource, nocache)
-    #        for role in roles)
-    #    for resource, permission in resource_permissions
-    #)
+    # If none of the short-circuit conditions have been met, it means that
+    # all of the checks where True if the operator was all, or none of the checks
+    # were True if the operator is any.
+    return True if operator is all else False
 
 
 async def user_has_permissions(
