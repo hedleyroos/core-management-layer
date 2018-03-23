@@ -208,7 +208,7 @@ async def get_role_resource_permissions(
     resource_id = resource if type(resource) is int else \
         RESOURCE_URN_TO_ID_MAP[resource]
 
-    key = bytes("{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id),
+    key = bytes(f"{MKP_ROLE_RESOURCE_PERMISSION}:{role_id}:{resource_id}",
                 encoding="utf8")
     with client_exception_handler():
         role_resource_permissions = None if nocache else await request.app["memcache"].get(key)
@@ -268,7 +268,7 @@ async def get_all_user_roles(
     :return: A dictionary containing the roles assigned to the specified user on
        the domains and sites in the system.
     """
-    key = bytes("{}:{}".format(MKP_USER_ROLES, user.hex), encoding="utf8")
+    key = bytes(f"{MKP_USER_ROLES}:{user.hex}", encoding="utf8")
     with client_exception_handler():
         user_roles = None if nocache else await request.app["memcache"].get(key)
 
@@ -278,9 +278,7 @@ async def get_all_user_roles(
             response = await request.app["operational_api"].get_all_user_roles(user.hex)
 
         if response.user_id != user.hex:
-            raise RuntimeError("Invalid API response: {} != {}".format(
-                response.user_id, user.hex
-            ))
+            raise RuntimeError(f"Invalid API response: {response.user_id} != {user.hex}")
         # We store the roles_map part of the response
         user_roles = response.roles_map
         with client_exception_handler():
@@ -310,7 +308,7 @@ async def get_user_roles_for_domain(
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
     # empty list of it does not exist.
-    return user_roles.get("d:{}".format(domain_id), [])
+    return user_roles.get(f"d:{domain_id}", [])
 
 
 async def get_user_roles_for_site(
@@ -331,4 +329,4 @@ async def get_user_roles_for_site(
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the site key. Return an
     # empty list of it does not exist.
-    return user_roles.get("s:{}".format(site_id), [])
+    return user_roles.get(f"s:{site_id}", [])
