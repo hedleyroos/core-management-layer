@@ -390,9 +390,6 @@ class TestUtils(AioHTTPTestCase):
 
     def setUp(self):
         super().setUp()
-        # self.user = uuid1()
-        # self.site_id = 1
-        # self.client_id = TEST_SITES[self.site_id]["client_id"]
         self.dummy_request = Mock(
             spec=Request,
             app=self.app
