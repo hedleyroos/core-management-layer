@@ -24,7 +24,9 @@ PERMISSION_NAME_TO_ID_MAP = {}
 RESOURCE_URN_TO_ID_MAP = {}
 ROLE_LABEL_TO_ID_MAP = {}
 SITE_NAME_TO_ID_MAP = {}
-SITE_CLIENT_ID_TO_ID_MAP = {}
+SITE_CLIENT_ID_TO_ID_MAP = {
+    "management_layer_workaround": 1  # TODO: Remove when properly implemented
+}
 
 # The API client used to load the data
 API = AccessControlApi()
