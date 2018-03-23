@@ -94,12 +94,16 @@ async def roles_have_permissions(
     if TECH_ADMIN in roles:
         return True
 
-    #return operator(
-    #    # Any role can provide the permission.
-    #    any(await role_has_permission(role, permission, resource, nocache)
-    #        for role in roles)
-    #    for resource, permission in resource_permissions
-    #)
+    # This code snippet was originally used before the utility functions were changed
+    # into co-routines. It is elegant and efficient and left here for posterity and as
+    # an example of the logic that is performed in the code below, which unfortunately
+    # ended up being more verbose. - cobusc
+    #
+    # return operator(
+    #     # Any role can provide the permission.
+    #     any(role_has_permission(role, permission, resource, nocache) for role in roles)
+    #     for resource, permission in resource_permissions)
+
     for resource, permission in resource_permissions:
         some_role_has_the_permission = False
         for role in roles:
