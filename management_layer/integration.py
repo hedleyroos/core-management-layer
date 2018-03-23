@@ -3,23 +3,6 @@ from management_layer import transformations
 from management_layer.utils import client_exception_handler
 from management_layer.permission.decorator import require_permissions
 
-# API clients generated from the Swagger specifications of the
-# respective components.
-
-# An example of using aiobravado for API clients.
-# Do not remove yet. (cobusc)
-
-# from aiobravado.client import SwaggerClient
-# from aiobravado.swagger_model import load_file
-#
-#
-# async def get_client():
-#     spec = await load_file("../core-user-data-store/swagger/user_data_store.yml")
-#     client = SwaggerClient.from_spec(spec, config={"use_models": False})
-#     return client
-#
-# bravado_client = asyncio.get_event_loop().run_until_complete(get_client())
-
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "Content-Length"  # TODO: Use correct header
 
@@ -29,24 +12,6 @@ class Implementation(AbstractStubClass):
     The implementation linking calls made the Management Layer
     to the Authentication-, Access Control- and User Data Store services.
     """
-    # @staticmethod
-    # async def adminnote_list(request, **kwargs):
-    #     """
-    #     :param request: An HttpRequest
-    #     :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
-    #     :param limit (optional): integer An optional query parameter to limit the number of results returned.
-    #     :param user_id (optional): string An optional query parameter to filter by user_id
-    #     :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
-    #     """
-    #     with client_exception_handler():
-    #         admin_notes = await bravado_client.user_data.adminnote_list(**kwargs).result()
-    #
-    #     if admin_notes:
-    #         transform = transformations.ADMIN_NOTE
-    #         result = [transform.apply(note) for note in admin_notes]
-    #         return result
-    #
-    #     return []
 
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:adminnote", "read")])
