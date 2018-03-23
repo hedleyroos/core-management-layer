@@ -401,6 +401,12 @@ class TestUtils(AioHTTPTestCase):
             app=self.app
         )
 
+    async def tearDownAsync(self):
+        await super().tearDownAsync()
+        await self.app["memcache"].close()
+        for backend in ["access_control_api", "operational_api"]:
+            await self.app[backend].api_client.rest_client.pool_manager.close()
+
     async def get_application(self):
         """
         Set up the application used by the tests

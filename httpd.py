@@ -15,8 +15,15 @@ logging.basicConfig(level=settings.LOG_LEVEL)
 
 
 async def on_shutdown(app):
+    print("Waiting for memcache to finish up...")
+    await app["memcache"].close()
     print("Waiting for clients to finish up...")
-    for backend in ["access_control_api", "authentication_service_api", "user_data_api"]:
+    for backend in [
+        "access_control_api",
+        "operational_api",
+        "authentication_service_api",
+        "user_data_api"
+    ]:
         await app[backend].api_client.rest_client.pool_manager.close()
 
     print("Done.")
