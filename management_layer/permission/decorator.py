@@ -3,12 +3,15 @@ The permission module exposes a decorator that can be used to protect
 function calls by specifying the permissions required to execute the function.
 """
 import asyncio
+import json
 import typing
 import uuid
 from functools import wraps
 
+from aiohttp.web_exceptions import HTTPForbidden
+
 from management_layer.permission.utils import Operator, ResourcePermissions, \
-    user_has_permissions, Forbidden
+    user_has_permissions
 from management_layer.mappings import SITE_CLIENT_ID_TO_ID_MAP
 
 
@@ -110,10 +113,12 @@ def require_permissions(
             user = uuid.UUID(request["token"]["sub"])
             # Extract the client id from the request
             client_id = request["token"]["aud"]
-            if client_id in SITE_CLIENT_ID_TO_ID_MAP:
-                site_id = SITE_CLIENT_ID_TO_ID_MAP[client_id]
-            else:
-                raise Forbidden(f"No site linked to the client '{client_id}'")
+            if client_id not in SITE_CLIENT_ID_TO_ID_MAP:
+                raise HTTPForbidden(body=json.dumps({
+                    "message": f"No site linked to the client '{client_id}'"
+                }))
+
+            site_id = SITE_CLIENT_ID_TO_ID_MAP[client_id]
 
             allowed = await user_has_permissions(
                 request, user, operator, resource_permissions,
@@ -125,9 +130,9 @@ def require_permissions(
                 else:
                     return f(*args, **kwargs)
 
-            # If the necessary permissions are not available, we always raise
-            # an exception.
-            raise Forbidden()
+            raise HTTPForbidden(body=json.dumps({
+                "message": "Forbidden"
+            }))
 
         return wrapped_f
 

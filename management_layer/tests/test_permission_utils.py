@@ -8,6 +8,7 @@ from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from datetime import datetime
 
 from aiohttp.web import Request
+from aiohttp.web_exceptions import HTTPForbidden
 
 import management_layer.constants
 import management_layer.permission
@@ -100,7 +101,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         self.assertTrue(await empty_all(self.dummy_request))
 
         # Never gets allowed, regardless of the user's roles
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await empty_any(self.dummy_request)
 
     @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
@@ -165,10 +166,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         mocked_function.return_value = ["some_role"]
 
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await stack(self.dummy_request)
 
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await reverse_stack(self.dummy_request)
 
     @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
@@ -208,13 +209,13 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
@@ -230,7 +231,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has only one of the permissions, then access is
         # denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await multiple_requirements(self.dummy_request)
 
         # If the user has all the permissions, then access is allowed.
@@ -274,13 +275,13 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
@@ -307,7 +308,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role3"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
     @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
@@ -355,25 +356,25 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         # If the user has roles partially fulfilling the required permissions,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role3"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2", "role3"])
-        with self.assertRaises(utils.Forbidden):
+        with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         # If the user has roles with the necessary permissions,

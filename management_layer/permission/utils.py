@@ -30,14 +30,6 @@ Domain = typing.Union[str, int]
 Role = typing.Union[str, int]
 
 
-class Forbidden(Exception):
-    """
-    An exception raised when a user does not have the required permission(s)
-    to perform a function.
-    """
-    pass
-
-
 async def role_has_permission(
     request: Request, role: Role, permission: Permission, resource: Resource,
     nocache: bool = False
