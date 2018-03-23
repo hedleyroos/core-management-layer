@@ -19,6 +19,8 @@ from management_layer.mappings import SITE_NAME_TO_ID_MAP, \
 from management_layer.settings import CACHE_TIME
 
 # Convenience types
+from management_layer.utils import client_exception_handler
+
 UserId = type(UUID)
 SiteId = int
 Operator = typing.Callable[..., bool]
@@ -204,21 +206,26 @@ async def get_role_resource_permissions(
 
     key = bytes("{}:{}:{}".format(MKP_ROLE_RESOURCE_PERMISSION, role_id, resource_id),
                 encoding="utf8")
-    role_resource_permissions = None if nocache else await request.app["memcache"].get(key)
+    with client_exception_handler():
+        role_resource_permissions = None if nocache else await request.app["memcache"].get(key)
+
     if not role_resource_permissions:
         # The API call returns a List[RoleResourcePermission]
-        role_resource_permissions = await request.app[
-            "access_control_api"].roleresourcepermission_list(
-            role_id=role_id, resource_id=resource_id
-        )
+        with client_exception_handler():
+            role_resource_permissions = await request.app[
+                "access_control_api"].roleresourcepermission_list(
+                role_id=role_id, resource_id=resource_id
+            )
+
         # Internally we use only the permission ids, i.e. List[int]
         role_resource_permissions = [
             entry.permission_id for entry in role_resource_permissions
         ]
 
-        await request.app["memcache"].set(
-            key, json.dumps(role_resource_permissions).encode("utf8"), exptime=CACHE_TIME
-        )
+        with client_exception_handler():
+            await request.app["memcache"].set(
+                key, json.dumps(role_resource_permissions).encode("utf8"), exptime=CACHE_TIME
+            )
     else:
         role_resource_permissions = json.loads(role_resource_permissions, encoding="utf8")
 
@@ -258,18 +265,23 @@ async def get_all_user_roles(
        the domains and sites in the system.
     """
     key = bytes("{}:{}".format(MKP_USER_ROLES, user.hex), encoding="utf8")
-    user_roles = None if nocache else await request.app["memcache"].get(key)
+    with client_exception_handler():
+        user_roles = None if nocache else await request.app["memcache"].get(key)
+
     if not user_roles:
         # The API returns an AllUserRoles object
-        response = await request.app["operational_api"].get_all_user_roles(user.hex)
+        with client_exception_handler():
+            response = await request.app["operational_api"].get_all_user_roles(user.hex)
+
         if response.user_id != user.hex:
             raise RuntimeError("Invalid API response: {} != {}".format(
                 response.user_id, user.hex
             ))
         # We store the roles_map part of the response
         user_roles = response.roles_map
-        await request.app["memcache"].set(
-            key, json.dumps(user_roles).encode("utf8"), exptime=CACHE_TIME)
+        with client_exception_handler():
+            await request.app["memcache"].set(
+                key, json.dumps(user_roles).encode("utf8"), exptime=CACHE_TIME)
     else:
         user_roles = json.loads(user_roles, encoding="utf8")
 
