@@ -12,9 +12,12 @@ from aiohttp.web import Request
 import management_layer.constants
 import management_layer.permission
 from access_control import RoleResourcePermission, AccessControlApi, OperationalApi
-from management_layer.permission import utils, require_permissions
+from management_layer.permission import utils
+from management_layer.permission.decorator import require_permissions
 
 # Test dictionaries commonly used by tests
+from management_layer.tests import make_coroutine_returning
+
 TEST_ROLE_LABEL_TO_ID_MAP = {"role{}".format(i): i for i in range(1, 11)}
 TEST_PERMISSION_NAME_TO_ID_MAP = {"permission{}".format(i): i for i in range(1, 11)}
 TEST_RESOURCE_URN_TO_ID_MAP = {"urn:resource{}".format(i): i for i in range(1, 11)}
@@ -22,13 +25,6 @@ TEST_SITES = {1: {"client_id": "test_client"}}
 TEST_SITE_CLIENT_ID_TO_ID_MAP = {
     detail["client_id"]: id_ for id_, detail in TEST_SITES.items()
 }
-
-
-def make_coroutine_returning(return_value):
-    async def mock_coroutine(*args, **kwargs):
-        return return_value
-
-    return Mock(wraps=mock_coroutine)
 
 
 class TestRequirePermissionsDecorator(AioHTTPTestCase):

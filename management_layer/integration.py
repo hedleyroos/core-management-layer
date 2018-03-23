@@ -1,6 +1,7 @@
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations
 from management_layer.utils import client_exception_handler
+from management_layer.permission.decorator import require_permissions
 
 # API clients generated from the Swagger specifications of the
 # respective components.
@@ -48,6 +49,7 @@ class Implementation(AbstractStubClass):
     #     return []
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "read")])
     async def adminnote_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -68,6 +70,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "create")])
     async def adminnote_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -83,6 +86,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "delete")])
     async def adminnote_delete(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -94,6 +98,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "read")])
     async def adminnote_read(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -109,6 +114,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "update")])
     async def adminnote_update(request, body, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -126,6 +132,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:oidc_provider:client", "read")])
     async def client_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -147,6 +154,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:oidc_provider:client", "read")])
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -163,6 +171,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domainrole", "read")])
     async def domainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -184,6 +193,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domainrole", "create")])
     async def domainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -200,6 +210,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domainrole", "delete")])
     async def domainrole_delete(request, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -212,6 +223,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domainrole", "read")])
     async def domainrole_read(request, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -229,6 +241,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domainrole", "update")])
     async def domainrole_update(request, body, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -247,6 +260,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
     async def domain_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -267,6 +281,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "create")])
     async def domain_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -283,6 +298,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "delete")])
     async def domain_delete(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -294,6 +310,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
     async def domain_read(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -310,6 +327,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "update")])
     async def domain_update(request, body, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -503,6 +521,7 @@ class Implementation(AbstractStubClass):
             return user_site_role_labels_aggregated.to_dict()
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "read")])
     async def permission_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -523,6 +542,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "create")])
     async def permission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -539,6 +559,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "delete")])
     async def permission_delete(request, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -550,6 +571,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "read")])
     async def permission_read(request, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -566,6 +588,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "update")])
     async def permission_update(request, body, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -583,6 +606,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:resource", "read")])
     async def resource_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -604,6 +628,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:resource", "create")])
     async def resource_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -620,6 +645,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:resource", "delete")])
     async def resource_delete(request, resource_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -631,6 +657,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:resource", "read")])
     async def resource_read(request, resource_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -647,6 +674,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:resource", "update")])
     async def resource_update(request, body, resource_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -664,6 +692,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "read")])
     async def roleresourcepermission_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -686,6 +715,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "create")])
     async def roleresourcepermission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -702,6 +732,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "delete")])
     async def roleresourcepermission_delete(request, role_id, resource_id, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -716,6 +747,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "read")])
     async def roleresourcepermission_read(request, role_id, resource_id, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -734,6 +766,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:role", "read")])
     async def role_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -754,6 +787,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:role", "create")])
     async def role_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -770,6 +804,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:role", "delete")])
     async def role_delete(request, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -781,6 +816,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:role", "read")])
     async def role_read(request, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -797,6 +833,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:role", "update")])
     async def role_update(request, body, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -814,6 +851,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:sitedataschema", "read")])
     async def sitedataschema_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -834,6 +872,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:sitedataschema", "create")])
     async def sitedataschema_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -850,6 +889,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:sitedataschema", "delete")])
     async def sitedataschema_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -861,6 +901,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:sitedataschema", "read")])
     async def sitedataschema_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -877,6 +918,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:sitedataschema", "update")])
     async def sitedataschema_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -894,6 +936,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:siterole", "read")])
     async def siterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -915,6 +958,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:siterole", "create")])
     async def siterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -931,6 +975,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:siterole", "delete")])
     async def siterole_delete(request, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -943,6 +988,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:siterole", "read")])
     async def siterole_read(request, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -960,6 +1006,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:siterole", "update")])
     async def siterole_update(request, body, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -978,6 +1025,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "read")])
     async def site_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -998,6 +1046,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "create")])
     async def site_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1014,6 +1063,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "delete")])
     async def site_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1025,6 +1075,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "read")])
     async def site_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1041,6 +1092,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "update")])
     async def site_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1074,6 +1126,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")])
     async def userdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1096,6 +1149,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "create")])
     async def userdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1112,6 +1166,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "delete")])
     async def userdomainrole_delete(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1125,6 +1180,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")])
     async def userdomainrole_read(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1143,6 +1199,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:user", "read")])
     async def user_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1165,6 +1222,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:user", "delete")])
     async def user_delete(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1176,6 +1234,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:user", "read")])
     async def user_read(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1192,6 +1251,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:user", "update")])
     async def user_update(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1225,6 +1285,7 @@ class Implementation(AbstractStubClass):
         raise NotImplementedError()
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")])
     async def usersitedata_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1246,6 +1307,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "create")])
     async def usersitedata_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1262,6 +1324,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "delete")])
     async def usersitedata_delete(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1274,6 +1337,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")])
     async def usersitedata_read(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1291,6 +1355,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "update")])
     async def usersitedata_update(request, body, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1307,6 +1372,7 @@ class Implementation(AbstractStubClass):
             return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")])
     async def usersiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1329,6 +1395,7 @@ class Implementation(AbstractStubClass):
         }
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "create")])
     async def usersiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1345,6 +1412,7 @@ class Implementation(AbstractStubClass):
         return None
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "delete")])
     async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1358,6 +1426,7 @@ class Implementation(AbstractStubClass):
         return result
 
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")])
     async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
