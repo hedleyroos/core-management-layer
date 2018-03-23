@@ -3,7 +3,7 @@
 python_dateutil == 2.6.0
 aiomcache
 jsonschema
-aiohttp
+aiohttp >= 3.1.0,<4.0
 aiohttp-cors
 aiodns    # For use with aiohttp
 cchardet  # For use with aiohttp
