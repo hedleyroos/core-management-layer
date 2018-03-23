@@ -1,9 +1,9 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@master#egg=swagger-django-generator
 -e git+https://github.com/praekelt/apitools@master#egg=apitools
 python_dateutil == 2.6.0
-pymemcache < 2.0.0 # To be replaced by aiomcache
+aiomcache
 jsonschema
-aiohttp
+aiohttp >= 3.1.0,<4.0
 aiohttp-cors
 aiodns    # For use with aiohttp
 cchardet  # For use with aiohttp

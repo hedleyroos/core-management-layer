@@ -1,4 +1,6 @@
 import logging
+
+import aiomcache
 from aiohttp import web
 
 import access_control
@@ -6,24 +8,39 @@ import authentication_service
 import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
+from management_layer.constants import TECH_ADMIN
 from management_layer.middleware import auth_middleware, sentry_middleware
+from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT
+from management_layer.permission import utils
 
 logging.basicConfig(level=settings.LOG_LEVEL)
 
 
 async def on_shutdown(app):
+    print("Waiting for memcache to finish up...")
+    await app["memcache"].close()
     print("Waiting for clients to finish up...")
-    for backend in ["access_control_api", "authentication_service_api", "user_data_api"]:
+    for backend in [
+        "access_control_api",
+        "operational_api",
+        "authentication_service_api",
+        "user_data_api"
+    ]:
         await app[backend].api_client.rest_client.pool_manager.close()
 
     print("Done.")
 
 
+async def mocked_return(_request, _user_id, _site_id, nocache=False):
+    return [TECH_ADMIN]
+
+
 if __name__ == "__main__":
-    if settings.INSECURE:
+    if settings.INSECURE:  # TODO: Remove before going to prod
         print("*" * 29)
         print("* Running in insecure mode! *")
         print("*" * 29)
+        setattr(utils, "get_user_roles_for_site", mocked_return)
 
     app = web.Application(middlewares=[
         auth_middleware, sentry_middleware
@@ -73,6 +90,8 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
+
+    app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
 
     print("Access Control/Operational: {}".format(access_control_configuration.host))
     print("Authentication Service: {}".format(authentication_service_configuration.host))

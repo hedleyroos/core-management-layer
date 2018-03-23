@@ -6,16 +6,22 @@ import socket
 import subprocess
 import time
 import uuid
+
+import jwt
 from aiohttp import web
-from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, \
+    TestClient as Client  # Rename TestClient so that it is not considered a test
 from apitools.datagenerator import DataGenerator
 from collections import namedtuple
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from parameterized import parameterized
 
 import access_control
 import authentication_service
 import user_data_store
+from management_layer.constants import TECH_ADMIN
+from management_layer.middleware import auth_middleware
+from management_layer.tests import make_coroutine_returning
 from user_data_store import UserDataApi
 from management_layer.api import schemas
 from management_layer.api.urls import add_routes
@@ -30,7 +36,6 @@ DATA_GENERATOR.not_required_probability = 1.0
 ACCESS_CONTROL_PORT = 60000
 AUTHENTICATION_SERVICE_PORT = 60001
 USER_DATA_STORE_PORT = 60002
-
 
 _MOCKED_ACCESS_CONTROL_API = None
 _MOCKED_AUTHENTICATION_SERVICE_API = None
@@ -237,10 +242,39 @@ class ExampleTestCase(AioHTTPTestCase):
         self.loop.run_until_complete(test_get_route())
 
 
+@patch.multiple("management_layer.permission.decorator",
+                SITE_CLIENT_ID_TO_ID_MAP={os.environ["JWT_AUDIENCE"]: 1})
+@patch("management_layer.permission.utils.get_user_roles_for_site",
+       Mock(side_effect=make_coroutine_returning([TECH_ADMIN])))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
     """
+
+    async def get_client(self, server):
+        """
+        Return a TestClient instance.
+        """
+        now = int(time.time())
+        id_token_data = {
+            "iss": os.environ["JWT_ISSUER"],
+            "sub": "bc36b436-1091-11e8-bc0f-0242ac120003",
+            "aud": os.environ["JWT_AUDIENCE"],
+            "exp": now + 600,  # Expire 5 minutes in the future
+            "iat": now,
+            "auth_time": now,
+            "nonce": "self.code.nonce",
+            "at_hash": "QBW0o1FTo_zMzrMc7af94w"
+        }
+        id_token = jwt.encode(
+            payload=id_token_data,
+            key=os.environ["JWT_SECRET"],
+            algorithm=os.environ["JWT_ALGORITHM"],
+        ).decode("utf-8")
+        return Client(
+            server, loop=self.loop,
+            headers={"Authorization": "Bearer %s" % id_token}
+        )
 
     async def assertStatus(self, response, status):
         """
@@ -260,7 +294,7 @@ class IntegrationTest(AioHTTPTestCase):
         Set up the application used by the tests
         :return:
         """
-        app = web.Application(loop=self.loop)
+        app = web.Application(loop=self.loop, middlewares=[auth_middleware])
 
         user_data_store_configuration = user_data_store.configuration.Configuration()
         user_data_store_configuration.host = "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT)

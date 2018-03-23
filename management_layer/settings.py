@@ -31,4 +31,10 @@ AUTHENTICATION_SERVICE_API_KEY = env.str("AUTHENTICATION_SERVICE_API_KEY")
 USER_DATA_STORE_API_KEY = env.str("USER_DATA_STORE_API_KEY")
 
 LOG_LEVEL = logging.INFO
+
+# Optional Sentry DSN
 SENTRY_DSN = env.str("SENTRY_DSN", None)
+
+# Optional Memcache settings
+MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
+MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)

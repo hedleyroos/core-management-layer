@@ -1,18 +1,12 @@
 import time
 
 import jwt
-import raven
+import os
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch
 
-import management_layer
 from management_layer import middleware
-
-TEST_AUDIENCE = "test_audience"
-TEST_SECRET = "test_secret"
-TEST_ISSUER = "http://localhost:8000/openid"
-TEST_ALGORITHM = "HS256"
 
 
 class AuthMiddlewareTest(AioHTTPTestCase):
@@ -37,9 +31,9 @@ class AuthMiddlewareTest(AioHTTPTestCase):
         super().setUp()
         now = int(time.time())
         self.id_token_data = {
-            "iss": TEST_ISSUER,
+            "iss": os.environ["JWT_ISSUER"],
             "sub": "bc36b436-1091-11e8-bc0f-0242ac120003",
-            "aud": TEST_AUDIENCE,
+            "aud": os.environ["JWT_AUDIENCE"],
             "exp": now + 600,  # Expire 5 minutes in the future
             "iat": now,
             "auth_time": now,
@@ -80,58 +74,49 @@ class AuthMiddlewareTest(AioHTTPTestCase):
         id_token = jwt.encode(
             payload=self.id_token_data,
             key="somekey",
-            algorithm=TEST_ALGORITHM,
+            algorithm=os.environ["JWT_ALGORITHM"],
         ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
-        with patch.multiple(
-                "management_layer.settings", JWT_SECRET=TEST_SECRET,
-                JWT_ALGORITHM=TEST_ALGORITHM, JWT_AUDIENCE=TEST_AUDIENCE
-        ):
-            response = await self.client.request(
-                "GET", "/",
-                headers={
-                    "Authorization": "bearer {}".format(id_token)
-                }
-            )
-            self.assertEqual(response.status, 401)
+
+        response = await self.client.request(
+            "GET", "/",
+            headers={
+                "Authorization": "bearer {}".format(id_token)
+            }
+        )
+        self.assertEqual(response.status, 401)
 
         # Fiddle with the audience
         tweaked_data = self.id_token_data.copy()
         tweaked_data["aud"] = "someone_else"
         id_token = jwt.encode(
             payload=tweaked_data,
-            key=TEST_SECRET,
-            algorithm=TEST_ALGORITHM,
+            key=os.environ["JWT_SECRET"],
+            algorithm=os.environ["JWT_ALGORITHM"],
         ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
-        with patch.multiple(
-                "management_layer.settings", JWT_SECRET=TEST_SECRET,
-                JWT_ALGORITHM=TEST_ALGORITHM, JWT_AUDIENCE=TEST_AUDIENCE
-        ):
-            response = await self.client.request(
-                "GET", "/",
-                headers={
-                    "Authorization": "bearer {}".format(id_token)
-                }
-            )
-            self.assertEqual(response.status, 401)
+
+        response = await self.client.request(
+            "GET", "/",
+            headers={
+                "Authorization": "bearer {}".format(id_token)
+            }
+        )
+        self.assertEqual(response.status, 401)
 
     @unittest_run_loop
     async def test_valid_token(self):
         id_token = jwt.encode(
             payload=self.id_token_data,
-            key=TEST_SECRET,
-            algorithm=TEST_ALGORITHM,
+            key=os.environ["JWT_SECRET"],
+            algorithm=os.environ["JWT_ALGORITHM"],
         ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
-        with patch.multiple(
-            "management_layer.settings", JWT_SECRET=TEST_SECRET,
-            JWT_ALGORITHM=TEST_ALGORITHM, JWT_AUDIENCE=TEST_AUDIENCE
-        ):
-            response = await self.client.request(
-                "GET", "/",
-                headers={
-                    "Authorization": "bearer {}".format(id_token)
-                }
-            )
-            self.assertEqual(response.status, 200)
+
+        response = await self.client.request(
+            "GET", "/",
+            headers={
+                "Authorization": "bearer {}".format(id_token)
+            }
+        )
+        self.assertEqual(response.status, 200)
 
 
 class SentryMiddlewareTest(AioHTTPTestCase):
