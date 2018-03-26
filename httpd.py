@@ -1,7 +1,12 @@
-import logging
+# Import our customised logging module first in order for the settings to
+# be applied to all the modules imported below.
+from management_layer.logging import logging
 
+import asyncio
 import aiomcache
 from aiohttp import web
+import aiojobs
+from aiojobs.aiohttp import setup
 
 import access_control
 import authentication_service
@@ -9,17 +14,34 @@ import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN
+from management_layer.mappings import refresh_all
 from management_layer.middleware import auth_middleware, sentry_middleware
-from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT
+from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT, MAPPING_REFRESH_SLEEP_SECONDS
 from management_layer.permission import utils
 
-logging.basicConfig(level=settings.LOG_LEVEL)
+logger = logging.getLogger()
+logger.setLevel(settings.LOG_LEVEL)
+
+
+async def on_startup(application: web.Application):
+    logger.info("Setting up scheduled jobs...")
+
+    # Create a closure that will be used to refresh data.
+    # The closure contains the application, which is required for the API calls
+    # which are used to refresh the data.
+    async def refresh_mappings(sleep_secs: float):
+        while True:
+            await refresh_all(application)
+            await asyncio.sleep(sleep_secs)
+
+    scheduler = aiojobs.aiohttp.get_scheduler_from_app(app)
+    await scheduler.spawn(refresh_mappings(MAPPING_REFRESH_SLEEP_SECONDS))
 
 
 async def on_shutdown(app):
-    print("Waiting for memcache to finish up...")
+    logger.info("Waiting for memcache to finish up...")
     await app["memcache"].close()
-    print("Waiting for clients to finish up...")
+    logger.info("Waiting for clients to finish up...")
     for backend in [
         "access_control_api",
         "operational_api",
@@ -28,7 +50,7 @@ async def on_shutdown(app):
     ]:
         await app[backend].api_client.rest_client.pool_manager.close()
 
-    print("Done.")
+    logger.info("Done.")
 
 
 async def mocked_return(_request, _user_id, _site_id, nocache=False):
@@ -37,15 +59,15 @@ async def mocked_return(_request, _user_id, _site_id, nocache=False):
 
 if __name__ == "__main__":
     if settings.INSECURE:  # TODO: Remove before going to prod
-        print("*" * 29)
-        print("* Running in insecure mode! *")
-        print("*" * 29)
+        logger.info("*" * 29)
+        logger.info("* Running in insecure mode! *")
+        logger.info("*" * 29)
         setattr(utils, "get_user_roles_for_site", mocked_return)
 
     app = web.Application(middlewares=[
         auth_middleware, sentry_middleware
     ])
-    print("Using the following APIs:")
+    logger.info("Using the following APIs:")
     user_data_store_configuration = user_data_store.configuration.Configuration()
     override_host = settings.USER_DATA_STORE_API
     if override_host:
@@ -93,11 +115,14 @@ if __name__ == "__main__":
 
     app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
 
-    print("Access Control/Operational: {}".format(access_control_configuration.host))
-    print("Authentication Service: {}".format(authentication_service_configuration.host))
-    print("User Data Store: {}".format(user_data_store_configuration.host))
+    logger.info("Access Control/Operational: {}".format(access_control_configuration.host))
+    logger.info("Authentication Service: {}".format(authentication_service_configuration.host))
+    logger.info("User Data Store: {}".format(user_data_store_configuration.host))
 
+    setup(app)  # Set up aiojobs scheduler
+    app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
+
     add_routes(app, with_ui=settings.WITH_UI)
     if settings.WITH_UI:
         # Override default spec view.
@@ -107,5 +132,5 @@ if __name__ == "__main__":
         ]
         app.router.add_view(r"/the_specification", views.SwaggerSpec)
 
-    print("Listening on port {}".format(settings.PORT))
+    logger.info("Listening on port {}".format(settings.PORT))
     web.run_app(app, port=settings.PORT)

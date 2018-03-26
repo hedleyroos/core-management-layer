@@ -38,3 +38,6 @@ SENTRY_DSN = env.str("SENTRY_DSN", None)
 # Optional Memcache settings
 MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
 MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)
+
+# Time period between refreshing mapping information.
+MAPPING_REFRESH_SLEEP_SECONDS = 60.0

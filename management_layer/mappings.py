@@ -8,8 +8,12 @@ dictionaries where the key is the id of the entity, and the value is the entity
 itself, as well as a dictionary which maps the text identifier of the entity
 to its id.
 """
-from typing import Callable, Tuple, List, Dict, TypeVar
+import logging
+
+from typing import Callable, Tuple, List, Dict, TypeVar, Coroutine, Awaitable
 from access_control.api.access_control_api import AccessControlApi
+
+logger = logging.getLogger(__name__)
 
 # Internal copies of definitions
 DOMAINS = {}
@@ -28,22 +32,17 @@ SITE_CLIENT_ID_TO_ID_MAP = {
     "management_layer_workaround": 1  # TODO: Remove when properly implemented
 }
 
-# The API client used to load the data
-API = AccessControlApi()
-
 # Custom convenience type
 T = TypeVar("T")
 
 
-def _load(
-    api_call: Callable[..., List[T]],
+async def _load(
+    api_call: Callable[..., Awaitable[List[T]]],
     name_field: str
 ) -> Tuple[Dict[int, T], Dict[str, int]]:
     """
     Generic function to load permission-related information from the Access
     Control component.
-
-    TODO: We may have to use the asynchronous variants of the API calls.
 
     :param api_call: The API call that returns the needed information
     :param name_field: The name of the field in which the text name can be found
@@ -53,63 +52,69 @@ def _load(
     items_by_id = {}
     name_to_id_map = {}
     offset = 0
-    items = api_call(offset=offset)
+    items = await api_call(offset=offset)
     while items:
         for item in items:
             items_by_id[item.id] = item
             name_to_id_map[getattr(item, name_field)] = item.id
         # Check if there are more items
         offset += len(items)
-        items = api_call(offset=offset)
+        items = await api_call(offset=offset)
 
     return items_by_id, name_to_id_map
 
 
-def refresh_domains():
+async def refresh_domains(app):
     """Refresh the global domain information"""
+    logger.info("Refreshing domains")
     global DOMAINS
     global DOMAIN_NAME_TO_ID_MAP
-    DOMAINS, DOMAIN_NAME_TO_ID_MAP = _load(API.domain_list, "name")
+    DOMAINS, DOMAIN_NAME_TO_ID_MAP = await _load(app["access_control_api"].domain_list, "name")
 
 
-def refresh_permissions():
+async def refresh_permissions(app):
     """Refresh the global permission information"""
+    logger.info("Refreshing permissions")
     global PERMISSIONS
     global PERMISSION_NAME_TO_ID_MAP
-    PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = _load(API.permission_list, "name")
+    PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = await _load(app["access_control_api"].permission_list, "name")
 
 
-def refresh_resources():
+async def refresh_resources(app):
     """Refresh the global resources information"""
+    logger.info("Refreshing resources")
     global RESOURCES
     global RESOURCE_URN_TO_ID_MAP
-    RESOURCES, RESOURCE_URN_TO_ID_MAP = _load(API.resource_list, "urn")
+    RESOURCES, RESOURCE_URN_TO_ID_MAP = await _load(app["access_control_api"].resource_list, "urn")
 
 
-def refresh_roles():
+async def refresh_roles(app):
     """Refresh the global roles information"""
+    logger.info("Refreshing roles")
     global ROLES
     global ROLE_LABEL_TO_ID_MAP
-    ROLES, ROLE_LABEL_TO_ID_MAP = _load(API.role_list, "label")
+    ROLES, ROLE_LABEL_TO_ID_MAP = await _load(app["access_control_api"].role_list, "label")
 
 
-def refresh_sites():
+async def refresh_sites(app):
     """Refresh the global sites information"""
+    logger.info("Refreshing sites")
     global SITES
     global SITE_NAME_TO_ID_MAP
-    SITES, SITE_NAME_TO_ID_MAP = _load(API.site_list, "name")
+    SITES, SITE_NAME_TO_ID_MAP = await _load(app["access_control_api"].site_list, "name")
     global SITE_CLIENT_ID_TO_ID_MAP
     SITE_CLIENT_ID_TO_ID_MAP = {
         detail["client_id"]: id_ for id_, detail in SITES.items()
     }
 
 
-def refresh_all():
+async def refresh_all(app):
     """
     Refresh all data mappings
     """
-    refresh_domains()
-    refresh_permissions()
-    refresh_resources()
-    refresh_roles()
-    refresh_sites()
+    logger.info("Refreshing all mappings")
+    await refresh_domains(app)
+    await refresh_permissions(app)
+    await refresh_resources(app)
+    await refresh_roles(app)
+    await refresh_sites(app)
