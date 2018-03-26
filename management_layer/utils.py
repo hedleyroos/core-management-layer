@@ -1,4 +1,9 @@
+import asyncio
 import json
+import logging
+from functools import wraps
+
+import time
 
 import access_control.rest
 import authentication_service.rest
@@ -8,6 +13,28 @@ from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
 from management_layer.sentry import sentry
+
+logger = logging.getLogger(__name__)
+
+
+def timeit(log_level=logging.DEBUG):
+    def wrap(f):
+        @wraps(f)
+        async def wrapped_f(*args, **kwargs):
+            start_time = time.time()
+            if asyncio.iscoroutinefunction(f):
+                result = await f(*args, **kwargs)
+            else:
+                result = f(*args, **kwargs)
+
+            total_time = (time.time() - start_time) * 1000
+            logger.log(log_level, f"{f.__module__}.{f.__name__} took {total_time:.3f} ms")
+
+            return result
+
+        return wrapped_f
+
+    return wrap
 
 
 @contextmanager
