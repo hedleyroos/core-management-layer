@@ -27,12 +27,12 @@ import logging
 from typing import Callable, Tuple, List, Dict, TypeVar, Awaitable
 
 import aiomcache
-import time
 from aiohttp import web
 
 from management_layer import transformations
 from management_layer.settings import CACHE_TIME
 from management_layer.sentry import sentry
+from management_layer.utils import timeit
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +53,8 @@ SITE_CLIENT_ID_TO_ID_MAP = {}  # type: Dict[str, int]
 
 # Custom convenience type
 T = TypeVar("T")
+
+LOG_LEVEL = logging.INFO
 
 
 async def _load(
@@ -98,84 +100,76 @@ async def _load(
     return items_by_id, name_to_id_map
 
 
+@timeit(LOG_LEVEL)
 async def refresh_domains(app: web.Application, nocache: bool=False):
     """Refresh the global domain information"""
     logger.info("Refreshing domains")
     global DOMAINS
     global DOMAIN_NAME_TO_ID_MAP
-    start_time = time.time()
     try:
         DOMAINS, DOMAIN_NAME_TO_ID_MAP = await _load(
             app["access_control_api"].domain_list, app["memcache"], transformations.DOMAIN,
             bytes(f"{__name__}:domains", encoding="utf8"), "name", nocache
         )
-        total_time = (time.time() - start_time) * 1000
-        logger.info(f"Refreshed in {total_time:.3f} ms")
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
+@timeit(LOG_LEVEL)
 async def refresh_permissions(app: web.Application, nocache: bool=False):
     """Refresh the global permission information"""
     logger.info("Refreshing permissions")
     global PERMISSIONS
     global PERMISSION_NAME_TO_ID_MAP
-    start_time = time.time()
     try:
         PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = await _load(
             app["access_control_api"].permission_list, app["memcache"], transformations.PERMISSION,
             bytes(f"{__name__}:permissions", encoding="utf8"), "name", nocache
         )
-        total_time = (time.time() - start_time) * 1000
-        logger.info(f"Refreshed in {total_time:.3f} ms")
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
+@timeit(LOG_LEVEL)
 async def refresh_resources(app: web.Application, nocache: bool=False):
     """Refresh the global resources information"""
     logger.info("Refreshing resources")
     global RESOURCES
     global RESOURCE_URN_TO_ID_MAP
-    start_time = time.time()
     try:
         RESOURCES, RESOURCE_URN_TO_ID_MAP = await _load(
             app["access_control_api"].resource_list, app["memcache"], transformations.RESOURCE,
             bytes(f"{__name__}:resources", encoding="utf8"), "urn", nocache
         )
-        total_time = (time.time() - start_time) * 1000
-        logger.info(f"Refreshed in {total_time:.3f} ms")
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
+@timeit(LOG_LEVEL)
 async def refresh_roles(app: web.Application, nocache: bool=False):
     """Refresh the global roles information"""
     logger.info("Refreshing roles")
     global ROLES
     global ROLE_LABEL_TO_ID_MAP
-    start_time = time.time()
     try:
         ROLES, ROLE_LABEL_TO_ID_MAP = await _load(
             app["access_control_api"].role_list, app["memcache"], transformations.ROLE,
             bytes(f"{__name__}:roles", encoding="utf8"), "label", nocache
         )
-        total_time = (time.time() - start_time) * 1000
-        logger.info(f"Refreshed in {total_time:.3f} ms")
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
+@timeit(LOG_LEVEL)
 async def refresh_sites(app: web.Application, nocache: bool=False):
     """Refresh the global sites information"""
     logger.info("Refreshing sites")
     global SITES
     global SITE_NAME_TO_ID_MAP
-    start_time = time.time()
     try:
         SITES, SITE_NAME_TO_ID_MAP = await _load(
             app["access_control_api"].site_list, app["memcache"], transformations.SITE,
@@ -185,13 +179,12 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
         SITE_CLIENT_ID_TO_ID_MAP = {
             detail["client_id"]: id_ for id_, detail in SITES.items()
         }
-        total_time = (time.time() - start_time) * 1000
-        logger.info(f"Refreshed in {total_time:.3f} ms")
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
+@timeit(LOG_LEVEL)
 async def refresh_all(app: web.Application, nocache: bool=False):
     """
     Refresh all data mappings
