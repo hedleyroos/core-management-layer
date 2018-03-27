@@ -10,7 +10,8 @@ class SwaggerSpec(__SWAGGER_SPEC__):
     async def get(self):
         spec = self.SPEC.copy()
         spec["basePath"] = "/"
-        spec["host"] = "{}:{}".format(os.getenv("UI_HOST", "localhost"), settings.PORT)
+        # Removing the host so that the spec the URL is loaded on is used.
+        spec.pop("host", None)
         # Add basic auth as a security definition
         security_definitions = spec.get("securityDefinitions", {})
         security_definitions["OAuth2"]["authorizationUrl"] = \
