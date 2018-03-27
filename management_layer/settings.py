@@ -30,7 +30,7 @@ ACCESS_CONTROL_API_KEY = env.str("ACCESS_CONTROL_API_KEY")
 AUTHENTICATION_SERVICE_API_KEY = env.str("AUTHENTICATION_SERVICE_API_KEY")
 USER_DATA_STORE_API_KEY = env.str("USER_DATA_STORE_API_KEY")
 
-LOG_LEVEL = logging.INFO
+LOG_LEVEL = logging.DEBUG
 
 # Optional Sentry DSN
 SENTRY_DSN = env.str("SENTRY_DSN", None)
@@ -38,3 +38,6 @@ SENTRY_DSN = env.str("SENTRY_DSN", None)
 # Optional Memcache settings
 MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
 MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)
+
+# Time period between refreshing mapping information.
+MAPPING_REFRESH_SLEEP_SECONDS = 60.0

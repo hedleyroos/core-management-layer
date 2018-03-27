@@ -13,9 +13,7 @@ from aiohttp.web import Request
 
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
     MKP_USER_ROLES, TECH_ADMIN
-from management_layer.mappings import SITE_NAME_TO_ID_MAP, \
-    DOMAIN_NAME_TO_ID_MAP, ROLE_LABEL_TO_ID_MAP, RESOURCE_URN_TO_ID_MAP, \
-    PERMISSION_NAME_TO_ID_MAP
+from management_layer.mappings import Mappings
 from management_layer.settings import CACHE_TIME
 
 # Convenience types
@@ -51,7 +49,7 @@ async def role_has_permission(
     """
     result = False
     permission_id = permission if type(permission) is int else \
-        PERMISSION_NAME_TO_ID_MAP[permission]
+        Mappings.permission_name_to_id_map[permission]
 
     permission_ids = await get_role_resource_permissions(request, role, resource, nocache=nocache)
     if permission_ids:
@@ -204,9 +202,9 @@ async def get_role_resource_permissions(
     :param nocache: Bypass the cache if True
     :return: A list of permission ids
     """
-    role_id = role if type(role) is int else ROLE_LABEL_TO_ID_MAP[role]
+    role_id = role if type(role) is int else Mappings.role_label_to_id_map[role]
     resource_id = resource if type(resource) is int else \
-        RESOURCE_URN_TO_ID_MAP[resource]
+        Mappings.resource_urn_to_id_map[resource]
 
     key = bytes(f"{MKP_ROLE_RESOURCE_PERMISSION}:{role_id}:{resource_id}",
                 encoding="utf8")
@@ -303,7 +301,7 @@ async def get_user_roles_for_domain(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    domain_id = domain if type(domain) is int else DOMAIN_NAME_TO_ID_MAP[domain]
+    domain_id = domain if type(domain) is int else Mappings.domain_name_to_id_map[domain]
 
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
@@ -324,7 +322,7 @@ async def get_user_roles_for_site(
     :param nocache: Bypass the cache if True
     :return: A list of role ids
     """
-    site_id = site if type(site) is int else SITE_NAME_TO_ID_MAP[site]
+    site_id = site if type(site) is int else Mappings.site_name_to_id_map[site]
 
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the site key. Return an
