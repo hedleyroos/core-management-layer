@@ -12,6 +12,7 @@ class AbstractStubClass(object):
     Implementations need to be derived from this class.
     """
 
+    # adminnote_list -- Synchronisation point for meld
     @staticmethod
     async def adminnote_list(request, **kwargs):
         """
@@ -24,6 +25,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # adminnote_create -- Synchronisation point for meld
     @staticmethod
     async def adminnote_create(request, body, **kwargs):
         """
@@ -33,6 +35,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # adminnote_delete -- Synchronisation point for meld
     @staticmethod
     async def adminnote_delete(request, admin_note_id, **kwargs):
         """
@@ -42,6 +45,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # adminnote_read -- Synchronisation point for meld
     @staticmethod
     async def adminnote_read(request, admin_note_id, **kwargs):
         """
@@ -51,6 +55,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # adminnote_update -- Synchronisation point for meld
     @staticmethod
     async def adminnote_update(request, body, admin_note_id, **kwargs):
         """
@@ -61,6 +66,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # client_list -- Synchronisation point for meld
     @staticmethod
     async def client_list(request, **kwargs):
         """
@@ -68,11 +74,12 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
-        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
+        :param client_token_id (optional): string An optional client id to filter on. This is not the primary key.
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
+    # client_read -- Synchronisation point for meld
     @staticmethod
     async def client_read(request, client_id, **kwargs):
         """
@@ -82,6 +89,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domainrole_list -- Synchronisation point for meld
     @staticmethod
     async def domainrole_list(request, **kwargs):
         """
@@ -94,6 +102,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domainrole_create -- Synchronisation point for meld
     @staticmethod
     async def domainrole_create(request, body, **kwargs):
         """
@@ -103,6 +112,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domainrole_delete -- Synchronisation point for meld
     @staticmethod
     async def domainrole_delete(request, domain_id, role_id, **kwargs):
         """
@@ -113,6 +123,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domainrole_read -- Synchronisation point for meld
     @staticmethod
     async def domainrole_read(request, domain_id, role_id, **kwargs):
         """
@@ -123,6 +134,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domainrole_update -- Synchronisation point for meld
     @staticmethod
     async def domainrole_update(request, body, domain_id, role_id, **kwargs):
         """
@@ -134,6 +146,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domain_list -- Synchronisation point for meld
     @staticmethod
     async def domain_list(request, **kwargs):
         """
@@ -145,6 +158,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domain_create -- Synchronisation point for meld
     @staticmethod
     async def domain_create(request, body, **kwargs):
         """
@@ -154,6 +168,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domain_delete -- Synchronisation point for meld
     @staticmethod
     async def domain_delete(request, domain_id, **kwargs):
         """
@@ -163,6 +178,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domain_read -- Synchronisation point for meld
     @staticmethod
     async def domain_read(request, domain_id, **kwargs):
         """
@@ -172,6 +188,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # domain_update -- Synchronisation point for meld
     @staticmethod
     async def domain_update(request, body, domain_id, **kwargs):
         """
@@ -182,6 +199,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationdomainrole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_list(request, **kwargs):
         """
@@ -195,6 +213,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationdomainrole_create -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_create(request, body, **kwargs):
         """
@@ -204,6 +223,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationdomainrole_delete -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
@@ -215,6 +235,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationdomainrole_read -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_read(request, invitation_id, domain_id, role_id, **kwargs):
         """
@@ -226,6 +247,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_list -- Synchronisation point for meld
     @staticmethod
     async def invitation_list(request, **kwargs):
         """
@@ -238,6 +260,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_create -- Synchronisation point for meld
     @staticmethod
     async def invitation_create(request, body, **kwargs):
         """
@@ -247,6 +270,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_delete -- Synchronisation point for meld
     @staticmethod
     async def invitation_delete(request, invitation_id, **kwargs):
         """
@@ -256,6 +280,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_read -- Synchronisation point for meld
     @staticmethod
     async def invitation_read(request, invitation_id, **kwargs):
         """
@@ -265,6 +290,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_update -- Synchronisation point for meld
     @staticmethod
     async def invitation_update(request, body, invitation_id, **kwargs):
         """
@@ -275,6 +301,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_list(request, **kwargs):
         """
@@ -288,6 +315,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationsiterole_create -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_create(request, body, **kwargs):
         """
@@ -297,6 +325,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationsiterole_delete -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
@@ -308,6 +337,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationsiterole_read -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_read(request, invitation_id, site_id, role_id, **kwargs):
         """
@@ -319,6 +349,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_all_user_roles -- Synchronisation point for meld
     @staticmethod
     async def get_all_user_roles(request, user_id, **kwargs):
         """
@@ -328,6 +359,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_domain_roles(request, domain_id, **kwargs):
         """
@@ -337,6 +369,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
         """
@@ -346,6 +379,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
     async def get_site_role_labels_aggregated(request, site_id, **kwargs):
         """
@@ -355,6 +389,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_user_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
         """
@@ -365,6 +400,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # permission_list -- Synchronisation point for meld
     @staticmethod
     async def permission_list(request, **kwargs):
         """
@@ -376,6 +412,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # permission_create -- Synchronisation point for meld
     @staticmethod
     async def permission_create(request, body, **kwargs):
         """
@@ -385,6 +422,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # permission_delete -- Synchronisation point for meld
     @staticmethod
     async def permission_delete(request, permission_id, **kwargs):
         """
@@ -394,6 +432,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # permission_read -- Synchronisation point for meld
     @staticmethod
     async def permission_read(request, permission_id, **kwargs):
         """
@@ -403,6 +442,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # permission_update -- Synchronisation point for meld
     @staticmethod
     async def permission_update(request, body, permission_id, **kwargs):
         """
@@ -413,6 +453,67 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # refresh_all -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_all(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_domains -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_domains(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_permissions -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_permissions(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_resources -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_resources(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_roles -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_roles(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_sites -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_sites(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # resource_list -- Synchronisation point for meld
     @staticmethod
     async def resource_list(request, **kwargs):
         """
@@ -425,6 +526,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # resource_create -- Synchronisation point for meld
     @staticmethod
     async def resource_create(request, body, **kwargs):
         """
@@ -434,6 +536,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # resource_delete -- Synchronisation point for meld
     @staticmethod
     async def resource_delete(request, resource_id, **kwargs):
         """
@@ -443,6 +546,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # resource_read -- Synchronisation point for meld
     @staticmethod
     async def resource_read(request, resource_id, **kwargs):
         """
@@ -452,6 +556,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # resource_update -- Synchronisation point for meld
     @staticmethod
     async def resource_update(request, body, resource_id, **kwargs):
         """
@@ -462,6 +567,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # roleresourcepermission_list -- Synchronisation point for meld
     @staticmethod
     async def roleresourcepermission_list(request, **kwargs):
         """
@@ -475,6 +581,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # roleresourcepermission_create -- Synchronisation point for meld
     @staticmethod
     async def roleresourcepermission_create(request, body, **kwargs):
         """
@@ -484,6 +591,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # roleresourcepermission_delete -- Synchronisation point for meld
     @staticmethod
     async def roleresourcepermission_delete(request, role_id, resource_id, permission_id, **kwargs):
         """
@@ -495,6 +603,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # roleresourcepermission_read -- Synchronisation point for meld
     @staticmethod
     async def roleresourcepermission_read(request, role_id, resource_id, permission_id, **kwargs):
         """
@@ -506,6 +615,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # role_list -- Synchronisation point for meld
     @staticmethod
     async def role_list(request, **kwargs):
         """
@@ -517,6 +627,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # role_create -- Synchronisation point for meld
     @staticmethod
     async def role_create(request, body, **kwargs):
         """
@@ -526,6 +637,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # role_delete -- Synchronisation point for meld
     @staticmethod
     async def role_delete(request, role_id, **kwargs):
         """
@@ -535,6 +647,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # role_read -- Synchronisation point for meld
     @staticmethod
     async def role_read(request, role_id, **kwargs):
         """
@@ -544,6 +657,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # role_update -- Synchronisation point for meld
     @staticmethod
     async def role_update(request, body, role_id, **kwargs):
         """
@@ -554,6 +668,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # sitedataschema_list -- Synchronisation point for meld
     @staticmethod
     async def sitedataschema_list(request, **kwargs):
         """
@@ -565,6 +680,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # sitedataschema_create -- Synchronisation point for meld
     @staticmethod
     async def sitedataschema_create(request, body, **kwargs):
         """
@@ -574,6 +690,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # sitedataschema_delete -- Synchronisation point for meld
     @staticmethod
     async def sitedataschema_delete(request, site_id, **kwargs):
         """
@@ -583,6 +700,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # sitedataschema_read -- Synchronisation point for meld
     @staticmethod
     async def sitedataschema_read(request, site_id, **kwargs):
         """
@@ -592,6 +710,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # sitedataschema_update -- Synchronisation point for meld
     @staticmethod
     async def sitedataschema_update(request, body, site_id, **kwargs):
         """
@@ -602,6 +721,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # siterole_list -- Synchronisation point for meld
     @staticmethod
     async def siterole_list(request, **kwargs):
         """
@@ -614,6 +734,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # siterole_create -- Synchronisation point for meld
     @staticmethod
     async def siterole_create(request, body, **kwargs):
         """
@@ -623,6 +744,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # siterole_delete -- Synchronisation point for meld
     @staticmethod
     async def siterole_delete(request, site_id, role_id, **kwargs):
         """
@@ -633,6 +755,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # siterole_read -- Synchronisation point for meld
     @staticmethod
     async def siterole_read(request, site_id, role_id, **kwargs):
         """
@@ -643,6 +766,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # siterole_update -- Synchronisation point for meld
     @staticmethod
     async def siterole_update(request, body, site_id, role_id, **kwargs):
         """
@@ -654,6 +778,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # site_list -- Synchronisation point for meld
     @staticmethod
     async def site_list(request, **kwargs):
         """
@@ -665,6 +790,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # site_create -- Synchronisation point for meld
     @staticmethod
     async def site_create(request, body, **kwargs):
         """
@@ -674,6 +800,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # site_delete -- Synchronisation point for meld
     @staticmethod
     async def site_delete(request, site_id, **kwargs):
         """
@@ -683,6 +810,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # site_read -- Synchronisation point for meld
     @staticmethod
     async def site_read(request, site_id, **kwargs):
         """
@@ -692,6 +820,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # site_update -- Synchronisation point for meld
     @staticmethod
     async def site_update(request, body, site_id, **kwargs):
         """
@@ -702,6 +831,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get__api_v1_sites_site_id_activate -- Synchronisation point for meld
     @staticmethod
     async def get__api_v1_sites_site_id_activate(request, site_id, **kwargs):
         """
@@ -711,6 +841,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get__api_v1_sites_site_id_deactivate -- Synchronisation point for meld
     @staticmethod
     async def get__api_v1_sites_site_id_deactivate(request, site_id, **kwargs):
         """
@@ -720,6 +851,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # userdomainrole_list -- Synchronisation point for meld
     @staticmethod
     async def userdomainrole_list(request, **kwargs):
         """
@@ -733,6 +865,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # userdomainrole_create -- Synchronisation point for meld
     @staticmethod
     async def userdomainrole_create(request, body, **kwargs):
         """
@@ -742,6 +875,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # userdomainrole_delete -- Synchronisation point for meld
     @staticmethod
     async def userdomainrole_delete(request, user_id, domain_id, role_id, **kwargs):
         """
@@ -753,6 +887,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # userdomainrole_read -- Synchronisation point for meld
     @staticmethod
     async def userdomainrole_read(request, user_id, domain_id, role_id, **kwargs):
         """
@@ -764,6 +899,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # user_list -- Synchronisation point for meld
     @staticmethod
     async def user_list(request, **kwargs):
         """
@@ -777,6 +913,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # user_delete -- Synchronisation point for meld
     @staticmethod
     async def user_delete(request, user_id, **kwargs):
         """
@@ -786,6 +923,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # user_read -- Synchronisation point for meld
     @staticmethod
     async def user_read(request, user_id, **kwargs):
         """
@@ -795,6 +933,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # user_update -- Synchronisation point for meld
     @staticmethod
     async def user_update(request, body, user_id, **kwargs):
         """
@@ -805,6 +944,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get__api_v1_users_user_id_activate -- Synchronisation point for meld
     @staticmethod
     async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
         """
@@ -814,6 +954,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get__api_v1_users_user_id_deactivate -- Synchronisation point for meld
     @staticmethod
     async def get__api_v1_users_user_id_deactivate(request, user_id, **kwargs):
         """
@@ -823,6 +964,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersitedata_list -- Synchronisation point for meld
     @staticmethod
     async def usersitedata_list(request, **kwargs):
         """
@@ -835,6 +977,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersitedata_create -- Synchronisation point for meld
     @staticmethod
     async def usersitedata_create(request, body, **kwargs):
         """
@@ -844,6 +987,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersitedata_delete -- Synchronisation point for meld
     @staticmethod
     async def usersitedata_delete(request, user_id, site_id, **kwargs):
         """
@@ -854,6 +998,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersitedata_read -- Synchronisation point for meld
     @staticmethod
     async def usersitedata_read(request, user_id, site_id, **kwargs):
         """
@@ -864,6 +1009,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersitedata_update -- Synchronisation point for meld
     @staticmethod
     async def usersitedata_update(request, body, user_id, site_id, **kwargs):
         """
@@ -875,6 +1021,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersiterole_list -- Synchronisation point for meld
     @staticmethod
     async def usersiterole_list(request, **kwargs):
         """
@@ -888,6 +1035,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersiterole_create -- Synchronisation point for meld
     @staticmethod
     async def usersiterole_create(request, body, **kwargs):
         """
@@ -897,6 +1045,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersiterole_delete -- Synchronisation point for meld
     @staticmethod
     async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
         """
@@ -908,6 +1057,7 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # usersiterole_read -- Synchronisation point for meld
     @staticmethod
     async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
         """
@@ -1058,7 +1208,7 @@ class MockedStubClass(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param client_ids (optional): array An optional list of client ids
-        :param client_id (optional): string An optional client id to filter on. This is not the primary key.
+        :param client_token_id (optional): string An optional client id to filter on. This is not the primary key.
         """
         response_schema = json.loads("""{
     "items": {
@@ -1912,6 +2062,96 @@ class MockedStubClass(AbstractStubClass):
         :param permission_id: integer A unique integer value identifying the permission.
         """
         response_schema = schemas.permission
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_all(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_domains(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_permissions(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_resources(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_roles(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_sites(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
