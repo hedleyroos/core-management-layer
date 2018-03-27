@@ -242,8 +242,8 @@ class ExampleTestCase(AioHTTPTestCase):
         self.loop.run_until_complete(test_get_route())
 
 
-@patch.multiple("management_layer.permission.decorator",
-                SITE_CLIENT_ID_TO_ID_MAP={os.environ["JWT_AUDIENCE"]: 1})
+@patch.multiple("management_layer.mappings.Mappings",
+                site_client_id_to_id_map={os.environ["JWT_AUDIENCE"]: 1})
 @patch("management_layer.permission.utils.get_user_roles_for_site",
        Mock(side_effect=make_coroutine_returning([TECH_ADMIN])))
 class IntegrationTest(AioHTTPTestCase):
@@ -519,3 +519,39 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, schemas.user_site_role_labels_aggregated)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_sites(self, nocache):
+        response = await self.client.get("/refresh/sites", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_roles(self, nocache):
+        response = await self.client.get("/refresh/roles", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_resources(self, nocache):
+        response = await self.client.get("/refresh/resources", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_permissions(self, nocache):
+        response = await self.client.get("/refresh/permissions", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_domains(self, nocache):
+        response = await self.client.get("/refresh/domains", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_all(self, nocache):
+        response = await self.client.get("/refresh/all", params={"nocache": nocache})
+        await self.assertStatus(response, 200)

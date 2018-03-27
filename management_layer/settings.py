@@ -40,4 +40,4 @@ MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
 MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)
 
 # Time period between refreshing mapping information.
-MAPPING_REFRESH_SLEEP_SECONDS = 10.0
+MAPPING_REFRESH_SLEEP_SECONDS = 60.0

@@ -4,6 +4,7 @@ function calls by specifying the permissions required to execute the function.
 """
 import asyncio
 import json
+import logging
 import typing
 import uuid
 from functools import wraps
@@ -12,7 +13,9 @@ from aiohttp.web_exceptions import HTTPForbidden
 
 from management_layer.permission.utils import Operator, ResourcePermissions, \
     user_has_permissions
-from management_layer.mappings import SITE_CLIENT_ID_TO_ID_MAP
+from management_layer.mappings import Mappings
+
+logger = logging.getLogger(__name__)
 
 
 def require_permissions(
@@ -113,12 +116,12 @@ def require_permissions(
             user = uuid.UUID(request["token"]["sub"])
             # Extract the client id from the request
             client_id = request["token"]["aud"]
-            if client_id not in SITE_CLIENT_ID_TO_ID_MAP:
+            if client_id not in Mappings.site_client_id_to_id_map:
                 raise HTTPForbidden(body=json.dumps({
                     "message": f"No site linked to the client '{client_id}'"
                 }))
 
-            site_id = SITE_CLIENT_ID_TO_ID_MAP[client_id]
+            site_id = Mappings.site_client_id_to_id_map[client_id]
 
             allowed = await user_has_permissions(
                 request, user, operator, resource_permissions,

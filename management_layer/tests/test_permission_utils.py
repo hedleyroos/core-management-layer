@@ -71,7 +71,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         self.assertEqual(simple.__name__, "simple")
         self.assertEqual(simple.__doc__, "This docstring is checked.")
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -104,7 +104,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         with self.assertRaises(HTTPForbidden):
             await empty_any(self.dummy_request)
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -125,7 +125,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # arguments.
         mocked_function.assert_called_with(self.dummy_request, self.user, self.site_id, False)
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -172,13 +172,13 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         with self.assertRaises(HTTPForbidden):
             await reverse_stack(self.dummy_request)
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -238,13 +238,13 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1", "role2"])
         self.assertTrue(await multiple_requirements(self.dummy_request))
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -311,13 +311,13 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
-    @patch.dict("management_layer.mappings.SITE_CLIENT_ID_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -417,11 +417,11 @@ class TestUtils(AioHTTPTestCase):
 
         return app
 
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("access_control.api.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
@@ -494,11 +494,11 @@ class TestUtils(AioHTTPTestCase):
                     TEST_RESOURCE_URN_TO_ID_MAP["urn:resource2"], nocache)
             )
 
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("access_control.api.access_control_api"
            ".AccessControlApi.roleresourcepermission_list")
@@ -672,11 +672,11 @@ class TestUtils(AioHTTPTestCase):
                 )
             )
 
-    @patch.dict("management_layer.mappings.ROLE_LABEL_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.role_label_to_id_map",
                 TEST_ROLE_LABEL_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.PERMISSION_NAME_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.permission_name_to_id_map",
                 TEST_PERMISSION_NAME_TO_ID_MAP, clear=True)
-    @patch.dict("management_layer.mappings.RESOURCE_URN_TO_ID_MAP",
+    @patch.dict("management_layer.mappings.Mappings.resource_urn_to_id_map",
                 TEST_RESOURCE_URN_TO_ID_MAP, clear=True)
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")

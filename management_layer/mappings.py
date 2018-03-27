@@ -8,11 +8,11 @@ dictionaries where the key is the id of the entity, and the value is the entity
 itself, as well as a dictionary which maps the text identifier of the entity
 to its id.
 
-While the use of globals to store these values can be problematic in the case
+While the use of shared variables to store these values can be problematic in the case
 where an application is multi-threaded, the same is not true when the application
 uses an event loop, since it is single-threaded in nature.
 
-The values stored in the global dictionaries are refreshed when a scheduled
+The values stored in the mapping class are refreshed when a scheduled
 job calls one of the refresh_* functions. Typically a refresh will use a cached
 value from Memcache, but, if the value is not in memcache or it expired, the
 API will be queried and the cache updated.
@@ -36,25 +36,28 @@ from management_layer.utils import timeit
 
 logger = logging.getLogger(__name__)
 
-# Internal copies of definitions. These are mappings of ids to dictionaries.
-DOMAINS = {}  # type: Dict[int, Dict]
-PERMISSIONS = {}  # type: Dict[int, Dict]
-RESOURCES = {}  # type: Dict[int, Dict]
-ROLES = {}  # type: Dict[int, Dict]
-SITES = {}  # type: Dict[int, Dict]
 
-# Name/label to id mappings.
-DOMAIN_NAME_TO_ID_MAP = {}  # type: Dict[str, int]
-PERMISSION_NAME_TO_ID_MAP = {}  # type: Dict[str, int]
-RESOURCE_URN_TO_ID_MAP = {}  # type: Dict[str, int]
-ROLE_LABEL_TO_ID_MAP = {}  # type: Dict[str, int]
-SITE_NAME_TO_ID_MAP = {}  # type: Dict[str, int]
-SITE_CLIENT_ID_TO_ID_MAP = {}  # type: Dict[str, int]
+class Mappings:
+    # Internal copies of definitions. These are mappings of ids to dictionaries.
+    domains = {}  # type: Dict[int, Dict]
+    permissions = {}  # type: Dict[int, Dict]
+    resources = {}  # type: Dict[int, Dict]
+    roles = {}  # type: Dict[int, Dict]
+    sites = {}  # type: Dict[int, Dict]
+
+    # Name/label to id mappings.
+    domain_name_to_id_map = {}  # type: Dict[str, int]
+    permission_name_to_id_map = {}  # type: Dict[str, int]
+    resource_urn_to_id_map = {}  # type: Dict[str, int]
+    role_label_to_id_map = {}  # type: Dict[str, int]
+    site_name_to_id_map = {}  # type: Dict[str, int]
+    site_client_id_to_id_map = {}  # type: Dict[str, int]
+
 
 # Custom convenience type
 T = TypeVar("T")
 
-LOG_LEVEL = logging.INFO
+TIMING_LOG_LEVEL = logging.INFO
 
 
 async def _load(
@@ -100,14 +103,12 @@ async def _load(
     return items_by_id, name_to_id_map
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_domains(app: web.Application, nocache: bool=False):
-    """Refresh the global domain information"""
+    """Refresh the domain information"""
     logger.info("Refreshing domains")
-    global DOMAINS
-    global DOMAIN_NAME_TO_ID_MAP
     try:
-        DOMAINS, DOMAIN_NAME_TO_ID_MAP = await _load(
+        Mappings.domains, Mappings.domain_name_to_id_map = await _load(
             app["access_control_api"].domain_list, app["memcache"], transformations.DOMAIN,
             bytes(f"{__name__}:domains", encoding="utf8"), "name", nocache
         )
@@ -116,14 +117,12 @@ async def refresh_domains(app: web.Application, nocache: bool=False):
         logger.error(e)
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_permissions(app: web.Application, nocache: bool=False):
-    """Refresh the global permission information"""
+    """Refresh the permission information"""
     logger.info("Refreshing permissions")
-    global PERMISSIONS
-    global PERMISSION_NAME_TO_ID_MAP
     try:
-        PERMISSIONS, PERMISSION_NAME_TO_ID_MAP = await _load(
+        Mappings.permissions, Mappings.permission_name_to_id_map = await _load(
             app["access_control_api"].permission_list, app["memcache"], transformations.PERMISSION,
             bytes(f"{__name__}:permissions", encoding="utf8"), "name", nocache
         )
@@ -132,14 +131,12 @@ async def refresh_permissions(app: web.Application, nocache: bool=False):
         logger.error(e)
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_resources(app: web.Application, nocache: bool=False):
-    """Refresh the global resources information"""
+    """Refresh the resources information"""
     logger.info("Refreshing resources")
-    global RESOURCES
-    global RESOURCE_URN_TO_ID_MAP
     try:
-        RESOURCES, RESOURCE_URN_TO_ID_MAP = await _load(
+        Mappings.resources, Mappings.resource_urn_to_id_map = await _load(
             app["access_control_api"].resource_list, app["memcache"], transformations.RESOURCE,
             bytes(f"{__name__}:resources", encoding="utf8"), "urn", nocache
         )
@@ -148,14 +145,12 @@ async def refresh_resources(app: web.Application, nocache: bool=False):
         logger.error(e)
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_roles(app: web.Application, nocache: bool=False):
-    """Refresh the global roles information"""
+    """Refresh the roles information"""
     logger.info("Refreshing roles")
-    global ROLES
-    global ROLE_LABEL_TO_ID_MAP
     try:
-        ROLES, ROLE_LABEL_TO_ID_MAP = await _load(
+        Mappings.roles, Mappings.role_label_to_id_map = await _load(
             app["access_control_api"].role_list, app["memcache"], transformations.ROLE,
             bytes(f"{__name__}:roles", encoding="utf8"), "label", nocache
         )
@@ -164,27 +159,25 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
         logger.error(e)
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_sites(app: web.Application, nocache: bool=False):
-    """Refresh the global sites information"""
+    """Refresh the sites information"""
     logger.info("Refreshing sites")
-    global SITES
-    global SITE_NAME_TO_ID_MAP
     try:
-        SITES, SITE_NAME_TO_ID_MAP = await _load(
+        Mappings.sites, Mappings.site_name_to_id_map = await _load(
             app["access_control_api"].site_list, app["memcache"], transformations.SITE,
             bytes(f"{__name__}:sites", encoding="utf8"), "name", nocache
         )
-        global SITE_CLIENT_ID_TO_ID_MAP
-        SITE_CLIENT_ID_TO_ID_MAP = {
-            detail["client_id"]: id_ for id_, detail in SITES.items()
+        Mappings.site_client_id_to_id_map = {
+            detail["client_id"]: id_ for id_, detail in Mappings.sites.items()
         }
+        Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
 
-@timeit(LOG_LEVEL)
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_all(app: web.Application, nocache: bool=False):
     """
     Refresh all data mappings
