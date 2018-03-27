@@ -74,7 +74,7 @@ window.onload = function() {
 
   // Build a system
   const ui = SwaggerUIBundle({
-    url: "http://localhost:8000/the_specification",
+    url: location.protocol+"//"+location.host+"/the_specification",
     dom_id: '#swagger-ui',
     oauth2RedirectUrl: "http://localhost:8000/ui/oauth2-redirect.html",
     presets: [
