@@ -651,7 +651,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_all -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:all", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_all(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -663,7 +663,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_domains -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:domains", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_domains(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -675,7 +675,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_permissions -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:permissions", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_permissions(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -687,7 +687,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_resources -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:resources", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_resources(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -699,7 +699,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_roles -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:roles", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_roles(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -711,7 +711,7 @@ class Implementation(AbstractStubClass):
 
     # refresh_sites -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:management_layer:refresh:sites", "update")])
+    @require_permissions(any, [])  # Tech admin only
     async def refresh_sites(request, **kwargs):
         """
         :param request: An HttpRequest
