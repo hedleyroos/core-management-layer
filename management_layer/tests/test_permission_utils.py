@@ -13,6 +13,7 @@ from aiohttp.web_exceptions import HTTPForbidden
 import management_layer.constants
 import management_layer.permission
 from access_control import RoleResourcePermission, AccessControlApi, OperationalApi
+from management_layer.constants import TECH_ADMIN
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions
 
@@ -93,16 +94,20 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # the user has.
         @require_permissions(any, [])
         def empty_any(_request):
-            raise RuntimeError("This should never get executed")
+            return "You must be a tech admin"
 
         mocked_function.side_effect = make_coroutine_returning(["some_role"])
 
         # Always gets allowed, regardless of the user's roles
         self.assertTrue(await empty_all(self.dummy_request))
 
-        # Never gets allowed, regardless of the user's roles
+        # Never gets allowed unless the user has the TECH_ADMIN role
         with self.assertRaises(HTTPForbidden):
             await empty_any(self.dummy_request)
+
+        mocked_function.side_effect = make_coroutine_returning([TECH_ADMIN])
+        self.assertEqual(await empty_any(self.dummy_request),
+                         "You must be a tech admin")
 
     @patch.dict("management_layer.mappings.Mappings.site_client_id_to_id_map",
                 TEST_SITE_CLIENT_ID_TO_ID_MAP, clear=True)

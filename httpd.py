@@ -118,6 +118,7 @@ if __name__ == "__main__":
     logger.info("Access Control/Operational: {}".format(access_control_configuration.host))
     logger.info("Authentication Service: {}".format(authentication_service_configuration.host))
     logger.info("User Data Store: {}".format(user_data_store_configuration.host))
+    logger.info("Memcache: {}:{}".format(MEMCACHE_HOST, MEMCACHE_PORT))
 
     setup(app)  # Set up aiojobs scheduler
     app.on_startup.append(on_startup)
