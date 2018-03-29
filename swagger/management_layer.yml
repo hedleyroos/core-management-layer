@@ -196,6 +196,8 @@ definitions:
         readOnly: true
       parent_id:
         type: integer
+        x-related-info:
+          model: No Model
       name:
         type: string
         maxLength: 100
@@ -220,6 +222,8 @@ definitions:
     properties:
       parent_id:
         type: integer
+        x-related-info:
+          model: No Model
       name:
         type: string
         maxLength: 100
@@ -233,6 +237,8 @@ definitions:
     properties:
       parent_id:
         type: integer
+        x-related-info:
+          model: No Model
       name:
         type: string
         maxLength: 100
@@ -253,8 +259,13 @@ definitions:
       client_id:
         type: string
         format: uuid
+        x-related-info:
+          field: client_id
+          label: client_id
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       name:
         type: string
         maxLength: 100
@@ -284,8 +295,13 @@ definitions:
       client_id:
         type: string
         format: uuid
+        x-related-info:
+          field: client_id
+          label: client_id
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       name:
         type: string
         maxLength: 100
@@ -303,8 +319,13 @@ definitions:
       client_id:
         type: string
         format: uuid
+        x-related-info:
+          field: client_id
+          label: client_id
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       name:
         type: string
         maxLength: 100
@@ -371,8 +392,12 @@ definitions:
     properties:
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       grant_implicitly:
         type: boolean
       created_at:
@@ -395,8 +420,12 @@ definitions:
     properties:
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       grant_implicitly:
         type: boolean
     required:
@@ -415,8 +444,12 @@ definitions:
     properties:
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       grant_implicitly:
         type: boolean
       created_at:
@@ -439,8 +472,12 @@ definitions:
     properties:
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       grant_implicitly:
         type: boolean
     required:
@@ -460,10 +497,16 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       created_at:
         type: string
         format: 'date-time'
@@ -485,10 +528,16 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
     required:
       - user_id
       - domain_id
@@ -500,10 +549,16 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       created_at:
         type: string
         format: 'date-time'
@@ -525,10 +580,16 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
     required:
       - user_id
       - site_id
@@ -631,10 +692,16 @@ definitions:
     properties:
       role_id:
         type: integer
+        x-related-info:
+          label: label
       resource_id:
         type: integer
+        x-related-info:
+          label: urn
       permission_id:
         type: integer
+        x-related-info:
+          label: name
       created_at:
         type: string
         format: 'date-time'
@@ -655,10 +722,16 @@ definitions:
     properties:
       role_id:
         type: integer
+        x-related-info:
+          label: label
       resource_id:
         type: integer
+        x-related-info:
+          label: urn
       permission_id:
         type: integer
+        x-related-info:
+          label: name
     required:
       - role_id
       - resource_id
@@ -675,6 +748,9 @@ definitions:
         type: string
         format: uuid
         description: The user that created the invitation
+        x-related-info:
+          model: user
+          label: username
       first_name:
         type: string
         maxLength: 100
@@ -712,6 +788,9 @@ definitions:
         type: string
         format: uuid
         description: The user that created the invitation
+        x-related-info:
+          model: user
+          label: username
       first_name:
         type: string
         maxLength: 100
@@ -753,10 +832,16 @@ definitions:
       invitation_id:
         type: string
         format: uuid
+        x-related-info:
+          label: email
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       created_at:
         type: string
         format: 'date-time'
@@ -778,10 +863,16 @@ definitions:
       invitation_id:
         type: string
         format: uuid
+        x-related-info:
+          label: email
       domain_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
     required:
       - invitation_id
       - domain_id
@@ -793,10 +884,16 @@ definitions:
       invitation_id:
         type: string
         format: uuid
+        x-related-info:
+          label: email
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
       created_at:
         type: string
         format: 'date-time'
@@ -818,10 +915,16 @@ definitions:
       invitation_id:
         type: string
         format: uuid
+        x-related-info:
+          label: email
       site_id:
         type: integer
+        x-related-info:
+          label: name
       role_id:
         type: integer
+        x-related-info:
+          label: label
     required:
       - invitation_id
       - site_id
@@ -931,12 +1034,17 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       creator_id:
         type: string
         format: uuid
         readOnly: true
         description: The user making the request will be considered the creator and thus this field is not available
           when creating admin note.
+        x-related-info:
+          model: user
+          label: username
       note:
         type: string
       created_at:
@@ -961,12 +1069,17 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       creator_id:
         type: string
         format: uuid
         readOnly: true
         description: The user making the request will be considered the creator and thus this field is not available
           when creating admin note.
+        x-related-info:
+          model: user
+          label: username
       note:
         type: string
     required:
@@ -986,15 +1099,17 @@ definitions:
     properties:
       site_id:
         type: integer
+        x-related-info:
+          label: name
       schema:
         type: object
       created_at:
         type: string
-        format: 'date-time'
+        format: date-time
         readOnly: true
       updated_at:
         type: string
-        format: 'date-time'
+        format: date-time
         readOnly: true
     required:
       - site_id
@@ -1007,6 +1122,8 @@ definitions:
     properties:
       site_id:
         type: integer
+        x-related-info:
+          label: name
       schema:
         type: object
     required:
@@ -1026,11 +1143,15 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          label: name
       consented_at:
         type: string
-        format: 'date-time'
+        format: date-time
       data:
         type: object
       blocked:
@@ -1058,11 +1179,15 @@ definitions:
       user_id:
         type: string
         format: uuid
+        x-related-info:
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          label: name
       consented_at:
         type: string
-        format: date
+        format: date-time
       blocked:
         type: boolean
       data:
@@ -1077,7 +1202,7 @@ definitions:
     properties:
       consented_at:
         type: string
-        format: date
+        format: date-time
       blocked:
         type: boolean
       data:
@@ -1099,6 +1224,8 @@ definitions:
       client_id:
         description: ''
         type: string
+        x-related-info:
+          model: No Model
       contact_email:
         description: ''
         type: string
@@ -1164,7 +1291,7 @@ definitions:
       date_joined:
         description: ''
         type: string
-        format: date
+        format: date-time
         readOnly: true
       last_login:
         description: ''
@@ -1182,7 +1309,7 @@ definitions:
         type: string
       birth_date:
         type: string
-        format: date
+        format: date-time
       avatar:
         type: string
         format: uri
@@ -1235,7 +1362,7 @@ definitions:
         type: string
       birth_date:
         type: string
-        format: date
+        format: date-time
       avatar:
         type: string
         format: uri
