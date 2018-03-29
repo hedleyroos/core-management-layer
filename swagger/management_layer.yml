@@ -197,7 +197,7 @@ definitions:
       parent_id:
         type: integer
         x-related-info:
-          model: No Model
+          model: domain
       name:
         type: string
         maxLength: 100
@@ -223,7 +223,7 @@ definitions:
       parent_id:
         type: integer
         x-related-info:
-          model: No Model
+          model: domain
       name:
         type: string
         maxLength: 100
@@ -238,7 +238,7 @@ definitions:
       parent_id:
         type: integer
         x-related-info:
-          model: No Model
+          model: domain
       name:
         type: string
         maxLength: 100
@@ -261,7 +261,7 @@ definitions:
         format: uuid
         x-related-info:
           field: client_id
-          label: client_id
+          label: name
       domain_id:
         type: integer
         x-related-info:
@@ -297,7 +297,7 @@ definitions:
         format: uuid
         x-related-info:
           field: client_id
-          label: client_id
+          label: name
       domain_id:
         type: integer
         x-related-info:
@@ -321,7 +321,7 @@ definitions:
         format: uuid
         x-related-info:
           field: client_id
-          label: client_id
+          label: name
       domain_id:
         type: integer
         x-related-info:
@@ -1105,11 +1105,11 @@ definitions:
         type: object
       created_at:
         type: string
-        format: date-time
+        format: 'date-time'
         readOnly: true
       updated_at:
         type: string
-        format: date-time
+        format: 'date-time'
         readOnly: true
     required:
       - site_id
@@ -1151,7 +1151,7 @@ definitions:
           label: name
       consented_at:
         type: string
-        format: date-time
+        format: date
       data:
         type: object
       blocked:
@@ -1187,7 +1187,7 @@ definitions:
           label: name
       consented_at:
         type: string
-        format: date-time
+        format: date
       blocked:
         type: boolean
       data:
@@ -1202,7 +1202,7 @@ definitions:
     properties:
       consented_at:
         type: string
-        format: date-time
+        format: date
       blocked:
         type: boolean
       data:
@@ -1225,7 +1225,7 @@ definitions:
         description: ''
         type: string
         x-related-info:
-          model: No Model
+          model: null
       contact_email:
         description: ''
         type: string
@@ -1291,7 +1291,7 @@ definitions:
       date_joined:
         description: ''
         type: string
-        format: date-time
+        format: date
         readOnly: true
       last_login:
         description: ''
@@ -1309,7 +1309,7 @@ definitions:
         type: string
       birth_date:
         type: string
-        format: date-time
+        format: date
       avatar:
         type: string
         format: uri
@@ -1362,7 +1362,7 @@ definitions:
         type: string
       birth_date:
         type: string
-        format: date-time
+        format: date
       avatar:
         type: string
         format: uri
