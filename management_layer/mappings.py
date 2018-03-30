@@ -59,6 +59,8 @@ T = TypeVar("T")
 
 TIMING_LOG_LEVEL = logging.INFO
 
+MAPPING_DATA_LIMIT = 100
+
 
 async def _load(
     api_call: Callable[..., Awaitable[List[T]]],
@@ -78,33 +80,32 @@ async def _load(
     :return: A tuple containing the an id->entity map, as well as a str->id
         mapping.
     """
-    # TODO: Obviously a big hack until I can sort out the actual problem
-    return {}, {}
-
+    items_by_id = {}  # type: Dict[int, T]
     items = None if nocache else await memcache.get(key)
-    if not items:
-        logger.debug("Loading from API")
-        items_by_id = {}  # type: Dict[int, T]
-        offset = 0
-        # TODO: Sort out the bug regarding calling the `api_call` more than once
-        limit = 1
-        while True:
-            items = await api_call(offset=offset, limit=limit)
-            if items:
-                for item in items:
-                    items_by_id[item.id] = transform.apply(item.to_dict())
-                # Check if there are more items
-                if len(items) < limit:
-                    # We got less than we asked for, so no more to process.
-                    break
-                else:
-                    offset += limit
-            else:
-                break
-        await memcache.set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
-    else:
-        logger.debug("Loaded from cache")
+    if items:
         items_by_id = json.loads(items, encoding="utf8")
+        logger.debug(f"Loaded {len(items_by_id)} definitions from cache")
+    else:
+        offset = 0
+        while True:
+            items = await api_call(offset=offset, limit=MAPPING_DATA_LIMIT)
+            if not items:
+                # We got no results back, so we can break.
+                break
+
+            for item in items:
+                items_by_id[item.id] = transform.apply(item.to_dict())
+
+            if len(items) < MAPPING_DATA_LIMIT:
+                # We got less results than we asked for which implies there are no more,
+                # so we can break.
+                break
+
+            # Call API again with new offset
+            offset += MAPPING_DATA_LIMIT
+
+        await memcache.set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
+        logger.debug(f"Loaded {len(items_by_id)} definitions from the API")
 
     name_to_id_map = {
         item[name_field]: id_ for id_, item in items_by_id.items()
@@ -181,10 +182,11 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
         Mappings.site_client_id_to_id_map = {
             detail["client_id"]: id_ for id_, detail in Mappings.sites.items()
         }
-        Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
     except Exception as e:
         sentry.captureException()
         logger.error(e)
+
+    Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
 
 # @timeit(TIMING_LOG_LEVEL)
 # async def refresh_sites(app: web.Application, nocache: bool=False):
