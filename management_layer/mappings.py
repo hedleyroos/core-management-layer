@@ -188,58 +188,6 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
 
     Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
 
-# @timeit(TIMING_LOG_LEVEL)
-# async def refresh_sites(app: web.Application, nocache: bool=False):
-#     """Refresh the sites information"""
-#     logger.info("Refreshing sites")
-#     try:
-#         key = bytes(f"{__name__}:sites", encoding="utf8")
-#
-#         items = None if nocache else await app["memcache"].get(key)
-#         if not items:
-#             logger.debug("Loading from API")
-#             items_by_id = {}  # type: Dict[int, T]
-#             offset = 0
-#             # TODO: Sort out the bug regarding calling the `api_call` more than once
-#             limit = 1
-#             while True:
-#                 successful_api_call = False
-#                 while not successful_api_call:
-#                     try:
-#                         items = await app["access_control_api"].site_list(offset=offset, limit=limit)
-#                         successful_api_call = True
-#                     except Exception as e:
-#                         logger.error(str(e))
-#
-#                 if items:
-#                     for item in items:
-#                         items_by_id[item.id] = transformations.SITE.apply(item.to_dict())
-#                     # Check if there are more items
-#                     if len(items) < limit:
-#                         # We got less than we asked for, so no more to process.
-#                         break
-#                     else:
-#                         offset += limit
-#                 else:
-#                     break
-#             await app["memcache"].set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
-#         else:
-#             logger.debug("Loaded from cache")
-#             items_by_id = json.loads(items, encoding="utf8")
-#
-#         name_to_id_map = {
-#             item["name"]: id_ for id_, item in items_by_id.items()
-#         }  # type: Dict[str, int]
-#
-#         Mappings.sites = items_by_id
-#         Mappings.site_name_to_id_map = name_to_id_map
-#         Mappings.site_client_id_to_id_map = {
-#             detail["client_id"]: id_ for id_, detail in Mappings.sites.items()
-#         }
-#         Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
-#     except Exception as e:
-#         logger.error(str(e))
-
 
 @timeit(TIMING_LOG_LEVEL)
 async def refresh_all(app: web.Application, nocache: bool=False):
