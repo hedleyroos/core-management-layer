@@ -19,7 +19,7 @@ from parameterized import parameterized
 import access_control
 import authentication_service
 import user_data_store
-from management_layer.constants import TECH_ADMIN
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.middleware import auth_middleware
 from management_layer.tests import make_coroutine_returning
 from user_data_store import UserDataApi
@@ -245,7 +245,7 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch.multiple("management_layer.mappings.Mappings",
                 site_client_id_to_id_map={os.environ["JWT_AUDIENCE"]: 1})
 @patch("management_layer.permission.utils.get_user_roles_for_site",
-       Mock(side_effect=make_coroutine_returning([TECH_ADMIN])))
+       Mock(side_effect=make_coroutine_returning([TECH_ADMIN_ROLE_LABEL])))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py

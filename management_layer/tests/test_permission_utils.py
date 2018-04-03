@@ -13,7 +13,7 @@ from aiohttp.web_exceptions import HTTPForbidden
 import management_layer.constants
 import management_layer.permission
 from access_control import RoleResourcePermission, AccessControlApi, OperationalApi
-from management_layer.constants import TECH_ADMIN
+from management_layer.constants import TECH_ADMIN_ROLE_ID
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions
 
@@ -96,7 +96,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         def empty_any(_request):
             return "You must be a tech admin"
 
-        mocked_function.side_effect = make_coroutine_returning(["some_role"])
+        mocked_function.side_effect = make_coroutine_returning({0})  # An arbitrary id
 
         # Always gets allowed, regardless of the user's roles
         self.assertTrue(await empty_all(self.dummy_request))
@@ -105,7 +105,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         with self.assertRaises(HTTPForbidden):
             await empty_any(self.dummy_request)
 
-        mocked_function.side_effect = make_coroutine_returning([TECH_ADMIN])
+        mocked_function.side_effect = make_coroutine_returning({TECH_ADMIN_ROLE_ID})
         self.assertEqual(await empty_any(self.dummy_request),
                          "You must be a tech admin")
 
@@ -169,7 +169,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         def reverse_stack(_request):
             raise RuntimeError("This should never get executed")
 
-        mocked_function.return_value = ["some_role"]
+        mocked_function.return_value = {1000}  # An arbitrary id
 
         with self.assertRaises(HTTPForbidden):
             await stack(self.dummy_request)
@@ -197,8 +197,8 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         async def dummy_get_role_resource_permissions(_request, role, resource, nocache=False):
             # Return hand-crafted responses for this test.
             responses = {
-                ("role1", "urn:resource1"): [1],
-                ("role2", "urn:resource2"): [2],
+                (1, "urn:resource1"): [1],
+                (2, "urn:resource2"): [2],
             }
             return responses.get((role, resource), [])
 
@@ -213,19 +213,19 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # mocks the roles returned.
 
         # If the user has no roles, then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({})
         with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
         self.assertTrue(await single_requirement(self.dummy_request))
 
         @require_permissions(all, [("urn:resource1", "permission1"),
@@ -263,8 +263,8 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         async def dummy_get_role_resource_permissions(_request, role, resource, nocache=False):
             # Return hand-crafted responses for this test.
             responses = {
-                ("role1", "urn:resource1"): [1],
-                ("role2", "urn:resource2"): [2],
+                (1, "urn:resource1"): [1],
+                (2, "urn:resource2"): [2],
             }
             return responses.get((role, resource), [])
 
@@ -279,19 +279,19 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # mocks the roles returned.
 
         # If the user has no roles, then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({})
         with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
             await single_requirement(self.dummy_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
         self.assertTrue(await single_requirement(self.dummy_request))
 
         @require_permissions(any, [("urn:resource1", "permission1"),
@@ -341,9 +341,9 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         async def dummy_get_role_resource_permissions(_request, role, resource, nocache=False):
             # Return hand-crafted responses for this test.
             responses = {
-                ("role1", "urn:resource1"): [1],
-                ("role2", "urn:resource2"): [2],
-                ("role3", "urn:resource3"): [3],
+                (1, "urn:resource1"): [1],
+                (2, "urn:resource2"): [2],
+                (3, "urn:resource3"): [3],
             }
             return responses.get((role, resource), [])
 
@@ -360,34 +360,34 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # mocks the roles returned.
 
         # If the user has no roles, then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning([])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({})
         with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         # If the user has roles partially fulfilling the required permissions,
         # then access is denied.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
         with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role3"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({3})
         with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2", "role3"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2, 3})
         with self.assertRaises(HTTPForbidden):
             await combo_requirement(self.dummy_request)
 
         # If the user has roles with the necessary permissions,
         # then access is allowed.
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1", "role2"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1, 2})
         self.assertTrue(await combo_requirement(self.dummy_request))
 
-        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1", "role3"])
+        mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1, 3})
         self.assertTrue(await combo_requirement(self.dummy_request))
 
 
@@ -540,7 +540,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertTrue(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], all,
+                    {"role1", "role2"}, all,
                     [("urn:resource1", "permission1")],
                     nocache
                 )
@@ -549,7 +549,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], all,
+                    {"role1", "role2"}, all,
                     [("urn:resource1", "permission2")],
                     nocache
                 )
@@ -558,7 +558,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], all,
+                    {"role1", "role2"}, all,
                     [("urn:resource2", "permission1")],
                     nocache
                 )
@@ -568,7 +568,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertTrue(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]}, all,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission1"])],
                     nocache
@@ -578,7 +578,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]}, all,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission2"])],
                     nocache
@@ -588,7 +588,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]}, all,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource2"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission1"])],
                     nocache
@@ -601,7 +601,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertTrue(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], any,
+                    {"role1", "role2"}, any,
                     [("urn:resource1", "permission1"),
                      ("urn:resource3", "permission3")],
                     nocache
@@ -611,7 +611,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], any,
+                    {"role1", "role2"}, any,
                     [("urn:resource3", "permission3"),
                      ("urn:resource4", "permission4")],
                     nocache
@@ -621,7 +621,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    ["role1", "role2"], any,
+                    {"role1", "role2"}, any,
                     [("urn:resource2", "permission1")],
                     nocache
                 )
@@ -631,7 +631,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertTrue(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], any,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]}, any,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]),
                      (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
@@ -643,7 +643,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]}, all,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission3"]),
                      (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource4"],
@@ -655,7 +655,8 @@ class TestUtils(AioHTTPTestCase):
             self.assertFalse(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]], all,
+                    {TEST_ROLE_LABEL_TO_ID_MAP["role1"], TEST_ROLE_LABEL_TO_ID_MAP["role2"]},
+                    all,
                     [(TEST_RESOURCE_URN_TO_ID_MAP["urn:resource1"],
                       TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]),
                      (TEST_RESOURCE_URN_TO_ID_MAP["urn:resource3"],
@@ -670,7 +671,7 @@ class TestUtils(AioHTTPTestCase):
             self.assertTrue(
                 await utils.roles_have_permissions(
                     self.dummy_request,
-                    [management_layer.constants.TECH_ADMIN], operator,
+                    {TECH_ADMIN_ROLE_ID}, operator,
                     [("urn:resource{}".format(i),
                       "permission{}".format(i)) for i in range(1, 11)],
                     nocache
@@ -701,8 +702,8 @@ class TestUtils(AioHTTPTestCase):
             resource_id = resource if type(resource) is int else \
                 TEST_RESOURCE_URN_TO_ID_MAP[resource]
             responses = {
-                (1, 1): [TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]],
-                (2, 2): [TEST_PERMISSION_NAME_TO_ID_MAP["permission2"]]
+                (1, 1): {TEST_PERMISSION_NAME_TO_ID_MAP["permission1"]},
+                (2, 2): {TEST_PERMISSION_NAME_TO_ID_MAP["permission2"]}
             }
             return responses.get((role_id, resource_id), [])
 
