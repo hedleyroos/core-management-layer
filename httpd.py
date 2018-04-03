@@ -13,7 +13,7 @@ import authentication_service
 import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
-from management_layer.constants import TECH_ADMIN
+from management_layer.constants import TECH_ADMIN_ROLE_ID
 from management_layer.mappings import refresh_all
 from management_layer.middleware import auth_middleware, sentry_middleware
 from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT, MAPPING_REFRESH_SLEEP_SECONDS
@@ -54,7 +54,7 @@ async def on_shutdown(app):
 
 
 async def mocked_return(_request, _user_id, _site_id, nocache=False):
-    return [TECH_ADMIN]
+    return [TECH_ADMIN_ROLE_ID]
 
 
 if __name__ == "__main__":
