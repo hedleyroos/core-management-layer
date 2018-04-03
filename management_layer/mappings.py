@@ -30,6 +30,7 @@ import aiomcache
 from aiohttp import web
 
 from management_layer import transformations
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL, TECH_ADMIN_ROLE_ID
 from management_layer.settings import CACHE_TIME
 from management_layer.sentry import sentry
 from management_layer.utils import timeit
@@ -42,14 +43,20 @@ class Mappings:
     domains = {}  # type: Dict[int, Dict]
     permissions = {}  # type: Dict[int, Dict]
     resources = {}  # type: Dict[int, Dict]
-    roles = {}  # type: Dict[int, Dict]
+    roles = {
+        TECH_ADMIN_ROLE_ID: {
+            "label": TECH_ADMIN_ROLE_LABEL
+        }
+    }  # type: Dict[int, Dict]
     sites = {}  # type: Dict[int, Dict]
 
     # Name/label to id mappings.
     domain_name_to_id_map = {}  # type: Dict[str, int]
     permission_name_to_id_map = {}  # type: Dict[str, int]
     resource_urn_to_id_map = {}  # type: Dict[str, int]
-    role_label_to_id_map = {}  # type: Dict[str, int]
+    role_label_to_id_map = {
+        TECH_ADMIN_ROLE_LABEL: TECH_ADMIN_ROLE_ID
+    }  # type: Dict[str, int]
     site_name_to_id_map = {}  # type: Dict[str, int]
     site_client_id_to_id_map = {}  # type: Dict[str, int]
 
@@ -168,6 +175,9 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
     except Exception as e:
         sentry.captureException()
         logger.error(e)
+
+    Mappings.roles[TECH_ADMIN_ROLE_ID] = {"label": TECH_ADMIN_ROLE_LABEL}
+    Mappings.role_label_to_id_map[TECH_ADMIN_ROLE_LABEL] = TECH_ADMIN_ROLE_ID
 
 
 @timeit(TIMING_LOG_LEVEL)
