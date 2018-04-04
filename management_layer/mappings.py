@@ -40,11 +40,11 @@ logger = logging.getLogger(__name__)
 
 class Mappings:
     # Internal copies of definitions. These are mappings of ids to dictionaries.
-    _domains = {}  # type: Dict[int, Dict]
-    _permissions = {}  # type: Dict[int, Dict]
-    _resources = {}  # type: Dict[int, Dict]
-    _roles = {}  # type: Dict[int, Dict]
-    _sites = {}  # type: Dict[int, Dict]
+    _domains = {}  # type: Dict[int, Dict] (refer to transformations.DOMAIN for more detail)
+    _permissions = {}  # type: Dict[int, Dict] (refer to transformations.PERMISSION for more detail)
+    _resources = {}  # type: Dict[int, Dict] (refer to transformations.RESOURCE for more detail)
+    _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
+    _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
 
     # Name/label to id mappings.
     _domain_name_to_id_map = {}  # type: Dict[str, int]
@@ -55,7 +55,7 @@ class Mappings:
     _site_client_id_to_id_map = {}  # type: Dict[str, int]
 
     @classmethod
-    def domain_id_for(cls, name: str):
+    def domain_id_for(cls, name: str) -> int:
         try:
             return cls._domain_name_to_id_map[name]
         except KeyError:
@@ -63,7 +63,7 @@ class Mappings:
             raise
 
     @classmethod
-    def domain_name_for(cls, domain_id: int):
+    def domain_name_for(cls, domain_id: int) -> str:
         try:
             return cls._domains[domain_id]["name"]
         except KeyError:
@@ -71,7 +71,7 @@ class Mappings:
             raise
 
     @classmethod
-    def permission_id_for(cls, name: str):
+    def permission_id_for(cls, name: str) -> int:
         try:
             return cls._permission_name_to_id_map[name]
         except KeyError:
@@ -79,7 +79,7 @@ class Mappings:
             raise
 
     @classmethod
-    def permission_name_for(cls, permission_id: int):
+    def permission_name_for(cls, permission_id: int) -> str:
         try:
             return cls._permissions[permission_id]["name"]
         except KeyError:
@@ -87,7 +87,7 @@ class Mappings:
             raise
 
     @classmethod
-    def resource_id_for(cls, urn: str):
+    def resource_id_for(cls, urn: str) -> int:
         try:
             return cls._resource_urn_to_id_map[urn]
         except KeyError:
@@ -95,7 +95,7 @@ class Mappings:
             raise
 
     @classmethod
-    def resource_urn_for(cls, resource_id: int):
+    def resource_urn_for(cls, resource_id: int) -> str:
         try:
             return cls._resources[resource_id]["urn"]
         except KeyError:
@@ -103,7 +103,7 @@ class Mappings:
             raise
 
     @classmethod
-    def role_id_for(cls, label: str):
+    def role_id_for(cls, label: str) -> int:
         try:
             return cls._role_label_to_id_map[label]
         except KeyError:
@@ -111,7 +111,7 @@ class Mappings:
             raise
 
     @classmethod
-    def role_label_for(cls, role_id: int):
+    def role_label_for(cls, role_id: int) -> str:
         try:
             return cls._roles[role_id]["label"]
         except KeyError:
@@ -119,7 +119,7 @@ class Mappings:
             raise
 
     @classmethod
-    def site_id_for(cls, client_id: str):
+    def site_id_for(cls, client_id: str) -> int:
         try:
             return cls._site_client_id_to_id_map[client_id]
         except KeyError:
@@ -127,7 +127,7 @@ class Mappings:
             raise
 
     @classmethod
-    def site_name_for(cls, site_id: int):
+    def site_name_for(cls, site_id: int) -> str:
         try:
             return cls._sites[site_id]["name"]
         except KeyError:

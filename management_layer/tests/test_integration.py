@@ -102,9 +102,9 @@ def setUpModule():
     workdir = os.getenv("TRAVIS_BUILD_DIR", ".")
     global _MOCKED_ACCESS_CONTROL_API
     cmd = _PRISM_COMMAND.format(
-        workdir,  "swagger/access_control.yml", ACCESS_CONTROL_PORT
+        workdir, "swagger/access_control.yml", ACCESS_CONTROL_PORT
     )
-    LOGGER.info("Starting mock server using: {}".format(cmd))
+    LOGGER.info(f"Starting mock server using: {cmd}")
     _MOCKED_ACCESS_CONTROL_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         close_fds=True, shell=False
@@ -114,7 +114,7 @@ def setUpModule():
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/authentication_service.yml", AUTHENTICATION_SERVICE_PORT
     )
-    LOGGER.info("Starting mock server using: {}".format(cmd))
+    LOGGER.info(f"Starting mock server using: {cmd}")
     _MOCKED_AUTHENTICATION_SERVICE_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         close_fds=True, shell=False
@@ -124,7 +124,7 @@ def setUpModule():
     cmd = _PRISM_COMMAND.format(
         workdir, "swagger/user_data_store.yml", USER_DATA_STORE_PORT
     )
-    LOGGER.info("Starting mock server using: {}".format(cmd))
+    LOGGER.info(f"Starting mock server using: {cmd}")
     _MOCKED_USER_DATA_STORE_API = subprocess.Popen(
         cmd.split(), stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         close_fds=True, shell=False
@@ -201,7 +201,7 @@ def clean_response_data(data):
 
     for k, v in data.items():
         if v is None:
-            print("Removing field {} from response because it is None")
+            LOGGER.debug(f"Removing field {k} from response because it is None")
 
     return {k: v for k, v in data.items() if v is not None}
 
@@ -304,7 +304,7 @@ class IntegrationTest(AioHTTPTestCase):
         app = web.Application(loop=self.loop, middlewares=[auth_middleware])
 
         user_data_store_configuration = user_data_store.configuration.Configuration()
-        user_data_store_configuration.host = "http://localhost:{}/api/v1".format(USER_DATA_STORE_PORT)
+        user_data_store_configuration.host = f"http://localhost:{USER_DATA_STORE_PORT}/api/v1"
         app["user_data_api"] = UserDataApi(
             api_client=user_data_store.ApiClient(
                 configuration=user_data_store_configuration
@@ -312,7 +312,7 @@ class IntegrationTest(AioHTTPTestCase):
         )
 
         access_control_configuration = access_control.configuration.Configuration()
-        access_control_configuration.host = "http://localhost:{}/api/v1".format(ACCESS_CONTROL_PORT)
+        access_control_configuration.host = f"http://localhost:{ACCESS_CONTROL_PORT}/api/v1"
         app["access_control_api"] = access_control.api.AccessControlApi(
             api_client=access_control.ApiClient(
                 configuration=access_control_configuration
@@ -329,7 +329,7 @@ class IntegrationTest(AioHTTPTestCase):
         )
 
         authentication_service_configuration = authentication_service.configuration.Configuration()
-        authentication_service_configuration.host = "http://localhost:{}/api/v1".format(AUTHENTICATION_SERVICE_PORT)
+        authentication_service_configuration.host = f"http://localhost:{AUTHENTICATION_SERVICE_PORT}/api/v1"
         app["authentication_service_api"] = authentication_service.api.AuthenticationApi(
             api_client=authentication_service.ApiClient(
                 configuration=authentication_service_configuration
@@ -347,7 +347,7 @@ class IntegrationTest(AioHTTPTestCase):
     @unittest_run_loop
     async def test_list(self, resource, info):
         # Default call
-        response = await self.client.get("/{}".format(resource))
+        response = await self.client.get(f"/{resource}")
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -355,7 +355,7 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
-        response = await self.client.get("/{}?offset=1&limit=10".format(resource))
+        response = await self.client.get(f"/{resource}?offset=1&limit=10")
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -363,7 +363,7 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With arguments
-        response = await self.client.get("/{}?foo=bar".format(resource))
+        response = await self.client.get(f"/{resource}?foo=bar")
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -371,12 +371,12 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertIn(_TOTAL_COUNT_HEADER, response.headers)
 
         # With bad arguments
-        response = await self.client.get("/{}?offset=a".format(resource))
+        response = await self.client.get(f"/{resource}?offset=a")
         await self.assertStatus(response, 400)
 
         # Quick check that CORS is working
         response = await self.client.request(
-            "OPTIONS", "/{}?offset=1&limit=10".format(resource),
+            "OPTIONS", f"/{resource}?offset=1&limit=10",
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "GET"
@@ -385,7 +385,7 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 200)
 
         response = await self.client.request(
-            "OPTIONS", "/{}?offset=1&limit=10".format(resource),
+            "OPTIONS", f"/{resource}?offset=1&limit=10",
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "DELETE"
@@ -402,7 +402,7 @@ class IntegrationTest(AioHTTPTestCase):
             return
 
         data = get_test_data(info.create_schema)
-        response = await self.client.post("/{}".format(resource), data=json.dumps(data))
+        response = await self.client.post(f"/{resource}", data=json.dumps(data))
         await self.assertStatus(response, 201)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
@@ -410,7 +410,7 @@ class IntegrationTest(AioHTTPTestCase):
 
         # Quick check that CORS is working
         response = await self.client.request(
-            "OPTIONS", "/{}".format(resource),
+            "OPTIONS", f"/{resource}",
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "POST"
