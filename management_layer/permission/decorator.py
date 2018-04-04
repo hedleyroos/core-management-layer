@@ -11,10 +11,10 @@ from functools import wraps
 
 from aiohttp.web_exceptions import HTTPForbidden
 
-from management_layer.constants import TECH_ADMIN_ROLE_ID
-from management_layer.permission.utils import Operator, ResourcePermissions, \
-    user_has_permissions, get_user_roles_for_domain, get_user_roles_for_site
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.permission.utils import Operator, ResourcePermissions
 from management_layer.mappings import Mappings
+from management_layer.permission import utils
 
 logger = logging.getLogger(__name__)
 
@@ -100,13 +100,13 @@ def require_permissions(
             :return: Whatever the wrapped function
             """
             # Extract the request from the function arguments
-            request = get_value_from_args_or_kwargs(request_field, args, kwargs)
+            request = _get_value_from_args_or_kwargs(request_field, args, kwargs)
 
-            user_id, site_id = get_user_and_site(request)
+            user_id, site_id = _get_user_and_site(request)
 
-            allowed = await user_has_permissions(
+            allowed = await utils.user_has_permissions(
                 request, user_id, operator, resource_permissions,
-                site=site_id, nocache=nocache,
+                site=site_id, nocache=nocache
             )
             if allowed:
                 if asyncio.iscoroutinefunction(f):
@@ -124,13 +124,13 @@ def require_permissions(
 
 
 def requester_has_role(
-        nocache: bool = False,
-        request_field: typing.Union[int, str] = 0,
-        body_field: typing.Union[int, str] = None,
-        target_user_id_field: typing.Union[int, str] = None,
-        role_id_field: typing.Union[int, str] = None,
-        domain_id_field: typing.Union[int, str] = None,
-        site_id_field: typing.Union[int, str] = None
+    request_field: typing.Union[int, str] = 0,
+    body_field: typing.Union[int, str] = None,
+    target_user_id_field: typing.Union[int, str] = None,
+    role_id_field: typing.Union[int, str] = None,
+    domain_id_field: typing.Union[int, str] = None,
+    site_id_field: typing.Union[int, str] = None,
+    nocache: bool = False,
 ) -> typing.Callable:
     """
     This function is used as a decorator to protect functions that add and remove roles on
@@ -160,7 +160,6 @@ def requester_has_role(
     result = await doSomething(request, body)  # Decorator change function to coroutine
     ```
 
-    :param nocache: Bypass the cache if True
     :param request_field: An integer or string identifying either the positional
         argument or the name of the keyword argument identifying the request parameter.
     :param body_field: An integer or string identifying either the positional
@@ -176,6 +175,7 @@ def requester_has_role(
         or the name of the keyword argument identifying the domain_id field.
     :param site_id_field: An integer or string identifying either the positional argument
         or the name of the keyword argument identifying the site_id field.
+    :param nocache: Bypass the cache if True
     :raises: Forbidden if the user does not have the role that is being invoked or revoked.
     """
 
@@ -188,19 +188,24 @@ def requester_has_role(
             :return: Whatever the wrapped function
             """
             # Extract the request from the function arguments
-            request = get_value_from_args_or_kwargs(request_field, args, kwargs)
+            request = _get_value_from_args_or_kwargs(request_field, args, kwargs)
 
-            user_id, site_id = get_user_and_site(request)
+            user_id, token_site_id = _get_user_and_site(request)
 
-            # Extract the user_id for which a role must be a assigned/revoked
-            target_user_id = get_value_from_args_or_kwargs(target_user_id_field, args, kwargs)
+            # The decorator need to get the values for the following variables from the
+            # decorated function.
+            role_id = None
+            target_user_id = None
+            domain_id = None
+            site_id = None
 
             if body_field is not None:
-                body = get_value_from_args_or_kwargs(body_field, args, kwargs)
+                body = _get_value_from_args_or_kwargs(body_field, args, kwargs)
 
-                # When the body is specified, the xxx_field arguments must be the names of the
-                # fields in the body dictionary.
+                # When body_field is specified, the xxx_field arguments must be the names of the
+                # fields in the body dictionary or None, in which case the defaults will be used.
                 role_id = body[role_id_field or "role_id"]
+                target_user_id = body[target_user_id_field or "user_id"]
                 # We expect either a domain_id or a site_id to be provided
                 domain_id = body.get(domain_id_field or "domain_id")
                 site_id = body.get(site_id_field or "site_id")
@@ -208,33 +213,48 @@ def requester_has_role(
                         domain_id is not None and site_id is not None:
                     raise RuntimeError("Either a domain_id or site_id needs to exist in the body")
             else:
-                # If a body is not specified, the rest of the arguments are considered to be
+                # If the body_field is not specified, the rest of the arguments are considered to be
                 # positional arguments.
-                role_id = get_value_from_args_or_kwargs(role_id_field, args, kwargs)
+                role_id = _get_value_from_args_or_kwargs(role_id_field, args, kwargs)
                 if domain_id_field is None and site_id_field is None or \
                         domain_id_field is not None and site_id_field is not None:
                     raise RuntimeError("Either a domain_id_field or site_id_field needs to defined")
 
                 if domain_id_field:
-                    domain_id = get_value_from_args_or_kwargs(domain_id_field, args, kwargs)
+                    domain_id = _get_value_from_args_or_kwargs(domain_id_field, args, kwargs)
                 else:
-                    site_id = get_value_from_args_or_kwargs(site_id_field, args, kwargs)
+                    site_id = _get_value_from_args_or_kwargs(site_id_field, args, kwargs)
+
+                # Extract the user_id for which a role must be a assigned/revoked
+                target_user_id = _get_value_from_args_or_kwargs(target_user_id_field, args, kwargs)
 
             if domain_id:
-                user_roles = await get_user_roles_for_domain(request, user_id, domain_id, nocache)
+                user_roles = await utils.get_user_roles_for_domain(request, user_id, domain_id,
+                                                                   nocache)
             else:  # Use site_id
-                user_roles = await get_user_roles_for_site(request, user_id, site_id, nocache)
+                user_roles = await utils.get_user_roles_for_site(request, user_id, site_id, nocache)
 
             # If the user roles contains the one we want to assign or Tech Admin, we allow
             # the call to proceed.
-            if user_roles.intersection([role_id, TECH_ADMIN_ROLE_ID]):
+            if user_roles.intersection([role_id, Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)]):
                 if asyncio.iscoroutinefunction(f):
                     return await f(*args, **kwargs)
                 else:
                     return f(*args, **kwargs)
 
+            log_message = f"User {user_id} cannot assign role {Mappings.role_label_for(role_id)}" \
+                          f" to target user {target_user_id} on "
+            if domain_id:
+                log_message += f"domain {Mappings.domain_name_for(domain_id)} "
+            else:
+                log_message += f"site {Mappings.site_name_for(site_id)} "
+
+            log_message += f"because it does not have the role or {TECH_ADMIN_ROLE_LABEL} itself."
+
+            logger.debug(log_message)
+
             raise HTTPForbidden(body=json.dumps({
-                "message": "Forbidden"
+                "message": log_message
             }))
 
         return wrapped_f
@@ -242,7 +262,7 @@ def requester_has_role(
     return wrap
 
 
-def get_value_from_args_or_kwargs(
+def _get_value_from_args_or_kwargs(
         argument_identifier: typing.Union[int, str],
         args: typing.Tuple[typing.Any, ...], kwargs: dict
 ):
@@ -263,7 +283,7 @@ def get_value_from_args_or_kwargs(
     raise RuntimeError("Invalid value for argument identifier")
 
 
-def get_user_and_site(request):
+def _get_user_and_site(request):
     """
     A request contains the JWT token payload from which we get
     * the user id from the "sub" (subscriber) field
@@ -276,10 +296,12 @@ def get_user_and_site(request):
     user_id = uuid.UUID(request["token"]["sub"])
     # Extract the client id from the request
     client_id = request["token"]["aud"]
-    if client_id not in Mappings.site_client_id_to_id_map:
+
+    try:
+        site_id = Mappings.site_id_for(client_id)
+    except KeyError:
         raise HTTPForbidden(body=json.dumps({
             "message": f"No site linked to the client '{client_id}'"
         }))
 
-    site_id = Mappings.site_client_id_to_id_map[client_id]
     return user_id, site_id

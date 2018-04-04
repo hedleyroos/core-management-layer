@@ -6,18 +6,21 @@ Permissions are based on the roles assigned to the user making the request,
 which maps to permissions on resources.
 """
 import json
+import logging
 import typing
 from uuid import UUID
 
 from aiohttp.web import Request
 
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
-    MKP_USER_ROLES, TECH_ADMIN_ROLE_ID
+    MKP_USER_ROLES, TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import Mappings
 from management_layer.settings import CACHE_TIME
 
 # Convenience types
 from management_layer.utils import client_exception_handler
+
+logger = logging.getLogger(__name__)
 
 UserId = type(UUID)
 SiteId = int
@@ -49,7 +52,7 @@ async def role_has_permission(
     """
     result = False
     permission_id = permission if type(permission) is int else \
-        Mappings.permission_name_to_id_map[permission]
+        Mappings.permission_id_for(permission)
 
     permission_ids = await get_role_resource_permissions(request, role, resource, nocache=nocache)
     if permission_ids:
@@ -90,9 +93,9 @@ async def roles_have_permissions(
         raise RuntimeError("The operator must be all or any")
 
     # Normalise to ids
-    roles = {role if type(role) is int else Mappings.role_label_to_id_map[role] for role in roles}
+    roles = {role if type(role) is int else Mappings.role_id_for(role) for role in roles}
 
-    if TECH_ADMIN_ROLE_ID in roles:
+    if Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL) in roles:
         return True
 
     # This code snippet was originally used before the utility functions were changed
@@ -108,7 +111,7 @@ async def roles_have_permissions(
     for resource, permission in resource_permissions:
         some_role_has_the_permission = False
         for role in roles:
-            if await role_has_permission(request, role, permission, resource, nocache):
+            if await role_has_permission(request, role, permission, resource, nocache=nocache):
                 some_role_has_the_permission = True
                 break  # No need to look further
 
@@ -166,7 +169,7 @@ async def user_has_permissions(
 async def get_user_roles_for_site_or_domain(
     request: Request, user: UserId,
     site: SiteId = None, domain: Domain = None, nocache: bool = False
-) -> typing.List[Role]:
+) -> typing.Set[int]:
     """
     Get the roles assigned to the user for the specified site or domain.
     Either a site or a domain needs to be specified.
@@ -184,9 +187,9 @@ async def get_user_roles_for_site_or_domain(
         raise RuntimeError("Either a site or a domain needs to be provided")
 
     if domain:
-        result = await get_user_roles_for_domain(request, user, domain, nocache)
+        result = await get_user_roles_for_domain(request, user, domain, nocache=nocache)
     else:
-        result = await get_user_roles_for_site(request, user, site, nocache)
+        result = await get_user_roles_for_site(request, user, site, nocache=nocache)
 
     return result
 
@@ -205,9 +208,9 @@ async def get_role_resource_permissions(
     :param nocache: Bypass the cache if True
     :return: A list of permission ids
     """
-    role_id = role if type(role) is int else Mappings.role_label_to_id_map[role]
+    role_id = role if type(role) is int else Mappings.role_id_for(role)
     resource_id = resource if type(resource) is int else \
-        Mappings.resource_urn_to_id_map[resource]
+        Mappings.resource_id_for(resource)
 
     key = bytes(f"{MKP_ROLE_RESOURCE_PERMISSION}:{role_id}:{resource_id}",
                 encoding="utf8")
@@ -304,7 +307,7 @@ async def get_user_roles_for_domain(
     :param nocache: Bypass the cache if True
     :return: A set of role ids
     """
-    domain_id = domain if type(domain) is int else Mappings.domain_name_to_id_map[domain]
+    domain_id = domain if type(domain) is int else Mappings.domain_id_for(domain)
 
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the domain key. Return an
@@ -325,7 +328,7 @@ async def get_user_roles_for_site(
     :param nocache: Bypass the cache if True
     :return: A set of role ids
     """
-    site_id = site if type(site) is int else Mappings.site_name_to_id_map[site]
+    site_id = site if type(site) is int else Mappings.site_id_for(site)
 
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the site key. Return an

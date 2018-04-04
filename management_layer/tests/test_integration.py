@@ -1,4 +1,6 @@
 import json
+
+import aiomcache
 import jsonschema
 import logging
 import os
@@ -20,6 +22,7 @@ import access_control
 import authentication_service
 import user_data_store
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.mappings import Mappings, return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
 from management_layer.tests import make_coroutine_returning
 from user_data_store import UserDataApi
@@ -243,9 +246,13 @@ class ExampleTestCase(AioHTTPTestCase):
 
 
 @patch.multiple("management_layer.mappings.Mappings",
-                site_client_id_to_id_map={os.environ["JWT_AUDIENCE"]: 1})
+                _site_client_id_to_id_map={os.environ["JWT_AUDIENCE"]: 1},
+                _roles={-1: {"label": TECH_ADMIN_ROLE_LABEL}},
+                _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1})
 @patch("management_layer.permission.utils.get_user_roles_for_site",
-       Mock(side_effect=make_coroutine_returning([TECH_ADMIN_ROLE_LABEL])))
+       Mock(side_effect=return_tech_admin_role_for_testing))
+@patch("management_layer.permission.utils.get_user_roles_for_domain",
+       Mock(side_effect=return_tech_admin_role_for_testing))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
@@ -328,6 +335,9 @@ class IntegrationTest(AioHTTPTestCase):
                 configuration=authentication_service_configuration
             )
         )
+
+        app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+
         add_routes(app, with_ui=False)
         return app
 
