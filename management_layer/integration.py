@@ -1,7 +1,7 @@
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings
 from management_layer.utils import client_exception_handler
-from management_layer.permission.decorator import require_permissions
+from management_layer.permission.decorator import require_permissions, requester_has_role
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "Content-Length"  # TODO: Use correct header
@@ -1331,6 +1331,7 @@ class Implementation(AbstractStubClass):
     # userdomainrole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "create")])
+    @requester_has_role(body_field=1)
     async def userdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1350,6 +1351,7 @@ class Implementation(AbstractStubClass):
     # userdomainrole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "delete")])
+    @requester_has_role(target_user_id_field=1, domain_id_field=2, role_id_field=3)
     async def userdomainrole_delete(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1607,6 +1609,7 @@ class Implementation(AbstractStubClass):
     # usersiterole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:usersiterole", "create")])
+    @requester_has_role(body_field=1)
     async def usersiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1626,6 +1629,7 @@ class Implementation(AbstractStubClass):
     # usersiterole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:usersiterole", "delete")])
+    @requester_has_role(target_user_id_field=1, site_id_field=2, role_id_field=3)
     async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
