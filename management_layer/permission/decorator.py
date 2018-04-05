@@ -20,13 +20,14 @@ logger = logging.getLogger(__name__)
 
 
 def require_permissions(
-        operator: Operator,
-        resource_permissions: ResourcePermissions,
-        nocache: bool = False,
-        request_field: typing.Union[int, str] = 0
+    operator: Operator,
+    resource_permissions: ResourcePermissions,
+    nocache: bool = False,
+    request_field: typing.Union[int, str] = 0,
+    target_user_field: typing.Union[int, str] = None
 ) -> typing.Callable:
     """
-    This function is used as a decorator to protect functions by specifying
+    This function is used as a decorator to restrict functions by specifying
     the permissions that a user requires to perform the action, e.g.
     ```
     @require_permissions(all, [("urn:ge:test:foo", "write")])
@@ -81,11 +82,24 @@ def require_permissions(
     result = await doSomething(request)  # Decorator change function to coroutine
     ```
 
+    IMPORTANT: When a function call relates to a particular user, the user does not explicitly
+    require permissions on that resource for it to be allowed. A user implicitly has access to
+    anything directly related to his profile.
+    ```
+    @require_permissions(all, [("urn:ge:user", "read")], target_user_field=1)
+    def read_user_data(request, user_id):
+        pass
+    ```
+    In the example above, if the user specified by the token in the request is the same user
+    as the one identified by the function argument "user_id", then the call is allowed.
+
     :param operator: any or all
     :param resource_permissions: The resource permissions required
     :param nocache: Bypass the cache if True
     :param request_field: An integer or string identifying either the positional
         argument or the name of the keyword argument identifying the request parameter.
+    :param target_user_field: An integer or string identifying either the positional
+        argument or the name of the keyword argument identifying the target user parameter.
     :raises: Forbidden if the user does not have the required permissions.
     """
     if operator not in [any, all]:
@@ -104,10 +118,21 @@ def require_permissions(
 
             user_id, site_id = _get_user_and_site(request)
 
-            allowed = await utils.user_has_permissions(
+            # Start off with the assumption that the function call is not allowed
+            allowed = False
+
+            # If the target user field is specified and the target user is the user
+            # that is making the request, then we allow the function call.
+            if target_user_field is not None:
+                target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
+                allowed = (user_id == target_user_id)
+
+            # Permissions will only be checked if allowed is not already true.
+            allowed = allowed or await utils.user_has_permissions(
                 request, user_id, operator, resource_permissions,
                 site=site_id, nocache=nocache
             )
+
             if allowed:
                 if asyncio.iscoroutinefunction(f):
                     return await f(*args, **kwargs)
