@@ -30,6 +30,7 @@ import aiomcache
 from aiohttp import web
 
 from management_layer import transformations
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.settings import CACHE_TIME
 from management_layer.sentry import sentry
 from management_layer.utils import timeit
@@ -39,19 +40,99 @@ logger = logging.getLogger(__name__)
 
 class Mappings:
     # Internal copies of definitions. These are mappings of ids to dictionaries.
-    domains = {}  # type: Dict[int, Dict]
-    permissions = {}  # type: Dict[int, Dict]
-    resources = {}  # type: Dict[int, Dict]
-    roles = {}  # type: Dict[int, Dict]
-    sites = {}  # type: Dict[int, Dict]
+    _domains = {}  # type: Dict[int, Dict] (refer to transformations.DOMAIN for more detail)
+    _permissions = {}  # type: Dict[int, Dict] (refer to transformations.PERMISSION for more detail)
+    _resources = {}  # type: Dict[int, Dict] (refer to transformations.RESOURCE for more detail)
+    _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
+    _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
 
     # Name/label to id mappings.
-    domain_name_to_id_map = {}  # type: Dict[str, int]
-    permission_name_to_id_map = {}  # type: Dict[str, int]
-    resource_urn_to_id_map = {}  # type: Dict[str, int]
-    role_label_to_id_map = {}  # type: Dict[str, int]
-    site_name_to_id_map = {}  # type: Dict[str, int]
-    site_client_id_to_id_map = {}  # type: Dict[str, int]
+    _domain_name_to_id_map = {}  # type: Dict[str, int]
+    _permission_name_to_id_map = {}  # type: Dict[str, int]
+    _resource_urn_to_id_map = {}  # type: Dict[str, int]
+    _role_label_to_id_map = {}  # type: Dict[str, int]
+    _site_name_to_id_map = {}  # type: Dict[str, int]
+    _site_client_id_to_id_map = {}  # type: Dict[str, int]
+
+    @classmethod
+    def domain_id_for(cls, name: str) -> int:
+        try:
+            return cls._domain_name_to_id_map[name]
+        except KeyError:
+            logger.error(f"'{name}' not in {cls._domain_name_to_id_map}")
+            raise
+
+    @classmethod
+    def domain_name_for(cls, domain_id: int) -> str:
+        try:
+            return cls._domains[domain_id]["name"]
+        except KeyError:
+            logger.error(f"'{domain_id}' not in {cls._domains}")
+            raise
+
+    @classmethod
+    def permission_id_for(cls, name: str) -> int:
+        try:
+            return cls._permission_name_to_id_map[name]
+        except KeyError:
+            logger.error(f"'{name}' not in {cls._permission_name_to_id_map}")
+            raise
+
+    @classmethod
+    def permission_name_for(cls, permission_id: int) -> str:
+        try:
+            return cls._permissions[permission_id]["name"]
+        except KeyError:
+            logger.error(f"'{permission_id}' not in {cls._permissions}")
+            raise
+
+    @classmethod
+    def resource_id_for(cls, urn: str) -> int:
+        try:
+            return cls._resource_urn_to_id_map[urn]
+        except KeyError:
+            logger.error(f"'{urn}' not in {cls._resource_urn_to_id_map}")
+            raise
+
+    @classmethod
+    def resource_urn_for(cls, resource_id: int) -> str:
+        try:
+            return cls._resources[resource_id]["urn"]
+        except KeyError:
+            logger.error(f"'{resource_id}' not in {cls._resources}")
+            raise
+
+    @classmethod
+    def role_id_for(cls, label: str) -> int:
+        try:
+            return cls._role_label_to_id_map[label]
+        except KeyError:
+            logger.error(f"'{label}' not in {cls._role_label_to_id_map}")
+            raise
+
+    @classmethod
+    def role_label_for(cls, role_id: int) -> str:
+        try:
+            return cls._roles[role_id]["label"]
+        except KeyError:
+            logger.error(f"'{role_id}' not in {cls._roles}")
+            raise
+
+    @classmethod
+    def site_id_for(cls, client_id: str) -> int:
+        try:
+            return cls._site_client_id_to_id_map[client_id]
+        except KeyError:
+            logger.error(f"'{client_id}' not in {cls._site_client_id_to_id_map}")
+            raise
+
+    @classmethod
+    def site_name_for(cls, site_id: int) -> str:
+        try:
+            return cls._sites[site_id]["name"]
+        except KeyError:
+            logger.error(f"'{site_id}' not in {cls._sites}")
+            raise
 
 
 # Custom convenience type
@@ -119,7 +200,7 @@ async def refresh_domains(app: web.Application, nocache: bool=False):
     """Refresh the domain information"""
     logger.info("Refreshing domains")
     try:
-        Mappings.domains, Mappings.domain_name_to_id_map = await _load(
+        Mappings._domains, Mappings._domain_name_to_id_map = await _load(
             app["access_control_api"].domain_list, app["memcache"], transformations.DOMAIN,
             bytes(f"{__name__}:domains", encoding="utf8"), "name", nocache
         )
@@ -133,7 +214,7 @@ async def refresh_permissions(app: web.Application, nocache: bool=False):
     """Refresh the permission information"""
     logger.info("Refreshing permissions")
     try:
-        Mappings.permissions, Mappings.permission_name_to_id_map = await _load(
+        Mappings._permissions, Mappings._permission_name_to_id_map = await _load(
             app["access_control_api"].permission_list, app["memcache"], transformations.PERMISSION,
             bytes(f"{__name__}:permissions", encoding="utf8"), "name", nocache
         )
@@ -147,7 +228,7 @@ async def refresh_resources(app: web.Application, nocache: bool=False):
     """Refresh the resources information"""
     logger.info("Refreshing resources")
     try:
-        Mappings.resources, Mappings.resource_urn_to_id_map = await _load(
+        Mappings._resources, Mappings._resource_urn_to_id_map = await _load(
             app["access_control_api"].resource_list, app["memcache"], transformations.RESOURCE,
             bytes(f"{__name__}:resources", encoding="utf8"), "urn", nocache
         )
@@ -161,7 +242,7 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
     """Refresh the roles information"""
     logger.info("Refreshing roles")
     try:
-        Mappings.roles, Mappings.role_label_to_id_map = await _load(
+        Mappings._roles, Mappings._role_label_to_id_map = await _load(
             app["access_control_api"].role_list, app["memcache"], transformations.ROLE,
             bytes(f"{__name__}:roles", encoding="utf8"), "label", nocache
         )
@@ -169,24 +250,28 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
         sentry.captureException()
         logger.error(e)
 
+    # TODO: Remove this when loading data properly
+    Mappings._roles[-1] = {"label": TECH_ADMIN_ROLE_LABEL}
+    Mappings._role_label_to_id_map[TECH_ADMIN_ROLE_LABEL] = -1
+
 
 @timeit(TIMING_LOG_LEVEL)
 async def refresh_sites(app: web.Application, nocache: bool=False):
     """Refresh the sites information"""
     logger.info("Refreshing sites")
     try:
-        Mappings.sites, Mappings.site_name_to_id_map = await _load(
+        Mappings._sites, Mappings._site_name_to_id_map = await _load(
             app["access_control_api"].site_list, app["memcache"], transformations.SITE,
             bytes(f"{__name__}:sites", encoding="utf8"), "name", nocache
         )
-        Mappings.site_client_id_to_id_map = {
-            detail["client_id"]: id_ for id_, detail in Mappings.sites.items()
+        Mappings._site_client_id_to_id_map = {
+            detail["client_id"]: id_ for id_, detail in Mappings._sites.items()
         }
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
-    Mappings.site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
+    Mappings._site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
 
 
 @timeit(TIMING_LOG_LEVEL)
@@ -200,3 +285,12 @@ async def refresh_all(app: web.Application, nocache: bool=False):
     await refresh_resources(app, nocache)
     await refresh_roles(app, nocache)
     await refresh_sites(app, nocache)
+
+
+async def return_tech_admin_role_for_testing(*args, **kwargs):
+    """
+    Many of the test functions require the availability of a function that will return a set
+    of roles containing the TECH_ADMIN role. This function does exactly that.
+    :return: A set containing the TECH_ADMIN role id
+    """
+    return {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)}
