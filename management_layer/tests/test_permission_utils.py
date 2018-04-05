@@ -53,7 +53,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         self.client_id = TEST_SITES[self.site_id]["client_id"]
         self.dummy_request = {
             "token": {
-                "sub": self.user.hex,
+                "sub": str(self.user),
                 "aud": self.client_id
             }
         }
@@ -69,6 +69,29 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         app = web.Application(loop=self.loop)
         app.router.add_get('/', hello)
         return app
+
+    @patch("management_layer.permission.utils.get_user_roles_for_site")
+    @unittest_run_loop
+    async def test_target_user_implied_permission(self, mocked_function):
+        """
+        When a permission decorator specifies a target user field and that field
+        contains the user id of the user making the request, then implicit permission
+        is granted.
+        """
+        @require_permissions(any, [], nocache=True, target_user_field=1)
+        def example_call_with_user(_request, the_user_id):
+            # The caller is also the target user
+            return _request["token"]["sub"] == the_user_id
+
+        mocked_function.side_effect = make_coroutine_returning(set())  # No roles
+
+        # Never gets allowed if the user id in the request token does not match
+        # the value in the target user field.
+        with self.assertRaises(HTTPForbidden):
+            await example_call_with_user(self.dummy_request, "fake_user_id")
+
+        # Allow the call when the caller is also the target user.
+        self.assertTrue(await example_call_with_user(self.dummy_request, str(self.user)))
 
     @unittest_run_loop
     async def test_name_and_docstring(self):
@@ -398,7 +421,7 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         self.client_id = TEST_SITES[self.site_id]["client_id"]
         self.dummy_request = {
             "token": {
-                "sub": self.user.hex,
+                "sub": str(self.user),
                 "aud": self.client_id
             }
         }
