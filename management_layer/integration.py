@@ -15,7 +15,8 @@ class Implementation(AbstractStubClass):
 
     # adminnote_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:user_data:adminnote", "read")])
+    @require_permissions(all, [("urn:ge:user_data:adminnote", "read")],
+                         target_user_field="creator_id")
     async def adminnote_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -45,6 +46,8 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
+        # The caller of this function is considered the creator.
+        body["creator_id"] = request["token"]["sub"]
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_create(data=body)
 
@@ -495,6 +498,13 @@ class Implementation(AbstractStubClass):
 
     # get_all_user_roles -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:siterole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read"),
+                               ("urn:ge:access_control:usersiterole", "read"),
+                               ], target_user_field=1)
     async def get_all_user_roles(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -507,6 +517,8 @@ class Implementation(AbstractStubClass):
 
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:domainrole", "read")])
     async def get_domain_roles(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -519,6 +531,10 @@ class Implementation(AbstractStubClass):
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:siterole", "read")])
     async def get_site_and_domain_roles(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -531,6 +547,10 @@ class Implementation(AbstractStubClass):
 
     # get_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:siterole", "read")])
     async def get_site_role_labels_aggregated(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -543,6 +563,13 @@ class Implementation(AbstractStubClass):
 
     # get_user_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:siterole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read"),
+                               ("urn:ge:access_control:usersiterole", "read"),
+                               ], target_user_field=1)
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1305,7 +1332,8 @@ class Implementation(AbstractStubClass):
 
     # userdomainrole_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")])
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")],
+                         target_user_field="user_id")
     async def userdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1367,7 +1395,8 @@ class Implementation(AbstractStubClass):
 
     # userdomainrole_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")])
+    @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")],
+                         target_user_field=1)
     async def userdomainrole_read(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1427,7 +1456,7 @@ class Implementation(AbstractStubClass):
 
     # user_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:identity_provider:user", "read")])
+    @require_permissions(all, [("urn:ge:identity_provider:user", "read")], target_user_field=1)
     async def user_read(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1446,7 +1475,7 @@ class Implementation(AbstractStubClass):
 
     # user_update -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:identity_provider:user", "update")])
+    @require_permissions(all, [("urn:ge:identity_provider:user", "update")], target_user_field=2)
     async def user_update(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1486,7 +1515,8 @@ class Implementation(AbstractStubClass):
 
     # usersitedata_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")])
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")],
+                         target_user_field="user_id")
     async def usersitedata_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1511,6 +1541,7 @@ class Implementation(AbstractStubClass):
     # usersitedata_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "create")])
+    # The targeted user should not be allowed to make this call. This is admin only.
     async def usersitedata_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1530,6 +1561,7 @@ class Implementation(AbstractStubClass):
     # usersitedata_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "delete")])
+    # The targeted user should not be allowed to make this call. This is admin only.
     async def usersitedata_delete(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1544,7 +1576,7 @@ class Implementation(AbstractStubClass):
 
     # usersitedata_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")])
+    @require_permissions(all, [("urn:ge:user_data:usersitedata", "read")], target_user_field=1)
     async def usersitedata_read(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1565,6 +1597,7 @@ class Implementation(AbstractStubClass):
     # usersitedata_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "update")])
+    # The targeted user should not be allowed to make this call. This is admin only.
     async def usersitedata_update(request, body, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1583,7 +1616,8 @@ class Implementation(AbstractStubClass):
 
     # usersiterole_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")])
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")],
+                         target_user_field="user_id")
     async def usersiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1645,7 +1679,7 @@ class Implementation(AbstractStubClass):
 
     # usersiterole_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")])
+    @require_permissions(all, [("urn:ge:access_control:usersiterole", "read")], target_user_field=1)
     async def usersiterole_read(request, user_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
