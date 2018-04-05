@@ -22,9 +22,8 @@ import access_control
 import authentication_service
 import user_data_store
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
-from management_layer.mappings import Mappings, return_tech_admin_role_for_testing
+from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
-from management_layer.tests import make_coroutine_returning
 from user_data_store import UserDataApi
 from management_layer.api import schemas
 from management_layer.api.urls import add_routes
