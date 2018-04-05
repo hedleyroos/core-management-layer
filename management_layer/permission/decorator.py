@@ -124,8 +124,12 @@ def require_permissions(
             # If the target user field is specified and the target user is the user
             # that is making the request, then we allow the function call.
             if target_user_field is not None:
-                target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
-                allowed = (user_id == target_user_id)
+                # For some calls the specified field may be optional
+                try:
+                    target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
+                    allowed = (user_id == target_user_id)
+                except KeyError:
+                    pass
 
             # Permissions will only be checked if allowed is not already true.
             allowed = allowed or await utils.user_has_permissions(
@@ -288,15 +292,16 @@ def requester_has_role(
 
 
 def _get_value_from_args_or_kwargs(
-        argument_identifier: typing.Union[int, str],
-        args: typing.Tuple[typing.Any, ...], kwargs: dict
+    argument_identifier: typing.Union[int, str],
+    args: typing.Tuple[typing.Any, ...], kwargs: dict,
 ):
     """
-
     :param argument_identifier: The index or name of a function argument
     :param args: A list of positional arguments
     :param kwargs: A dictionary of named arguments
     :return: The value of the argument.
+    :raise KeyError: if the argument identified by argument_identifier does not exist.
+    :raise RuntimeError: if the argument_identifier argument contains an unexpected value.
     """
     argument_identifier_type = type(argument_identifier)
     if argument_identifier_type is int:
