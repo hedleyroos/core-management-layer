@@ -3042,6 +3042,7 @@ x-detail-page-definitions:
         - created_at
         - updated_at
     - model: user_site_data
+      base_path: usersitedata
       label: Site Data
       key: user_id
       fields:
