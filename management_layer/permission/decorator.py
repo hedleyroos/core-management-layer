@@ -127,7 +127,9 @@ def require_permissions(
                 # For some calls the specified field may be optional
                 try:
                     target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
-                    allowed = (user_id == target_user_id)
+                    # We cast the values to strings when comparing, to that both strings and UUIDs
+                    # can be used.
+                    allowed = (str(user_id) == str(target_user_id))
                 except KeyError:
                     pass
 
