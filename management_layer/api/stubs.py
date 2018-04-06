@@ -1098,7 +1098,11 @@ class MockedStubClass(AbstractStubClass):
                 "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
                 "format": "uuid",
                 "readOnly": true,
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "id": {
                 "readOnly": true,
@@ -1114,7 +1118,10 @@ class MockedStubClass(AbstractStubClass):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -1223,7 +1230,10 @@ class MockedStubClass(AbstractStubClass):
             },
             "client_id": {
                 "description": "",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "model": null
+                }
             },
             "contact_email": {
                 "description": "",
@@ -1316,13 +1326,19 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "grant_implicitly": {
                 "type": "boolean"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1444,7 +1460,11 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "parent_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "domain"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1553,14 +1573,23 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "invitation_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "email"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1676,7 +1705,11 @@ class MockedStubClass(AbstractStubClass):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "last_name": {
                 "maxLength": 100,
@@ -1794,13 +1827,22 @@ class MockedStubClass(AbstractStubClass):
             },
             "invitation_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "email"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2295,13 +2337,22 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "permission_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "resource_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "urn"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2523,7 +2574,10 @@ class MockedStubClass(AbstractStubClass):
                 "type": "object"
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2634,10 +2688,16 @@ class MockedStubClass(AbstractStubClass):
                 "type": "boolean"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2744,7 +2804,11 @@ class MockedStubClass(AbstractStubClass):
         "properties": {
             "client_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "field": "client_id",
+                    "label": "name"
+                }
             },
             "created_at": {
                 "format": "date-time",
@@ -2755,7 +2819,10 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "id": {
                 "readOnly": true,
@@ -2907,10 +2974,16 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2919,7 +2992,10 @@ class MockedStubClass(AbstractStubClass):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -3210,7 +3286,10 @@ class MockedStubClass(AbstractStubClass):
                 "type": "object"
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -3219,7 +3298,10 @@ class MockedStubClass(AbstractStubClass):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -3329,10 +3411,16 @@ class MockedStubClass(AbstractStubClass):
                 "type": "string"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -3341,7 +3429,10 @@ class MockedStubClass(AbstractStubClass):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [

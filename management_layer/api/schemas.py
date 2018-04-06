@@ -24,7 +24,11 @@ admin_note = json.loads("""
             "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
             "format": "uuid",
             "readOnly": true,
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "id": {
             "readOnly": true,
@@ -40,7 +44,10 @@ admin_note = json.loads("""
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -62,14 +69,21 @@ admin_note_create = json.loads("""
             "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
             "format": "uuid",
             "readOnly": true,
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "note": {
             "type": "string"
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -147,7 +161,10 @@ client = json.loads("""
         },
         "client_id": {
             "description": "",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "model": null
+            }
         },
         "contact_email": {
             "description": "",
@@ -216,7 +233,11 @@ domain = json.loads("""
             "type": "string"
         },
         "parent_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "domain"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -245,7 +266,11 @@ domain_create = json.loads("""
             "type": "string"
         },
         "parent_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "domain"
+            }
         }
     },
     "required": [
@@ -264,13 +289,19 @@ domain_role = json.loads("""
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "grant_implicitly": {
             "type": "boolean"
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -293,13 +324,19 @@ domain_role_create = json.loads("""
 {
     "properties": {
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "grant_implicitly": {
             "type": "boolean"
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         }
     },
     "required": [
@@ -371,7 +408,11 @@ domain_update = json.loads("""
             "type": "string"
         },
         "parent_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "domain"
+            }
         }
     },
     "type": "object"
@@ -406,7 +447,11 @@ invitation = json.loads("""
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "last_name": {
             "maxLength": 100,
@@ -450,7 +495,11 @@ invitation_create = json.loads("""
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "last_name": {
             "maxLength": 100,
@@ -476,14 +525,23 @@ invitation_domain_role = json.loads("""
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "invitation_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "email"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -506,14 +564,23 @@ invitation_domain_role_create = json.loads("""
 {
     "properties": {
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "invitation_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "email"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         }
     },
     "required": [
@@ -535,13 +602,22 @@ invitation_site_role = json.loads("""
         },
         "invitation_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "email"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -565,13 +641,22 @@ invitation_site_role_create = json.loads("""
     "properties": {
         "invitation_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "email"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         }
     },
     "required": [
@@ -831,13 +916,22 @@ role_resource_permission = json.loads("""
             "type": "string"
         },
         "permission_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "resource_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "urn"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -860,13 +954,22 @@ role_resource_permission_create = json.loads("""
 {
     "properties": {
         "permission_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "resource_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "urn"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         }
     },
     "required": [
@@ -902,7 +1005,11 @@ site = json.loads("""
     "properties": {
         "client_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "field": "client_id",
+                "label": "name"
+            }
         },
         "created_at": {
             "format": "date-time",
@@ -913,7 +1020,10 @@ site = json.loads("""
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "id": {
             "readOnly": true,
@@ -991,13 +1101,20 @@ site_create = json.loads("""
     "properties": {
         "client_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "field": "client_id",
+                "label": "name"
+            }
         },
         "description": {
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "is_active": {
             "type": "boolean"
@@ -1027,7 +1144,10 @@ site_data_schema = json.loads("""
             "type": "object"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1052,7 +1172,10 @@ site_data_schema_create = json.loads("""
             "type": "object"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         }
     },
     "required": [
@@ -1087,10 +1210,16 @@ site_role = json.loads("""
             "type": "boolean"
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1116,10 +1245,16 @@ site_role_create = json.loads("""
             "type": "boolean"
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         }
     },
     "required": [
@@ -1171,13 +1306,20 @@ site_update = json.loads("""
     "properties": {
         "client_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "field": "client_id",
+                "label": "name"
+            }
         },
         "description": {
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "is_active": {
             "type": "boolean"
@@ -1292,10 +1434,16 @@ user_domain_role = json.loads("""
             "type": "string"
         },
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1304,7 +1452,10 @@ user_domain_role = json.loads("""
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -1322,14 +1473,23 @@ user_domain_role_create = json.loads("""
 {
     "properties": {
         "domain_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -1360,7 +1520,10 @@ user_site_data = json.loads("""
             "type": "object"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1369,7 +1532,10 @@ user_site_data = json.loads("""
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -1392,18 +1558,24 @@ user_site_data_create = json.loads("""
             "type": "boolean"
         },
         "consented_at": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
         },
         "data": {
             "type": "object"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -1423,7 +1595,7 @@ user_site_data_update = json.loads("""
             "type": "boolean"
         },
         "consented_at": {
-            "format": "date",
+            "format": "date-time",
             "type": "string"
         },
         "data": {
@@ -1443,10 +1615,16 @@ user_site_role = json.loads("""
             "type": "string"
         },
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1455,7 +1633,10 @@ user_site_role = json.loads("""
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
@@ -1473,14 +1654,23 @@ user_site_role_create = json.loads("""
 {
     "properties": {
         "role_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
         },
         "user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username"
+            }
         }
     },
     "required": [
