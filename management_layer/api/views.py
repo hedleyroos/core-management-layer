@@ -53,7 +53,11 @@ class Adminnotes(View, CorsViewMixin):
                 "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
                 "format": "uuid",
                 "readOnly": true,
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "id": {
                 "readOnly": true,
@@ -69,7 +73,10 @@ class Adminnotes(View, CorsViewMixin):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -291,7 +298,10 @@ class Clients(View, CorsViewMixin):
             },
             "client_id": {
                 "description": "",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "model": null
+                }
             },
             "contact_email": {
                 "description": "",
@@ -446,13 +456,19 @@ class Domainroles(View, CorsViewMixin):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "grant_implicitly": {
                 "type": "boolean"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -694,7 +710,11 @@ class Domains(View, CorsViewMixin):
                 "type": "string"
             },
             "parent_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "domain"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -918,14 +938,23 @@ class Invitationdomainroles(View, CorsViewMixin):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "invitation_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "email"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1143,7 +1172,11 @@ class Invitations(View, CorsViewMixin):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "last_name": {
                 "maxLength": 100,
@@ -1381,13 +1414,22 @@ class Invitationsiteroles(View, CorsViewMixin):
             },
             "invitation_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "email"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2428,13 +2470,22 @@ class Roleresourcepermissions(View, CorsViewMixin):
                 "type": "string"
             },
             "permission_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "resource_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "urn"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -2876,7 +2927,10 @@ class Sitedataschemas(View, CorsViewMixin):
                 "type": "object"
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -3103,10 +3157,16 @@ class Siteroles(View, CorsViewMixin):
                 "type": "boolean"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -3333,7 +3393,11 @@ class Sites(View, CorsViewMixin):
         "properties": {
             "client_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "field": "client_id",
+                    "label": "name"
+                }
             },
             "created_at": {
                 "format": "date-time",
@@ -3344,7 +3408,10 @@ class Sites(View, CorsViewMixin):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "id": {
                 "readOnly": true,
@@ -3645,10 +3712,16 @@ class Userdomainroles(View, CorsViewMixin):
                 "type": "string"
             },
             "domain_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -3657,7 +3730,10 @@ class Userdomainroles(View, CorsViewMixin):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -4185,7 +4261,10 @@ class Usersitedata(View, CorsViewMixin):
                 "type": "object"
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -4194,7 +4273,10 @@ class Usersitedata(View, CorsViewMixin):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -4422,10 +4504,16 @@ class Usersiteroles(View, CorsViewMixin):
                 "type": "string"
             },
             "role_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -4434,7 +4522,10 @@ class Usersiteroles(View, CorsViewMixin):
             },
             "user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username"
+                }
             }
         },
         "required": [
@@ -4632,7 +4723,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
                     "format": "uuid",
                     "readOnly": true,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "id": {
                     "readOnly": true,
@@ -4648,7 +4743,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -4667,14 +4765,21 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
                     "format": "uuid",
                     "readOnly": true,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "note": {
                     "type": "string"
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -4743,7 +4848,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "client_id": {
                     "description": "",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "model": null
+                    }
                 },
                 "contact_email": {
                     "description": "",
@@ -4809,7 +4917,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "domain"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -4835,7 +4947,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "domain"
+                    }
                 }
             },
             "required": [
@@ -4851,13 +4967,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "grant_implicitly": {
                     "type": "boolean"
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -4877,13 +4999,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "domain_role_create": {
             "properties": {
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "grant_implicitly": {
                     "type": "boolean"
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 }
             },
             "required": [
@@ -4946,7 +5074,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "parent_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "domain"
+                    }
                 }
             },
             "type": "object"
@@ -4978,7 +5110,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "invitor_id": {
                     "description": "The user that created the invitation",
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "last_name": {
                     "maxLength": 100,
@@ -5019,7 +5155,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "invitor_id": {
                     "description": "The user that created the invitation",
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "last_name": {
                     "maxLength": 100,
@@ -5042,14 +5182,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "invitation_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "email"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5069,14 +5218,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "invitation_domain_role_create": {
             "properties": {
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "invitation_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "email"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 }
             },
             "required": [
@@ -5095,13 +5253,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "invitation_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "email"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5122,13 +5289,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "properties": {
                 "invitation_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "email"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 }
             },
             "required": [
@@ -5354,13 +5530,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "permission_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "resource_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "urn"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5380,13 +5565,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "role_resource_permission_create": {
             "properties": {
                 "permission_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "resource_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "urn"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 }
             },
             "required": [
@@ -5416,7 +5610,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "properties": {
                 "client_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "client_id",
+                        "label": "name"
+                    }
                 },
                 "created_at": {
                     "format": "date-time",
@@ -5427,7 +5625,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "id": {
                     "readOnly": true,
@@ -5499,13 +5700,20 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "properties": {
                 "client_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "client_id",
+                        "label": "name"
+                    }
                 },
                 "description": {
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "is_active": {
                     "type": "boolean"
@@ -5532,7 +5740,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5554,7 +5765,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 }
             },
             "required": [
@@ -5583,10 +5797,16 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5609,10 +5829,16 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 }
             },
             "required": [
@@ -5654,13 +5880,20 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "properties": {
                 "client_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "client_id",
+                        "label": "name"
+                    }
                 },
                 "description": {
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "is_active": {
                     "type": "boolean"
@@ -5769,10 +6002,16 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5781,7 +6020,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -5796,14 +6038,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "user_domain_role_create": {
             "properties": {
                 "domain_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -5831,7 +6082,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5840,7 +6094,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -5860,18 +6117,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "consented_at": {
-                    "format": "date",
+                    "format": "date-time",
                     "type": "string"
                 },
                 "data": {
                     "type": "object"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -5888,7 +6151,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "consented_at": {
-                    "format": "date",
+                    "format": "date-time",
                     "type": "string"
                 },
                 "data": {
@@ -5905,10 +6168,16 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5917,7 +6186,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -5932,14 +6204,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "user_site_role_create": {
             "properties": {
                 "role_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
                 },
                 "user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username"
+                    }
                 }
             },
             "required": [
@@ -6207,6 +6488,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/admin_note",
@@ -6392,6 +6679,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/client",
@@ -6473,6 +6766,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/domain_role",
@@ -6642,6 +6941,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/domain",
@@ -6810,6 +7115,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/invitation_domain_role",
@@ -6962,6 +7273,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/invitation",
@@ -7130,6 +7447,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/invitation_site_role",
@@ -7449,6 +7772,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/permission",
@@ -7769,6 +8098,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/resource",
@@ -7939,6 +8274,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/role_resource_permission",
@@ -8079,6 +8420,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/role",
@@ -8242,6 +8589,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/site_data_schema",
@@ -8404,6 +8757,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/site_role",
@@ -8573,6 +8932,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/site",
@@ -8789,6 +9154,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/user_domain_role",
@@ -8945,6 +9316,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/user",
@@ -9114,6 +9491,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/user_site_data",
@@ -9288,6 +9671,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
                         "schema": {
                             "items": {
                                 "$ref": "#/definitions/user_site_role",
@@ -9428,7 +9817,90 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "type": "oauth2"
         }
     },
-    "swagger": "2.0"
+    "swagger": "2.0",
+    "x-detail-page-definitions": {
+        "invitation": {
+            "inlines": [
+                {
+                    "fields": [
+                        "domain_id",
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "invitation_id",
+                    "label": "Domain Roles",
+                    "model": "invitation_domain_role"
+                },
+                {
+                    "fields": [
+                        "site_id",
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "invitation_id",
+                    "label": "Site Roles",
+                    "model": "invitation_site_role"
+                }
+            ]
+        },
+        "role": {
+            "inlines": [
+                {
+                    "fields": [
+                        "resource_id",
+                        "permission_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "role_id",
+                    "label": "Resource Permissions",
+                    "model": "role_resource_permission"
+                }
+            ]
+        },
+        "user": {
+            "inlines": [
+                {
+                    "fields": [
+                        "domain_id",
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "user_id",
+                    "label": "Domain Roles",
+                    "model": "user_domain_role"
+                },
+                {
+                    "fields": [
+                        "site_id",
+                        "data",
+                        "consented_at",
+                        "blocked",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "user_id",
+                    "label": "Site Data",
+                    "model": "user_site_data",
+                    "rest_resource_name": "usersitedata"
+                },
+                {
+                    "fields": [
+                        "site_id",
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "user_id",
+                    "label": "Site Roles",
+                    "model": "user_site_role"
+                }
+            ]
+        }
+    }
 }""")
 
     async def get(self):

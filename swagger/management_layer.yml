@@ -1574,6 +1574,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1652,6 +1656,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1746,6 +1754,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1825,6 +1837,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1890,6 +1906,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1960,6 +1980,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2051,6 +2075,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2137,6 +2165,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2224,6 +2256,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2294,6 +2330,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2372,6 +2412,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2452,6 +2496,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2515,6 +2563,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2577,6 +2629,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2661,6 +2717,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2757,6 +2817,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2848,6 +2912,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -2904,6 +2972,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
           schema:
             type: array
             items:
