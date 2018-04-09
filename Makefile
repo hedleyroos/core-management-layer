@@ -114,7 +114,7 @@ authentication-service-client: swagger-codegen-cli-$(CODEGEN_VERSION).jar swagge
 	$(CODEGEN) --lang python --library asyncio -i swagger/authentication_service.yml -D packageName=authentication_service -o /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)
 	cp -r /tmp/$(AUTHENTICATION_SERVICE_CLIENT_DIR)/authentication_service/* $(AUTHENTICATION_SERVICE_CLIENT_DIR)
 
-management-layer-api: swagger-codegen-cli-$(CODEGEN_VERSION).jar validate-swagger
+management-layer-api: validate-swagger
 	$(PYTHON) $(VENV)/src/swagger-django-generator/swagger_django_generator/generator.py swagger/management_layer.yml --output-dir management_layer/api --module-name management_layer.api --backend aiohttp
 
 runserver: $(VENV)
