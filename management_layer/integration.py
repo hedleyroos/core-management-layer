@@ -4,7 +4,7 @@ from management_layer.utils import client_exception_handler
 from management_layer.permission.decorator import require_permissions, requester_has_role
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
-CLIENT_TOTAL_COUNT_HEADER = "Content-Length"  # TODO: Use correct header
+CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
 
 
 class Implementation(AbstractStubClass):
