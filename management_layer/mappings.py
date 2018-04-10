@@ -306,16 +306,20 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
                     jwks = await response.json()
 
             for entry in jwks["keys"]:
-                # We compute the public key based on the parameters provided
-                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(entry))
-                # We store the computed public key along with the parameters
-                entry["public_key"] = public_key
-                # Store the public key entry against the key id (kid)
                 items_by_id[entry["kid"]] = entry
 
             await app["memcache"].set(key, json.dumps(items_by_id).encode("utf8"),
                                       CACHE_TIME)
             logger.debug(f"Loaded {len(items_by_id)} definitions from the JWKS end-point")
+
+        for k, parameters in items_by_id.items():
+            # We compute the public key based on the parameters provided. The public key is not
+            # cached in memcache. Only its parameters are.
+            public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(parameters))
+            # We store the computed public key along with the parameters
+            items_by_id[k]["public_key"] = public_key
+
+        Mappings._keys = items_by_id
 
     except Exception as e:
         sentry.captureException()
