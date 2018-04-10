@@ -37,6 +37,8 @@ if __name__ != "__main__":
         "ACCESS_CONTROL_API_KEY": "test",
         "AUTHENTICATION_SERVICE_API_KEY": "test",
         "USER_DATA_STORE_API_KEY": "test",
+        "AUTHENTICATION_SERVICE_JWKS": "http://localhost:{}/openid/jwks".format(
+            AUTHENTICATION_SERVICE_PORT),
         "JWT_AUDIENCE": "test_audience",
         "JWT_SECRET": "test_secret",
         "JWT_ISSUER": "http://localhost:8000/openid",

@@ -26,12 +26,14 @@ import logging
 
 from typing import Callable, Tuple, List, Dict, TypeVar, Awaitable
 
+import aiohttp
 import aiomcache
+import jwt
 from aiohttp import web
 
 from management_layer import transformations
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
-from management_layer.settings import CACHE_TIME
+from management_layer.settings import CACHE_TIME, AUTHENTICATION_SERVICE_JWKS
 from management_layer.sentry import sentry
 from management_layer.utils import timeit
 
@@ -45,6 +47,7 @@ class Mappings:
     _resources = {}  # type: Dict[int, Dict] (refer to transformations.RESOURCE for more detail)
     _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
     _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
+    _keys = {}  # type: Dict[int, Dict]  (refer to JWKS documentation)
 
     # Name/label to id mappings.
     _domain_name_to_id_map = {}  # type: Dict[str, int]
@@ -132,6 +135,14 @@ class Mappings:
             return cls._sites[site_id]["name"]
         except KeyError:
             logger.error(f"'{site_id}' not in {cls._sites}")
+            raise
+
+    @classmethod
+    def public_key_for(cls, kid: str) -> Dict:
+        try:
+            return cls._keys[kid]["public_key"]
+        except KeyError:
+            logger.error(f"'{kid}' not in {cls._keys}")
             raise
 
 
@@ -275,11 +286,49 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
 
 
 @timeit(TIMING_LOG_LEVEL)
+async def refresh_keys(app: web.Application, nocache: bool=False):
+    """
+    The call for retrieving the JSON Web Token Key Set (JWKS) is not exposed by the Authentication
+    Service API since it is part of the OIDC Provider Django application. A simple HTTP request
+    (as opposed to using a client library) suffices in this case.
+    """
+    logger.info("Refreshing keys")
+    try:
+        items_by_id = {}  # type: Dict[int, T]
+        key = bytes(f"{__name__}:jwks", encoding="utf8")
+        items = None if nocache else await app["memcache"].get(key)
+        if items:
+            items_by_id = json.loads(items, encoding="utf8")
+            logger.debug(f"Loaded {len(items_by_id)} definitions from cache")
+        else:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(AUTHENTICATION_SERVICE_JWKS) as response:
+                    jwks = await response.json()
+
+            for entry in jwks["keys"]:
+                # We compute the public key based on the parameters provided
+                public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(entry))
+                # We store the computed public key along with the parameters
+                entry["public_key"] = public_key
+                # Store the public key entry against the key id (kid)
+                items_by_id[entry["kid"]] = entry
+
+            await app["memcache"].set(key, json.dumps(items_by_id).encode("utf8"),
+                                      CACHE_TIME)
+            logger.debug(f"Loaded {len(items_by_id)} definitions from the JWKS end-point")
+
+    except Exception as e:
+        sentry.captureException()
+        logger.error(e)
+
+
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_all(app: web.Application, nocache: bool=False):
     """
     Refresh all data mappings
     """
     logger.info("Refreshing all mappings")
+    await refresh_keys(app, nocache)
     await refresh_domains(app, nocache)
     await refresh_permissions(app, nocache)
     await refresh_resources(app, nocache)
