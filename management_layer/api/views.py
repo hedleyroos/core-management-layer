@@ -6372,7 +6372,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "minimum": 1,
             "name": "limit",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-admin-on-rest-exclude": true
         },
         "optional_nocache": {
             "default": false,
@@ -6389,7 +6390,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "minimum": 0,
             "name": "offset",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-admin-on-rest-exclude": true
         },
         "optional_role_filter": {
             "description": "An optional query parameter to filter by role_id",
@@ -9819,6 +9821,31 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
     },
     "swagger": "2.0",
     "x-detail-page-definitions": {
+        "domain": {
+            "inlines": [
+                {
+                    "fields": [
+                        "id",
+                        "name",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "parent_id",
+                    "label": "Child Domains",
+                    "model": "domain"
+                },
+                {
+                    "fields": [
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "domain_id",
+                    "label": "Roles",
+                    "model": "domain_role"
+                }
+            ]
+        },
         "invitation": {
             "inlines": [
                 {
@@ -9857,6 +9884,20 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "key": "role_id",
                     "label": "Resource Permissions",
                     "model": "role_resource_permission"
+                }
+            ]
+        },
+        "site": {
+            "inlines": [
+                {
+                    "fields": [
+                        "role_id",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "site_id",
+                    "label": "Roles",
+                    "model": "site_role"
                 }
             ]
         },
