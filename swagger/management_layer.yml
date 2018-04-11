@@ -63,7 +63,7 @@ parameters:
     minimum: 1
     maximum: 100
     default: 20
-    x-admin-on-rest-include: false
+    x-admin-on-rest-exclude: true
 
   optional_offset:
     description: >-
@@ -75,7 +75,7 @@ parameters:
     type: integer
     default: 0
     minimum: 0
-    x-admin-on-rest-include: false
+    x-admin-on-rest-exclude: true
 
   optional_domain_filter:
     description: An optional query parameter to filter by domain_id
