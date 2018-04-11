@@ -63,6 +63,7 @@ parameters:
     minimum: 1
     maximum: 100
     default: 20
+    x-admin-on-rest-include: false
 
   optional_offset:
     description: >-
@@ -74,6 +75,7 @@ parameters:
     type: integer
     default: 0
     minimum: 0
+    x-admin-on-rest-include: false
 
   optional_domain_filter:
     description: An optional query parameter to filter by domain_id
@@ -3075,6 +3077,23 @@ paths:
            description: Site not found
 
 x-detail-page-definitions:
+  domain:
+    inlines:
+    - model: domain
+      label: Child Domains
+      key: parent_id
+      fields:
+        - id
+        - name
+        - created_at
+        - updated_at
+    - model: domain_role
+      label: Roles
+      key: domain_id
+      fields:
+        - role_id
+        - created_at
+        - updated_at
   invitation:
     inlines:
     - model: invitation_domain_role
@@ -3101,6 +3120,15 @@ x-detail-page-definitions:
       fields:
         - resource_id
         - permission_id
+        - created_at
+        - updated_at
+  site:
+    inlines:
+    - model: site_role
+      label: Roles
+      key: site_id
+      fields:
+        - role_id
         - created_at
         - updated_at
   user:
