@@ -464,9 +464,29 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # refresh_clients -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_clients(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # refresh_domains -- Synchronisation point for meld
     @staticmethod
     async def refresh_domains(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_keys -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_keys(request, **kwargs):
         """
         :param request: An HttpRequest
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
@@ -2131,7 +2151,37 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def refresh_clients(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def refresh_domains(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def refresh_keys(request, **kwargs):
         """
         :param request: An HttpRequest
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.

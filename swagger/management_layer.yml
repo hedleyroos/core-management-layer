@@ -1392,6 +1392,20 @@ paths:
         403:
          description: "Forbidden"
 
+  /refresh/clients:
+    parameters:
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Refresh OIDC client information"
+      operationId: refresh_clients
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "Successfully refreshed OIDC client data"
+        403:
+         description: "Forbidden"
+
   /refresh/domains:
     parameters:
       - $ref: '#/parameters/optional_nocache'
@@ -1403,6 +1417,20 @@ paths:
       responses:
         200:
           description: "Successfully refreshed domain mapping data"
+        403:
+         description: "Forbidden"
+
+  /refresh/keys:
+    parameters:
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Refresh JWKS information"
+      operationId: refresh_keys
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "Successfully refreshed keys data"
         403:
          description: "Forbidden"
 

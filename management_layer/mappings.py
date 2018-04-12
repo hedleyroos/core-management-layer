@@ -47,6 +47,7 @@ class Mappings:
     _resources = {}  # type: Dict[int, Dict] (refer to transformations.RESOURCE for more detail)
     _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
     _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
+    _clients = {}  # type: Dict[int, Dict] (refer to transformations.CLIENT for more detail)
     _keys = {}  # type: Dict[int, Dict]  (refer to JWKS documentation)
 
     # Name/label to id mappings.
@@ -55,7 +56,9 @@ class Mappings:
     _resource_urn_to_id_map = {}  # type: Dict[str, int]
     _role_label_to_id_map = {}  # type: Dict[str, int]
     _site_name_to_id_map = {}  # type: Dict[str, int]
-    _site_client_id_to_id_map = {}  # type: Dict[str, int]
+    _client_name_to_id_map = {}  # type: Dict[str, int]
+    _token_client_id_to_site_id_map = {}  # type: Dict[str, int]
+    _client_id_to_site_id_map = {}  # type: Dict[int, int]
 
     @classmethod
     def domain_id_for(cls, name: str) -> int:
@@ -122,11 +125,21 @@ class Mappings:
             raise
 
     @classmethod
-    def site_id_for(cls, client_id: str) -> int:
+    def site_id_for(cls, token_client_id: str) -> int:
+        """
+        Returns the site linked to a client.
+        A token has a "client_id" string, which maps to a client with an integer id.
+        This integer id is used in the "client_id" field of a site definition. So::
+
+          token_client_id -> client.id -> site.client_id
+
+        :param token_client_id:
+        """
+
         try:
-            return cls._site_client_id_to_id_map[client_id]
+            return cls._token_client_id_to_site_id_map[token_client_id]
         except KeyError:
-            logger.error(f"'{client_id}' not in {cls._site_client_id_to_id_map}")
+            logger.error(f"'{token_client_id}' not in {cls._token_client_id_to_site_id_map}")
             raise
 
     @classmethod
@@ -275,14 +288,35 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
             app["access_control_api"].site_list, app["memcache"], transformations.SITE,
             bytes(f"{__name__}:sites", encoding="utf8"), "name", nocache
         )
-        Mappings._site_client_id_to_id_map = {
-            detail["client_id"]: id_ for id_, detail in Mappings._sites.items()
+
+        Mappings._client_id_to_site_id_map = {
+            detail["client_id"]: _id for _id, detail in Mappings._sites.items()
         }
     except Exception as e:
         sentry.captureException()
         logger.error(e)
 
-    Mappings._site_client_id_to_id_map["management_layer_workaround"] = 1  # TODO Workaround for now
+
+@timeit(TIMING_LOG_LEVEL)
+async def refresh_clients(app: web.Application, nocache: bool=False):
+    """Refresh the client information
+    Because this information is linked to site information, the site information needs to be
+    loaded before this.
+    """
+    logger.info("Refreshing clients")
+    try:
+        Mappings._clients, Mappings._client_name_to_id_map = await _load(
+            app["authentication_service_api"].client_list, app["memcache"], transformations.CLIENT,
+            bytes(f"{__name__}:clients", encoding="utf8"), "name", nocache
+        )
+
+        Mappings._token_client_id_to_site_id_map = {
+            detail["client_id"]: Mappings._client_id_to_site_id_map.get(id_, None)
+            for id_, detail in Mappings._clients.items()
+        }
+    except Exception as e:
+        sentry.captureException()
+        logger.error(e)
 
 
 @timeit(TIMING_LOG_LEVEL)
@@ -338,6 +372,8 @@ async def refresh_all(app: web.Application, nocache: bool=False):
     await refresh_resources(app, nocache)
     await refresh_roles(app, nocache)
     await refresh_sites(app, nocache)
+    # Refresh clients after sites, since it references some site-based data.
+    await refresh_clients(app, nocache)
 
 
 async def return_tech_admin_role_for_testing(*args, **kwargs):
