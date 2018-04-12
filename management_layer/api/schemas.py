@@ -1004,10 +1004,8 @@ site = json.loads("""
 {
     "properties": {
         "client_id": {
-            "format": "uuid",
-            "type": "string",
+            "type": "integer",
             "x-related-info": {
-                "field": "client_id",
                 "label": "name"
             }
         },
@@ -1100,10 +1098,8 @@ site_create = json.loads("""
 {
     "properties": {
         "client_id": {
-            "format": "uuid",
-            "type": "string",
+            "type": "integer",
             "x-related-info": {
-                "field": "client_id",
                 "label": "name"
             }
         },
@@ -1305,10 +1301,8 @@ site_update = json.loads("""
     "minProperties": 1,
     "properties": {
         "client_id": {
-            "format": "uuid",
-            "type": "string",
+            "type": "integer",
             "x-related-info": {
-                "field": "client_id",
                 "label": "name"
             }
         },

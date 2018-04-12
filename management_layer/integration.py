@@ -259,6 +259,7 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param parent_id (optional): integer An optional query parameter to filter by parent_id
         :param domain_ids (optional): array An optional list of domain ids
         :returns: result or (result, headers) tuple
         """
@@ -1224,6 +1225,7 @@ class Implementation(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
+        :param client_id (optional): integer An optional client id to filter on
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():

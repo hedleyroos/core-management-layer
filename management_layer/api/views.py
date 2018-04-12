@@ -423,9 +423,9 @@ class ClientsClientId(View, CorsViewMixin):
         :param self: A ClientsClientId instance
         """
         try:
-            # client_id: string A string value identifying the client
+            # client_id: integer A integer identifying the client
             client_id = self.request.match_info["client_id"]
-            jsonschema.validate(client_id, {"type": "string"})
+            client_id = int(client_id)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -761,6 +761,11 @@ class Domains(View, CorsViewMixin):
                 if 100 < limit:
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
+            # parent_id (optional): integer An optional query parameter to filter by parent_id
+            parent_id = self.request.query.get("parent_id", None)
+            if parent_id is not None:
+                parent_id = int(parent_id)
+                optional_args["parent_id"] = parent_id
             # domain_ids (optional): array An optional list of domain ids
             domain_ids = self.request.query.getall("domain_ids", None)
             if domain_ids:
@@ -3392,10 +3397,8 @@ class Sites(View, CorsViewMixin):
     "items": {
         "properties": {
             "client_id": {
-                "format": "uuid",
-                "type": "string",
+                "type": "integer",
                 "x-related-info": {
-                    "field": "client_id",
                     "label": "name"
                 }
             },
@@ -3484,6 +3487,11 @@ class Sites(View, CorsViewMixin):
 
                 jsonschema.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
+            # client_id (optional): integer An optional client id to filter on
+            client_id = self.request.query.get("client_id", None)
+            if client_id is not None:
+                client_id = int(client_id)
+                optional_args["client_id"] = client_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -5609,10 +5617,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "site": {
             "properties": {
                 "client_id": {
-                    "format": "uuid",
-                    "type": "string",
+                    "type": "integer",
                     "x-related-info": {
-                        "field": "client_id",
                         "label": "name"
                     }
                 },
@@ -5699,10 +5705,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "site_create": {
             "properties": {
                 "client_id": {
-                    "format": "uuid",
-                    "type": "string",
+                    "type": "integer",
                     "x-related-info": {
-                        "field": "client_id",
                         "label": "name"
                     }
                 },
@@ -5879,10 +5883,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "minProperties": 1,
             "properties": {
                 "client_id": {
-                    "format": "uuid",
-                    "type": "string",
+                    "type": "integer",
                     "x-related-info": {
-                        "field": "client_id",
                         "label": "name"
                     }
                 },
@@ -6318,12 +6320,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "type": "integer"
         },
         "client_id": {
-            "description": "A string value identifying the client",
-            "format": "string",
+            "description": "A integer identifying the client",
             "in": "path",
             "name": "client_id",
             "required": true,
-            "type": "string"
+            "type": "integer"
         },
         "country_code": {
             "description": "A unique two-character value identifying the country.",
@@ -6392,6 +6393,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "integer",
             "x-admin-on-rest-exclude": true
+        },
+        "optional_parent_filter": {
+            "description": "An optional query parameter to filter by parent_id",
+            "in": "query",
+            "name": "parent_id",
+            "required": false,
+            "type": "integer"
         },
         "optional_role_filter": {
             "description": "An optional query parameter to filter by role_id",
@@ -6919,6 +6927,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     },
                     {
                         "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_parent_filter",
                         "x-scope": [
                             ""
                         ]
@@ -8926,6 +8940,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "required": false,
                         "type": "array",
                         "uniqueItems": true
+                    },
+                    {
+                        "description": "An optional client id to filter on",
+                        "in": "query",
+                        "name": "client_id",
+                        "required": false,
+                        "type": "integer"
                     }
                 ],
                 "produces": [

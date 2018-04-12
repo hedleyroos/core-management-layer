@@ -151,7 +151,7 @@ def get_test_data(schema):
     """
     data = DATA_GENERATOR.random_value(schema)
     # Overwrite fields that expect a UUID
-    for field in ["user_id", "creator_id", "invitation_id", "client_id"]:
+    for field in ["user_id", "creator_id", "invitation_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
     # Overwrite fields that expect a datetime

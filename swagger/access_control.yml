@@ -64,6 +64,12 @@ parameters:
     required: false
     type: string
     format: uuid
+  optional_parent_filter:
+    description: An optional query parameter to filter by parent_id
+    in: query
+    name: parent_id
+    required: false
+    type: integer
   optional_role_filter:
     description: An optional query parameter to filter by role_id
     in: query
@@ -195,8 +201,7 @@ definitions:
         type: string
         maxLength: 30
       client_id:
-        type: string
-        maxLength: 255
+        type: integer
       domain_id:
         type: integer
       description:
@@ -226,8 +231,7 @@ definitions:
         type: string
         maxLength: 30
       client_id:
-        type: string
-        maxLength: 255
+        type: integer
       domain_id:
         type: integer
       description:
@@ -242,8 +246,7 @@ definitions:
     type: object
     properties:
       client_id:
-        type: string
-        maxLength: 255
+        type: integer
       domain_id:
         type: integer
       name:
@@ -964,6 +967,7 @@ paths:
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_parent_filter'
         - name: domain_ids
           description: An optional list of domain ids
           in: query
@@ -979,6 +983,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1057,6 +1065,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1151,6 +1163,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1251,6 +1267,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1316,6 +1336,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1386,6 +1410,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1477,6 +1505,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1563,6 +1595,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1650,6 +1686,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1715,11 +1755,20 @@ paths:
           minItems: 0
           collectionFormat: multi
           uniqueItems: true
+        - name: client_id
+          description: An optional client id to filter on
+          in: query
+          type: integer
+          required: false
       produces:
         - application/json
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1798,6 +1847,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1878,6 +1931,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:
@@ -1941,6 +1998,10 @@ paths:
       responses:
         '200':
           description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
           schema:
             type: array
             items:

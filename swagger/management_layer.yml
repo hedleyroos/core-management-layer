@@ -92,6 +92,13 @@ parameters:
     type: string
     format: uuid
 
+  optional_parent_filter:
+    description: An optional query parameter to filter by parent_id
+    in: query
+    name: parent_id
+    required: false
+    type: integer
+
   optional_role_filter:
     description: An optional query parameter to filter by role_id
     in: query
@@ -182,12 +189,11 @@ parameters:
     maxLength: 2
 
   client_id:
-    description: A string value identifying the client
+    description: A integer identifying the client
     in: path
     name: client_id
     required: true
-    type: string
-    format: string
+    type: integer
 
 definitions:
   domain:
@@ -262,10 +268,8 @@ definitions:
         type: integer
         readOnly: true
       client_id:
-        type: string
-        format: uuid
+        type: integer
         x-related-info:
-          field: client_id
           label: name
       domain_id:
         type: integer
@@ -298,10 +302,8 @@ definitions:
     type: object
     properties:
       client_id:
-        type: string
-        format: uuid
+        type: integer
         x-related-info:
-          field: client_id
           label: name
       domain_id:
         type: integer
@@ -322,10 +324,8 @@ definitions:
     type: object
     properties:
       client_id:
-        type: string
-        format: uuid
+        type: integer
         x-related-info:
-          field: client_id
           label: name
       domain_id:
         type: integer
@@ -1561,6 +1561,7 @@ paths:
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
+        - $ref: '#/parameters/optional_parent_filter'
         - name: domain_ids
           description: An optional list of domain ids
           in: query
@@ -2327,6 +2328,11 @@ paths:
           minItems: 0
           collectionFormat: multi
           uniqueItems: true
+        - name: client_id
+          description: An optional client id to filter on
+          in: query
+          type: integer
+          required: false
       produces:
         - application/json
       responses:
