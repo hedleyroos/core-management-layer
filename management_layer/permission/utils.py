@@ -152,7 +152,8 @@ async def user_has_permissions(
     :return: True if the user is has the required permissions on the resources
     """
     # Either a site or domain needs to be provided, but not both.
-    if bool(site) == bool(domain):
+    if site is None and domain is None or \
+       site is not None and domain is not None:
         raise RuntimeError("Either a site or a domain needs to be provided")
 
     if operator not in [all, any]:
