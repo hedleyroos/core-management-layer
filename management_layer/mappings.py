@@ -311,8 +311,9 @@ async def refresh_clients(app: web.Application, nocache: bool=False):
         )
 
         Mappings._token_client_id_to_site_id_map = {
-            detail["client_id"]: Mappings._client_id_to_site_id_map.get(id_, None)
+            detail["client_id"]: Mappings._client_id_to_site_id_map[id_]
             for id_, detail in Mappings._clients.items()
+            if id_ in Mappings._client_id_to_site_id_map
         }
     except Exception as e:
         sentry.captureException()
