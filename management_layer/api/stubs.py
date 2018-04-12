@@ -84,7 +84,7 @@ class AbstractStubClass(object):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A string value identifying the client
+        :param client_id: integer A integer identifying the client
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -153,6 +153,7 @@ class AbstractStubClass(object):
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param parent_id (optional): integer An optional query parameter to filter by parent_id
         :param domain_ids (optional): array An optional list of domain ids
         :returns: result or (result, headers) tuple
         """
@@ -786,6 +787,7 @@ class AbstractStubClass(object):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
+        :param client_id (optional): integer An optional client id to filter on
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -1297,7 +1299,7 @@ class MockedStubClass(AbstractStubClass):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A string value identifying the client
+        :param client_id: integer A integer identifying the client
         """
         response_schema = schemas.client
         if "type" not in response_schema:
@@ -1438,6 +1440,7 @@ class MockedStubClass(AbstractStubClass):
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param parent_id (optional): integer An optional query parameter to filter by parent_id
         :param domain_ids (optional): array An optional list of domain ids
         """
         response_schema = json.loads("""{
@@ -2798,15 +2801,14 @@ class MockedStubClass(AbstractStubClass):
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param site_ids (optional): array An optional list of site ids
+        :param client_id (optional): integer An optional client id to filter on
         """
         response_schema = json.loads("""{
     "items": {
         "properties": {
             "client_id": {
-                "format": "uuid",
-                "type": "string",
+                "type": "integer",
                 "x-related-info": {
-                    "field": "client_id",
                     "label": "name"
                 }
             },
