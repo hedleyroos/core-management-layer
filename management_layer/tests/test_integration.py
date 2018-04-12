@@ -245,7 +245,7 @@ class ExampleTestCase(AioHTTPTestCase):
 
 
 @patch.multiple("management_layer.mappings.Mappings",
-                _site_client_id_to_id_map={os.environ["JWT_AUDIENCE"]: 1},
+                _token_client_id_to_site_id_map={os.environ["JWT_AUDIENCE"]: 1},
                 _roles={-1: {"label": TECH_ADMIN_ROLE_LABEL}},
                 _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1})
 @patch("management_layer.permission.utils.get_user_roles_for_site",
@@ -557,6 +557,18 @@ class IntegrationTest(AioHTTPTestCase):
     @unittest_run_loop
     async def test_refresh_domains(self, nocache):
         response = await self.client.get("/refresh/domains", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_keys(self, nocache):
+        response = await self.client.get("/refresh/keys", params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_refresh_clients(self, nocache):
+        response = await self.client.get("/refresh/clients", params={"nocache": nocache})
         await self.assertStatus(response, 200)
 
     @parameterized.expand(["true", "false"])

@@ -2052,6 +2052,41 @@ class RefreshAll(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class RefreshClients(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RefreshClients instance
+        """
+        try:
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.refresh_clients(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class RefreshDomains(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
@@ -2075,6 +2110,41 @@ class RefreshDomains(View, CorsViewMixin):
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.refresh_domains(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class RefreshKeys(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RefreshKeys instance
+        """
+        try:
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.refresh_keys(
             self.request, **optional_args)
 
         if type(result) is tuple:
@@ -7946,6 +8016,31 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/refresh/clients": {
+            "get": {
+                "description": "Refresh OIDC client information",
+                "operationId": "refresh_clients",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully refreshed OIDC client data"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
         "/refresh/domains": {
             "get": {
                 "description": "Refresh domain mapping information",
@@ -7956,6 +8051,31 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "Successfully refreshed domain mapping data"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/refresh/keys": {
+            "get": {
+                "description": "Refresh JWKS information",
+                "operationId": "refresh_keys",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully refreshed keys data"
                     },
                     "403": {
                         "description": "Forbidden"

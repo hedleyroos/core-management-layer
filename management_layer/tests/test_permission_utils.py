@@ -37,7 +37,7 @@ TEST_DOMAIN_NAME_TO_ID_MAP = {v["name"]: k for k, v in TEST_DOMAINS.items()}
 
 
 @patch.multiple("management_layer.mappings.Mappings",
-                _site_client_id_to_id_map=TEST_SITE_CLIENT_ID_TO_ID_MAP,
+                _token_client_id_to_site_id_map=TEST_SITE_CLIENT_ID_TO_ID_MAP,
                 _role_label_to_id_map=TEST_ROLE_LABEL_TO_ID_MAP,
                 _permission_name_to_id_map=TEST_PERMISSION_NAME_TO_ID_MAP,
                 _resource_urn_to_id_map=TEST_RESOURCE_URN_TO_ID_MAP)
@@ -400,7 +400,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
 
 @patch.multiple("management_layer.mappings.Mappings",
-                _site_client_id_to_id_map=TEST_SITE_CLIENT_ID_TO_ID_MAP,
+                _token_client_id_to_site_id_map=TEST_SITE_CLIENT_ID_TO_ID_MAP,
                 _sites=TEST_SITES,
                 _site_name_to_id_map=TEST_SITE_NAME_TO_ID_MAP,
                 _domains=TEST_DOMAINS,

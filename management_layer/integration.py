@@ -689,6 +689,17 @@ class Implementation(AbstractStubClass):
         await mappings.refresh_all(request.app, **kwargs)
         return {}
 
+    # refresh_clients -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_clients(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        await mappings.refresh_clients(request.app, **kwargs)
+        return {}
+
     # refresh_domains -- Synchronisation point for meld
     @staticmethod
     @require_permissions(any, [])  # Tech admin only
@@ -699,6 +710,17 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         await mappings.refresh_domains(request.app, **kwargs)
+        return {}
+
+    # refresh_keys -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_keys(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        await mappings.refresh_keys(request.app, **kwargs)
         return {}
 
     # refresh_permissions -- Synchronisation point for meld
