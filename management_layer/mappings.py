@@ -14,12 +14,15 @@ uses an event loop, since it is single-threaded in nature.
 
 The values stored in the mapping class are refreshed when a scheduled
 job calls one of the refresh_* functions. Typically a refresh will use a cached
-value from Memcache, but, if the value is not in memcache or it expired, the
+value from memcache, but, if the value is not in memcache or it expired, the
 API will be queried and the cache updated.
 
 If multiple instances of the management-layer is running, typically only one
 will have to refresh memcache, after which the rest will use the cached values.
 
+IMPORTANT: Dictionaries with integer keys that are serialised to JSON will have those keys
+converted to strings when cached and those keys need to be transformed back to integers
+after reading from the cache.
 """
 import json
 import logging
@@ -48,7 +51,7 @@ class Mappings:
     _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
     _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
     _clients = {}  # type: Dict[int, Dict] (refer to transformations.CLIENT for more detail)
-    _keys = {}  # type: Dict[int, Dict]  (refer to JWKS documentation)
+    _keys = {}  # type: Dict[str, Dict]  (refer to JWKS documentation)
 
     # Name/label to id mappings.
     _domain_name_to_id_map = {}  # type: Dict[str, int]
@@ -189,6 +192,10 @@ async def _load(
     items = None if nocache else await memcache.get(key)
     if items:
         items_by_id = json.loads(items, encoding="utf8")
+        # When items_by_id is JSON-encoded to cache, the integer ids are (implicitly) converted to
+        # string, because JSON does not support integer keys. We need to convert them back after
+        # reading from the cache.
+        items_by_id = {int(id_): value for id_, value in items_by_id.items()}
         logger.debug(f"Loaded {len(items_by_id)} definitions from cache")
     else:
         offset = 0
