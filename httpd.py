@@ -79,21 +79,20 @@ if __name__ == "__main__":
     override_host = settings.ACCESS_CONTROL_API
     if override_host:
         access_control_configuration.host = override_host
+    access_control_api_client = access_control.ApiClient(
+        header_name="X-API-KEY",
+        header_value=settings.ACCESS_CONTROL_API_KEY,
+        configuration=access_control_configuration
+    )
     app["access_control_api"] = access_control.api.AccessControlApi(
-        api_client=access_control.ApiClient(
-            header_name="X-API-KEY",
-            header_value=settings.ACCESS_CONTROL_API_KEY,
-            configuration=access_control_configuration
-        )
+        api_client=access_control_api_client
     )
 
     # Operational API is a part of access control. It was split out by the
     # swagger generator due to its tag. Thus allowing it to use the same client
     # and config as access_control.
     app["operational_api"] = access_control.api.OperationalApi(
-            api_client=access_control.ApiClient(
-            configuration=access_control_configuration
-        )
+         api_client=access_control_api_client
     )
 
     authentication_service_configuration = authentication_service.configuration.Configuration()
