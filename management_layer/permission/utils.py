@@ -277,7 +277,7 @@ async def get_all_user_roles(
     with client_exception_handler():
         user_roles = None if nocache else await request.app["memcache"].get(key)
 
-    if not user_roles:
+    if user_roles is None:
         # The API returns an AllUserRoles object
         with client_exception_handler():
             response = await request.app["operational_api"].get_all_user_roles(user.hex)
