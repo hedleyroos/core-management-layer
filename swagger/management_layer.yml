@@ -1583,6 +1583,32 @@ paths:
       tags:
         - operational
 
+  /ops/user_has_permissions/{user_id}:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - optin
+    get:
+      description: 'Check of the user has the specified resource permissions'
+      operationId: user_has_permissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'True if the user has the permissions, else False'
+          schema:
+            type: object
+            properties:
+              has_permissions:
+                type: boolean
+        403:
+          description: 'Forbidden'
+        400:
+          description: 'Bad Request'
+        404:
+          description: 'User not found'
+      tags:
+        - operational
+
   /domains:
     get:
       operationId: domain_list
