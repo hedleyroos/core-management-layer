@@ -298,6 +298,7 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
 
         Mappings._client_id_to_site_id_map = {
             detail["client_id"]: _id for _id, detail in Mappings._sites.items()
+            if "client" in detail  # Some sites may not have a client linked yet.
         }
     except Exception as e:
         sentry.captureException()
