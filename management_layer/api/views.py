@@ -5587,12 +5587,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 },
                 "requires_2fa": {
+                    "default": true,
                     "type": "boolean"
                 }
             },
             "required": [
-                "label",
-                "requires_2fa"
+                "label"
             ],
             "type": "object"
         },
