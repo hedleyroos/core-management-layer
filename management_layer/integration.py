@@ -592,7 +592,7 @@ class Implementation(AbstractStubClass):
                 for item in body["resource_permissions"]
             ]
         except KeyError as e:
-            raise web.BadRequest(e)
+            raise web.HTTPBadRequest(text=str(e))
 
         nocache = body.get("nocache", False)
         operator_string = body["operator"]
@@ -601,18 +601,18 @@ class Implementation(AbstractStubClass):
         elif operator_string == "all":
             operator = all
         else:
-            raise web.BadRequest(f"Invalid operator specified: {operator_string}.")
+            raise web.HTTPBadRequest(text=f"Invalid operator specified: {operator_string}.")
 
         site_id = body.get("site_id")
         domain_id = body.get("domain_id")
 
         # Either a site_id or domain_id needs to be specified.
         if site_id is None and domain_id is None or \
-            site_id is not None and domain_id is not None:
-            raise web.BadRequest("Either site_id or domain_id needs to be specified")
+           site_id is not None and domain_id is not None:
+            raise web.HTTPBadRequest(text="Either site_id or domain_id needs to be specified")
 
-        result = utils.user_has_permissions(request, user_id, operator, resource_permissions,
-                                            site=site_id, domain=domain_id, nocache=nocache)
+        result = await utils.user_has_permissions(request, user_id, operator, resource_permissions,
+                                                  site=site_id, domain=domain_id, nocache=nocache)
         return {"has_permissions": result}
 
     # get_user_site_role_labels_aggregated -- Synchronisation point for meld
