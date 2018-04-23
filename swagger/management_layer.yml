@@ -1377,6 +1377,40 @@ definitions:
         maxLength: 2
     minProperties: 1
 
+  resource_permission:
+    type: object
+    properties:
+      resource:
+        type: string
+        format: uri
+      permission:
+        type: string
+    required:
+      - resource
+      - permission
+
+  user_permissions_check:
+    type: object
+    properties:
+      operator:
+        type: string
+        enum: [all, any]
+      resource_permissions:
+        type: array
+        items:
+          $ref: '#/definitions/resource_permission'
+      site_id:
+        type: integer
+      domain_id:
+        type: integer
+      nocache:
+        type: boolean
+        default: false
+    required:
+      - operator
+      - resource_permissions
+      # site_id or domain_id is required
+
 paths:
   /refresh/all:
     parameters:
@@ -1586,10 +1620,15 @@ paths:
   /ops/user_has_permissions/{user_id}:
     parameters:
       - $ref: '#/parameters/user_id'
-      - optin
-    get:
+      - in: body
+        name: data
+        schema:
+          $ref: '#/definitions/user_permissions_check'
+    post:
       description: 'Check of the user has the specified resource permissions'
       operationId: user_has_permissions
+      consumes:
+        - application/json
       produces:
         - application/json
       responses:
@@ -1600,6 +1639,8 @@ paths:
             properties:
               has_permissions:
                 type: boolean
+            required:
+              - has_permissions
         403:
           description: 'Forbidden'
         400:
