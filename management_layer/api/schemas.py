@@ -889,12 +889,12 @@ role_create = json.loads("""
             ]
         },
         "requires_2fa": {
+            "default": true,
             "type": "boolean"
         }
     },
     "required": [
-        "label",
-        "requires_2fa"
+        "label"
     ],
     "type": "object"
 }
