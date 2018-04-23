@@ -1411,6 +1411,14 @@ definitions:
       - resource_permissions
       # site_id or domain_id is required
 
+  user_permissions_check_response:
+    type: object
+    properties:
+      has_permissions:
+        type: boolean
+    required:
+      - has_permissions
+
 paths:
   /refresh/all:
     parameters:
@@ -1635,12 +1643,7 @@ paths:
         200:
           description: 'True if the user has the permissions, else False'
           schema:
-            type: object
-            properties:
-              has_permissions:
-                type: boolean
-            required:
-              - has_permissions
+            $ref: '#/definitions/user_permissions_check_response'
         403:
           description: 'Forbidden'
         400:
