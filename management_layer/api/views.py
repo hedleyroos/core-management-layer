@@ -1750,6 +1750,60 @@ class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsUserHasPermissionsUserId(View, CorsViewMixin):
+
+    POST_RESPONSE_SCHEMA = json.loads("""{
+    "properties": {
+        "has_permissions": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "has_permissions"
+    ],
+    "type": "object"
+}""")
+    POST_BODY_SCHEMA = schemas.user_permissions_check
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUserHasPermissionsUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.user_has_permissions(
+            self.request, body, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
 class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.user_site_role_labels_aggregated
@@ -5521,6 +5575,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "resource_permission": {
+            "properties": {
+                "permission": {
+                    "type": "string"
+                },
+                "resource": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "resource",
+                "permission"
+            ],
+            "type": "object"
+        },
         "resource_update": {
             "minProperties": 1,
             "properties": {
@@ -6133,6 +6203,42 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "user_id",
                 "domain_id",
                 "role_id"
+            ],
+            "type": "object"
+        },
+        "user_permissions_check": {
+            "properties": {
+                "domain_id": {
+                    "type": "integer"
+                },
+                "nocache": {
+                    "default": false,
+                    "type": "boolean"
+                },
+                "operator": {
+                    "enum": [
+                        "all",
+                        "any"
+                    ],
+                    "type": "string"
+                },
+                "resource_permissions": {
+                    "items": {
+                        "$ref": "#/definitions/resource_permission",
+                        "x-scope": [
+                            "",
+                            "#/definitions/user_permissions_check"
+                        ]
+                    },
+                    "type": "array"
+                },
+                "site_id": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "operator",
+                "resource_permissions"
             ],
             "type": "object"
         },
@@ -7781,6 +7887,64 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/ops/user_has_permissions/{user_id}": {
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "in": "body",
+                    "name": "data",
+                    "schema": {
+                        "$ref": "#/definitions/user_permissions_check",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                }
+            ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "Check of the user has the specified resource permissions",
+                "operationId": "user_has_permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "True if the user has the permissions, else False",
+                        "schema": {
+                            "properties": {
+                                "has_permissions": {
+                                    "type": "boolean"
+                                }
+                            },
+                            "required": [
+                                "has_permissions"
+                            ],
+                            "type": "object"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            }
         },
         "/ops/user_site_role_labels_aggregated/{user_id}/{site_id}": {
             "get": {

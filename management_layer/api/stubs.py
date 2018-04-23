@@ -390,6 +390,17 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # user_has_permissions -- Synchronisation point for meld
+    @staticmethod
+    async def user_has_permissions(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_user_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
@@ -1996,6 +2007,32 @@ class MockedStubClass(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         response_schema = schemas.site_role_labels_aggregated
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def user_has_permissions(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        """
+        response_schema = json.loads("""{
+    "properties": {
+        "has_permissions": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "has_permissions"
+    ],
+    "type": "object"
+}""")
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

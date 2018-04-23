@@ -42,6 +42,7 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/permissions/{permission_id}", views.PermissionsPermissionId)
     app.router.add_view(r"/permissions", views.Permissions)
     app.router.add_view(r"/ops/user_site_role_labels_aggregated/{user_id}/{site_id}", views.OpsUserSiteRoleLabelsAggregatedUserIdSiteId)
+    app.router.add_view(r"/ops/user_has_permissions/{user_id}", views.OpsUserHasPermissionsUserId)
     app.router.add_view(r"/ops/site_role_labels_aggregated/{site_id}", views.OpsSiteRoleLabelsAggregatedSiteId)
     app.router.add_view(r"/ops/site_and_domain_roles/{site_id}", views.OpsSiteAndDomainRolesSiteId)
     app.router.add_view(r"/ops/domain_roles/{domain_id}", views.OpsDomainRolesDomainId)
