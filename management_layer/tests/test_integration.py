@@ -247,7 +247,10 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch.multiple("management_layer.mappings.Mappings",
                 _token_client_id_to_site_id_map={os.environ["JWT_AUDIENCE"]: 1},
                 _roles={-1: {"label": TECH_ADMIN_ROLE_LABEL}},
-                _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1})
+                _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1},
+                _permission_name_to_id_map={"read": 1},
+                _resource_urn_to_id_map={"urn:ge:test:resource": 1,
+                                         "urn:ge:test:resource2": 2})
 @patch("management_layer.permission.utils.get_user_roles_for_site",
        Mock(side_effect=return_tech_admin_role_for_testing))
 @patch("management_layer.permission.utils.get_user_roles_for_domain",
@@ -256,6 +259,10 @@ class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
     """
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user_id = "bc36b436-1091-11e8-bc0f-0242ac120003"
 
     async def get_client(self, server):
         """
@@ -264,7 +271,7 @@ class IntegrationTest(AioHTTPTestCase):
         now = int(time.time())
         id_token_data = {
             "iss": os.environ["JWT_ISSUER"],
-            "sub": "bc36b436-1091-11e8-bc0f-0242ac120003",
+            "sub": self.user_id,
             "aud": os.environ["JWT_AUDIENCE"],
             "exp": now + 600,  # Expire 5 minutes in the future
             "iat": now,
@@ -293,7 +300,7 @@ class IntegrationTest(AioHTTPTestCase):
             body = await response.text()
             print(body)
 
-        self.assertEqual(response.status, status)
+        self.assertEqual(status, response.status)
 
     async def get_application(self):
         """
@@ -576,3 +583,89 @@ class IntegrationTest(AioHTTPTestCase):
     async def test_refresh_all(self, nocache):
         response = await self.client.get("/refresh/all", params={"nocache": nocache})
         await self.assertStatus(response, 200)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_user_has_permissions(self, nocache):
+        resource_permissions = [
+            {
+                "resource": "urn:ge:test:resource",
+                "permission": "read"
+            },
+            {
+                "resource": "urn:ge:test:resource2",
+                "permission": "read"
+            },
+        ]
+
+        data = {
+            "nocache": nocache == "true",
+            "operator": "any",
+            "resource_permissions": resource_permissions,
+            "site_id": 1
+        }
+
+        # When the check performed is for the user id that is also the requester (i.e. the
+        # holder of the token sent with the request), permission is always allowed to make the
+        # request.
+        response = await self.client.post(
+            f"/ops/user_has_permissions/{self.user_id}",
+            data=json.dumps(data)
+        )
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.user_permissions_check_response)
+        self.assertTrue(response_body["has_permissions"])
+
+        # Quick check that CORS is working
+        response = await self.client.request(
+            "OPTIONS", f"/ops/user_has_permissions/{self.user_id}",
+            headers={
+                "Origin": "http://foo.bar",
+                "Access-Control-Request-Method": "POST"
+            }
+        )
+        await self.assertStatus(response, 200)
+
+        # Bad requests results in HTTP 400 responses
+        data = {
+            "nocache": nocache == "true",
+            "operator": "unsupported",
+            "resource_permissions": resource_permissions,
+            "site_id": 1
+        }
+        response = await self.client.post(
+            f"/ops/user_has_permissions/{self.user_id}",
+            data=json.dumps(data)
+        )
+        await self.assertStatus(response, 400)
+
+        data = {
+            "nocache": nocache == "true",
+            "operator": "any",
+            "resource_permissions": resource_permissions,
+            # Missing site_id or domain_id
+        }
+        response = await self.client.post(
+            f"/ops/user_has_permissions/{self.user_id}",
+            data=json.dumps(data)
+        )
+        await self.assertStatus(response, 400)
+
+        data = {
+            "nocache": nocache == "true",
+            "operator": "any",
+            "resource_permissions": [
+                {
+                    "resource": "urn:ge:test:doesnotexist",  # Bad data
+                    "permission": "read"
+                }
+            ],
+            "domain_id": 1
+        }
+        response = await self.client.post(
+            f"/ops/user_has_permissions/{self.user_id}",
+            data=json.dumps(data)
+        )
+        await self.assertStatus(response, 400)

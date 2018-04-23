@@ -2022,17 +2022,7 @@ class MockedStubClass(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :param user_id: string A UUID value identifying the user.
         """
-        response_schema = json.loads("""{
-    "properties": {
-        "has_permissions": {
-            "type": "boolean"
-        }
-    },
-    "required": [
-        "has_permissions"
-    ],
-    "type": "object"
-}""")
+        response_schema = schemas.user_permissions_check_response
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

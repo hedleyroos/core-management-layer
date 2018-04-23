@@ -1566,6 +1566,20 @@ user_permissions_check = json.loads("""
 }
 """)
 
+user_permissions_check_response = json.loads("""
+{
+    "properties": {
+        "has_permissions": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "has_permissions"
+    ],
+    "type": "object"
+}
+""")
+
 user_site_data = json.loads("""
 {
     "properties": {

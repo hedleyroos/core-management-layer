@@ -1752,17 +1752,7 @@ class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
 
 class OpsUserHasPermissionsUserId(View, CorsViewMixin):
 
-    POST_RESPONSE_SCHEMA = json.loads("""{
-    "properties": {
-        "has_permissions": {
-            "type": "boolean"
-        }
-    },
-    "required": [
-        "has_permissions"
-    ],
-    "type": "object"
-}""")
+    POST_RESPONSE_SCHEMA = schemas.user_permissions_check_response
     POST_BODY_SCHEMA = schemas.user_permissions_check
 
     async def post(self):
@@ -1801,7 +1791,7 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
 
         maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
-        return json_response(result, status=201, headers=headers)
+        return json_response(result, headers=headers)
 
 
 class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
@@ -6242,6 +6232,17 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "user_permissions_check_response": {
+            "properties": {
+                "has_permissions": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "has_permissions"
+            ],
+            "type": "object"
+        },
         "user_site_data": {
             "properties": {
                 "blocked": {
@@ -7920,15 +7921,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "200": {
                         "description": "True if the user has the permissions, else False",
                         "schema": {
-                            "properties": {
-                                "has_permissions": {
-                                    "type": "boolean"
-                                }
-                            },
-                            "required": [
-                                "has_permissions"
-                            ],
-                            "type": "object"
+                            "$ref": "#/definitions/user_permissions_check_response",
+                            "x-scope": [
+                                ""
+                            ]
                         }
                     },
                     "400": {
