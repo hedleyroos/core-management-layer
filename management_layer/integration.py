@@ -1,5 +1,8 @@
+from aiohttp import web
+
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings
+from management_layer.permission import utils
 from management_layer.utils import client_exception_handler
 from management_layer.permission.decorator import require_permissions, requester_has_role
 
@@ -561,6 +564,56 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             site_role_labels_aggregated = await request.app["operational_api"].get_site_role_labels_aggregated(site_id)
             return site_role_labels_aggregated.to_dict()
+
+    # user_has_permissions -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:siterole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read"),
+                               ("urn:ge:access_control:usersiterole", "read"),
+                               ("urn:ge:access_control:permission", "read"),
+                               ("urn:ge:access_control:resource", "read"),
+                               ], target_user_field=2)
+    async def user_has_permissions(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        # The request body uses strings to identify resources and permissions.
+        # We convert it to their integer representations here as a validation step.
+        try:
+            resource_permissions = [
+                (mappings.Mappings.resource_id_for(item["resource"]),
+                 mappings.Mappings.permission_id_for(item["permission"]))
+                for item in body["resource_permissions"]
+            ]
+        except KeyError as e:
+            raise web.HTTPBadRequest(text=str(e))
+
+        nocache = body.get("nocache", False)
+        operator_string = body["operator"]
+        if operator_string == "any":
+            operator = any
+        elif operator_string == "all":
+            operator = all
+        else:
+            raise web.HTTPBadRequest(text=f"Invalid operator specified: {operator_string}.")
+
+        site_id = body.get("site_id")
+        domain_id = body.get("domain_id")
+
+        # Either a site_id or domain_id needs to be specified.
+        if site_id is None and domain_id is None or \
+           site_id is not None and domain_id is not None:
+            raise web.HTTPBadRequest(text="Either site_id or domain_id needs to be specified")
+
+        result = await utils.user_has_permissions(request, user_id, operator, resource_permissions,
+                                                  site=site_id, domain=domain_id, nocache=nocache)
+        return {"has_permissions": result}
 
     # get_user_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod

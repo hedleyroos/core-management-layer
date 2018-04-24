@@ -815,6 +815,25 @@ resource_create = json.loads("""
 }
 """)
 
+resource_permission = json.loads("""
+{
+    "properties": {
+        "permission": {
+            "type": "string"
+        },
+        "resource": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "required": [
+        "resource",
+        "permission"
+    ],
+    "type": "object"
+}
+""")
+
 resource_update = json.loads("""
 {
     "minProperties": 1,
@@ -1490,6 +1509,72 @@ user_domain_role_create = json.loads("""
         "user_id",
         "domain_id",
         "role_id"
+    ],
+    "type": "object"
+}
+""")
+
+user_permissions_check = json.loads("""
+{
+    "properties": {
+        "domain_id": {
+            "type": "integer"
+        },
+        "nocache": {
+            "default": false,
+            "type": "boolean"
+        },
+        "operator": {
+            "enum": [
+                "all",
+                "any"
+            ],
+            "type": "string"
+        },
+        "resource_permissions": {
+            "items": {
+                "properties": {
+                    "permission": {
+                        "type": "string"
+                    },
+                    "resource": {
+                        "format": "uri",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "resource",
+                    "permission"
+                ],
+                "type": "object",
+                "x-scope": [
+                    "",
+                    "#/definitions/user_permissions_check"
+                ]
+            },
+            "type": "array"
+        },
+        "site_id": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "operator",
+        "resource_permissions"
+    ],
+    "type": "object"
+}
+""")
+
+user_permissions_check_response = json.loads("""
+{
+    "properties": {
+        "has_permissions": {
+            "type": "boolean"
+        }
+    },
+    "required": [
+        "has_permissions"
     ],
     "type": "object"
 }
