@@ -337,8 +337,26 @@ class AuthenticationApi(object):
         :param async bool
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
-        :param str email: An optional email filter
-        :param str username_prefix: An optional username prefix filter
+        :param str birth_date: An optional birth_date range filter
+        :param str country: An optional country filter
+        :param str date_joined: An optional date joined range filter
+        :param str email: An optional case insensitive email inner match filter
+        :param bool email_verified: An optional email verified filter
+        :param str first_name: An optional case insensitive first name inner match filter
+        :param str gender: An optional gender filter
+        :param bool is_active: An optional is_active filter
+        :param str last_login: An optional last login range filter
+        :param str last_name: An optional case insensitive last name inner match filter
+        :param str msisdn: An optional case insensitive MSISDN inner match filter
+        :param bool msisdn_verified: An optional MSISDN verified filter
+        :param str nickname: An optional case insensitive nickname inner match filter
+        :param int organisational_unit_id: An optional filter on the organisational unit id
+        :param str updated_at: An optional updated_at range filter
+        :param str username: An optional case insensitive username inner match filter
+        :param str q: An optional case insensitive inner match filter across all searchable text fields
+        :param bool tfa_enabled: An optional filter based on whether a user has 2FA enabled or not
+        :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
+        :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
         :return: list[User]
                  If the method is called asynchronously,
@@ -362,15 +380,33 @@ class AuthenticationApi(object):
         :param async bool
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
-        :param str email: An optional email filter
-        :param str username_prefix: An optional username prefix filter
+        :param str birth_date: An optional birth_date range filter
+        :param str country: An optional country filter
+        :param str date_joined: An optional date joined range filter
+        :param str email: An optional case insensitive email inner match filter
+        :param bool email_verified: An optional email verified filter
+        :param str first_name: An optional case insensitive first name inner match filter
+        :param str gender: An optional gender filter
+        :param bool is_active: An optional is_active filter
+        :param str last_login: An optional last login range filter
+        :param str last_name: An optional case insensitive last name inner match filter
+        :param str msisdn: An optional case insensitive MSISDN inner match filter
+        :param bool msisdn_verified: An optional MSISDN verified filter
+        :param str nickname: An optional case insensitive nickname inner match filter
+        :param int organisational_unit_id: An optional filter on the organisational unit id
+        :param str updated_at: An optional updated_at range filter
+        :param str username: An optional case insensitive username inner match filter
+        :param str q: An optional case insensitive inner match filter across all searchable text fields
+        :param bool tfa_enabled: An optional filter based on whether a user has 2FA enabled or not
+        :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
+        :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
         :return: list[User]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'email', 'username_prefix', 'user_ids']  # noqa: E501
+        all_params = ['offset', 'limit', 'birth_date', 'country', 'date_joined', 'email', 'email_verified', 'first_name', 'gender', 'is_active', 'last_login', 'last_name', 'msisdn', 'msisdn_verified', 'nickname', 'organisational_unit_id', 'updated_at', 'username', 'q', 'tfa_enabled', 'has_organisational_unit', 'order_by', 'user_ids']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -392,6 +428,33 @@ class AuthenticationApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `user_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `user_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('country' in params and
+                len(params['country']) > 2):
+            raise ValueError("Invalid value for parameter `country` when calling `user_list`, length must be less than or equal to `2`")  # noqa: E501
+        if ('country' in params and
+                len(params['country']) < 2):
+            raise ValueError("Invalid value for parameter `country` when calling `user_list`, length must be greater than or equal to `2`")  # noqa: E501
+        if ('email' in params and
+                len(params['email']) < 3):
+            raise ValueError("Invalid value for parameter `email` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('first_name' in params and
+                len(params['first_name']) < 3):
+            raise ValueError("Invalid value for parameter `first_name` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('last_name' in params and
+                len(params['last_name']) < 3):
+            raise ValueError("Invalid value for parameter `last_name` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('msisdn' in params and
+                len(params['msisdn']) < 3):
+            raise ValueError("Invalid value for parameter `msisdn` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('nickname' in params and
+                len(params['nickname']) < 3):
+            raise ValueError("Invalid value for parameter `nickname` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('username' in params and
+                len(params['username']) < 3):
+            raise ValueError("Invalid value for parameter `username` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
+        if ('q' in params and
+                len(params['q']) < 3):
+            raise ValueError("Invalid value for parameter `q` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
         if ('user_ids' in params and
                 len(params['user_ids']) < 0):
             raise ValueError("Invalid value for parameter `user_ids` when calling `user_list`, number of items must be greater than or equal to `0`")  # noqa: E501
@@ -404,10 +467,47 @@ class AuthenticationApi(object):
             query_params.append(('offset', params['offset']))  # noqa: E501
         if 'limit' in params:
             query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'birth_date' in params:
+            query_params.append(('birth_date', params['birth_date']))  # noqa: E501
+        if 'country' in params:
+            query_params.append(('country', params['country']))  # noqa: E501
+        if 'date_joined' in params:
+            query_params.append(('date_joined', params['date_joined']))  # noqa: E501
         if 'email' in params:
             query_params.append(('email', params['email']))  # noqa: E501
-        if 'username_prefix' in params:
-            query_params.append(('username_prefix', params['username_prefix']))  # noqa: E501
+        if 'email_verified' in params:
+            query_params.append(('email_verified', params['email_verified']))  # noqa: E501
+        if 'first_name' in params:
+            query_params.append(('first_name', params['first_name']))  # noqa: E501
+        if 'gender' in params:
+            query_params.append(('gender', params['gender']))  # noqa: E501
+        if 'is_active' in params:
+            query_params.append(('is_active', params['is_active']))  # noqa: E501
+        if 'last_login' in params:
+            query_params.append(('last_login', params['last_login']))  # noqa: E501
+        if 'last_name' in params:
+            query_params.append(('last_name', params['last_name']))  # noqa: E501
+        if 'msisdn' in params:
+            query_params.append(('msisdn', params['msisdn']))  # noqa: E501
+        if 'msisdn_verified' in params:
+            query_params.append(('msisdn_verified', params['msisdn_verified']))  # noqa: E501
+        if 'nickname' in params:
+            query_params.append(('nickname', params['nickname']))  # noqa: E501
+        if 'organisational_unit_id' in params:
+            query_params.append(('organisational_unit_id', params['organisational_unit_id']))  # noqa: E501
+        if 'updated_at' in params:
+            query_params.append(('updated_at', params['updated_at']))  # noqa: E501
+        if 'username' in params:
+            query_params.append(('username', params['username']))  # noqa: E501
+        if 'q' in params:
+            query_params.append(('q', params['q']))  # noqa: E501
+        if 'tfa_enabled' in params:
+            query_params.append(('tfa_enabled', params['tfa_enabled']))  # noqa: E501
+        if 'has_organisational_unit' in params:
+            query_params.append(('has_organisational_unit', params['has_organisational_unit']))  # noqa: E501
+        if 'order_by' in params:
+            query_params.append(('order_by', params['order_by']))  # noqa: E501
+            collection_formats['order_by'] = 'csv'  # noqa: E501
         if 'user_ids' in params:
             query_params.append(('user_ids', params['user_ids']))  # noqa: E501
             collection_formats['user_ids'] = 'multi'  # noqa: E501
