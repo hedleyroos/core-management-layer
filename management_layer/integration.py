@@ -1500,8 +1500,26 @@ class Implementation(AbstractStubClass):
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param email (optional): string An optional email filter
-        :param username_prefix (optional): string An optional username prefix filter
+        :param birth_date (optional): string An optional birth_date range filter
+        :param country (optional): string An optional country filter
+        :param date_joined (optional): string An optional date joined range filter
+        :param email (optional): string An optional case insensitive email inner match filter
+        :param email_verified (optional): boolean An optional email verified filter
+        :param first_name (optional): string An optional case insensitive first name inner match filter
+        :param gender (optional): string An optional gender filter
+        :param is_active (optional): boolean An optional is_active filter
+        :param last_login (optional): string An optional last login range filter
+        :param last_name (optional): string An optional case insensitive last name inner match filter
+        :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
+        :param msisdn_verified (optional): boolean An optional MSISDN verified filter
+        :param nickname (optional): string An optional case insensitive nickname inner match filter
+        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param updated_at (optional): string An optional updated_at range filter
+        :param username (optional): string An optional case insensitive username inner match filter
+        :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
+        :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
+        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :returns: result or (result, headers) tuple
         """

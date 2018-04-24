@@ -4159,16 +4159,117 @@ class Users(View, CorsViewMixin):
                 if 100 < limit:
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
-            # email (optional): string An optional email filter
+            # birth_date (optional): string An optional birth_date range filter
+            birth_date = self.request.query.get("birth_date", None)
+            if birth_date is not None:
+                jsonschema.validate(birth_date, {"type": "string"})
+                optional_args["birth_date"] = birth_date
+            # country (optional): string An optional country filter
+            country = self.request.query.get("country", None)
+            if country is not None:
+                jsonschema.validate(country, {"type": "string"})
+                optional_args["country"] = country
+            # date_joined (optional): string An optional date joined range filter
+            date_joined = self.request.query.get("date_joined", None)
+            if date_joined is not None:
+                jsonschema.validate(date_joined, {"type": "string"})
+                optional_args["date_joined"] = date_joined
+            # email (optional): string An optional case insensitive email inner match filter
             email = self.request.query.get("email", None)
             if email is not None:
                 jsonschema.validate(email, {"type": "string"})
                 optional_args["email"] = email
-            # username_prefix (optional): string An optional username prefix filter
-            username_prefix = self.request.query.get("username_prefix", None)
-            if username_prefix is not None:
-                jsonschema.validate(username_prefix, {"type": "string"})
-                optional_args["username_prefix"] = username_prefix
+            # email_verified (optional): boolean An optional email verified filter
+            email_verified = self.request.query.get("email_verified", None)
+            if email_verified is not None:
+                email_verified = (email_verified.lower() == "true")
+                jsonschema.validate(email_verified, {"type": "boolean"})
+                optional_args["email_verified"] = email_verified
+            # first_name (optional): string An optional case insensitive first name inner match filter
+            first_name = self.request.query.get("first_name", None)
+            if first_name is not None:
+                jsonschema.validate(first_name, {"type": "string"})
+                optional_args["first_name"] = first_name
+            # gender (optional): string An optional gender filter
+            gender = self.request.query.get("gender", None)
+            if gender is not None:
+                jsonschema.validate(gender, {"type": "string"})
+                optional_args["gender"] = gender
+            # is_active (optional): boolean An optional is_active filter
+            is_active = self.request.query.get("is_active", None)
+            if is_active is not None:
+                is_active = (is_active.lower() == "true")
+                jsonschema.validate(is_active, {"type": "boolean"})
+                optional_args["is_active"] = is_active
+            # last_login (optional): string An optional last login range filter
+            last_login = self.request.query.get("last_login", None)
+            if last_login is not None:
+                jsonschema.validate(last_login, {"type": "string"})
+                optional_args["last_login"] = last_login
+            # last_name (optional): string An optional case insensitive last name inner match filter
+            last_name = self.request.query.get("last_name", None)
+            if last_name is not None:
+                jsonschema.validate(last_name, {"type": "string"})
+                optional_args["last_name"] = last_name
+            # msisdn (optional): string An optional case insensitive MSISDN inner match filter
+            msisdn = self.request.query.get("msisdn", None)
+            if msisdn is not None:
+                jsonschema.validate(msisdn, {"type": "string"})
+                optional_args["msisdn"] = msisdn
+            # msisdn_verified (optional): boolean An optional MSISDN verified filter
+            msisdn_verified = self.request.query.get("msisdn_verified", None)
+            if msisdn_verified is not None:
+                msisdn_verified = (msisdn_verified.lower() == "true")
+                jsonschema.validate(msisdn_verified, {"type": "boolean"})
+                optional_args["msisdn_verified"] = msisdn_verified
+            # nickname (optional): string An optional case insensitive nickname inner match filter
+            nickname = self.request.query.get("nickname", None)
+            if nickname is not None:
+                jsonschema.validate(nickname, {"type": "string"})
+                optional_args["nickname"] = nickname
+            # organisational_unit_id (optional): integer An optional filter on the organisational unit id
+            organisational_unit_id = self.request.query.get("organisational_unit_id", None)
+            if organisational_unit_id is not None:
+                organisational_unit_id = int(organisational_unit_id)
+                optional_args["organisational_unit_id"] = organisational_unit_id
+            # updated_at (optional): string An optional updated_at range filter
+            updated_at = self.request.query.get("updated_at", None)
+            if updated_at is not None:
+                jsonschema.validate(updated_at, {"type": "string"})
+                optional_args["updated_at"] = updated_at
+            # username (optional): string An optional case insensitive username inner match filter
+            username = self.request.query.get("username", None)
+            if username is not None:
+                jsonschema.validate(username, {"type": "string"})
+                optional_args["username"] = username
+            # q (optional): string An optional case insensitive inner match filter across all searchable text fields
+            q = self.request.query.get("q", None)
+            if q is not None:
+                jsonschema.validate(q, {"type": "string"})
+                optional_args["q"] = q
+            # tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
+            tfa_enabled = self.request.query.get("tfa_enabled", None)
+            if tfa_enabled is not None:
+                tfa_enabled = (tfa_enabled.lower() == "true")
+                jsonschema.validate(tfa_enabled, {"type": "boolean"})
+                optional_args["tfa_enabled"] = tfa_enabled
+            # has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+            has_organisational_unit = self.request.query.get("has_organisational_unit", None)
+            if has_organisational_unit is not None:
+                has_organisational_unit = (has_organisational_unit.lower() == "true")
+                jsonschema.validate(has_organisational_unit, {"type": "boolean"})
+                optional_args["has_organisational_unit"] = has_organisational_unit
+            # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
+            order_by = self.request.query.getall("order_by", None)
+            if order_by is not None:
+                schema = {'name': 'order_by', 'description': 'Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.', 'in': 'query', 'required': False, 'type': 'array', 'collectionFormat': 'csv', 'items': {'type': 'string'}, 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(order_by, schema)
+                optional_args["order_by"] = order_by
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.getall("user_ids", None)
             if user_ids is not None:
@@ -4202,7 +4303,7 @@ class UsersUserId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.user
-    PUT_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    PUT_RESPONSE_SCHEMA = schemas.user
     PUT_BODY_SCHEMA = schemas.user_update
 
     async def delete(self):
@@ -6884,7 +6985,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ]
             }
         },
@@ -9584,19 +9685,158 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "description": "An optional email filter",
-                        "format": "email",
+                        "description": "An optional birth_date range filter",
                         "in": "query",
+                        "name": "birth_date",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional country filter",
+                        "in": "query",
+                        "maxLength": 2,
+                        "minLength": 2,
+                        "name": "country",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional date joined range filter",
+                        "in": "query",
+                        "name": "date_joined",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional case insensitive email inner match filter",
+                        "in": "query",
+                        "minLength": 3,
                         "name": "email",
                         "required": false,
                         "type": "string"
                     },
                     {
-                        "description": "An optional username prefix filter",
+                        "description": "An optional email verified filter",
                         "in": "query",
-                        "name": "username_prefix",
+                        "name": "email_verified",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "description": "An optional case insensitive first name inner match filter",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "first_name",
                         "required": false,
                         "type": "string"
+                    },
+                    {
+                        "description": "An optional gender filter",
+                        "in": "query",
+                        "name": "gender",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional is_active filter",
+                        "in": "query",
+                        "name": "is_active",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "description": "An optional last login range filter",
+                        "in": "query",
+                        "name": "last_login",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional case insensitive last name inner match filter",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "last_name",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional case insensitive MSISDN inner match filter",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "msisdn",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional MSISDN verified filter",
+                        "in": "query",
+                        "name": "msisdn_verified",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "description": "An optional case insensitive nickname inner match filter",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "nickname",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional filter on the organisational unit id",
+                        "in": "query",
+                        "name": "organisational_unit_id",
+                        "required": false,
+                        "type": "integer"
+                    },
+                    {
+                        "description": "An optional updated_at range filter",
+                        "in": "query",
+                        "name": "updated_at",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional case insensitive username inner match filter",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "username",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional case insensitive inner match filter across all searchable text fields",
+                        "in": "query",
+                        "minLength": 3,
+                        "name": "q",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "description": "An optional filter based on whether a user has 2FA enabled or not",
+                        "in": "query",
+                        "name": "tfa_enabled",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "description": "An optional filter based on whether a user has an organisational unit or not",
+                        "in": "query",
+                        "name": "has_organisational_unit",
+                        "required": false,
+                        "type": "boolean"
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "Fields and directions to order by, e.g. \\"-created_at,username\\". Add \\"-\\" in front of a field name to indicate descending order.",
+                        "in": "query",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "order_by",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
                     },
                     {
                         "collectionFormat": "multi",
@@ -9637,7 +9877,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ]
             }
         },
@@ -9650,7 +9890,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ]
             },
             "get": {
@@ -9670,7 +9910,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ]
             },
             "parameters": [
@@ -9703,11 +9943,17 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ]
             }
         },
