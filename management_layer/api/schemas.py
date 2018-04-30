@@ -1438,6 +1438,26 @@ user = json.loads("""
 }
 """)
 
+user_and_roles = json.loads("""
+{
+    "properties": {
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "roles": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "type": "object"
+}
+""")
+
 user_domain_role = json.loads("""
 {
     "properties": {

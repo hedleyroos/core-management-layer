@@ -390,6 +390,26 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_domain_users_and_roles -- Synchronisation point for meld
+    @staticmethod
+    async def get_domain_users_and_roles(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # get_site_users_and_roles -- Synchronisation point for meld
+    @staticmethod
+    async def get_site_users_and_roles(request, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # user_has_permissions -- Synchronisation point for meld
     @staticmethod
     async def user_has_permissions(request, body, user_id, **kwargs):
@@ -2025,6 +2045,80 @@ class MockedStubClass(AbstractStubClass):
         :param site_id: integer A unique integer value identifying the site.
         """
         response_schema = schemas.site_role_labels_aggregated
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def get_domain_users_and_roles(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "string"
+            },
+            "roles": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            }
+        },
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def get_site_users_and_roles(request, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param site_id: integer A unique integer value identifying the site.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "id": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "string"
+            },
+            "roles": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            }
+        },
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

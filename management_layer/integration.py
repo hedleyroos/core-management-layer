@@ -519,6 +519,36 @@ class Implementation(AbstractStubClass):
             user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
             return user_roles.to_dict()
 
+    # get_domain_users_and_roles -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read")])
+    async def get_domain_users_and_roles(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer An integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            users_and_roles = await request.app["operational_api"].get_domain_users_and_roles(domain_id)
+            return users_and_roles.to_dict()
+
+    # get_site_users_and_roles -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:siterole", "read"),
+                               ("urn:ge:access_control:usersiterole", "read")])
+    async def get_site_users_and_roles(request, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param site_id: integer An integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            users_and_roles = await request.app["operational_api"].get_site_users_and_roles(site_id)
+            return users_and_roles.to_dict()
+
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
