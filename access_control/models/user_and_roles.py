@@ -31,73 +31,47 @@ class UserAndRoles(object):
                             and the value is json key in definition.
     """
     swagger_types = {
-        'id': 'int',
-        'name': 'str',
+        'user_id': 'str',
         'roles': 'list[str]'
     }
 
     attribute_map = {
-        'id': 'id',
-        'name': 'name',
+        'user_id': 'user_id',
         'roles': 'roles'
     }
 
-    def __init__(self, id=None, name=None, roles=None):  # noqa: E501
+    def __init__(self, user_id=None, roles=None):  # noqa: E501
         """UserAndRoles - a model defined in Swagger"""  # noqa: E501
 
-        self._id = None
-        self._name = None
+        self._user_id = None
         self._roles = None
         self.discriminator = None
 
-        if id is not None:
-            self.id = id
-        if name is not None:
-            self.name = name
+        if user_id is not None:
+            self.user_id = user_id
         if roles is not None:
             self.roles = roles
 
     @property
-    def id(self):
-        """Gets the id of this UserAndRoles.  # noqa: E501
+    def user_id(self):
+        """Gets the user_id of this UserAndRoles.  # noqa: E501
 
 
-        :return: The id of this UserAndRoles.  # noqa: E501
-        :rtype: int
-        """
-        return self._id
-
-    @id.setter
-    def id(self, id):
-        """Sets the id of this UserAndRoles.
-
-
-        :param id: The id of this UserAndRoles.  # noqa: E501
-        :type: int
-        """
-
-        self._id = id
-
-    @property
-    def name(self):
-        """Gets the name of this UserAndRoles.  # noqa: E501
-
-
-        :return: The name of this UserAndRoles.  # noqa: E501
+        :return: The user_id of this UserAndRoles.  # noqa: E501
         :rtype: str
         """
-        return self._name
+        return self._user_id
 
-    @name.setter
-    def name(self, name):
-        """Sets the name of this UserAndRoles.
+    @user_id.setter
+    def user_id(self, user_id):
+        """Sets the user_id of this UserAndRoles.
 
 
-        :param name: The name of this UserAndRoles.  # noqa: E501
+        :param user_id: The user_id of this UserAndRoles.  # noqa: E501
         :type: str
         """
 
-        self._name = name
+        self._user_id = user_id
 
     @property
     def roles(self):

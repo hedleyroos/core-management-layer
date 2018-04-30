@@ -531,12 +531,33 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
+            # Get access control response.
             users_and_roles = await request.app["operational_api"].get_domain_users_and_roles(domain_id)
-            return users_and_roles.to_dict()
+            users_and_roles = [user_and_roles.to_dict() for user_and_roles in users_and_roles]
+            # Get all the user names of the user IDs found.
+            user_ids = [an_item["user_id"] for an_item in users_and_roles]
+            users, _status, headers = await request.app[
+                "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
+
+            if users:
+                transform = transformations.USER
+                users = [transform.apply(user.to_dict()) for user in users]
+                users = {user["id"]: user["username"] for user in users}
+                users_and_roles = [
+                    {
+                        "id": user_and_roles["user_id"],
+                        "username": users[user_and_roles["user_id"]],
+                        "roles": user_and_roles["roles"]
+                    } for user_and_roles in users_and_roles
+                ]
+            return users_and_roles
 
     # get_site_users_and_roles -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:site", "read"),
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read"),
+                               ("urn:ge:access_control:site", "read"),
                                ("urn:ge:access_control:siterole", "read"),
                                ("urn:ge:access_control:usersiterole", "read")])
     async def get_site_users_and_roles(request, site_id, **kwargs):
@@ -546,8 +567,26 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
+            # Get access control response.
             users_and_roles = await request.app["operational_api"].get_site_users_and_roles(site_id)
-            return users_and_roles.to_dict()
+            users_and_roles = [user_and_roles.to_dict() for user_and_roles in users_and_roles]
+            # Get all the user names of the user IDs found.
+            user_ids = [an_item["user_id"] for an_item in users_and_roles]
+            users, _status, headers = await request.app[
+                "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
+
+            if users:
+                transform = transformations.USER
+                users = [transform.apply(user.to_dict()) for user in users]
+                users = {user["id"]: user["username"] for user in users}
+                users_and_roles = [
+                    {
+                        "id": user_and_roles["user_id"],
+                        "username": users[user_and_roles["user_id"]],
+                        "roles": user_and_roles["roles"]
+                    } for user_and_roles in users_and_roles
+                ]
+            return users_and_roles
 
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod

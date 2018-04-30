@@ -1754,11 +1754,9 @@ class OpsUserAndRolesByDomainDomainId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
+        "description": "A user and their roles.",
         "properties": {
             "id": {
-                "type": "integer"
-            },
-            "name": {
                 "type": "string"
             },
             "roles": {
@@ -1766,6 +1764,9 @@ class OpsUserAndRolesByDomainDomainId(View, CorsViewMixin):
                     "type": "string"
                 },
                 "type": "array"
+            },
+            "username": {
+                "type": "string"
             }
         },
         "type": "object",
@@ -1808,11 +1809,9 @@ class OpsUserAndRolesBySiteSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
+        "description": "A user and their roles.",
         "properties": {
             "id": {
-                "type": "integer"
-            },
-            "name": {
                 "type": "string"
             },
             "roles": {
@@ -1820,6 +1819,9 @@ class OpsUserAndRolesBySiteSiteId(View, CorsViewMixin):
                     "type": "string"
                 },
                 "type": "array"
+            },
+            "username": {
+                "type": "string"
             }
         },
         "type": "object",
@@ -6336,11 +6338,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "type": "object"
         },
         "user_and_roles": {
+            "description": "A user and their roles.",
             "properties": {
                 "id": {
-                    "type": "integer"
-                },
-                "name": {
                     "type": "string"
                 },
                 "roles": {
@@ -6348,6 +6348,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     "type": "array"
+                },
+                "username": {
+                    "type": "string"
                 }
             },
             "type": "object"

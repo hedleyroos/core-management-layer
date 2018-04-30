@@ -2061,11 +2061,9 @@ class MockedStubClass(AbstractStubClass):
         """
         response_schema = json.loads("""{
     "items": {
+        "description": "A user and their roles.",
         "properties": {
             "id": {
-                "type": "integer"
-            },
-            "name": {
                 "type": "string"
             },
             "roles": {
@@ -2073,6 +2071,9 @@ class MockedStubClass(AbstractStubClass):
                     "type": "string"
                 },
                 "type": "array"
+            },
+            "username": {
+                "type": "string"
             }
         },
         "type": "object",
@@ -2098,11 +2099,9 @@ class MockedStubClass(AbstractStubClass):
         """
         response_schema = json.loads("""{
     "items": {
+        "description": "A user and their roles.",
         "properties": {
             "id": {
-                "type": "integer"
-            },
-            "name": {
                 "type": "string"
             },
             "roles": {
@@ -2110,6 +2109,9 @@ class MockedStubClass(AbstractStubClass):
                     "type": "string"
                 },
                 "type": "array"
+            },
+            "username": {
+                "type": "string"
             }
         },
         "type": "object",

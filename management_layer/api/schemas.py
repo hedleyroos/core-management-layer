@@ -1440,11 +1440,9 @@ user = json.loads("""
 
 user_and_roles = json.loads("""
 {
+    "description": "A user and their roles.",
     "properties": {
         "id": {
-            "type": "integer"
-        },
-        "name": {
             "type": "string"
         },
         "roles": {
@@ -1452,6 +1450,9 @@ user_and_roles = json.loads("""
                 "type": "string"
             },
             "type": "array"
+        },
+        "username": {
+            "type": "string"
         }
     },
     "type": "object"
