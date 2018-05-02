@@ -519,12 +519,12 @@ class Implementation(AbstractStubClass):
             user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
             return user_roles.to_dict()
 
-    # get_domain_users_and_roles -- Synchronisation point for meld
+    # get_users_with_roles_for_domain -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
                                ("urn:ge:access_control:domainrole", "read"),
                                ("urn:ge:access_control:userdomainrole", "read")])
-    async def get_domain_users_and_roles(request, domain_id, **kwargs):
+    async def get_users_with_roles_for_domain(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
         :param domain_id: integer An integer value identifying the domain.
@@ -532,27 +532,39 @@ class Implementation(AbstractStubClass):
         """
         with client_exception_handler():
             # Get access control response.
-            users_and_roles = await request.app["operational_api"].get_domain_users_and_roles(domain_id)
-            users_and_roles = [user_and_roles.to_dict() for user_and_roles in users_and_roles]
+            users_with_roles = await request.app["operational_api"].get_users_with_roles_for_domain(domain_id)
+            users_with_roles = [user_with_roles.to_dict() for user_with_roles in users_with_roles]
+
+            # Get all user_ids and role_ids to retrieve.
+            user_ids = []
+            role_ids = []
+            for user_with_roles in users_with_roles:
+                user_ids.append(user_with_roles["user_id"])
+                role_ids.extend(user_with_roles["role_ids"])
             # Get all the user names of the user IDs found.
-            user_ids = [an_item["user_id"] for an_item in users_and_roles]
             users, _status, headers = await request.app[
                 "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
 
-            if users:
+            # Get all the role labels of the role IDs found.
+            roles, _status, headers = await request.app[
+                "access_control_api"].role_list_with_http_info(role_ids=role_ids, **kwargs)
+
+            if users and roles:
                 transform = transformations.USER
                 users = [transform.apply(user.to_dict()) for user in users]
-                users = {user["id"]: user["username"] for user in users}
-                users_and_roles = [
+                user_mapping = {user["id"]: user["username"] for user in users}
+                roles = [role.to_dict() for role in roles]
+                role_mapping = {role["id"]: role["label"] for role in roles}
+                users_with_roles = [
                     {
-                        "id": user_and_roles["user_id"],
-                        "username": users[user_and_roles["user_id"]],
-                        "roles": user_and_roles["roles"]
-                    } for user_and_roles in users_and_roles
+                        "id": user_with_roles["user_id"],
+                        "username": user_mapping[user_with_roles["user_id"]],
+                        "roles": [role_mapping[int(role_id)] for role_id in user_with_roles["role_ids"]]
+                    } for user_with_roles in users_with_roles
                 ]
-            return users_and_roles
+            return users_with_roles
 
-    # get_site_users_and_roles -- Synchronisation point for meld
+    # get_users_with_roles_for_site -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
                                ("urn:ge:access_control:domainrole", "read"),
@@ -560,7 +572,7 @@ class Implementation(AbstractStubClass):
                                ("urn:ge:access_control:site", "read"),
                                ("urn:ge:access_control:siterole", "read"),
                                ("urn:ge:access_control:usersiterole", "read")])
-    async def get_site_users_and_roles(request, site_id, **kwargs):
+    async def get_users_with_roles_for_site(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
         :param site_id: integer An integer value identifying the site.
@@ -568,25 +580,37 @@ class Implementation(AbstractStubClass):
         """
         with client_exception_handler():
             # Get access control response.
-            users_and_roles = await request.app["operational_api"].get_site_users_and_roles(site_id)
-            users_and_roles = [user_and_roles.to_dict() for user_and_roles in users_and_roles]
+            users_with_roles = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
+            users_with_roles = [user_with_roles.to_dict() for user_with_roles in users_with_roles]
+
+            # Get all user_ids and role_ids to retrieve.
+            user_ids = []
+            role_ids = []
+            for user_with_roles in users_with_roles:
+                user_ids.append(user_with_roles["user_id"])
+                role_ids.extend(user_with_roles["role_ids"])
             # Get all the user names of the user IDs found.
-            user_ids = [an_item["user_id"] for an_item in users_and_roles]
             users, _status, headers = await request.app[
                 "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
 
-            if users:
+            # Get all the role labels of the role IDs found.
+            roles, _status, headers = await request.app[
+                "access_control_api"].role_list_with_http_info(role_ids=role_ids, **kwargs)
+
+            if users and roles:
                 transform = transformations.USER
                 users = [transform.apply(user.to_dict()) for user in users]
-                users = {user["id"]: user["username"] for user in users}
-                users_and_roles = [
+                user_mapping = {user["id"]: user["username"] for user in users}
+                roles = [role.to_dict() for role in roles]
+                role_mapping = {role["id"]: role["label"] for role in roles}
+                users_with_roles = [
                     {
-                        "id": user_and_roles["user_id"],
-                        "username": users[user_and_roles["user_id"]],
-                        "roles": user_and_roles["roles"]
-                    } for user_and_roles in users_and_roles
+                        "id": user_with_roles["user_id"],
+                        "username": user_mapping[user_with_roles["user_id"]],
+                        "roles": [role_mapping[int(role_id)] for role_id in user_with_roles["role_ids"]]
+                    } for user_with_roles in users_with_roles
                 ]
-            return users_and_roles
+            return users_with_roles
 
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod

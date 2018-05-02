@@ -58,9 +58,9 @@ from access_control.models.site_role_create import SiteRoleCreate
 from access_control.models.site_role_labels_aggregated import SiteRoleLabelsAggregated
 from access_control.models.site_role_update import SiteRoleUpdate
 from access_control.models.site_update import SiteUpdate
-from access_control.models.user_and_roles import UserAndRoles
 from access_control.models.user_domain_role import UserDomainRole
 from access_control.models.user_domain_role_create import UserDomainRoleCreate
 from access_control.models.user_site_role import UserSiteRole
 from access_control.models.user_site_role_create import UserSiteRoleCreate
 from access_control.models.user_site_role_labels_aggregated import UserSiteRoleLabelsAggregated
+from access_control.models.user_with_roles import UserWithRoles

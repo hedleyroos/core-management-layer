@@ -1438,27 +1438,6 @@ user = json.loads("""
 }
 """)
 
-user_and_roles = json.loads("""
-{
-    "description": "A user and their roles.",
-    "properties": {
-        "id": {
-            "type": "string"
-        },
-        "roles": {
-            "items": {
-                "type": "string"
-            },
-            "type": "array"
-        },
-        "username": {
-            "type": "string"
-        }
-    },
-    "type": "object"
-}
-""")
-
 user_domain_role = json.loads("""
 {
     "properties": {
@@ -1855,6 +1834,28 @@ user_update = json.loads("""
         },
         "msisdn_verified": {
             "type": "boolean"
+        }
+    },
+    "type": "object"
+}
+""")
+
+user_with_roles = json.loads("""
+{
+    "description": "A user with their roles.",
+    "properties": {
+        "id": {
+            "format": "UUID",
+            "type": "string"
+        },
+        "roles": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "username": {
+            "type": "string"
         }
     },
     "type": "object"

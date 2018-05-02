@@ -1419,12 +1419,13 @@ definitions:
     required:
       - has_permissions
 
-  user_and_roles:
-    description: 'A user and their roles.'
+  user_with_roles:
+    description: 'A user with their roles.'
     type: object
     properties:
       id:
         type: string
+        format: UUID
       username:
         type: string
       roles:
@@ -1638,12 +1639,12 @@ paths:
       tags:
         - operational
 
-  /ops/user_and_roles_by_domain/{domain_id}:
+  /ops/users_with_roles_for_domain/{domain_id}:
     parameters:
       - $ref: '#/parameters/domain_id'
     get:
       description: 'Get a list of Users with their effective roles within the given domain.'
-      operationId: get_domain_users_and_roles
+      operationId: get_users_with_roles_for_domain
       produces:
         - application/json
       responses:
@@ -1652,7 +1653,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/user_and_roles'
+              $ref: '#/definitions/user_with_roles'
         403:
           description: 'Forbidden'
         404:
@@ -1660,12 +1661,12 @@ paths:
       tags:
         - operational
 
-  /ops/user_and_roles_by_site/{site_id}:
+  /ops/users_with_roles_for_site/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'
     get:
       description: 'Get a list of Users with their effective roles within the given site.'
-      operationId: get_site_users_and_roles
+      operationId: get_users_with_roles_for_site
       produces:
         - application/json
       responses:
@@ -1674,7 +1675,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/user_and_roles'
+              $ref: '#/definitions/user_with_roles'
         403:
           description: 'Forbidden'
         404:

@@ -1750,116 +1750,6 @@ class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class OpsUserAndRolesByDomainDomainId(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = json.loads("""{
-    "items": {
-        "description": "A user and their roles.",
-        "properties": {
-            "id": {
-                "type": "string"
-            },
-            "roles": {
-                "items": {
-                    "type": "string"
-                },
-                "type": "array"
-            },
-            "username": {
-                "type": "string"
-            }
-        },
-        "type": "object",
-        "x-scope": [
-            ""
-        ]
-    },
-    "type": "array"
-}""")
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OpsUserAndRolesByDomainDomainId instance
-        """
-        try:
-            # domain_id: integer A unique integer value identifying the domain.
-            domain_id = self.request.match_info["domain_id"]
-            domain_id = int(domain_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get_domain_users_and_roles(
-            self.request, domain_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class OpsUserAndRolesBySiteSiteId(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = json.loads("""{
-    "items": {
-        "description": "A user and their roles.",
-        "properties": {
-            "id": {
-                "type": "string"
-            },
-            "roles": {
-                "items": {
-                    "type": "string"
-                },
-                "type": "array"
-            },
-            "username": {
-                "type": "string"
-            }
-        },
-        "type": "object",
-        "x-scope": [
-            ""
-        ]
-    },
-    "type": "array"
-}""")
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OpsUserAndRolesBySiteSiteId instance
-        """
-        try:
-            # site_id: integer A unique integer value identifying the site.
-            site_id = self.request.match_info["site_id"]
-            site_id = int(site_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get_site_users_and_roles(
-            self.request, site_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
 class OpsUserHasPermissionsUserId(View, CorsViewMixin):
 
     POST_RESPONSE_SCHEMA = schemas.user_permissions_check_response
@@ -1928,6 +1818,118 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
 
         result = await Stubs.get_user_site_role_labels_aggregated(
             self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class OpsUsersWithRolesForDomainDomainId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "description": "A user with their roles.",
+        "properties": {
+            "id": {
+                "format": "UUID",
+                "type": "string"
+            },
+            "roles": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            },
+            "username": {
+                "type": "string"
+            }
+        },
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUsersWithRolesForDomainDomainId instance
+        """
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_users_with_roles_for_domain(
+            self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "description": "A user with their roles.",
+        "properties": {
+            "id": {
+                "format": "UUID",
+                "type": "string"
+            },
+            "roles": {
+                "items": {
+                    "type": "string"
+                },
+                "type": "array"
+            },
+            "username": {
+                "type": "string"
+            }
+        },
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUsersWithRolesForSiteSiteId instance
+        """
+        try:
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_users_with_roles_for_site(
+            self.request, site_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -6337,24 +6339,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
-        "user_and_roles": {
-            "description": "A user and their roles.",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "roles": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "username": {
-                    "type": "string"
-                }
-            },
-            "type": "object"
-        },
         "user_domain_role": {
             "properties": {
                 "created_at": {
@@ -6706,6 +6690,25 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "msisdn_verified": {
                     "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "user_with_roles": {
+            "description": "A user with their roles.",
+            "properties": {
+                "id": {
+                    "format": "UUID",
+                    "type": "string"
+                },
+                "roles": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "username": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -8118,86 +8121,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
-        "/ops/user_and_roles_by_domain/{domain_id}": {
-            "get": {
-                "description": "Get a list of Users with their effective roles within the given domain.",
-                "operationId": "get_domain_users_and_roles",
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/user_and_roles",
-                                "x-scope": [
-                                    ""
-                                ]
-                            },
-                            "type": "array"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Domain not found"
-                    }
-                },
-                "tags": [
-                    "operational"
-                ]
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/domain_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
-        "/ops/user_and_roles_by_site/{site_id}": {
-            "get": {
-                "description": "Get a list of Users with their effective roles within the given site.",
-                "operationId": "get_site_users_and_roles",
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "schema": {
-                            "items": {
-                                "$ref": "#/definitions/user_and_roles",
-                                "x-scope": [
-                                    ""
-                                ]
-                            },
-                            "type": "array"
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Site not found"
-                    }
-                },
-                "tags": [
-                    "operational"
-                ]
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/site_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
         "/ops/user_has_permissions/{user_id}": {
             "parameters": [
                 {
@@ -8283,6 +8206,86 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ""
                     ]
                 },
+                {
+                    "$ref": "#/parameters/site_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/ops/users_with_roles_for_domain/{domain_id}": {
+            "get": {
+                "description": "Get a list of Users with their effective roles within the given domain.",
+                "operationId": "get_users_with_roles_for_domain",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/user_with_roles",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Domain not found"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/domain_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/ops/users_with_roles_for_site/{site_id}": {
+            "get": {
+                "description": "Get a list of Users with their effective roles within the given site.",
+                "operationId": "get_users_with_roles_for_site",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/user_with_roles",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Site not found"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
