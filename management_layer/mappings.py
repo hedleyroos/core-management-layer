@@ -24,10 +24,8 @@ IMPORTANT: Dictionaries with integer keys that are serialised to JSON will have 
 converted to strings when cached and those keys need to be transformed back to integers
 after reading from the cache.
 """
-import datetime
 import json
 import logging
-import uuid
 
 from typing import Callable, Tuple, List, Dict, TypeVar, Awaitable
 
@@ -36,8 +34,6 @@ import aiomcache
 import jwt
 from aiohttp import web
 
-from access_control.models.user_with_roles import UserWithRoles
-from authentication_service.models.user import User
 from management_layer import transformations
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.settings import CACHE_TIME, AUTHENTICATION_SERVICE_JWKS
@@ -61,7 +57,7 @@ class Mappings:
     _domain_name_to_id_map = {}  # type: Dict[str, int]
     _permission_name_to_id_map = {}  # type: Dict[str, int]
     _resource_urn_to_id_map = {}  # type: Dict[str, int]
-    _role_label_to_id_map = {}  # type: Dict[str"fake", int]
+    _role_label_to_id_map = {}  # type: Dict[str, int]
     _site_name_to_id_map = {}  # type: Dict[str, int]
     _client_name_to_id_map = {}  # type: Dict[str, int]
     _token_client_id_to_site_id_map = {}  # type: Dict[str, int]
@@ -172,8 +168,6 @@ T = TypeVar("T")
 TIMING_LOG_LEVEL = logging.INFO
 
 MAPPING_DATA_LIMIT = 100
-
-TESTING_USER_ID = "%s" % uuid.uuid1()
 
 
 async def _load(
@@ -399,34 +393,3 @@ async def return_tech_admin_role_for_testing(*args, **kwargs):
     """
     return {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)}
 
-
-async def return_users_with_roles(*args, **kwargs):
-    """
-    Some test functions require a list of user_ids and their role_ids, this is what this
-    function will return.
-    :return: A list of UserWithRoles objects
-    """
-    return [
-        UserWithRoles(
-            user_id=TESTING_USER_ID,
-            role_ids=[-1]
-        )
-    ]
-
-
-async def return_user_ids(*args, **kwargs):
-    """
-    Some test functions require to obtain a list of users with at least
-    an id and username that is what this will do.
-    :return: A list of uuid user_ids
-    """
-    return [
-        User(
-            id=TESTING_USER_ID,
-            username="Jake",
-            is_active=True,
-            date_joined=datetime.date.today(),
-            created_at=datetime.datetime.now(),
-            updated_at=datetime.datetime.now()
-        )
-    ]

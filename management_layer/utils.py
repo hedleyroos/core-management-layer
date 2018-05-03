@@ -1,6 +1,8 @@
 import asyncio
+import datetime
 import json
 import logging
+import uuid
 from functools import wraps
 
 import time
@@ -12,9 +14,15 @@ from contextlib import contextmanager
 from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
+from access_control import UserWithRoles
+from authentication_service import User
+
+from management_layer import mappings, transformations
 from management_layer.sentry import sentry
 
 logger = logging.getLogger(__name__)
+
+TESTING_USER_ID = "%s" % uuid.uuid1()
 
 
 def timeit(log_level=logging.DEBUG):
@@ -92,3 +100,70 @@ def client_exception_handler():
                 "body": str(cre)
             }))
 
+
+async def transform_users_with_roles(request, response, **kwargs):
+    """
+    Transform a UserWithRole list from the access_control to have id, usernames,
+    and role labels for the management layer UserWithRoles schema.
+    :return: List of users with roles dicts.
+    """
+    users_with_roles = [obj.to_dict() for obj in response]
+
+    # Get all user_ids to retrieve.
+    user_ids = [
+        obj["user_id"] for obj in users_with_roles
+    ]
+    if user_ids:
+        # Get all the user names of the user IDs found.
+        users = await request.app[
+            "authentication_service_api"].user_list(user_ids=user_ids, **kwargs)
+
+        if users:
+            transform = transformations.USER
+            users = [transform.apply(user.to_dict()) for user in users]
+            user_mapping = {
+                user["id"]: user["username"] for user in users
+            }
+            users_with_roles = [
+                {
+                    "id": user_with_roles["user_id"],
+                    "username": user_mapping[user_with_roles["user_id"]],
+                    "roles": [
+                        mappings.Mappings.role_label_for(role_id)
+                        for role_id in user_with_roles["role_ids"]
+                    ]
+                } for user_with_roles in users_with_roles
+            ]
+    return users_with_roles
+
+
+async def return_users_with_roles(*args, **kwargs):
+    """
+    Some test functions require a list of user_ids and their role_ids, this is what this
+    function will return.
+    :return: A list of UserWithRoles objects
+    """
+    return [
+        UserWithRoles(
+            user_id=TESTING_USER_ID,
+            role_ids=[-1]
+        )
+    ]
+
+
+async def return_user_ids(*args, **kwargs):
+    """
+    Some test functions require to obtain a list of users with at least
+    an id and username that is what this will do.
+    :return: A list of uuid user_ids
+    """
+    return [
+        User(
+            id=TESTING_USER_ID,
+            username="Jake",
+            is_active=True,
+            date_joined=datetime.date.today(),
+            created_at=datetime.datetime.now(),
+            updated_at=datetime.datetime.now()
+        )
+    ]

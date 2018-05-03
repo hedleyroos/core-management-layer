@@ -21,13 +21,13 @@ from parameterized import parameterized
 import access_control
 import authentication_service
 import user_data_store
-from management_layer.constants import TECH_ADMIN_ROLE_LABEL
-from management_layer.mappings import return_tech_admin_role_for_testing, \
-    return_users_with_roles, return_user_ids
-from management_layer.middleware import auth_middleware
-from user_data_store import UserDataApi
 from management_layer.api import schemas
 from management_layer.api.urls import add_routes
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.mappings import return_tech_admin_role_for_testing
+from management_layer.middleware import auth_middleware
+from management_layer.utils import return_users_with_roles, return_user_ids
+from user_data_store import UserDataApi
 
 LOGGER = logging.getLogger(__name__)
 DATA_GENERATOR = DataGenerator()
