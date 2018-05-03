@@ -536,6 +536,22 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, schemas.user_site_role_labels_aggregated)
 
+    @unittest_run_loop
+    async def test_get_users_with_roles_for_domain(self):
+        response = await self.client.get("/ops/users_with_roles_for_domain/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.user_with_roles)
+
+    @unittest_run_loop
+    async def test_get_users_with_roles_for_domain(self):
+        response = await self.client.get("/ops/users_with_roles_for_site/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, schemas.user_with_roles)
+
     @parameterized.expand(["true", "false"])
     @unittest_run_loop
     async def test_refresh_sites(self, nocache):

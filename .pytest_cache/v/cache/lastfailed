@@ -1,0 +1,8 @@
+{
+  "management_layer/tests/test_integration.py::AioHTTPTestCase": true,
+  "management_layer/tests/test_integration.py::ExampleTestCase": true,
+  "management_layer/tests/test_integration.py::IntegrationTest": true,
+  "management_layer/tests/test_integration.py::IntegrationTest::test_get_users_with_roles_for_domain": true,
+  "management_layer/tests/test_permission_utils.py::TestUtils::test_role_has_permissions": true,
+  "management_layer/tests/test_permission_utils.py::TestUtils::test_roles_have_permissions": true
+}
