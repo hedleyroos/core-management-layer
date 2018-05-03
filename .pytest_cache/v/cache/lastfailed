@@ -1,4 +1,0 @@
-{
-  "management_layer/tests/test_permission_utils.py::TestUtils::test_role_has_permissions": true,
-  "management_layer/tests/test_permission_utils.py::TestUtils::test_roles_have_permissions": true
-}
