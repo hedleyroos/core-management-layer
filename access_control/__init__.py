@@ -63,3 +63,4 @@ from access_control.models.user_domain_role_create import UserDomainRoleCreate
 from access_control.models.user_site_role import UserSiteRole
 from access_control.models.user_site_role_create import UserSiteRoleCreate
 from access_control.models.user_site_role_labels_aggregated import UserSiteRoleLabelsAggregated
+from access_control.models.user_with_roles import UserWithRoles

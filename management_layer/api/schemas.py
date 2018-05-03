@@ -1840,3 +1840,25 @@ user_update = json.loads("""
 }
 """)
 
+user_with_roles = json.loads("""
+{
+    "description": "A user with their roles.",
+    "properties": {
+        "id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "roles": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "username": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+

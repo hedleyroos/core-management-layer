@@ -1,10 +1,11 @@
 from aiohttp import web
+import logging
 
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings
 from management_layer.permission import utils
-from management_layer.utils import client_exception_handler
 from management_layer.permission.decorator import require_permissions, requester_has_role
+from management_layer.utils import client_exception_handler, transform_users_with_roles
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
@@ -518,6 +519,41 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
             return user_roles.to_dict()
+
+    # get_users_with_roles_for_domain -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read")])
+    async def get_users_with_roles_for_domain(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer An integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            # Get access control response.
+            response = await request.app["operational_api"].get_users_with_roles_for_domain(domain_id)
+        return await transform_users_with_roles(request, response, **kwargs)
+
+    # get_users_with_roles_for_site -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:domainrole", "read"),
+                               ("urn:ge:access_control:userdomainrole", "read"),
+                               ("urn:ge:access_control:site", "read"),
+                               ("urn:ge:access_control:siterole", "read"),
+                               ("urn:ge:access_control:usersiterole", "read")])
+    async def get_users_with_roles_for_site(request, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param site_id: integer An integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            # Get access control response.
+            response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
+        return await transform_users_with_roles(request, response, **kwargs)
 
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod

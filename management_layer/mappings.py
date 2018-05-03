@@ -392,3 +392,4 @@ async def return_tech_admin_role_for_testing(*args, **kwargs):
     :return: A set containing the TECH_ADMIN role id
     """
     return {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)}
+
