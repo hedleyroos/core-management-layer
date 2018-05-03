@@ -1425,7 +1425,7 @@ definitions:
     properties:
       id:
         type: string
-        format: UUID
+        format: uuid
       username:
         type: string
       roles:

@@ -22,7 +22,8 @@ import access_control
 import authentication_service
 import user_data_store
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
-from management_layer.mappings import return_tech_admin_role_for_testing
+from management_layer.mappings import return_tech_admin_role_for_testing, \
+    return_users_with_roles, return_user_ids
 from management_layer.middleware import auth_middleware
 from user_data_store import UserDataApi
 from management_layer.api import schemas
@@ -255,6 +256,12 @@ class ExampleTestCase(AioHTTPTestCase):
        Mock(side_effect=return_tech_admin_role_for_testing))
 @patch("management_layer.permission.utils.get_user_roles_for_domain",
        Mock(side_effect=return_tech_admin_role_for_testing))
+@patch("access_control.api.operational_api.OperationalApi.get_users_with_roles_for_domain",
+       Mock(side_effect=return_users_with_roles))
+@patch("access_control.api.operational_api.OperationalApi.get_users_with_roles_for_site",
+       Mock(side_effect=return_users_with_roles))
+@patch("authentication_service.api.authentication_api.AuthenticationApi.user_list",
+       Mock(side_effect=return_user_ids))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
@@ -542,7 +549,7 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
-        validate_response_schema(response_body, schemas.user_with_roles)
+        validate_response_schema(response_body[0], schemas.user_with_roles)
 
     @unittest_run_loop
     async def test_get_users_with_roles_for_domain(self):
@@ -550,7 +557,7 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 200)
         response_body = await response.json()
         response_body = clean_response_data(response_body)
-        validate_response_schema(response_body, schemas.user_with_roles)
+        validate_response_schema(response_body[0], schemas.user_with_roles)
 
     @parameterized.expand(["true", "false"])
     @unittest_run_loop

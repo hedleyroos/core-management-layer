@@ -1,4 +1,5 @@
 from aiohttp import web
+import logging
 
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings
@@ -536,26 +537,31 @@ class Implementation(AbstractStubClass):
             users_with_roles = [obj.to_dict() for obj in users_with_roles]
 
             # Get all user_ids to retrieve.
-            user_ids = [obj["user_id"] for obj in users_with_roles]
-            # Get all the user names of the user IDs found.
-            users, _status, headers = await request.app[
-                "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
+            user_ids = [
+                obj["user_id"] for obj in users_with_roles
+            ]
+            if user_ids:
+                # Get all the user names of the user IDs found.
+                users = await request.app[
+                    "authentication_service_api"].user_list(user_ids=user_ids, **kwargs)
 
-            if users:
-                transform = transformations.USER
-                users = [transform.apply(user.to_dict()) for user in users]
-                user_mapping = {user["id"]: user["username"] for user in users}
-                users_with_roles = [
-                    {
-                        "id": user_with_roles["user_id"],
-                        "username": user_mapping[user_with_roles["user_id"]],
-                        "roles": [
-                            mappings.Mappings.role_label_for(int(role_id))
-                            for role_id in user_with_roles["role_ids"]
-                        ]
-                    } for user_with_roles in users_with_roles
-                ]
-            return users_with_roles
+                if users:
+                    transform = transformations.USER
+                    users = [transform.apply(user.to_dict()) for user in users]
+                    user_mapping = {
+                        user["id"]: user["username"] for user in users
+                    }
+                    users_with_roles = [
+                        {
+                            "id": user_with_roles["user_id"],
+                            "username": user_mapping[user_with_roles["user_id"]],
+                            "roles": [
+                                mappings.Mappings.role_label_for(role_id)
+                                for role_id in user_with_roles["role_ids"]
+                            ]
+                        } for user_with_roles in users_with_roles
+                    ]
+                return users_with_roles
 
     # get_users_with_roles_for_site -- Synchronisation point for meld
     @staticmethod
@@ -577,26 +583,31 @@ class Implementation(AbstractStubClass):
             users_with_roles = [obj.to_dict() for obj in users_with_roles]
 
             # Get all user_ids to retrieve.
-            user_ids = [obj["user_id"] for obj in users_with_roles]
-            # Get all the user names of the user IDs found.
-            users, _status, headers = await request.app[
-                "authentication_service_api"].user_list_with_http_info(user_ids=user_ids, **kwargs)
+            user_ids = [
+                obj["user_id"] for obj in users_with_roles if obj["user_id"]
+            ]
+            if user_ids:
+                # Get all the user names of the user IDs found.
+                users = await request.app[
+                    "authentication_service_api"].user_list(user_ids=user_ids, **kwargs)
 
-            if users:
-                transform = transformations.USER
-                users = [transform.apply(user.to_dict()) for user in users]
-                user_mapping = {user["id"]: user["username"] for user in users}
-                users_with_roles = [
-                    {
-                        "id": user_with_roles["user_id"],
-                        "username": user_mapping[user_with_roles["user_id"]],
-                        "roles": [
-                            mappings.Mappings.role_label_for(int(role_id))
-                            for role_id in user_with_roles["role_ids"]
-                        ]
-                    } for user_with_roles in users_with_roles
-                ]
-            return users_with_roles
+                if users:
+                    transform = transformations.USER
+                    users = [transform.apply(user.to_dict()) for user in users]
+                    user_mapping = {
+                        user["id"]: user["username"] for user in users
+                    }
+                    users_with_roles = [
+                        {
+                            "id": user_with_roles["user_id"],
+                            "username": user_mapping[user_with_roles["user_id"]],
+                            "roles": [
+                                mappings.Mappings.role_label_for(role_id)
+                                for role_id in user_with_roles["role_ids"]
+                            ]
+                        } for user_with_roles in users_with_roles
+                    ]
+                return users_with_roles
 
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod

@@ -876,7 +876,7 @@ definitions:
       role_ids:
         type: array
         items:
-          type: string
+          type: integer
 
 paths:
   /ops/site_role_labels_aggregated/{site_id}:
