@@ -1836,7 +1836,7 @@ class OpsUsersWithRolesForDomainDomainId(View, CorsViewMixin):
         "description": "A user with their roles.",
         "properties": {
             "id": {
-                "format": "UUID",
+                "format": "uuid",
                 "type": "string"
             },
             "roles": {
@@ -1892,7 +1892,7 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
         "description": "A user with their roles.",
         "properties": {
             "id": {
-                "format": "UUID",
+                "format": "uuid",
                 "type": "string"
             },
             "roles": {
@@ -6698,7 +6698,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "description": "A user with their roles.",
             "properties": {
                 "id": {
-                    "format": "UUID",
+                    "format": "uuid",
                     "type": "string"
                 },
                 "roles": {

@@ -1845,7 +1845,7 @@ user_with_roles = json.loads("""
     "description": "A user with their roles.",
     "properties": {
         "id": {
-            "format": "UUID",
+            "format": "uuid",
             "type": "string"
         },
         "roles": {

@@ -32,7 +32,7 @@ class UserWithRoles(object):
     """
     swagger_types = {
         'user_id': 'str',
-        'role_ids': 'list[str]'
+        'role_ids': 'list[int]'
     }
 
     attribute_map = {
@@ -79,7 +79,7 @@ class UserWithRoles(object):
 
 
         :return: The role_ids of this UserWithRoles.  # noqa: E501
-        :rtype: list[str]
+        :rtype: list[int]
         """
         return self._role_ids
 
@@ -89,7 +89,7 @@ class UserWithRoles(object):
 
 
         :param role_ids: The role_ids of this UserWithRoles.  # noqa: E501
-        :type: list[str]
+        :type: list[int]
         """
 
         self._role_ids = role_ids
