@@ -3114,6 +3114,9 @@ paths:
           in: query
           required: false
           type: string
+          x-aor-filter:
+            format: date
+            range: true
         - name: country
           description: An optional country filter
           in: query
@@ -3126,6 +3129,9 @@ paths:
           in: query
           required: false
           type: string
+          x-aor-filter:
+            format: date
+            range: true
         - name: email
           description: An optional case insensitive email inner match filter
           in: query
@@ -3158,6 +3164,9 @@ paths:
           in: query
           required: false
           type: string
+          x-aor-filter:
+            format: date
+            range: true
         - name: last_name
           description: An optional case insensitive last name inner match filter
           in: query
@@ -3191,6 +3200,9 @@ paths:
           in: query
           required: false
           type: string
+          x-aor-filter:
+            format: date-time
+            range: true
         - name: username
           description: An optional case insensitive username inner match filter
           in: query
