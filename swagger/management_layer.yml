@@ -1546,6 +1546,28 @@ paths:
         403:
          description: "Forbidden"
 
+  /ops/user_management_portal_permissions/{user_id}:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Get a list of all permissions a user has on the Management Portal"
+      operationId: get_user_management_portal_permissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            type: array
+            items:
+              type: string
+            uniqueItems: true
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
   /ops/site_role_labels_aggregated/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'

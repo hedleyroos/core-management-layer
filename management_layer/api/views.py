@@ -1794,6 +1794,50 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsUserManagementPortalPermissionsUserId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUserManagementPortalPermissionsUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_user_management_portal_permissions(
+            self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.user_site_role_labels_aggregated
@@ -8174,6 +8218,47 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
+        "/ops/user_management_portal_permissions/{user_id}": {
+            "get": {
+                "description": "Get a list of all permissions a user has on the Management Portal",
+                "operationId": "get_user_management_portal_permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "uniqueItems": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
         "/ops/user_site_role_labels_aggregated/{user_id}/{site_id}": {
             "get": {
                 "description": "Get a list of all role labels that the specified user has from the specified sites perspective.",
@@ -9900,7 +9985,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "name": "birth_date",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-aor-filter": {
+                            "format": "date",
+                            "range": true
+                        }
                     },
                     {
                         "description": "An optional country filter",
@@ -9916,7 +10005,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "name": "date_joined",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-aor-filter": {
+                            "format": "date",
+                            "range": true
+                        }
                     },
                     {
                         "description": "An optional case insensitive email inner match filter",
@@ -9960,7 +10053,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "name": "last_login",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-aor-filter": {
+                            "format": "date",
+                            "range": true
+                        }
                     },
                     {
                         "description": "An optional case insensitive last name inner match filter",
@@ -10005,7 +10102,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "name": "updated_at",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-aor-filter": {
+                            "format": "date-time",
+                            "range": true
+                        }
                     },
                     {
                         "description": "An optional case insensitive username inner match filter",

@@ -161,6 +161,19 @@ class Mappings:
             logger.error(f"'{kid}' not in {cls._keys}")
             raise
 
+    @classmethod
+    def all_resource_permissions(cls):
+        """
+        This function returns a list of Management Portal permissions, which are concatenations
+        of the resource URNs and permission names.
+        :return:
+        """
+        return [
+            "{}:{}".format(resource, permission)
+            for resource in cls._resource_urn_to_id_map
+            for permission in cls._permission_name_to_id_map
+        ]
+
 
 # Custom convenience type
 T = TypeVar("T")

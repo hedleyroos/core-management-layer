@@ -33,6 +33,9 @@ ACCESS_CONTROL_API_KEY = env.str("ACCESS_CONTROL_API_KEY")
 AUTHENTICATION_SERVICE_API_KEY = env.str("AUTHENTICATION_SERVICE_API_KEY")
 USER_DATA_STORE_API_KEY = env.str("USER_DATA_STORE_API_KEY")
 
+# Management Portal Client ID (the one used in the token, i.e. client.client_id)
+MANAGEMENT_PORTAL_CLIENT_ID = env.str("MANAGEMENT_PORTAL_CLIENT_ID")
+
 LOG_LEVEL = env.str("LOG_LEVEL", "INFO")
 
 # Optional Sentry DSN
