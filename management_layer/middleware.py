@@ -141,12 +141,9 @@ async def auth_middleware(request, handler):
 
         LOGGER.debug("Token payload: {}".format(payload))
         request["token"] = payload
-    elif settings.INSECURE:
-        request["token"] = {
-            "sub": "40b724d6-1d33-11e8-afe3-6f15f0cf1da3",
-            "aud": "management_layer_workaround"
-        }
-        LOGGER.debug("Faking credentials because INSECURE is true.")
+    elif request.method == "OPTIONS":
+        # HTTP OPTION requests do not need a token
+        pass
     else:
         return json_response({"message": "An authentication token is required"},
                              status=MISSING_TOKEN_STATUS)
