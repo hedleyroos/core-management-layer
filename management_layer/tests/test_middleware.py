@@ -83,14 +83,8 @@ hc58gaeUuJtya8YVGT/bSXU=
 
     @unittest_run_loop
     async def test_missing_token(self):
-        with patch("management_layer.settings.INSECURE", False):
-            response = await self.client.request("GET", "/")
-            self.assertEqual(response.status, middleware.MISSING_TOKEN_STATUS)
-
-        with patch("management_layer.settings.INSECURE", True):
-            # The token gets faked in insecure mode
-            response = await self.client.request("GET", "/")
-            self.assertEqual(response.status, 200)
+        response = await self.client.request("GET", "/")
+        self.assertEqual(response.status, middleware.MISSING_TOKEN_STATUS)
 
     @unittest_run_loop
     async def test_invalid_token(self):
