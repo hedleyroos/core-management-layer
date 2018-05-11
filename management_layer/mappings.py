@@ -294,10 +294,6 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
         sentry.captureException()
         logger.error(e)
 
-    # TODO: Remove this when loading data properly
-    Mappings._roles[-1] = {"label": TECH_ADMIN_ROLE_LABEL}
-    Mappings._role_label_to_id_map[TECH_ADMIN_ROLE_LABEL] = -1
-
 
 @timeit(TIMING_LOG_LEVEL)
 async def refresh_sites(app: web.Application, nocache: bool=False):
