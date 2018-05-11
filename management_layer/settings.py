@@ -12,10 +12,6 @@ JWT_SECRET = env.str("JWT_SECRET", None)
 JWT_ALGORITHM = env.str("JWT_ALGORITHM", "HS256")
 JWT_AUDIENCE = env.str("JWT_AUDIENCE", None)
 
-# Warning: Never set this to true on a production system as it
-# bypasses token authentication.
-INSECURE = env.bool("INSECURE", False)
-
 # The port to listen on
 PORT = env.int("SERVER_PORT", 8000)
 WITH_UI = env.bool("WITH_UI", False)
@@ -46,4 +42,4 @@ MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
 MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)
 
 # Time period between refreshing mapping information.
-MAPPING_REFRESH_SLEEP_SECONDS = 60.0
+MAPPING_REFRESH_SLEEP_SECONDS = 300.0
