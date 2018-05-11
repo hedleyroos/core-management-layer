@@ -635,9 +635,18 @@ class Implementation(AbstractStubClass):
         if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
             raise web.HTTPForbidden(text="Only the Management Portal can use this API call")
 
-        management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
+        try:
+            user = uuid.UUID(user_id)
+        except ValueError:
+            raise web.HTTPBadRequest(text="Malformed user id")
+
+        try:
+            management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
+        except KeyError:
+            raise web.HTTPBadRequest(text="Misconfigured Management Portal Client ID")
+
         nocache = kwargs.get("nocache", False)
-        roles = await utils.get_user_roles_for_site(request, user=uuid.UUID(user_id),
+        roles = await utils.get_user_roles_for_site(request, user=user,
                                                     site=management_portal_site_id,
                                                     nocache=nocache)
         tech_admin_role_id = mappings.Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)
