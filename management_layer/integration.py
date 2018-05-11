@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from aiohttp import web
@@ -12,6 +13,8 @@ from management_layer.utils import client_exception_handler, transform_users_wit
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
+
+logger = logging.getLogger(__name__)
 
 
 class Implementation(AbstractStubClass):
@@ -646,9 +649,13 @@ class Implementation(AbstractStubClass):
             raise web.HTTPBadRequest(text="Misconfigured Management Portal Client ID")
 
         nocache = kwargs.get("nocache", False)
-        roles = await utils.get_user_roles_for_site(request, user=user,
-                                                    site=management_portal_site_id,
+        roles = await utils.get_user_roles_for_site(request, user, management_portal_site_id,
                                                     nocache=nocache)
+
+        if not roles:
+            # No roles are linked to the user for the Management Portal
+            return []
+
         tech_admin_role_id = mappings.Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)
 
         if tech_admin_role_id in roles:
