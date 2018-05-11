@@ -709,3 +709,9 @@ class IntegrationTest(AioHTTPTestCase):
             resource_urn, permission_name = e.rsplit(":", 1)
             self.assertIn(resource_urn, mappings.Mappings._resource_urn_to_id_map)
             self.assertIn(permission_name, mappings.Mappings._permission_name_to_id_map)
+
+        # Malformed user id
+        response = await self.client.get(
+            "/ops/user_management_portal_permissions/foobar",
+            params={"nocache": nocache})
+        await self.assertStatus(response, 400)
