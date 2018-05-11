@@ -292,6 +292,7 @@ async def get_all_user_roles(
     else:
         user_roles = json.loads(user_roles, encoding="utf8")
 
+    logger.debug(f"User: {user} Roles: {user_roles}")
     return user_roles
 
 

@@ -401,6 +401,17 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_user_management_portal_permissions -- Synchronisation point for meld
+    @staticmethod
+    async def get_user_management_portal_permissions(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_user_site_role_labels_aggregated -- Synchronisation point for meld
     @staticmethod
     async def get_user_site_role_labels_aggregated(request, user_id, site_id, **kwargs):
@@ -2061,6 +2072,28 @@ class MockedStubClass(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         """
         response_schema = schemas.user_permissions_check_response
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def get_user_management_portal_permissions(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

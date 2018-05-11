@@ -35,6 +35,7 @@ from access_control.models.permission_create import PermissionCreate
 from access_control.models.permission_update import PermissionUpdate
 from access_control.models.resource import Resource
 from access_control.models.resource_create import ResourceCreate
+from access_control.models.resource_permission import ResourcePermission
 from access_control.models.resource_update import ResourceUpdate
 from access_control.models.role import Role
 from access_control.models.role_create import RoleCreate

@@ -13,10 +13,9 @@ import authentication_service
 import user_data_store
 from management_layer import settings, views
 from management_layer.api.urls import add_routes
-from management_layer.mappings import refresh_all, return_tech_admin_role_for_testing
+from management_layer.mappings import refresh_all
 from management_layer.middleware import auth_middleware, sentry_middleware
 from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT, MAPPING_REFRESH_SLEEP_SECONDS
-from management_layer.permission import utils
 
 logger = logging.getLogger()
 logger.setLevel(settings.LOG_LEVEL)
@@ -53,12 +52,6 @@ async def on_shutdown(app):
 
 
 if __name__ == "__main__":
-    if settings.INSECURE:  # TODO: Remove before going to prod
-        logger.info("*" * 29)
-        logger.info("* Running in insecure mode! *")
-        logger.info("*" * 29)
-        setattr(utils, "get_user_roles_for_site", return_tech_admin_role_for_testing)
-
     app = web.Application(middlewares=[
         auth_middleware, sentry_middleware
     ])

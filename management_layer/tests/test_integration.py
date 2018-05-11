@@ -21,6 +21,7 @@ from parameterized import parameterized
 import access_control
 import authentication_service
 import user_data_store
+from management_layer import mappings
 from management_layer.api import schemas
 from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
@@ -691,4 +692,26 @@ class IntegrationTest(AioHTTPTestCase):
             f"/ops/user_has_permissions/{self.user_id}",
             data=json.dumps(data)
         )
+        await self.assertStatus(response, 400)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_get_user_management_portal_permissions(self, nocache):
+        response = await self.client.get(
+            "/ops/user_management_portal_permissions/{}".format(self.user_id),
+            params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, {"type": "array", "items": {"type": "string"}})
+        # Check that all strings returned have the for "<something>:<somethingelse>"
+        for e in response_body:
+            resource_urn, permission_name = e.rsplit(":", 1)
+            self.assertIn(resource_urn, mappings.Mappings._resource_urn_to_id_map)
+            self.assertIn(permission_name, mappings.Mappings._permission_name_to_id_map)
+
+        # Malformed user id
+        response = await self.client.get(
+            "/ops/user_management_portal_permissions/foobar",
+            params={"nocache": nocache})
         await self.assertStatus(response, 400)

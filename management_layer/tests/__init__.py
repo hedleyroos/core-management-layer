@@ -42,6 +42,7 @@ if __name__ != "__main__":
         "JWT_AUDIENCE": "test_audience",
         "JWT_SECRET": "test_secret",
         "JWT_ISSUER": "http://localhost:8000/openid",
-        "JWT_ALGORITHM": "HS256"
+        "JWT_ALGORITHM": "HS256",
+        "MANAGEMENT_PORTAL_CLIENT_ID": "test_audience",
     })
     os.environ.update(orig_environ)
