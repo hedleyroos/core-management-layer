@@ -1736,6 +1736,8 @@ paths:
   /domains:
     get:
       operationId: domain_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:domain:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -1769,6 +1771,8 @@ paths:
       consumes:
         - application/json
       operationId: domain_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:domain:create'
       parameters:
         - in: body
           name: data
@@ -1789,6 +1793,8 @@ paths:
       - $ref: '#/parameters/domain_id'
     delete:
       operationId: domain_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:domain:delete'
       responses:
         '204':
           description: ''
@@ -1796,6 +1802,8 @@ paths:
         - access_control
     get:
       operationId: domain_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:domain:read'
       produces:
         - application/json
       responses:
@@ -1809,6 +1817,8 @@ paths:
       consumes:
         - application/json
       operationId: domain_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:domain:update'
       parameters:
         - in: body
           name: data
@@ -1827,6 +1837,8 @@ paths:
   /domainroles:
     get:
       operationId: domainrole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:domainrole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -1851,6 +1863,8 @@ paths:
       consumes:
         - application/json
       operationId: domainrole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:domainrole:create'
       parameters:
         - in: body
           name: data
@@ -1872,6 +1886,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: domainrole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:domainrole:delete'
       responses:
         '204':
           description: ''
@@ -1879,6 +1895,8 @@ paths:
         - access_control
     get:
       operationId: domainrole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:domainrole:read'
       produces:
         - application/json
       responses:
@@ -1892,6 +1910,8 @@ paths:
       consumes:
         - application/json
       operationId: domainrole_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:domainrole:update'
       parameters:
         - in: body
           name: data
@@ -1910,6 +1930,8 @@ paths:
   /invitations:
     get:
       operationId: invitation_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitation:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -1949,6 +1971,8 @@ paths:
       consumes:
         - application/json
       operationId: invitation_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitation:create'
       parameters:
         - in: body
           name: data
@@ -1969,6 +1993,8 @@ paths:
       - $ref: '#/parameters/invitation_id'
     delete:
       operationId: invitation_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitation:delete'
       responses:
         '204':
           description: ''
@@ -1976,6 +2002,8 @@ paths:
         - access_control
     get:
       operationId: invitation_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitation:read'
       produces:
         - application/json
       responses:
@@ -1989,6 +2017,8 @@ paths:
       consumes:
         - application/json
       operationId: invitation_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitation:update'
       parameters:
         - in: body
           name: data
@@ -2007,6 +2037,8 @@ paths:
   /invitationdomainroles:
     get:
       operationId: invitationdomainrole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationdomainrole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2032,6 +2064,8 @@ paths:
       consumes:
         - application/json
       operationId: invitationdomainrole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationdomainrole:create'
       parameters:
         - in: body
           name: data
@@ -2054,6 +2088,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: invitationdomainrole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationdomainrole:delete'
       produces:
         - application/json
       responses:
@@ -2063,6 +2099,8 @@ paths:
         - access_control
     get:
       operationId: invitationdomainrole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationdomainrole:read'
       produces:
         - application/json
       responses:
@@ -2076,6 +2114,8 @@ paths:
   /invitationsiteroles:
     get:
       operationId: invitationsiterole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationsiterole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2101,6 +2141,8 @@ paths:
       consumes:
         - application/json
       operationId: invitationsiterole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationsiterole:create'
       parameters:
         - in: body
           name: data
@@ -2123,6 +2165,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: invitationsiterole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationsiterole:delete'
       responses:
         '204':
           description: ''
@@ -2130,6 +2174,8 @@ paths:
         - access_control
     get:
       operationId: invitationsiterole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:invitationsiterole:read'
       produces:
         - application/json
       responses:
@@ -2143,6 +2189,8 @@ paths:
   /permissions:
     get:
       operationId: permission_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:permission:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2175,6 +2223,8 @@ paths:
       consumes:
         - application/json
       operationId: permission_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:permission:create'
       parameters:
         - in: body
           name: data
@@ -2195,6 +2245,8 @@ paths:
       - $ref: '#/parameters/permission_id'
     delete:
       operationId: permission_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:permission:delete'
       responses:
         '204':
           description: ''
@@ -2202,6 +2254,8 @@ paths:
         - access_control
     get:
       operationId: permission_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:permission:read'
       produces:
         - application/json
       responses:
@@ -2215,6 +2269,8 @@ paths:
       consumes:
         - application/json
       operationId: permission_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:permission:update'
       parameters:
         - in: body
           name: data
@@ -2233,6 +2289,8 @@ paths:
   /resources:
     get:
       operationId: resource_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:resource:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2270,6 +2328,8 @@ paths:
       consumes:
         - application/json
       operationId: resource_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:resource:create'
       parameters:
         - in: body
           name: data
@@ -2290,6 +2350,8 @@ paths:
       - $ref: '#/parameters/resource_id'
     delete:
       operationId: resource_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:resource:delete'
       responses:
         '204':
           description: ''
@@ -2297,6 +2359,8 @@ paths:
         - access_control
     get:
       operationId: resource_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:resource:read'
       produces:
         - application/json
       responses:
@@ -2310,6 +2374,8 @@ paths:
       consumes:
         - application/json
       operationId: resource_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:resource:update'
       parameters:
         - in: body
           name: data
@@ -2328,6 +2394,8 @@ paths:
   /roles:
     get:
       operationId: role_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:role:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2360,6 +2428,8 @@ paths:
       consumes:
         - application/json
       operationId: role_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:role:create'
       parameters:
         - in: body
           name: data
@@ -2380,6 +2450,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: role_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:role:delete'
       responses:
         '204':
           description: ''
@@ -2387,6 +2459,8 @@ paths:
         - access_control
     get:
       operationId: role_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:role:read'
       produces:
         - application/json
       responses:
@@ -2400,6 +2474,8 @@ paths:
       consumes:
         - application/json
       operationId: role_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:role:update'
       parameters:
         - in: body
           name: data
@@ -2418,6 +2494,8 @@ paths:
   /roleresourcepermissions:
     get:
       operationId: roleresourcepermission_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:roleresourcepermission:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2451,6 +2529,8 @@ paths:
       consumes:
         - application/json
       operationId: roleresourcepermission_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:roleresourcepermission:create'
       parameters:
         - in: body
           name: data
@@ -2466,13 +2546,15 @@ paths:
       tags:
         - access_control
 
-  '/roleresourcepermissions/{role_id}/{resource_id}/{permission_id}':
+  /roleresourcepermissions/{role_id}/{resource_id}/{permission_id}:
     parameters:
       - $ref: '#/parameters/role_id'
       - $ref: '#/parameters/resource_id'
       - $ref: '#/parameters/permission_id'
     delete:
       operationId: roleresourcepermission_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:roleresourcepermission:delete'
       responses:
         '204':
           description: ''
@@ -2480,6 +2562,8 @@ paths:
         - access_control
     get:
       operationId: roleresourcepermission_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:roleresourcepermission:update'
       produces:
         - application/json
       responses:
@@ -2493,6 +2577,8 @@ paths:
   /sites:
     get:
       operationId: site_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:site:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2530,6 +2616,8 @@ paths:
       consumes:
         - application/json
       operationId: site_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:site:create'
       parameters:
         - in: body
           name: data
@@ -2545,11 +2633,13 @@ paths:
       tags:
         - access_control
 
-  '/sites/{site_id}':
+  /sites/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'
     delete:
       operationId: site_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:site:delete'
       responses:
         '204':
           description: ''
@@ -2557,6 +2647,8 @@ paths:
         - access_control
     get:
       operationId: site_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:site:read'
       produces:
         - application/json
       responses:
@@ -2570,6 +2662,8 @@ paths:
       consumes:
         - application/json
       operationId: site_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:site:update'
       parameters:
         - in: body
           name: data
@@ -2588,6 +2682,8 @@ paths:
   /siteroles:
     get:
       operationId: siterole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:siterole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2612,6 +2708,8 @@ paths:
       consumes:
         - application/json
       operationId: siterole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:siterole:create'
       parameters:
         - in: body
           name: data
@@ -2633,6 +2731,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: siterole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:siterole:delete'
       responses:
         '204':
           description: ''
@@ -2640,6 +2740,8 @@ paths:
         - access_control
     get:
       operationId: siterole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:siterole:read'
       produces:
         - application/json
       responses:
@@ -2653,6 +2755,8 @@ paths:
       consumes:
         - application/json
       operationId: siterole_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:siterole:update'
       parameters:
         - in: body
           name: data
@@ -2671,6 +2775,8 @@ paths:
   /userdomainroles:
     get:
       operationId: userdomainrole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:userdomainrole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2696,6 +2802,8 @@ paths:
       consumes:
         - application/json
       operationId: userdomainrole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:userdomainrole:create'
       parameters:
         - in: body
           name: data
@@ -2718,6 +2826,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: userdomainrole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:userdomainrole:delete'
       responses:
         '204':
           description: ''
@@ -2725,6 +2835,8 @@ paths:
         - access_control
     get:
       operationId: userdomainrole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:userdomainrole:read'
       produces:
         - application/json
       responses:
@@ -2738,6 +2850,8 @@ paths:
   /usersiteroles:
     get:
       operationId: usersiterole_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:usersiterole:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2763,6 +2877,8 @@ paths:
       consumes:
         - application/json
       operationId: usersiterole_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:usersiterole:create'
       parameters:
         - in: body
           name: data
@@ -2785,6 +2901,8 @@ paths:
       - $ref: '#/parameters/role_id'
     delete:
       operationId: usersiterole_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:usersiterole:delete'
       responses:
         '204':
           description: ''
@@ -2792,6 +2910,8 @@ paths:
         - access_control
     get:
       operationId: usersiterole_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:usersiterole:read'
       produces:
         - application/json
       responses:
@@ -2805,6 +2925,8 @@ paths:
   /usersitedata:
     get:
       operationId: usersitedata_list
+      x-aor-permissions:
+        - 'urn:ge:user_data:usersitedata:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2827,6 +2949,8 @@ paths:
         - user_data
     post:
       operationId: usersitedata_create
+      x-aor-permissions:
+        - 'urn:ge:user_data:usersitedata:create'
       parameters:
         - in: body
           name: data
@@ -2850,6 +2974,8 @@ paths:
       - $ref: '#/parameters/site_id'
     delete:
       operationId: usersitedata_delete
+      x-aor-permissions:
+        - 'urn:ge:user_data:usersitedata:delete'
       responses:
         '204':
           description: ''
@@ -2857,6 +2983,8 @@ paths:
         - user_data
     get:
       operationId: usersitedata_read
+      x-aor-permissions:
+        - 'urn:ge:user_data:usersitedata:read'
       produces:
         - application/json
       responses:
@@ -2868,6 +2996,8 @@ paths:
         - user_data
     put:
       operationId: usersitedata_update
+      x-aor-permissions:
+        - 'urn:ge:user_data:usersitedata:update'
       parameters:
         - in: body
           name: data
@@ -2888,6 +3018,8 @@ paths:
   /adminnotes:
     get:
       operationId: adminnote_list
+      x-aor-permissions:
+        - 'urn:ge:user_data:adminnote:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -2919,6 +3051,8 @@ paths:
       consumes:
         - application/json
       operationId: adminnote_create
+      x-aor-permissions:
+        - 'urn:ge:user_data:adminnote:create'
       parameters:
         - in: body
           name: data
@@ -2941,6 +3075,8 @@ paths:
       - $ref: '#/parameters/admin_note_id'
     delete:
       operationId: adminnote_delete
+      x-aor-permissions:
+        - 'urn:ge:user_data:adminnote:delete'
       responses:
         '204':
           description: 'Deleted'
@@ -2950,6 +3086,8 @@ paths:
         - user_data
     get:
       operationId: adminnote_read
+      x-aor-permissions:
+        - 'urn:ge:user_data:adminnote:read'
       produces:
         - application/json
       responses:
@@ -2965,6 +3103,8 @@ paths:
       consumes:
         - application/json
       operationId: adminnote_update
+      x-aor-permissions:
+        - 'urn:ge:user_data:adminnote:update'
       parameters:
         - in: body
           name: data
@@ -2985,6 +3125,8 @@ paths:
   /sitedataschemas:
     get:
       operationId: sitedataschema_list
+      x-aor-permissions:
+        - 'urn:ge:user_data:sitedataschema:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3017,6 +3159,8 @@ paths:
       consumes:
         - application/json
       operationId: sitedataschema_create
+      x-aor-permissions:
+        - 'urn:ge:user_data:sitedataschema:create'
       parameters:
         - in: body
           name: data
@@ -3037,6 +3181,8 @@ paths:
       - $ref: '#/parameters/site_id'
     delete:
       operationId: sitedataschema_delete
+      x-aor-permissions:
+        - 'urn:ge:user_data:sitedataschema:delete'
       responses:
         '204':
           description: ''
@@ -3044,6 +3190,8 @@ paths:
         - user_data
     get:
       operationId: sitedataschema_read
+      x-aor-permissions:
+        - 'urn:ge:user_data:sitedataschema:read'
       produces:
         - application/json
       responses:
@@ -3055,6 +3203,8 @@ paths:
         - user_data
     put:
       operationId: sitedataschema_update
+      x-aor-permissions:
+        - 'urn:ge:user_data:sitedataschema:update'
       parameters:
         - in: body
           name: data
@@ -3075,6 +3225,8 @@ paths:
   /clients:
     get:
       operationId: client_list
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:oidc_provider:client:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3115,6 +3267,8 @@ paths:
       - $ref: '#/parameters/client_id'
     get:
       operationId: client_read
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:oidc_provider:client:read'
       produces:
         - application/json
       responses:
@@ -3128,6 +3282,8 @@ paths:
   /users:
     get:
       operationId: user_list
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:user:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3289,6 +3445,8 @@ paths:
       - $ref: '#/parameters/user_id'
     delete:
       operationId: user_delete
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:user:delete'
       responses:
         '204':
           description: ''
@@ -3296,6 +3454,8 @@ paths:
         - authentication
     get:
       operationId: user_read
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:user:read'
       produces:
         - application/json
       responses:
@@ -3310,6 +3470,8 @@ paths:
       consumes:
         - application/json
       operationId: user_update
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:user:update'
       parameters:
         - in: body
           name: data
