@@ -805,7 +805,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_unit = await request.app["authentication_service_api"].country_read(
+            organisational_unit = await request.app[
+                "authentication_service_api"].organisational_unit_read(
                 organisational_unit_id)
 
         if organisational_unit:
