@@ -3508,7 +3508,12 @@ class MockedStubClass(AbstractStubClass):
             "country_code": {
                 "maxLength": 2,
                 "minLength": 2,
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "field": "code",
+                    "label": "name",
+                    "model": "country"
+                }
             },
             "created_at": {
                 "format": "date-time",
@@ -3562,6 +3567,14 @@ class MockedStubClass(AbstractStubClass):
             },
             "msisdn_verified": {
                 "type": "boolean"
+            },
+            "organisational_unit_id": {
+                "readOnly": true,
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisational_unit"
+                }
             },
             "updated_at": {
                 "format": "date-time",

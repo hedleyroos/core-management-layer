@@ -1367,6 +1367,16 @@ definitions:
         type: string
         minLength: 2
         maxLength: 2
+        x-related-info:
+          model: country
+          field: code
+          label: name
+      organisational_unit_id:
+        type: integer
+        readOnly: true
+        x-related-info:
+          model: organisational_unit
+          label: name
       created_at:
         type: string
         format: date-time
@@ -1420,6 +1430,10 @@ definitions:
         type: string
         minLength: 2
         maxLength: 2
+        x-related-info:
+          model: country
+          field: code
+          label: name
     minProperties: 1
 
   user_site:

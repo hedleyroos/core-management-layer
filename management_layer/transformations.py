@@ -185,5 +185,5 @@ USER = Transformation(
     ],
     copy_fields=["id", "username", "first_name", "last_name", "email",
                  "is_active", "email_verified", "msisdn_verified", "msisdn",
-                 "gender", "avatar", "country"]
+                 "gender", "avatar", "country_code", "organisational_unit_id"]
 )

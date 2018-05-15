@@ -4447,7 +4447,12 @@ class Users(View, CorsViewMixin):
             "country_code": {
                 "maxLength": 2,
                 "minLength": 2,
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "field": "code",
+                    "label": "name",
+                    "model": "country"
+                }
             },
             "created_at": {
                 "format": "date-time",
@@ -4501,6 +4506,14 @@ class Users(View, CorsViewMixin):
             },
             "msisdn_verified": {
                 "type": "boolean"
+            },
+            "organisational_unit_id": {
+                "readOnly": true,
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisational_unit"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -6606,7 +6619,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "country_code": {
                     "maxLength": 2,
                     "minLength": 2,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "code",
+                        "label": "name",
+                        "model": "country"
+                    }
                 },
                 "created_at": {
                     "format": "date-time",
@@ -6660,6 +6678,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "msisdn_verified": {
                     "type": "boolean"
+                },
+                "organisational_unit_id": {
+                    "readOnly": true,
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisational_unit"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -7039,7 +7065,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "country_code": {
                     "maxLength": 2,
                     "minLength": 2,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "code",
+                        "label": "name",
+                        "model": "country"
+                    }
                 },
                 "email": {
                     "description": "",
