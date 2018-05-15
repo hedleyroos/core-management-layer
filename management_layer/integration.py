@@ -149,7 +149,7 @@ class Implementation(AbstractStubClass):
     async def client_read(request, client_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_id: string A string value identifying the client
+        :param client_id: integer A integer identifying the client
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
@@ -158,6 +158,46 @@ class Implementation(AbstractStubClass):
         if client:
             transform = transformations.CLIENT
             result = transform.apply(client.to_dict())
+            return result
+
+        return None
+
+    # country_list -- Synchronisation point for meld
+    @staticmethod
+    async def country_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param country_codes (optional): array An optional list of country codes
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            countries, _status, headers = await request.app[
+                "authentication_service_api"].country_list_with_http_info(**kwargs)
+
+        if countries:
+            transform = transformations.COUNTRY
+            countries = [transform.apply(country.to_dict()) for country in countries]
+
+        return countries, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # country_read -- Synchronisation point for meld
+    @staticmethod
+    async def country_read(request, country_code, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param country_code: string A unique two-character value identifying the country.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            country = await request.app["authentication_service_api"].country_read(country_code)
+
+        if country:
+            transform = transformations.COUNTRY
+            result = transform.apply(country.to_dict())
             return result
 
         return None
@@ -733,7 +773,47 @@ class Implementation(AbstractStubClass):
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
 
+    # organisational_unit_list -- Synchronisation point for meld
+    @staticmethod
+    async def organisational_unit_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisational_units, _status, headers = await request.app[
+                "authentication_service_api"].organisational_unit_list_with_http_info(**kwargs)
 
+        if organisational_units:
+            transform = transformations.ORGANISATIONAL_UNIT
+            organisational_units = [transform.apply(organisational_unit.to_dict())
+                                    for organisational_unit in organisational_units]
+
+        return organisational_units, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # organisational_unit_read -- Synchronisation point for meld
+    @staticmethod
+    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisational_unit = await request.app["authentication_service_api"].country_read(
+                organisational_unit_id)
+
+        if organisational_unit:
+            transform = transformations.ORGANISATIONAL_UNIT
+            result = transform.apply(organisational_unit.to_dict())
+            return result
+
+        return None
 
     # permission_list -- Synchronisation point for meld
     @staticmethod
@@ -1621,6 +1701,7 @@ class Implementation(AbstractStubClass):
         :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
+        :param site_ids (optional): array An optional list of site ids
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():

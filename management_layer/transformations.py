@@ -19,6 +19,10 @@ ADMIN_NOTE = Transformation(
     copy_fields=["id", "user_id", "creator_id", "note"]
 )
 
+COUNTRY = Transformation(
+    copy_fields=["code", "name"]
+)
+
 DOMAIN = Transformation(
     mappings=[
         Mapping("created_at", conversion=datetime_to_string),
@@ -59,6 +63,14 @@ INVITATION_SITE_ROLE = Transformation(
         Mapping("updated_at", conversion=datetime_to_string)
     ],
     copy_fields=["invitation_id", "site_id", "role_id"]
+)
+
+ORGANISATIONAL_UNIT = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["id", "name", "description"]
 )
 
 PERMISSION = Transformation(
@@ -124,6 +136,15 @@ USER_DOMAIN_ROLE = Transformation(
         Mapping("updated_at", conversion=datetime_to_string)
     ],
     copy_fields=["user_id", "domain_id", "role_id"]
+)
+
+USER_SITE = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string),
+        Mapping("consented_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["id", "user_id", "site_id"]
 )
 
 USER_SITE_ROLE = Transformation(

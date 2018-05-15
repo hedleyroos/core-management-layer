@@ -89,6 +89,28 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # country_list -- Synchronisation point for meld
+    @staticmethod
+    async def country_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param country_codes (optional): array An optional list of country codes
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # country_read -- Synchronisation point for meld
+    @staticmethod
+    async def country_read(request, country_code, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param country_code: string A unique two-character value identifying the country.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # domainrole_list -- Synchronisation point for meld
     @staticmethod
     async def domainrole_list(request, **kwargs):
@@ -439,6 +461,28 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisational_unit_list -- Synchronisation point for meld
+    @staticmethod
+    async def organisational_unit_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisational_unit_read -- Synchronisation point for meld
+    @staticmethod
+    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisational_unit_id: integer An integer identifying an organisational unit
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -991,6 +1035,7 @@ class AbstractStubClass(object):
         :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
+        :param site_ids (optional): array An optional list of site ids
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -1382,6 +1427,61 @@ class MockedStubClass(AbstractStubClass):
         :param client_id: integer A integer identifying the client
         """
         response_schema = schemas.client
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def country_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param country_codes (optional): array An optional list of country codes
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "code": {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+            },
+            "name": {
+                "maxLength": 100,
+                "type": "string"
+            }
+        },
+        "required": [
+            "code",
+            "name"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def country_read(request, country_code, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param country_code: string A unique two-character value identifying the country.
+        """
+        response_schema = schemas.country
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -2188,6 +2288,74 @@ class MockedStubClass(AbstractStubClass):
     },
     "type": "array"
 }""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisational_unit_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "name",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisational_unit_id: integer An integer identifying an organisational unit
+        """
+        response_schema = schemas.organisational_unit
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -3324,6 +3492,7 @@ class MockedStubClass(AbstractStubClass):
         :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
+        :param site_ids (optional): array An optional list of site ids
         """
         response_schema = json.loads("""{
     "items": {

@@ -98,8 +98,8 @@ class AuthenticationApi(object):
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `client_list`, must be a value greater than or equal to `1`")  # noqa: E501
         if ('client_ids' in params and
-                len(params['client_ids']) < 0):
-            raise ValueError("Invalid value for parameter `client_ids` when calling `client_list`, number of items must be greater than or equal to `0`")  # noqa: E501
+                len(params['client_ids']) < 1):
+            raise ValueError("Invalid value for parameter `client_ids` when calling `client_list`, number of items must be greater than or equal to `1`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -111,7 +111,7 @@ class AuthenticationApi(object):
             query_params.append(('limit', params['limit']))  # noqa: E501
         if 'client_ids' in params:
             query_params.append(('client_ids', params['client_ids']))  # noqa: E501
-            collection_formats['client_ids'] = 'multi'  # noqa: E501
+            collection_formats['client_ids'] = 'csv'  # noqa: E501
         if 'client_token_id' in params:
             query_params.append(('client_token_id', params['client_token_id']))  # noqa: E501
 
@@ -230,6 +230,412 @@ class AuthenticationApi(object):
             post_params=form_params,
             files=local_var_files,
             response_type='Client',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def country_list(self, **kwargs):  # noqa: E501
+        """country_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.country_list(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[str] country_codes: An optional list of country codes
+        :return: list[Country]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.country_list_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.country_list_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def country_list_with_http_info(self, **kwargs):  # noqa: E501
+        """country_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.country_list_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[str] country_codes: An optional list of country codes
+        :return: list[Country]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['offset', 'limit', 'country_codes']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method country_list" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        if 'offset' in params and params['offset'] < 0:  # noqa: E501
+            raise ValueError("Invalid value for parameter `offset` when calling `country_list`, must be a value greater than or equal to `0`")  # noqa: E501
+        if 'limit' in params and params['limit'] > 100:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `country_list`, must be a value less than or equal to `100`")  # noqa: E501
+        if 'limit' in params and params['limit'] < 1:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `country_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('country_codes' in params and
+                len(params['country_codes']) < 1):
+            raise ValueError("Invalid value for parameter `country_codes` when calling `country_list`, number of items must be greater than or equal to `1`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'offset' in params:
+            query_params.append(('offset', params['offset']))  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'country_codes' in params:
+            query_params.append(('country_codes', params['country_codes']))  # noqa: E501
+            collection_formats['country_codes'] = 'csv'  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/countries', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[Country]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def country_read(self, country_code, **kwargs):  # noqa: E501
+        """country_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.country_read(country_code, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str country_code: A string value identifying the country (required)
+        :return: Country
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.country_read_with_http_info(country_code, **kwargs)  # noqa: E501
+        else:
+            (data) = self.country_read_with_http_info(country_code, **kwargs)  # noqa: E501
+            return data
+
+    def country_read_with_http_info(self, country_code, **kwargs):  # noqa: E501
+        """country_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.country_read_with_http_info(country_code, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param str country_code: A string value identifying the country (required)
+        :return: Country
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['country_code']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method country_read" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'country_code' is set
+        if ('country_code' not in params or
+                params['country_code'] is None):
+            raise ValueError("Missing the required parameter `country_code` when calling `country_read`")  # noqa: E501
+
+        if ('country_code' in params and
+                len(params['country_code']) > 2):
+            raise ValueError("Invalid value for parameter `country_code` when calling `country_read`, length must be less than or equal to `2`")  # noqa: E501
+        if ('country_code' in params and
+                len(params['country_code']) < 2):
+            raise ValueError("Invalid value for parameter `country_code` when calling `country_read`, length must be greater than or equal to `2`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+        if 'country_code' in params:
+            path_params['country_code'] = params['country_code']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/countries/{country_code}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Country',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisational_unit_list(self, **kwargs):  # noqa: E501
+        """organisational_unit_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisational_unit_list(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] organisational_unit_ids: An optional list of organisational unit ids
+        :return: list[OrganisationalUnit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisational_unit_list_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.organisational_unit_list_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def organisational_unit_list_with_http_info(self, **kwargs):  # noqa: E501
+        """organisational_unit_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisational_unit_list_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] organisational_unit_ids: An optional list of organisational unit ids
+        :return: list[OrganisationalUnit]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['offset', 'limit', 'organisational_unit_ids']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisational_unit_list" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        if 'offset' in params and params['offset'] < 0:  # noqa: E501
+            raise ValueError("Invalid value for parameter `offset` when calling `organisational_unit_list`, must be a value greater than or equal to `0`")  # noqa: E501
+        if 'limit' in params and params['limit'] > 100:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `organisational_unit_list`, must be a value less than or equal to `100`")  # noqa: E501
+        if 'limit' in params and params['limit'] < 1:  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `organisational_unit_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('organisational_unit_ids' in params and
+                len(params['organisational_unit_ids']) < 1):
+            raise ValueError("Invalid value for parameter `organisational_unit_ids` when calling `organisational_unit_list`, number of items must be greater than or equal to `1`")  # noqa: E501
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'offset' in params:
+            query_params.append(('offset', params['offset']))  # noqa: E501
+        if 'limit' in params:
+            query_params.append(('limit', params['limit']))  # noqa: E501
+        if 'organisational_unit_ids' in params:
+            query_params.append(('organisational_unit_ids', params['organisational_unit_ids']))  # noqa: E501
+            collection_formats['organisational_unit_ids'] = 'csv'  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/organisational_units', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='list[OrganisationalUnit]',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisational_unit_read(self, organisational_unit_id, **kwargs):  # noqa: E501
+        """organisational_unit_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisational_unit_read(organisational_unit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisational_unit_id: An integer identifying an organisational unit (required)
+        :return: OrganisationalUnit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisational_unit_read_with_http_info(organisational_unit_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.organisational_unit_read_with_http_info(organisational_unit_id, **kwargs)  # noqa: E501
+            return data
+
+    def organisational_unit_read_with_http_info(self, organisational_unit_id, **kwargs):  # noqa: E501
+        """organisational_unit_read  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisational_unit_read_with_http_info(organisational_unit_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisational_unit_id: An integer identifying an organisational unit (required)
+        :return: OrganisationalUnit
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['organisational_unit_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisational_unit_read" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'organisational_unit_id' is set
+        if ('organisational_unit_id' not in params or
+                params['organisational_unit_id'] is None):
+            raise ValueError("Missing the required parameter `organisational_unit_id` when calling `organisational_unit_read`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'organisational_unit_id' in params:
+            path_params['organisational_unit_id'] = params['organisational_unit_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/organisational_units/{organisational_unit_id}', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='OrganisationalUnit',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -358,6 +764,7 @@ class AuthenticationApi(object):
         :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
         :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
+        :param list[int] site_ids: An optional list of site ids
         :return: list[User]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -401,12 +808,13 @@ class AuthenticationApi(object):
         :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
         :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
+        :param list[int] site_ids: An optional list of site ids
         :return: list[User]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'birth_date', 'country', 'date_joined', 'email', 'email_verified', 'first_name', 'gender', 'is_active', 'last_login', 'last_name', 'msisdn', 'msisdn_verified', 'nickname', 'organisational_unit_id', 'updated_at', 'username', 'q', 'tfa_enabled', 'has_organisational_unit', 'order_by', 'user_ids']  # noqa: E501
+        all_params = ['offset', 'limit', 'birth_date', 'country', 'date_joined', 'email', 'email_verified', 'first_name', 'gender', 'is_active', 'last_login', 'last_name', 'msisdn', 'msisdn_verified', 'nickname', 'organisational_unit_id', 'updated_at', 'username', 'q', 'tfa_enabled', 'has_organisational_unit', 'order_by', 'user_ids', 'site_ids']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -456,8 +864,11 @@ class AuthenticationApi(object):
                 len(params['q']) < 3):
             raise ValueError("Invalid value for parameter `q` when calling `user_list`, length must be greater than or equal to `3`")  # noqa: E501
         if ('user_ids' in params and
-                len(params['user_ids']) < 0):
-            raise ValueError("Invalid value for parameter `user_ids` when calling `user_list`, number of items must be greater than or equal to `0`")  # noqa: E501
+                len(params['user_ids']) < 1):
+            raise ValueError("Invalid value for parameter `user_ids` when calling `user_list`, number of items must be greater than or equal to `1`")  # noqa: E501
+        if ('site_ids' in params and
+                len(params['site_ids']) < 1):
+            raise ValueError("Invalid value for parameter `site_ids` when calling `user_list`, number of items must be greater than or equal to `1`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -510,7 +921,10 @@ class AuthenticationApi(object):
             collection_formats['order_by'] = 'csv'  # noqa: E501
         if 'user_ids' in params:
             query_params.append(('user_ids', params['user_ids']))  # noqa: E501
-            collection_formats['user_ids'] = 'multi'  # noqa: E501
+            collection_formats['user_ids'] = 'csv'  # noqa: E501
+        if 'site_ids' in params:
+            query_params.append(('site_ids', params['site_ids']))  # noqa: E501
+            collection_formats['site_ids'] = 'csv'  # noqa: E501
 
         header_params = {}
 

@@ -213,6 +213,27 @@ client = json.loads("""
 }
 """)
 
+country = json.loads("""
+{
+    "properties": {
+        "code": {
+            "maxLength": 2,
+            "minLength": 2,
+            "type": "string"
+        },
+        "name": {
+            "maxLength": 100,
+            "type": "string"
+        }
+    },
+    "required": [
+        "code",
+        "name"
+    ],
+    "type": "object"
+}
+""")
+
 domain = json.loads("""
 {
     "properties": {
@@ -689,6 +710,40 @@ invitation_update = json.loads("""
             "type": "string"
         }
     },
+    "type": "object"
+}
+""")
+
+organisational_unit = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
     "type": "object"
 }
 """)
@@ -1575,6 +1630,46 @@ user_permissions_check_response = json.loads("""
     },
     "required": [
         "has_permissions"
+    ],
+    "type": "object"
+}
+""")
+
+user_site = json.loads("""
+{
+    "properties": {
+        "consented_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "site_id": {
+            "type": "integer"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "user_id": {
+            "format": "uuid",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "user_id",
+        "site_id",
+        "consented_at",
+        "created_at",
+        "updated_at"
     ],
     "type": "object"
 }
