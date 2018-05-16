@@ -1175,13 +1175,8 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      consented_at:
-        type: string
-        format: date-time
       data:
         type: object
-      blocked:
-        type: boolean
       created_at:
         type: string
         format: date-time
@@ -1193,8 +1188,6 @@ definitions:
     required:
       - user_id
       - site_id
-      - consented_at
-      - blocked
       - data
       - created_at
       - updated_at
@@ -1211,11 +1204,6 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      consented_at:
-        type: string
-        format: date-time
-      blocked:
-        type: boolean
       data:
         type: object
     required:
@@ -1226,11 +1214,6 @@ definitions:
   user_site_data_update:
     type: object
     properties:
-      consented_at:
-        type: string
-        format: date-time
-      blocked:
-        type: boolean
       data:
         type: object
     minProperties: 1
@@ -1435,35 +1418,6 @@ definitions:
           field: code
           label: name
     minProperties: 1
-
-  user_site:
-    type: object
-    properties:
-      id:
-        type: integer
-      user_id:
-        type: string
-        format: uuid
-      site_id:
-        type: integer
-      consented_at:
-        type: string
-        format: 'date-time'
-      created_at:
-        type: string
-        format: date-time
-        readOnly: true
-      updated_at:
-        type: string
-        format: date-time
-        readOnly: true
-    required:
-      - id
-      - user_id
-      - site_id
-      - consented_at
-      - created_at
-      - updated_at
 
   resource_permission:
     type: object
@@ -3118,6 +3072,17 @@ paths:
           required: false
           type: string
           format: uuid
+        - name: admin_note_ids
+          description: An optional list of adminnote ids
+          in: query
+          type: array
+          items:
+            type: integer
+          required: false
+          minItems: 0
+          collectionFormat: csv
+          uniqueItems: true
+
       produces:
         - application/json
       responses:
@@ -3807,8 +3772,6 @@ x-detail-page-definitions:
       fields:
         - site_id
         - data
-        - consented_at
-        - blocked
         - created_at
         - updated_at
     - model: user_site_role

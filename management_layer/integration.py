@@ -34,6 +34,7 @@ class Implementation(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+        :param admin_note_ids (optional): array An optional list of adminnote ids
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():

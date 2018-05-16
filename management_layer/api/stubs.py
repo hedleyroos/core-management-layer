@@ -21,6 +21,7 @@ class AbstractStubClass(object):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+        :param admin_note_ids (optional): array An optional list of adminnote ids
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -1212,6 +1213,7 @@ class MockedStubClass(AbstractStubClass):
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
         :param user_id (optional): string An optional query parameter to filter by user_id
         :param creator_id (optional): string An optional query parameter to filter by creator (a user_id)
+        :param admin_note_ids (optional): array An optional list of adminnote ids
         """
         response_schema = json.loads("""{
     "items": {
@@ -3698,13 +3700,6 @@ class MockedStubClass(AbstractStubClass):
         response_schema = json.loads("""{
     "items": {
         "properties": {
-            "blocked": {
-                "type": "boolean"
-            },
-            "consented_at": {
-                "format": "date-time",
-                "type": "string"
-            },
             "created_at": {
                 "format": "date-time",
                 "readOnly": true,
@@ -3735,8 +3730,6 @@ class MockedStubClass(AbstractStubClass):
         "required": [
             "user_id",
             "site_id",
-            "consented_at",
-            "blocked",
             "data",
             "created_at",
             "updated_at"

@@ -130,6 +130,19 @@ class Adminnotes(View, CorsViewMixin):
             if creator_id is not None:
                 jsonschema.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
+            # admin_note_ids (optional): array An optional list of adminnote ids
+            admin_note_ids = self.request.query.getall("admin_note_ids", None)
+            if admin_note_ids:
+                admin_note_ids = [int(e) for e in admin_note_ids]
+            if admin_note_ids is not None:
+                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'csv', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(admin_note_ids, schema)
+                optional_args["admin_note_ids"] = admin_note_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -4887,13 +4900,6 @@ class Usersitedata(View, CorsViewMixin):
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
         "properties": {
-            "blocked": {
-                "type": "boolean"
-            },
-            "consented_at": {
-                "format": "date-time",
-                "type": "string"
-            },
             "created_at": {
                 "format": "date-time",
                 "readOnly": true,
@@ -4924,8 +4930,6 @@ class Usersitedata(View, CorsViewMixin):
         "required": [
             "user_id",
             "site_id",
-            "consented_at",
-            "blocked",
             "data",
             "created_at",
             "updated_at"
@@ -6825,52 +6829,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
-        "user_site": {
-            "properties": {
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
-                "created_at": {
-                    "format": "date-time",
-                    "readOnly": true,
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "site_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "format": "date-time",
-                    "readOnly": true,
-                    "type": "string"
-                },
-                "user_id": {
-                    "format": "uuid",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "id",
-                "user_id",
-                "site_id",
-                "consented_at",
-                "created_at",
-                "updated_at"
-            ],
-            "type": "object"
-        },
         "user_site_data": {
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "created_at": {
                     "format": "date-time",
                     "readOnly": true,
@@ -6901,8 +6861,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": [
                 "user_id",
                 "site_id",
-                "consented_at",
-                "blocked",
                 "data",
                 "created_at",
                 "updated_at"
@@ -6911,13 +6869,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "user_site_data_create": {
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "data": {
                     "type": "object"
                 },
@@ -6945,13 +6896,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "user_site_data_update": {
             "minProperties": 1,
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "data": {
                     "type": "object"
                 }
@@ -7317,6 +7261,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "creator_id",
                         "required": false,
                         "type": "string"
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of adminnote ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 0,
+                        "name": "admin_note_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -11585,8 +11542,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "fields": [
                         "site_id",
                         "data",
-                        "consented_at",
-                        "blocked",
                         "created_at",
                         "updated_at"
                     ],

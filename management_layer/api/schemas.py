@@ -1648,56 +1648,9 @@ user_permissions_check_response = json.loads("""
 }
 """)
 
-user_site = json.loads("""
-{
-    "properties": {
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
-        "created_at": {
-            "format": "date-time",
-            "readOnly": true,
-            "type": "string"
-        },
-        "id": {
-            "type": "integer"
-        },
-        "site_id": {
-            "type": "integer"
-        },
-        "updated_at": {
-            "format": "date-time",
-            "readOnly": true,
-            "type": "string"
-        },
-        "user_id": {
-            "format": "uuid",
-            "type": "string"
-        }
-    },
-    "required": [
-        "id",
-        "user_id",
-        "site_id",
-        "consented_at",
-        "created_at",
-        "updated_at"
-    ],
-    "type": "object"
-}
-""")
-
 user_site_data = json.loads("""
 {
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "created_at": {
             "format": "date-time",
             "readOnly": true,
@@ -1728,8 +1681,6 @@ user_site_data = json.loads("""
     "required": [
         "user_id",
         "site_id",
-        "consented_at",
-        "blocked",
         "data",
         "created_at",
         "updated_at"
@@ -1741,13 +1692,6 @@ user_site_data = json.loads("""
 user_site_data_create = json.loads("""
 {
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "data": {
             "type": "object"
         },
@@ -1778,13 +1722,6 @@ user_site_data_update = json.loads("""
 {
     "minProperties": 1,
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "data": {
             "type": "object"
         }
