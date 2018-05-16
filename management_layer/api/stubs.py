@@ -2357,7 +2357,7 @@ class MockedStubClass(AbstractStubClass):
         :param request: An HttpRequest
         :param organisational_unit_id: integer An integer identifying an organisational unit
         """
-        response_schema = schemas.organisational_unit
+        response_schema = schemas.organisationalunit
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -3575,7 +3575,7 @@ class MockedStubClass(AbstractStubClass):
                 "type": "integer",
                 "x-related-info": {
                     "label": "name",
-                    "model": "organisational_unit"
+                    "model": "organisationalunit"
                 }
             },
             "updated_at": {

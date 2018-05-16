@@ -714,7 +714,7 @@ invitation_update = json.loads("""
 }
 """)
 
-organisational_unit = json.loads("""
+organisationalunit = json.loads("""
 {
     "properties": {
         "created_at": {
@@ -1480,7 +1480,7 @@ user = json.loads("""
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisational_unit"
+                "model": "organisationalunit"
             }
         },
         "updated_at": {

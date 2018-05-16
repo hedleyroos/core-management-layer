@@ -1268,7 +1268,7 @@ definitions:
       - client_id
       - response_type
 
-  organisational_unit:
+  organisationalunit:
     type: object
     properties:
       id:
@@ -1358,7 +1358,7 @@ definitions:
         type: integer
         readOnly: true
         x-related-info:
-          model: organisational_unit
+          model: organisationalunit
           label: name
       created_at:
         type: string
@@ -3406,7 +3406,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/organisational_unit'
+              $ref: '#/definitions/organisationalunit'
           headers:
             X-Total-Count:
               type: integer
@@ -3426,7 +3426,7 @@ paths:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/organisational_unit'
+            $ref: '#/definitions/organisationalunit'
       tags:
         - authentication
 

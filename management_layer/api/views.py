@@ -2205,7 +2205,7 @@ class Organisationalunits(View, CorsViewMixin):
 
 class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
 
-    GET_RESPONSE_SCHEMA = schemas.organisational_unit
+    GET_RESPONSE_SCHEMA = schemas.organisationalunit
 
     async def get(self):
         """
@@ -4525,7 +4525,7 @@ class Users(View, CorsViewMixin):
                 "type": "integer",
                 "x-related-info": {
                     "label": "name",
-                    "model": "organisational_unit"
+                    "model": "organisationalunit"
                 }
             },
             "updated_at": {
@@ -6000,7 +6000,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
-        "organisational_unit": {
+        "organisationalunit": {
             "properties": {
                 "created_at": {
                     "format": "date-time",
@@ -6688,7 +6688,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "integer",
                     "x-related-info": {
                         "label": "name",
-                        "model": "organisational_unit"
+                        "model": "organisationalunit"
                     }
                 },
                 "updated_at": {
@@ -8934,7 +8934,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         },
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/organisational_unit",
+                                "$ref": "#/definitions/organisationalunit",
                                 "x-scope": [
                                     ""
                                 ]
@@ -8958,7 +8958,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/organisational_unit",
+                            "$ref": "#/definitions/organisationalunit",
                             "x-scope": [
                                 ""
                             ]
