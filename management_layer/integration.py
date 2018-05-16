@@ -165,6 +165,7 @@ class Implementation(AbstractStubClass):
 
     # country_list -- Synchronisation point for meld
     @staticmethod
+    # No permissions are required for this
     async def country_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -187,6 +188,7 @@ class Implementation(AbstractStubClass):
 
     # country_read -- Synchronisation point for meld
     @staticmethod
+    # No permissions are required for this
     async def country_read(request, country_code, **kwargs):
         """
         :param request: An HttpRequest
@@ -776,6 +778,7 @@ class Implementation(AbstractStubClass):
 
     # organisational_unit_list -- Synchronisation point for meld
     @staticmethod
+    # No permissions are required for this
     async def organisational_unit_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -799,6 +802,7 @@ class Implementation(AbstractStubClass):
 
     # organisational_unit_read -- Synchronisation point for meld
     @staticmethod
+    # No permissions are required for this
     async def organisational_unit_read(request, organisational_unit_id, **kwargs):
         """
         :param request: An HttpRequest
