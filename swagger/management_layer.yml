@@ -1791,8 +1791,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -1991,8 +1991,8 @@ paths:
             type: integer
             format: uuid
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2243,8 +2243,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2348,8 +2348,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2448,8 +2448,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2631,8 +2631,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
         - name: client_id
           description: An optional client id to filter on
@@ -3079,7 +3079,7 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
+          minItems: 1
           collectionFormat: csv
           uniqueItems: true
 
@@ -3190,8 +3190,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -3291,7 +3291,7 @@ paths:
             type: integer
           required: false
           minItems: 1
-          collectionFormat: multi
+          collectionFormat: csv
           uniqueItems: true
         - description: An optional client id to filter on. This is not the primary key.
           in: query
@@ -3572,8 +3572,8 @@ paths:
             type: string
             format: uuid
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
         - name: site_ids
           description: An optional list of site ids

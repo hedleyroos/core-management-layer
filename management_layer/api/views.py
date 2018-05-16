@@ -135,7 +135,7 @@ class Adminnotes(View, CorsViewMixin):
             if admin_note_ids:
                 admin_note_ids = [int(e) for e in admin_note_ids]
             if admin_note_ids is not None:
-                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'csv', 'uniqueItems': True}
+                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -395,7 +395,7 @@ class Clients(View, CorsViewMixin):
             if client_ids:
                 client_ids = [int(e) for e in client_ids]
             if client_ids is not None:
-                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -895,7 +895,7 @@ class Domains(View, CorsViewMixin):
             if domain_ids:
                 domain_ids = [int(e) for e in domain_ids]
             if domain_ids is not None:
-                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -1370,7 +1370,7 @@ class Invitations(View, CorsViewMixin):
             if invitation_ids:
                 invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
-                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -2306,7 +2306,7 @@ class Permissions(View, CorsViewMixin):
             if permission_ids:
                 permission_ids = [int(e) for e in permission_ids]
             if permission_ids is not None:
-                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -2823,7 +2823,7 @@ class Resources(View, CorsViewMixin):
             if resource_ids:
                 resource_ids = [int(e) for e in resource_ids]
             if resource_ids is not None:
-                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3277,7 +3277,7 @@ class Roles(View, CorsViewMixin):
             if role_ids:
                 role_ids = [int(e) for e in role_ids]
             if role_ids is not None:
-                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3507,7 +3507,7 @@ class Sitedataschemas(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3999,7 +3999,7 @@ class Sites(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -4692,7 +4692,7 @@ class Users(View, CorsViewMixin):
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.getall("user_ids", None)
             if user_ids is not None:
-                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -7269,7 +7269,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "admin_note_ids",
                         "required": false,
                         "type": "array",
@@ -7462,7 +7462,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of client ids",
                         "in": "query",
                         "items": {
@@ -7848,13 +7848,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of domain ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "domain_ids",
                         "required": false,
                         "type": "array",
@@ -8206,14 +8206,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of invitation ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "invitation_ids",
                         "required": false,
                         "type": "array",
@@ -8995,13 +8995,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of permission ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "permission_ids",
                         "required": false,
                         "type": "array",
@@ -9386,13 +9386,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of resource ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "resource_ids",
                         "required": false,
                         "type": "array",
@@ -9735,13 +9735,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of role ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "role_ids",
                         "required": false,
                         "type": "array",
@@ -9919,13 +9919,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
@@ -10292,13 +10292,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
@@ -10864,14 +10864,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "uniqueItems": true
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of user ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "string"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "user_ids",
                         "required": false,
                         "type": "array",
