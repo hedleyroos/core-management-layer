@@ -3382,7 +3382,7 @@ paths:
       tags:
         - authentication
 
-  /organisational_units:
+  /organisationalunits:
     get:
       operationId: organisational_unit_list
       parameters:
@@ -3415,7 +3415,7 @@ paths:
       tags:
         - authentication
 
-  /organisational_units/{organisational_unit_id}:
+  /organisationalunits/{organisational_unit_id}:
     parameters:
       - $ref: '#/parameters/organisational_unit_id'
     get:

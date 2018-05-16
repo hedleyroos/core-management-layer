@@ -2109,7 +2109,7 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class OrganisationalUnits(View, CorsViewMixin):
+class Organisationalunits(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2152,7 +2152,7 @@ class OrganisationalUnits(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OrganisationalUnits instance
+        :param self: A Organisationalunits instance
         """
         try:
             optional_args = {}
@@ -2203,14 +2203,14 @@ class OrganisationalUnits(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class OrganisationalUnitsOrganisationalUnitId(View, CorsViewMixin):
+class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.organisational_unit
 
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OrganisationalUnitsOrganisationalUnitId instance
+        :param self: A OrganisationalunitsOrganisationalUnitId instance
         """
         try:
             # organisational_unit_id: integer An integer identifying an organisational unit
@@ -8890,7 +8890,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
-        "/organisational_units": {
+        "/organisationalunits": {
             "get": {
                 "operationId": "organisational_unit_list",
                 "parameters": [
@@ -8948,7 +8948,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
-        "/organisational_units/{organisational_unit_id}": {
+        "/organisationalunits/{organisational_unit_id}": {
             "get": {
                 "operationId": "organisational_unit_read",
                 "produces": [
