@@ -228,6 +228,7 @@ class UserDataApi(object):
         :param int limit: An optional query parameter to limit the number of results returned.
         :param str user_id: An optional query parameter to filter by user_id
         :param str creator_id: An optional query parameter to filter by creator (a user_id)
+        :param list[int] admin_note_ids: An optional list of adminnote ids
         :return: list[AdminNote]
                  If the method is called asynchronously,
                  returns the request thread.
@@ -252,12 +253,13 @@ class UserDataApi(object):
         :param int limit: An optional query parameter to limit the number of results returned.
         :param str user_id: An optional query parameter to filter by user_id
         :param str creator_id: An optional query parameter to filter by creator (a user_id)
+        :param list[int] admin_note_ids: An optional list of adminnote ids
         :return: list[AdminNote]
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'user_id', 'creator_id']  # noqa: E501
+        all_params = ['offset', 'limit', 'user_id', 'creator_id', 'admin_note_ids']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -279,6 +281,9 @@ class UserDataApi(object):
             raise ValueError("Invalid value for parameter `limit` when calling `adminnote_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
             raise ValueError("Invalid value for parameter `limit` when calling `adminnote_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('admin_note_ids' in params and
+                len(params['admin_note_ids']) < 0):
+            raise ValueError("Invalid value for parameter `admin_note_ids` when calling `adminnote_list`, number of items must be greater than or equal to `0`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -292,6 +297,9 @@ class UserDataApi(object):
             query_params.append(('user_id', params['user_id']))  # noqa: E501
         if 'creator_id' in params:
             query_params.append(('creator_id', params['creator_id']))  # noqa: E501
+        if 'admin_note_ids' in params:
+            query_params.append(('admin_note_ids', params['admin_note_ids']))  # noqa: E501
+            collection_formats['admin_note_ids'] = 'multi'  # noqa: E501
 
         header_params = {}
 

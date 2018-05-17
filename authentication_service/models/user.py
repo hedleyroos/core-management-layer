@@ -46,6 +46,7 @@ class User(object):
         'birth_date': 'date',
         'avatar': 'str',
         'country_code': 'str',
+        'organisational_unit_id': 'int',
         'created_at': 'datetime',
         'updated_at': 'datetime'
     }
@@ -66,11 +67,12 @@ class User(object):
         'birth_date': 'birth_date',
         'avatar': 'avatar',
         'country_code': 'country_code',
+        'organisational_unit_id': 'organisational_unit_id',
         'created_at': 'created_at',
         'updated_at': 'updated_at'
     }
 
-    def __init__(self, id=None, username=None, first_name=None, last_name=None, email=None, is_active=None, date_joined=None, last_login=None, email_verified=None, msisdn_verified=None, msisdn=None, gender=None, birth_date=None, avatar=None, country_code=None, created_at=None, updated_at=None):  # noqa: E501
+    def __init__(self, id=None, username=None, first_name=None, last_name=None, email=None, is_active=None, date_joined=None, last_login=None, email_verified=None, msisdn_verified=None, msisdn=None, gender=None, birth_date=None, avatar=None, country_code=None, organisational_unit_id=None, created_at=None, updated_at=None):  # noqa: E501
         """User - a model defined in Swagger"""  # noqa: E501
 
         self._id = None
@@ -88,6 +90,7 @@ class User(object):
         self._birth_date = None
         self._avatar = None
         self._country_code = None
+        self._organisational_unit_id = None
         self._created_at = None
         self._updated_at = None
         self.discriminator = None
@@ -118,6 +121,8 @@ class User(object):
             self.avatar = avatar
         if country_code is not None:
             self.country_code = country_code
+        if organisational_unit_id is not None:
+            self.organisational_unit_id = organisational_unit_id
         self.created_at = created_at
         self.updated_at = updated_at
 
@@ -465,6 +470,27 @@ class User(object):
             raise ValueError("Invalid value for `country_code`, length must be greater than or equal to `2`")  # noqa: E501
 
         self._country_code = country_code
+
+    @property
+    def organisational_unit_id(self):
+        """Gets the organisational_unit_id of this User.  # noqa: E501
+
+
+        :return: The organisational_unit_id of this User.  # noqa: E501
+        :rtype: int
+        """
+        return self._organisational_unit_id
+
+    @organisational_unit_id.setter
+    def organisational_unit_id(self, organisational_unit_id):
+        """Sets the organisational_unit_id of this User.
+
+
+        :param organisational_unit_id: The organisational_unit_id of this User.  # noqa: E501
+        :type: int
+        """
+
+        self._organisational_unit_id = organisational_unit_id
 
     @property
     def created_at(self):

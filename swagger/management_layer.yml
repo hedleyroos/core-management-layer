@@ -188,6 +188,13 @@ parameters:
     minLength: 2
     maxLength: 2
 
+  organisational_unit_id:
+    description: An integer identifying an organisational unit
+    in: path
+    name: organisational_unit_id
+    required: true
+    type: integer
+
   client_id:
     description: A integer identifying the client
     in: path
@@ -196,6 +203,20 @@ parameters:
     type: integer
 
 definitions:
+  country:
+    type: object
+    properties:
+      code:
+        type: string
+        minLength: 2
+        maxLength: 2
+      name:
+        type: string
+        maxLength: 100
+    required:
+      - code
+      - name
+
   domain:
     type: object
     properties:
@@ -1154,13 +1175,8 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      consented_at:
-        type: string
-        format: date-time
       data:
         type: object
-      blocked:
-        type: boolean
       created_at:
         type: string
         format: date-time
@@ -1172,8 +1188,6 @@ definitions:
     required:
       - user_id
       - site_id
-      - consented_at
-      - blocked
       - data
       - created_at
       - updated_at
@@ -1190,11 +1204,6 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      consented_at:
-        type: string
-        format: date-time
-      blocked:
-        type: boolean
       data:
         type: object
     required:
@@ -1205,11 +1214,6 @@ definitions:
   user_site_data_update:
     type: object
     properties:
-      consented_at:
-        type: string
-        format: date-time
-      blocked:
-        type: boolean
       data:
         type: object
     minProperties: 1
@@ -1263,6 +1267,30 @@ definitions:
       - id
       - client_id
       - response_type
+
+  organisationalunit:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
+      updated_at:
+        type: string
+        format: date-time
+        readOnly: true
+    required:
+      - id
+      - name
+      - description
+      - created_at
+      - updated_at
 
   user:
     type: object
@@ -1322,6 +1350,16 @@ definitions:
         type: string
         minLength: 2
         maxLength: 2
+        x-related-info:
+          model: country
+          field: code
+          label: name
+      organisational_unit_id:
+        type: integer
+        readOnly: true
+        x-related-info:
+          model: organisationalunit
+          label: name
       created_at:
         type: string
         format: date-time
@@ -1375,6 +1413,10 @@ definitions:
         type: string
         minLength: 2
         maxLength: 2
+        x-related-info:
+          model: country
+          field: code
+          label: name
     minProperties: 1
 
   resource_permission:
@@ -1749,8 +1791,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -1949,8 +1991,8 @@ paths:
             type: integer
             format: uuid
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2201,8 +2243,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2306,8 +2348,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2406,8 +2448,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -2589,8 +2631,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
         - name: client_id
           description: An optional client id to filter on
@@ -3030,6 +3072,17 @@ paths:
           required: false
           type: string
           format: uuid
+        - name: admin_note_ids
+          description: An optional list of adminnote ids
+          in: query
+          type: array
+          items:
+            type: integer
+          required: false
+          minItems: 1
+          collectionFormat: csv
+          uniqueItems: true
+
       produces:
         - application/json
       responses:
@@ -3137,8 +3190,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -3237,8 +3290,8 @@ paths:
           items:
             type: integer
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
         - description: An optional client id to filter on. This is not the primary key.
           in: query
@@ -3278,6 +3331,104 @@ paths:
             $ref: '#/definitions/client'
       tags:
         - oidc_provider
+
+  /countries:
+    get:
+      operationId: country_list
+      parameters:
+        - $ref: '#/parameters/optional_offset'
+        - $ref: '#/parameters/optional_limit'
+        - name: country_codes
+          description: An optional list of country codes
+          in: query
+          type: array
+          items:
+            type: string
+            minLength: 2
+            maxLength: 2
+          required: false
+          minItems: 1
+          collectionFormat: csv
+          uniqueItems: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/country'
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
+
+      tags:
+        - authentication
+
+  /countries/{country_code}:
+    parameters:
+      - $ref: '#/parameters/country_code'
+    get:
+      operationId: country_read
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/country'
+      tags:
+        - authentication
+
+  /organisationalunits:
+    get:
+      operationId: organisational_unit_list
+      parameters:
+        - $ref: '#/parameters/optional_offset'
+        - $ref: '#/parameters/optional_limit'
+        - name: organisational_unit_ids
+          description: An optional list of organisational unit ids
+          in: query
+          type: array
+          items:
+            type: integer
+          required: false
+          minItems: 1
+          collectionFormat: csv
+          uniqueItems: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/organisationalunit'
+          headers:
+            X-Total-Count:
+              type: integer
+              description: The total number of results matching the query
+
+      tags:
+        - authentication
+
+  /organisationalunits/{organisational_unit_id}:
+    parameters:
+      - $ref: '#/parameters/organisational_unit_id'
+    get:
+      operationId: organisational_unit_read
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/organisationalunit'
+      tags:
+        - authentication
 
   /users:
     get:
@@ -3421,8 +3572,18 @@ paths:
             type: string
             format: uuid
           required: false
-          minItems: 0
-          collectionFormat: multi
+          minItems: 1
+          collectionFormat: csv
+          uniqueItems: true
+        - name: site_ids
+          description: An optional list of site ids
+          in: query
+          type: array
+          items:
+            type: integer
+          required: false
+          minItems: 1
+          collectionFormat: csv
           uniqueItems: true
       produces:
         - application/json
@@ -3611,8 +3772,6 @@ x-detail-page-definitions:
       fields:
         - site_id
         - data
-        - consented_at
-        - blocked
         - created_at
         - updated_at
     - model: user_site_role

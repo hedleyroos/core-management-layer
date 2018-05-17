@@ -130,6 +130,19 @@ class Adminnotes(View, CorsViewMixin):
             if creator_id is not None:
                 jsonschema.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
+            # admin_note_ids (optional): array An optional list of adminnote ids
+            admin_note_ids = self.request.query.getall("admin_note_ids", None)
+            if admin_note_ids:
+                admin_note_ids = [int(e) for e in admin_note_ids]
+            if admin_note_ids is not None:
+                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(admin_note_ids, schema)
+                optional_args["admin_note_ids"] = admin_note_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -382,7 +395,7 @@ class Clients(View, CorsViewMixin):
             if client_ids:
                 client_ids = [int(e) for e in client_ids]
             if client_ids is not None:
-                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -434,6 +447,117 @@ class ClientsClientId(View, CorsViewMixin):
 
         result = await Stubs.client_read(
             self.request, client_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class Countries(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "code": {
+                "maxLength": 2,
+                "minLength": 2,
+                "type": "string"
+            },
+            "name": {
+                "maxLength": 100,
+                "type": "string"
+            }
+        },
+        "required": [
+            "code",
+            "name"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Countries instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # country_codes (optional): array An optional list of country codes
+            country_codes = self.request.query.getall("country_codes", None)
+            if country_codes is not None:
+                schema = {'name': 'country_codes', 'description': 'An optional list of country codes', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'minLength': 2, 'maxLength': 2}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(country_codes, schema)
+                optional_args["country_codes"] = country_codes
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.country_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class CountriesCountryCode(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.country
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CountriesCountryCode instance
+        """
+        try:
+            # country_code: string A unique two-character value identifying the country.
+            country_code = self.request.match_info["country_code"]
+            jsonschema.validate(country_code, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.country_read(
+            self.request, country_code, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -771,7 +895,7 @@ class Domains(View, CorsViewMixin):
             if domain_ids:
                 domain_ids = [int(e) for e in domain_ids]
             if domain_ids is not None:
-                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -1246,7 +1370,7 @@ class Invitations(View, CorsViewMixin):
             if invitation_ids:
                 invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
-                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -1985,6 +2109,132 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Organisationalunits(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "name": {
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "name",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Organisationalunits instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # organisational_unit_ids (optional): array An optional list of organisational unit ids
+            organisational_unit_ids = self.request.query.getall("organisational_unit_ids", None)
+            if organisational_unit_ids:
+                organisational_unit_ids = [int(e) for e in organisational_unit_ids]
+            if organisational_unit_ids is not None:
+                schema = {'name': 'organisational_unit_ids', 'description': 'An optional list of organisational unit ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(organisational_unit_ids, schema)
+                optional_args["organisational_unit_ids"] = organisational_unit_ids
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.organisational_unit_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.organisationalunit
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationalunitsOrganisationalUnitId instance
+        """
+        try:
+            # organisational_unit_id: integer An integer identifying an organisational unit
+            organisational_unit_id = self.request.match_info["organisational_unit_id"]
+            organisational_unit_id = int(organisational_unit_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.organisational_unit_read(
+            self.request, organisational_unit_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Permissions(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -2056,7 +2306,7 @@ class Permissions(View, CorsViewMixin):
             if permission_ids:
                 permission_ids = [int(e) for e in permission_ids]
             if permission_ids is not None:
-                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -2573,7 +2823,7 @@ class Resources(View, CorsViewMixin):
             if resource_ids:
                 resource_ids = [int(e) for e in resource_ids]
             if resource_ids is not None:
-                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3027,7 +3277,7 @@ class Roles(View, CorsViewMixin):
             if role_ids:
                 role_ids = [int(e) for e in role_ids]
             if role_ids is not None:
-                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3257,7 +3507,7 @@ class Sitedataschemas(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -3749,7 +3999,7 @@ class Sites(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -4210,7 +4460,12 @@ class Users(View, CorsViewMixin):
             "country_code": {
                 "maxLength": 2,
                 "minLength": 2,
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "field": "code",
+                    "label": "name",
+                    "model": "country"
+                }
             },
             "created_at": {
                 "format": "date-time",
@@ -4264,6 +4519,14 @@ class Users(View, CorsViewMixin):
             },
             "msisdn_verified": {
                 "type": "boolean"
+            },
+            "organisational_unit_id": {
+                "readOnly": true,
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisationalunit"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -4429,7 +4692,7 @@ class Users(View, CorsViewMixin):
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.getall("user_ids", None)
             if user_ids is not None:
-                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -4437,6 +4700,19 @@ class Users(View, CorsViewMixin):
 
                 jsonschema.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
+            # site_ids (optional): array An optional list of site ids
+            site_ids = self.request.query.getall("site_ids", None)
+            if site_ids:
+                site_ids = [int(e) for e in site_ids]
+            if site_ids is not None:
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                # Remove Swagger fields that clash with JSONSchema names at this level
+                for field in ["name", "in", "required", "collectionFormat"]:
+                    if field in schema:
+                        del schema[field]
+
+                jsonschema.validate(site_ids, schema)
+                optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
@@ -4624,13 +4900,6 @@ class Usersitedata(View, CorsViewMixin):
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
         "properties": {
-            "blocked": {
-                "type": "boolean"
-            },
-            "consented_at": {
-                "format": "date-time",
-                "type": "string"
-            },
             "created_at": {
                 "format": "date-time",
                 "readOnly": true,
@@ -4661,8 +4930,6 @@ class Usersitedata(View, CorsViewMixin):
         "required": [
             "user_id",
             "site_id",
-            "consented_at",
-            "blocked",
             "data",
             "created_at",
             "updated_at"
@@ -5277,6 +5544,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "country": {
+            "properties": {
+                "code": {
+                    "maxLength": 2,
+                    "minLength": 2,
+                    "type": "string"
+                },
+                "name": {
+                    "maxLength": 100,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "code",
+                "name"
+            ],
+            "type": "object"
+        },
         "domain": {
             "properties": {
                 "created_at": {
@@ -5713,6 +5998,37 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 }
             },
+            "type": "object"
+        },
+        "organisationalunit": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "name",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
             "type": "object"
         },
         "permission": {
@@ -6307,7 +6623,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "country_code": {
                     "maxLength": 2,
                     "minLength": 2,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "code",
+                        "label": "name",
+                        "model": "country"
+                    }
                 },
                 "created_at": {
                     "format": "date-time",
@@ -6361,6 +6682,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "msisdn_verified": {
                     "type": "boolean"
+                },
+                "organisational_unit_id": {
+                    "readOnly": true,
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisationalunit"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -6502,13 +6831,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "user_site_data": {
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "created_at": {
                     "format": "date-time",
                     "readOnly": true,
@@ -6539,8 +6861,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": [
                 "user_id",
                 "site_id",
-                "consented_at",
-                "blocked",
                 "data",
                 "created_at",
                 "updated_at"
@@ -6549,13 +6869,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "user_site_data_create": {
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "data": {
                     "type": "object"
                 },
@@ -6583,13 +6896,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         "user_site_data_update": {
             "minProperties": 1,
             "properties": {
-                "blocked": {
-                    "type": "boolean"
-                },
-                "consented_at": {
-                    "format": "date-time",
-                    "type": "string"
-                },
                 "data": {
                     "type": "object"
                 }
@@ -6703,7 +7009,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "country_code": {
                     "maxLength": 2,
                     "minLength": 2,
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "field": "code",
+                        "label": "name",
+                        "model": "country"
+                    }
                 },
                 "email": {
                     "description": "",
@@ -6876,6 +7187,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "string"
         },
+        "organisational_unit_id": {
+            "description": "An integer identifying an organisational unit",
+            "in": "path",
+            "name": "organisational_unit_id",
+            "required": true,
+            "type": "integer"
+        },
         "permission_id": {
             "description": "A unique integer value identifying the permission.",
             "in": "path",
@@ -6943,6 +7261,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "creator_id",
                         "required": false,
                         "type": "string"
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of adminnote ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1,
+                        "name": "admin_note_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
                     }
                 ],
                 "produces": [
@@ -6973,6 +7304,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:adminnote:read"
                 ]
             },
             "post": {
@@ -7011,6 +7345,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:adminnote:create"
                 ]
             }
         },
@@ -7027,6 +7364,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:adminnote:delete"
                 ]
             },
             "get": {
@@ -7050,6 +7390,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:adminnote:read"
                 ]
             },
             "parameters": [
@@ -7096,6 +7439,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:adminnote:update"
                 ]
             }
         },
@@ -7116,13 +7462,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of client ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "client_ids",
                         "required": false,
                         "type": "array",
@@ -7161,6 +7507,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             }
         },
@@ -7183,11 +7532,104 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "oidc_provider"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
             "parameters": [
                 {
                     "$ref": "#/parameters/client_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/countries": {
+            "get": {
+                "operationId": "country_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of country codes",
+                        "in": "query",
+                        "items": {
+                            "maxLength": 2,
+                            "minLength": 2,
+                            "type": "string"
+                        },
+                        "minItems": 1,
+                        "name": "country_codes",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/country",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            }
+        },
+        "/countries/{country_code}": {
+            "get": {
+                "operationId": "country_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/country",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/country_code",
                     "x-scope": [
                         ""
                     ]
@@ -7248,6 +7690,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domainrole:read"
                 ]
             },
             "post": {
@@ -7283,6 +7728,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domainrole:create"
                 ]
             }
         },
@@ -7296,6 +7744,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domainrole:delete"
                 ]
             },
             "get": {
@@ -7316,6 +7767,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domainrole:read"
                 ]
             },
             "parameters": [
@@ -7365,6 +7819,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domainrole:update"
                 ]
             }
         },
@@ -7391,13 +7848,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of domain ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "domain_ids",
                         "required": false,
                         "type": "array",
@@ -7429,6 +7886,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domain:read"
                 ]
             },
             "post": {
@@ -7464,6 +7924,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domain:create"
                 ]
             }
         },
@@ -7477,6 +7940,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domain:delete"
                 ]
             },
             "get": {
@@ -7497,6 +7963,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domain:read"
                 ]
             },
             "parameters": [
@@ -7540,6 +8009,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:domain:update"
                 ]
             }
         },
@@ -7603,6 +8075,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
             "post": {
@@ -7638,6 +8113,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationdomainrole:create"
                 ]
             }
         },
@@ -7654,6 +8132,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationdomainrole:delete"
                 ]
             },
             "get": {
@@ -7674,6 +8155,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
             "parameters": [
@@ -7722,14 +8206,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of invitation ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "invitation_ids",
                         "required": false,
                         "type": "array",
@@ -7761,6 +8245,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitation:read"
                 ]
             },
             "post": {
@@ -7796,6 +8283,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitation:create"
                 ]
             }
         },
@@ -7809,6 +8299,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitation:delete"
                 ]
             },
             "get": {
@@ -7829,6 +8322,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitation:read"
                 ]
             },
             "parameters": [
@@ -7872,6 +8368,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitation:update"
                 ]
             }
         },
@@ -7935,6 +8434,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
             "post": {
@@ -7970,6 +8472,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationsiterole:create"
                 ]
             }
         },
@@ -7983,6 +8488,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationsiterole:delete"
                 ]
             },
             "get": {
@@ -8003,6 +8511,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
             "parameters": [
@@ -8379,6 +8890,94 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/organisationalunits": {
+            "get": {
+                "operationId": "organisational_unit_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of organisational unit ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1,
+                        "name": "organisational_unit_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/organisationalunit",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            }
+        },
+        "/organisationalunits/{organisational_unit_id}": {
+            "get": {
+                "operationId": "organisational_unit_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/organisationalunit",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/organisational_unit_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
         "/permissions": {
             "get": {
                 "operationId": "permission_list",
@@ -8396,13 +8995,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of permission ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "permission_ids",
                         "required": false,
                         "type": "array",
@@ -8434,6 +9033,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:permission:read"
                 ]
             },
             "post": {
@@ -8469,6 +9071,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:permission:create"
                 ]
             }
         },
@@ -8482,6 +9087,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:permission:delete"
                 ]
             },
             "get": {
@@ -8502,6 +9110,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:permission:read"
                 ]
             },
             "parameters": [
@@ -8545,6 +9156,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:permission:update"
                 ]
             }
         },
@@ -8772,13 +9386,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of resource ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "resource_ids",
                         "required": false,
                         "type": "array",
@@ -8810,6 +9424,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:resource:read"
                 ]
             },
             "post": {
@@ -8845,6 +9462,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:resource:create"
                 ]
             }
         },
@@ -8858,6 +9478,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:resource:delete"
                 ]
             },
             "get": {
@@ -8878,6 +9501,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:resource:read"
                 ]
             },
             "parameters": [
@@ -8921,6 +9547,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:resource:update"
                 ]
             }
         },
@@ -8986,6 +9615,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:roleresourcepermission:read"
                 ]
             },
             "post": {
@@ -9021,6 +9653,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:roleresourcepermission:create"
                 ]
             }
         },
@@ -9034,6 +9669,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:roleresourcepermission:delete"
                 ]
             },
             "get": {
@@ -9054,6 +9692,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:roleresourcepermission:update"
                 ]
             },
             "parameters": [
@@ -9094,13 +9735,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of role ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "role_ids",
                         "required": false,
                         "type": "array",
@@ -9132,6 +9773,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:role:read"
                 ]
             },
             "post": {
@@ -9167,6 +9811,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:role:create"
                 ]
             }
         },
@@ -9180,6 +9827,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:role:delete"
                 ]
             },
             "get": {
@@ -9200,6 +9850,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:role:read"
                 ]
             },
             "parameters": [
@@ -9243,6 +9896,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:role:update"
                 ]
             }
         },
@@ -9263,13 +9919,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
@@ -9301,6 +9957,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:sitedataschema:read"
                 ]
             },
             "post": {
@@ -9336,6 +9995,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:sitedataschema:create"
                 ]
             }
         },
@@ -9349,6 +10011,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:sitedataschema:delete"
                 ]
             },
             "get": {
@@ -9369,6 +10034,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:sitedataschema:read"
                 ]
             },
             "parameters": [
@@ -9412,6 +10080,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:sitedataschema:update"
                 ]
             }
         },
@@ -9469,6 +10140,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:siterole:read"
                 ]
             },
             "post": {
@@ -9504,6 +10178,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:siterole:create"
                 ]
             }
         },
@@ -9517,6 +10194,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:siterole:delete"
                 ]
             },
             "get": {
@@ -9537,6 +10217,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:siterole:read"
                 ]
             },
             "parameters": [
@@ -9586,6 +10269,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:siterole:update"
                 ]
             }
         },
@@ -9606,13 +10292,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of site ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
@@ -9651,6 +10337,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:site:read"
                 ]
             },
             "post": {
@@ -9686,6 +10375,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:site:create"
                 ]
             }
         },
@@ -9699,6 +10391,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:site:delete"
                 ]
             },
             "get": {
@@ -9719,6 +10414,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:site:read"
                 ]
             },
             "parameters": [
@@ -9762,6 +10460,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:site:update"
                 ]
             }
         },
@@ -9873,6 +10574,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:userdomainrole:read"
                 ]
             },
             "post": {
@@ -9908,6 +10612,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:userdomainrole:create"
                 ]
             }
         },
@@ -9921,6 +10628,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:userdomainrole:delete"
                 ]
             },
             "get": {
@@ -9941,6 +10651,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:userdomainrole:read"
                 ]
             },
             "parameters": [
@@ -10151,15 +10864,28 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "uniqueItems": true
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of user ids",
                         "in": "query",
                         "items": {
                             "format": "uuid",
                             "type": "string"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "user_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of site ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1,
+                        "name": "site_ids",
                         "required": false,
                         "type": "array",
                         "uniqueItems": true
@@ -10190,6 +10916,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:user:read"
                 ]
             }
         },
@@ -10203,6 +10932,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:user:delete"
                 ]
             },
             "get": {
@@ -10223,6 +10955,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:user:read"
                 ]
             },
             "parameters": [
@@ -10266,6 +11001,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:user:update"
                 ]
             }
         },
@@ -10371,6 +11109,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:usersitedata:read"
                 ]
             },
             "post": {
@@ -10406,6 +11147,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:usersitedata:create"
                 ]
             }
         },
@@ -10419,6 +11163,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:usersitedata:delete"
                 ]
             },
             "get": {
@@ -10439,6 +11186,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:usersitedata:read"
                 ]
             },
             "parameters": [
@@ -10488,6 +11238,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:usersitedata:update"
                 ]
             }
         },
@@ -10551,6 +11304,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:usersiterole:read"
                 ]
             },
             "post": {
@@ -10586,6 +11342,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:usersiterole:create"
                 ]
             }
         },
@@ -10599,6 +11358,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:usersiterole:delete"
                 ]
             },
             "get": {
@@ -10619,6 +11381,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:usersiterole:read"
                 ]
             },
             "parameters": [
@@ -10777,8 +11542,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "fields": [
                         "site_id",
                         "data",
-                        "consented_at",
-                        "blocked",
                         "created_at",
                         "updated_at"
                     ],

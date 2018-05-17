@@ -213,6 +213,27 @@ client = json.loads("""
 }
 """)
 
+country = json.loads("""
+{
+    "properties": {
+        "code": {
+            "maxLength": 2,
+            "minLength": 2,
+            "type": "string"
+        },
+        "name": {
+            "maxLength": 100,
+            "type": "string"
+        }
+    },
+    "required": [
+        "code",
+        "name"
+    ],
+    "type": "object"
+}
+""")
+
 domain = json.loads("""
 {
     "properties": {
@@ -689,6 +710,40 @@ invitation_update = json.loads("""
             "type": "string"
         }
     },
+    "type": "object"
+}
+""")
+
+organisationalunit = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "name": {
+            "type": "string"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "name",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
     "type": "object"
 }
 """)
@@ -1360,7 +1415,12 @@ user = json.loads("""
         "country_code": {
             "maxLength": 2,
             "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "field": "code",
+                "label": "name",
+                "model": "country"
+            }
         },
         "created_at": {
             "format": "date-time",
@@ -1414,6 +1474,14 @@ user = json.loads("""
         },
         "msisdn_verified": {
             "type": "boolean"
+        },
+        "organisational_unit_id": {
+            "readOnly": true,
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisationalunit"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -1583,13 +1651,6 @@ user_permissions_check_response = json.loads("""
 user_site_data = json.loads("""
 {
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "created_at": {
             "format": "date-time",
             "readOnly": true,
@@ -1620,8 +1681,6 @@ user_site_data = json.loads("""
     "required": [
         "user_id",
         "site_id",
-        "consented_at",
-        "blocked",
         "data",
         "created_at",
         "updated_at"
@@ -1633,13 +1692,6 @@ user_site_data = json.loads("""
 user_site_data_create = json.loads("""
 {
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "data": {
             "type": "object"
         },
@@ -1670,13 +1722,6 @@ user_site_data_update = json.loads("""
 {
     "minProperties": 1,
     "properties": {
-        "blocked": {
-            "type": "boolean"
-        },
-        "consented_at": {
-            "format": "date-time",
-            "type": "string"
-        },
         "data": {
             "type": "object"
         }
@@ -1803,7 +1848,12 @@ user_update = json.loads("""
         "country_code": {
             "maxLength": 2,
             "minLength": 2,
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "field": "code",
+                "label": "name",
+                "model": "country"
+            }
         },
         "email": {
             "description": "",

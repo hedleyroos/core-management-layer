@@ -72,9 +72,11 @@ RESOURCES = {
     "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
     "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
     "clients": Resource(1, schemas.client, None, None),
-    "users": Resource(1, schemas.user, None, schemas.user_update)
+    "users": Resource(1, schemas.user, None, schemas.user_update),
+    "countries": Resource(1, schemas.country, None, None),
+    "organisationalunits": Resource(1, schemas.organisationalunit, None, None),
 }
-SKIP_DELETE_TESTS_FOR = ["clients"]
+SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisationalunits"]
 
 
 def wait_for_server(ip, port):
@@ -458,8 +460,13 @@ class IntegrationTest(AioHTTPTestCase):
     ])
     @unittest_run_loop
     async def test_read(self, resource, info):
+        if resource == "countries":
+            key = "/za"
+        else:
+            key = "/1" * info.num_identifying_parts
+
         response = await self.client.get("/{}{}".format(
-            resource, "/1" * info.num_identifying_parts)
+            resource, key)
         )
         await self.assertStatus(response, 200)
         response_body = await response.json()
