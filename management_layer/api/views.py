@@ -131,7 +131,9 @@ class Adminnotes(View, CorsViewMixin):
                 jsonschema.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
             # admin_note_ids (optional): array An optional list of adminnote ids
-            admin_note_ids = self.request.query.getall("admin_note_ids", None)
+            admin_note_ids = self.request.query.get("admin_note_ids", None)
+            if admin_note_ids is not None:
+                admin_note_ids = admin_note_ids.split(",")
             if admin_note_ids:
                 admin_note_ids = [int(e) for e in admin_note_ids]
             if admin_note_ids is not None:
@@ -391,7 +393,9 @@ class Clients(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # client_ids (optional): array An optional list of client ids
-            client_ids = self.request.query.getall("client_ids", None)
+            client_ids = self.request.query.get("client_ids", None)
+            if client_ids is not None:
+                client_ids = client_ids.split(",")
             if client_ids:
                 client_ids = [int(e) for e in client_ids]
             if client_ids is not None:
@@ -509,7 +513,9 @@ class Countries(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # country_codes (optional): array An optional list of country codes
-            country_codes = self.request.query.getall("country_codes", None)
+            country_codes = self.request.query.get("country_codes", None)
+            if country_codes is not None:
+                country_codes = country_codes.split(",")
             if country_codes is not None:
                 schema = {'name': 'country_codes', 'description': 'An optional list of country codes', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'minLength': 2, 'maxLength': 2}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
@@ -891,7 +897,9 @@ class Domains(View, CorsViewMixin):
                 parent_id = int(parent_id)
                 optional_args["parent_id"] = parent_id
             # domain_ids (optional): array An optional list of domain ids
-            domain_ids = self.request.query.getall("domain_ids", None)
+            domain_ids = self.request.query.get("domain_ids", None)
+            if domain_ids is not None:
+                domain_ids = domain_ids.split(",")
             if domain_ids:
                 domain_ids = [int(e) for e in domain_ids]
             if domain_ids is not None:
@@ -1366,7 +1374,9 @@ class Invitations(View, CorsViewMixin):
                 jsonschema.validate(invitor_id, {"type": "string"})
                 optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
-            invitation_ids = self.request.query.getall("invitation_ids", None)
+            invitation_ids = self.request.query.get("invitation_ids", None)
+            if invitation_ids is not None:
+                invitation_ids = invitation_ids.split(",")
             if invitation_ids:
                 invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
@@ -2173,7 +2183,9 @@ class Organisationalunits(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # organisational_unit_ids (optional): array An optional list of organisational unit ids
-            organisational_unit_ids = self.request.query.getall("organisational_unit_ids", None)
+            organisational_unit_ids = self.request.query.get("organisational_unit_ids", None)
+            if organisational_unit_ids is not None:
+                organisational_unit_ids = organisational_unit_ids.split(",")
             if organisational_unit_ids:
                 organisational_unit_ids = [int(e) for e in organisational_unit_ids]
             if organisational_unit_ids is not None:
@@ -2302,7 +2314,9 @@ class Permissions(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # permission_ids (optional): array An optional list of permission ids
-            permission_ids = self.request.query.getall("permission_ids", None)
+            permission_ids = self.request.query.get("permission_ids", None)
+            if permission_ids is not None:
+                permission_ids = permission_ids.split(",")
             if permission_ids:
                 permission_ids = [int(e) for e in permission_ids]
             if permission_ids is not None:
@@ -2819,7 +2833,9 @@ class Resources(View, CorsViewMixin):
                 jsonschema.validate(prefix, {"type": "string"})
                 optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
-            resource_ids = self.request.query.getall("resource_ids", None)
+            resource_ids = self.request.query.get("resource_ids", None)
+            if resource_ids is not None:
+                resource_ids = resource_ids.split(",")
             if resource_ids:
                 resource_ids = [int(e) for e in resource_ids]
             if resource_ids is not None:
@@ -3273,7 +3289,9 @@ class Roles(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # role_ids (optional): array An optional list of role ids
-            role_ids = self.request.query.getall("role_ids", None)
+            role_ids = self.request.query.get("role_ids", None)
+            if role_ids is not None:
+                role_ids = role_ids.split(",")
             if role_ids:
                 role_ids = [int(e) for e in role_ids]
             if role_ids is not None:
@@ -3503,7 +3521,9 @@ class Sitedataschemas(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
-            site_ids = self.request.query.getall("site_ids", None)
+            site_ids = self.request.query.get("site_ids", None)
+            if site_ids is not None:
+                site_ids = site_ids.split(",")
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
@@ -3995,7 +4015,9 @@ class Sites(View, CorsViewMixin):
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
-            site_ids = self.request.query.getall("site_ids", None)
+            site_ids = self.request.query.get("site_ids", None)
+            if site_ids is not None:
+                site_ids = site_ids.split(",")
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
@@ -4679,7 +4701,9 @@ class Users(View, CorsViewMixin):
                 jsonschema.validate(has_organisational_unit, {"type": "boolean"})
                 optional_args["has_organisational_unit"] = has_organisational_unit
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
-            order_by = self.request.query.getall("order_by", None)
+            order_by = self.request.query.get("order_by", None)
+            if order_by is not None:
+                order_by = order_by.split(",")
             if order_by is not None:
                 schema = {'name': 'order_by', 'description': 'Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.', 'in': 'query', 'required': False, 'type': 'array', 'collectionFormat': 'csv', 'items': {'type': 'string'}, 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
@@ -4690,7 +4714,9 @@ class Users(View, CorsViewMixin):
                 jsonschema.validate(order_by, schema)
                 optional_args["order_by"] = order_by
             # user_ids (optional): array An optional list of user ids
-            user_ids = self.request.query.getall("user_ids", None)
+            user_ids = self.request.query.get("user_ids", None)
+            if user_ids is not None:
+                user_ids = user_ids.split(",")
             if user_ids is not None:
                 schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
@@ -4701,7 +4727,9 @@ class Users(View, CorsViewMixin):
                 jsonschema.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
             # site_ids (optional): array An optional list of site ids
-            site_ids = self.request.query.getall("site_ids", None)
+            site_ids = self.request.query.get("site_ids", None)
+            if site_ids is not None:
+                site_ids = site_ids.split(",")
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
