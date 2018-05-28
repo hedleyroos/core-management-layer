@@ -183,8 +183,11 @@ TEST_CLIENT = {
     "id": 1,
     "client_id": "test_client",
     "name": "Test Client",
-    "created_at": datetime.datetime.now(),
-    "updated_at": datetime.datetime.now()
+    "contact_email": "",
+    "logo": "",
+    "require_consent": True,
+    "response_type": "",
+    "reuse_consent": True
 }
 
 
