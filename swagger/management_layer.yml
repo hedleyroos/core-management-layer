@@ -1590,7 +1590,7 @@ paths:
 
   /ops/get_site_from_client_token_id/{client_token_id}:
     parameters:
-      - description: An client token id. This is not the primary key of the client table, but rather the client id
+      - description: A client token id. This is not the primary key of the client table, but rather the client id
                      that is typically configured along with the client secret.
         in: path
         name: client_token_id
@@ -1598,7 +1598,7 @@ paths:
         type: string
       - $ref: '#/parameters/optional_nocache'
     get:
-      description: "Get a list of all permissions a user has on the Management Portal"
+      description: "Get the site associated with the specified client token id"
       operationId: get_site_from_client_token_id
       produces:
         - application/json

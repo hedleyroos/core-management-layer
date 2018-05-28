@@ -1830,7 +1830,7 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         :param self: A OpsGetSiteFromClientTokenIdClientTokenId instance
         """
         try:
-            # client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+            # client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
             client_token_id = self.request.match_info["client_token_id"]
             jsonschema.validate(client_token_id, {"type": "string"})
             optional_args = {}
@@ -8770,7 +8770,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/get_site_from_client_token_id/{client_token_id}": {
             "get": {
-                "description": "Get a list of all permissions a user has on the Management Portal",
+                "description": "Get the site associated with the specified client token id",
                 "operationId": "get_site_from_client_token_id",
                 "produces": [
                     "application/json"
@@ -8795,7 +8795,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
-                    "description": "An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.",
+                    "description": "A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.",
                     "in": "path",
                     "name": "client_token_id",
                     "required": true,

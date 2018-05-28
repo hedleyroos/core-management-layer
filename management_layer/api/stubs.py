@@ -398,7 +398,7 @@ class AbstractStubClass(object):
     async def get_site_from_client_token_id(request, client_token_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         :returns: result or (result, headers) tuple
         """
@@ -2175,7 +2175,7 @@ class MockedStubClass(AbstractStubClass):
     async def get_site_from_client_token_id(request, client_token_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         """
         response_schema = schemas.site
