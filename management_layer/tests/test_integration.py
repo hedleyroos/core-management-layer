@@ -27,7 +27,8 @@ from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
-from management_layer.utils import return_users_with_roles, return_user_ids, return_site, TEST_SITE
+from management_layer.utils import return_users_with_roles, return_user_ids, return_site, TEST_SITE, \
+    return_client
 from user_data_store import UserDataApi
 
 LOGGER = logging.getLogger(__name__)
@@ -266,8 +267,10 @@ class ExampleTestCase(AioHTTPTestCase):
        Mock(side_effect=return_users_with_roles))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.user_list",
        Mock(side_effect=return_user_ids))
-@patch("access_control.api.access_control_api.AccessControlApi.site_read",
+@patch("access_control.api.access_control_api.AccessControlApi.site_list",
        Mock(side_effect=return_site))
+@patch("authentication_service.api.authentication_api.AuthenticationApi.client_list",
+       Mock(side_effect=return_client))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py

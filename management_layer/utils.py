@@ -15,7 +15,7 @@ from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
 from access_control import UserWithRoles, Site
-from authentication_service import User
+from authentication_service import User, Client
 
 from management_layer import mappings, transformations
 from management_layer.sentry import sentry
@@ -179,9 +179,25 @@ TEST_SITE = {
     "updated_at": datetime.datetime.now()
 }
 
+TEST_CLIENT = {
+    "id": 1,
+    "client_id": "test_client",
+    "name": "Test Client",
+    "created_at": datetime.datetime.now(),
+    "updated_at": datetime.datetime.now()
+}
+
 
 async def return_site(*args, **kwargs):
     """
-    Some tests requires a test site to be returned
+    Some tests require a test site to be returned
     """
-    return Site(**TEST_SITE)
+    return [Site(**TEST_SITE)]
+
+
+async def return_client(*args, **kwargs):
+    """
+    Some tests require a test client to be returned
+    """
+    return [Client(**TEST_CLIENT)]
+

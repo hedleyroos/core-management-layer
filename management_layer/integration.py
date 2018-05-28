@@ -599,23 +599,25 @@ class Implementation(AbstractStubClass):
             raise web.HTTPForbidden(text="Token client id must match the one used in the API call")
 
         nocache = kwargs.get("nocache", False)
-        try:
-            site_id = mappings.Mappings.site_id_for(client_token_id)
-            if nocache:
-                with client_exception_handler():
-                    site = await request.app["access_control_api"].site_read(site_id)
-
-                if site:
+        if nocache:
+            # When nocache is set, we perform all the lookups via the API.
+            with client_exception_handler():
+                try:
+                    [client] = await request.app["authentication_service_api"].client_list(
+                        client_token_id=client_token_id)
+                    [site] = await request.app["access_control_api"].site_list(client_id=client.id)
                     result = site.to_dict()
-                else:
-                    return web.HTTPNotFound(text=f"Site with id {site_id} not found.")
-            else:
+                except Exception as e:
+                    raise web.HTTPNotFound(text=str(e))
+        else:
+            try:
+                site_id = mappings.Mappings.site_id_for(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
+            except KeyError as e:
+                raise web.HTTPNotFound(text=str(e))
 
-            transform = transformations.SITE
-            return transform.apply(result)
-        except KeyError:
-            raise web.HTTPNotFound(text=f"No site linked to {client_token_id}")
+        transform = transformations.SITE
+        return transform.apply(result)
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
