@@ -672,9 +672,8 @@ class Implementation(AbstractStubClass):
         except ValueError:
             raise web.HTTPBadRequest(text="Malformed user id")
 
-        nocache = kwargs.get("noncache", False)
+        nocache = kwargs.get("nocache", False)
         roles_for_domain = await utils.get_user_roles_for_domain(request, user, domain_id,
-
                                                                  nocache=nocache)
         if roles_for_domain:
             tech_admin_role_id = mappings.Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)
@@ -827,7 +826,7 @@ class Implementation(AbstractStubClass):
         except ValueError:
             raise web.HTTPBadRequest(text="Malformed user id")
 
-        nocache = kwargs.get("noncache", False)
+        nocache = kwargs.get("nocache", False)
         roles_for_site = await utils.get_user_roles_for_site(request, user, site_id,
                                                              nocache=nocache)
         if roles_for_site:
