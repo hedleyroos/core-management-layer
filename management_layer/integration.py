@@ -606,7 +606,8 @@ class Implementation(AbstractStubClass):
                     [client] = await request.app["authentication_service_api"].client_list(
                         client_token_id=client_token_id)
                     [site] = await request.app["access_control_api"].site_list(client_id=client.id)
-                    result = site.to_dict()
+                    transform = transformations.SITE
+                    result = transform.apply(site.to_dict())
                 except Exception as e:
                     raise web.HTTPNotFound(text=str(e))
         else:
@@ -616,8 +617,7 @@ class Implementation(AbstractStubClass):
             except KeyError as e:
                 raise web.HTTPNotFound(text=str(e))
 
-        transform = transformations.SITE
-        return transform.apply(result)
+        return result
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod

@@ -21,7 +21,7 @@ from parameterized import parameterized
 import access_control
 import authentication_service
 import user_data_store
-from management_layer import mappings
+from management_layer import mappings, transformations
 from management_layer.api import schemas
 from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
@@ -252,7 +252,7 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch.multiple("management_layer.mappings.Mappings",
                 _token_client_id_to_site_id_map={os.environ["JWT_AUDIENCE"]: 1},
                 _roles={-1: {"label": TECH_ADMIN_ROLE_LABEL}},
-                _sites={1: TEST_SITE},
+                _sites={1: transformations.SITE.apply(TEST_SITE)},
                 _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1},
                 _permission_name_to_id_map={"read": 1},
                 _resource_urn_to_id_map={"urn:ge:test:resource": 1,
