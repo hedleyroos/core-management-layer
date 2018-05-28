@@ -393,6 +393,17 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_site_from_client_token_id -- Synchronisation point for meld
+    @staticmethod
+    async def get_site_from_client_token_id(request, client_token_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
@@ -409,6 +420,18 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # get_user_domain_permissions -- Synchronisation point for meld
+    @staticmethod
+    async def get_user_domain_permissions(request, user_id, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param domain_id: integer A unique integer value identifying the domain.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -430,6 +453,18 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # get_user_site_permissions -- Synchronisation point for meld
+    @staticmethod
+    async def get_user_site_permissions(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         :returns: result or (result, headers) tuple
         """
@@ -2137,6 +2172,22 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def get_site_from_client_token_id(request, client_token_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.site
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2167,6 +2218,29 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def get_user_domain_permissions(request, user_id, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param domain_id: integer A unique integer value identifying the domain.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def user_has_permissions(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2187,6 +2261,29 @@ class MockedStubClass(AbstractStubClass):
         """
         :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def get_user_site_permissions(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         """
         response_schema = json.loads("""{
