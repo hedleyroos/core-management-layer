@@ -1588,13 +1588,84 @@ paths:
         403:
          description: "Forbidden"
 
+  /ops/get_site_from_client_token_id/{client_token_id}:
+    parameters:
+      - description: An client token id. This is not the primary key of the client table, but rather the client id
+                     that is typically configured along with the client secret.
+        in: path
+        name: client_token_id
+        required: true
+        type: string
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Get a list of all permissions a user has on the Management Portal"
+      operationId: get_site_from_client_token_id
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            $ref: '#/definitions/site'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
   /ops/user_management_portal_permissions/{user_id}:
     parameters:
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/optional_nocache'
     get:
-      description: "Get a list of all permissions a user has on the Management Portal"
+      deprecated: true
+      description: "(DEPRECATED. Use /ops/user_site_permissions instead.) Get a list of all permissions a user has on the Management Portal"
       operationId: get_user_management_portal_permissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            type: array
+            items:
+              type: string
+            uniqueItems: true
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
+  /ops/user_domain_permissions/{user_id}/{domain_id}:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - $ref: '#/parameters/domain_id'
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Get a list of all resource permissions a user has on the specified domain"
+      operationId: get_user_domain_permissions
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            type: array
+            items:
+              type: string
+            uniqueItems: true
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
+  /ops/user_site_permissions/{user_id}/{site_id}:
+    parameters:
+      - $ref: '#/parameters/user_id'
+      - $ref: '#/parameters/site_id'
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Get a list of all resource permissions a user has on the specified site"
+      operationId: get_user_site_permissions
       produces:
         - application/json
       responses:

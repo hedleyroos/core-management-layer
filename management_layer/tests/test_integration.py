@@ -27,7 +27,7 @@ from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
-from management_layer.utils import return_users_with_roles, return_user_ids
+from management_layer.utils import return_users_with_roles, return_user_ids, return_site, TEST_SITE
 from user_data_store import UserDataApi
 
 LOGGER = logging.getLogger(__name__)
@@ -251,6 +251,7 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch.multiple("management_layer.mappings.Mappings",
                 _token_client_id_to_site_id_map={os.environ["JWT_AUDIENCE"]: 1},
                 _roles={-1: {"label": TECH_ADMIN_ROLE_LABEL}},
+                _sites={1: TEST_SITE},
                 _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1},
                 _permission_name_to_id_map={"read": 1},
                 _resource_urn_to_id_map={"urn:ge:test:resource": 1,
@@ -265,6 +266,8 @@ class ExampleTestCase(AioHTTPTestCase):
        Mock(side_effect=return_users_with_roles))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.user_list",
        Mock(side_effect=return_user_ids))
+@patch("access_control.api.access_control_api.AccessControlApi.site_read",
+       Mock(side_effect=return_site))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
@@ -722,3 +725,68 @@ class IntegrationTest(AioHTTPTestCase):
             "/ops/user_management_portal_permissions/foobar",
             params={"nocache": nocache})
         await self.assertStatus(response, 400)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_get_user_domain_permissions(self, nocache):
+        response = await self.client.get(
+            "/ops/user_domain_permissions/{}/{}".format(
+                self.user_id, 1),
+            params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, {"type": "array", "items": {"type": "string"}})
+        # Check that all strings returned have the for "<something>:<somethingelse>"
+        for e in response_body:
+            resource_urn, permission_name = e.rsplit(":", 1)
+            self.assertIn(resource_urn, mappings.Mappings._resource_urn_to_id_map)
+            self.assertIn(permission_name, mappings.Mappings._permission_name_to_id_map)
+
+        # Malformed user id
+        response = await self.client.get(
+            "/ops/user_domain_permissions/foobar/1",
+            params={"nocache": nocache})
+        await self.assertStatus(response, 400)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_get_user_site_permissions(self, nocache):
+        response = await self.client.get(
+            "/ops/user_site_permissions/{}/{}".format(
+                self.user_id, 1),
+            params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, {"type": "array", "items": {"type": "string"}})
+        # Check that all strings returned have the for "<something>:<somethingelse>"
+        for e in response_body:
+            resource_urn, permission_name = e.rsplit(":", 1)
+            self.assertIn(resource_urn, mappings.Mappings._resource_urn_to_id_map)
+            self.assertIn(permission_name, mappings.Mappings._permission_name_to_id_map)
+
+        # Malformed user id
+        response = await self.client.get(
+            "/ops/user_site_permissions/foobar/1",
+            params={"nocache": nocache})
+        await self.assertStatus(response, 400)
+
+    @parameterized.expand(["true", "false"])
+    @unittest_run_loop
+    async def test_get_site_from_client_token_id(self, nocache):
+        response = await self.client.get(
+            "/ops/get_site_from_client_token_id/{}".format(
+                os.environ["JWT_AUDIENCE"]),
+            params={"nocache": nocache})
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.site)
+
+        # If the request is for a token id that differs from the
+        # one provided in the JWT token's audience, the call is forbidden.
+        response = await self.client.get(
+            "/ops/get_site_from_client_token_id/some_other_id",
+            params={"nocache": nocache})
+        await self.assertStatus(response, 403)

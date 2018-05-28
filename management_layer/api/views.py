@@ -1820,6 +1820,44 @@ class OpsDomainRolesDomainId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.site
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsGetSiteFromClientTokenIdClientTokenId instance
+        """
+        try:
+            # client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+            client_token_id = self.request.match_info["client_token_id"]
+            jsonschema.validate(client_token_id, {"type": "string"})
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_site_from_client_token_id(
+            self.request, client_token_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsSiteAndDomainRolesSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.site_and_domain_roles
@@ -1873,6 +1911,53 @@ class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
 
         result = await Stubs.get_site_role_labels_aggregated(
             self.request, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUserDomainPermissionsUserIdDomainId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_user_domain_permissions(
+            self.request, user_id, domain_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -1961,6 +2046,53 @@ class OpsUserManagementPortalPermissionsUserId(View, CorsViewMixin):
 
         result = await Stubs.get_user_management_portal_permissions(
             self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "type": "string"
+    },
+    "type": "array",
+    "uniqueItems": true
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUserSitePermissionsUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                jsonschema.validate(nocache, {"type": "boolean"})
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_user_site_permissions(
+            self.request, user_id, site_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -8636,6 +8768,47 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/ops/get_site_from_client_token_id/{client_token_id}": {
+            "get": {
+                "description": "Get a list of all permissions a user has on the Management Portal",
+                "operationId": "get_site_from_client_token_id",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "description": "An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.",
+                    "in": "path",
+                    "name": "client_token_id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
         "/ops/site_and_domain_roles/{site_id}": {
             "get": {
                 "description": "Get the site- and domain lineage roles defined for a given site.",
@@ -8704,6 +8877,53 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/ops/user_domain_permissions/{user_id}/{domain_id}": {
+            "get": {
+                "description": "Get a list of all resource permissions a user has on the specified domain",
+                "operationId": "get_user_domain_permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "uniqueItems": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/domain_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
         "/ops/user_has_permissions/{user_id}": {
             "parameters": [
                 {
@@ -8759,7 +8979,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/user_management_portal_permissions/{user_id}": {
             "get": {
-                "description": "Get a list of all permissions a user has on the Management Portal",
+                "deprecated": true,
+                "description": "(DEPRECATED. Use /ops/user_site_permissions instead.) Get a list of all permissions a user has on the Management Portal",
                 "operationId": "get_user_management_portal_permissions",
                 "produces": [
                     "application/json"
@@ -8786,6 +9007,53 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "parameters": [
                 {
                     "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/ops/user_site_permissions/{user_id}/{site_id}": {
+            "get": {
+                "description": "Get a list of all resource permissions a user has on the specified site",
+                "operationId": "get_user_site_permissions",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "type": "string"
+                            },
+                            "type": "array",
+                            "uniqueItems": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
                     ]

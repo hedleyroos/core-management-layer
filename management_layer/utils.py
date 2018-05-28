@@ -14,7 +14,7 @@ from contextlib import contextmanager
 from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
-from access_control import UserWithRoles
+from access_control import UserWithRoles, Site
 from authentication_service import User
 
 from management_layer import mappings, transformations
@@ -167,3 +167,21 @@ async def return_user_ids(*args, **kwargs):
             updated_at=datetime.datetime.now()
         )
     ]
+
+TEST_SITE = {
+    "id": 1,
+    "name": "Test Site Name",
+    "domain_id": 1,
+    "description": "A test site",
+    "client_id": 1,
+    "is_active": True,
+    "created_at": datetime.datetime.now(),
+    "updated_at": datetime.datetime.now()
+}
+
+
+async def return_site(*args, **kwargs):
+    """
+    Some tests requires a test site to be returned
+    """
+    return Site(**TEST_SITE)

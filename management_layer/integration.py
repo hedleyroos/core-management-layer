@@ -583,6 +583,40 @@ class Implementation(AbstractStubClass):
             domain_roles = await request.app["operational_api"].get_domain_roles(domain_id)
             return domain_roles.to_dict()
 
+    # get_site_from_client_token_id -- Synchronisation point for meld
+    @staticmethod
+    # The permission is checked in the function and not via a decorator.
+    async def get_site_from_client_token_id(request, client_token_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        # In order to be allowed to request the site info for a particular client ID, the client ID
+        # needs to be the audience of the JWT token used to make the request.
+        if request["token"]["aud"] != client_token_id:
+            raise web.HTTPForbidden(text="Token client id must match the one used in the API call")
+
+        nocache = kwargs.get("nocache", False)
+        try:
+            site_id = mappings.Mappings.site_id_for(client_token_id)
+            if nocache:
+                with client_exception_handler():
+                    site = await request.app["access_control_api"].site_read(site_id)
+
+                if site:
+                    result = site.to_dict()
+                else:
+                    return web.HTTPNotFound(text=f"Site with id {site_id} not found.")
+            else:
+                result = mappings.Mappings.site_by_id(site_id)
+
+            transform = transformations.SITE
+            return transform.apply(result)
+        except KeyError:
+            raise web.HTTPNotFound(text=f"No site linked to {client_token_id}")
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
@@ -614,6 +648,55 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             site_role_labels_aggregated = await request.app["operational_api"].get_site_role_labels_aggregated(site_id)
             return site_role_labels_aggregated.to_dict()
+
+    # get_user_domain_permissions -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "read"),
+                               ("urn:ge:access_control:resource", "read"),
+                               ("urn:ge:access_control:roleresourcepermission", "read"),
+                               ], target_user_field=1)
+    async def get_user_domain_permissions(request, user_id, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param domain_id: integer A unique integer value identifying the domain.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        result = []
+
+        try:
+            user = uuid.UUID(user_id)
+        except ValueError:
+            raise web.HTTPBadRequest(text="Malformed user id")
+
+        nocache = kwargs.get("noncache", False)
+        roles_for_domain = await utils.get_user_roles_for_domain(request, user, domain_id,
+
+                                                                 nocache=nocache)
+        if roles_for_domain:
+            tech_admin_role_id = mappings.Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)
+
+            if tech_admin_role_id in roles_for_domain:
+                result = mappings.Mappings.all_resource_permissions()
+                # There is also an API call that can be used, if necessary:
+                # resource_permissions = await request.app[
+                #     "operational_api"].get_tech_admin_resource_permissions()
+            else:
+                with client_exception_handler():
+                    resource_permissions = await request.app[
+                        "operational_api"].get_resource_permissions_for_roles(
+                            role_ids=list(roles_for_domain))
+
+                # Resource permissions are presented as a concatenation of the resource URN, a semicolon
+                # and the permission name. The API calls above return identifiers, so we need to map it.
+                result = [
+                    "{}:{}".format(mappings.Mappings.resource_urn_for(rp.resource_id),
+                                   mappings.Mappings.permission_name_for(rp.permission_id))
+                    for rp in resource_permissions
+                ]
+
+        return result
 
     # user_has_permissions -- Synchronisation point for meld
     @staticmethod
@@ -710,6 +793,54 @@ class Implementation(AbstractStubClass):
             with client_exception_handler():
                 resource_permissions = await request.app[
                     "operational_api"].get_resource_permissions_for_roles(role_ids=list(roles))
+
+                # Resource permissions are presented as a concatenation of the resource URN, a semicolon
+                # and the permission name. The API calls above return identifiers, so we need to map it.
+                result = [
+                    "{}:{}".format(mappings.Mappings.resource_urn_for(rp.resource_id),
+                                   mappings.Mappings.permission_name_for(rp.permission_id))
+                    for rp in resource_permissions
+                ]
+
+        return result
+
+    # get_user_site_permissions -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:permission", "read"),
+                               ("urn:ge:access_control:resource", "read"),
+                               ("urn:ge:access_control:roleresourcepermission", "read"),
+                               ], target_user_field=1)
+    async def get_user_site_permissions(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        result = []
+
+        try:
+            user = uuid.UUID(user_id)
+        except ValueError:
+            raise web.HTTPBadRequest(text="Malformed user id")
+
+        nocache = kwargs.get("noncache", False)
+        roles_for_site = await utils.get_user_roles_for_site(request, user, site_id,
+                                                             nocache=nocache)
+        if roles_for_site:
+            tech_admin_role_id = mappings.Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)
+
+            if tech_admin_role_id in roles_for_site:
+                result = mappings.Mappings.all_resource_permissions()
+                # There is also an API call that can be used, if necessary:
+                # resource_permissions = await request.app[
+                #     "operational_api"].get_tech_admin_resource_permissions()
+            else:
+                with client_exception_handler():
+                    resource_permissions = await request.app[
+                        "operational_api"].get_resource_permissions_for_roles(
+                            role_ids=list(roles_for_site))
 
                 # Resource permissions are presented as a concatenation of the resource URN, a semicolon
                 # and the permission name. The API calls above return identifiers, so we need to map it.

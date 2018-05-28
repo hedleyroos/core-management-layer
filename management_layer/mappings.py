@@ -64,6 +64,14 @@ class Mappings:
     _client_id_to_site_id_map = {}  # type: Dict[int, int]
 
     @classmethod
+    def site_by_id(cls, id_: int) -> dict:
+        try:
+            return cls._sites[id_]
+        except KeyError:
+            logger.error(f"Site id {id_} not in {cls._sites}")
+            raise
+
+    @classmethod
     def domain_id_for(cls, name: str) -> int:
         try:
             return cls._domain_name_to_id_map[name]
