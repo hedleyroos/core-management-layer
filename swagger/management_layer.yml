@@ -3524,6 +3524,9 @@ paths:
           type: string
           minLength: 2
           maxLength: 2
+          x-related-info:
+            rest_resource_name: countries
+            label: name
         - name: date_joined
           description: An optional date joined range filter
           in: query
@@ -3656,6 +3659,9 @@ paths:
           minItems: 1
           collectionFormat: csv
           uniqueItems: true
+          x-related-info:
+            rest_resource_name: sites
+            label: name
       produces:
         - application/json
       responses:
