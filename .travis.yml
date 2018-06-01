@@ -1,0 +1,29 @@
+language: python
+python:
+- '3.6'
+env:
+  global:
+  - secure: KOVLRFBDYCjJWomuktN1mYlMeUlFCw9O5cBKWQ5eCPJ5kI+2p6R9yNamdJnegwdYiBn9gjec5QdKU4L/LBzSF/W5F6FOOv2j3MWybjnQL/I9GPYqi5/1ofL46cNIEBULC5/W2qAdZNFE98q8ZpQwEKBIGRkDB05f4AGElHy+oGfVgGVoLnd42+I6/iWFHF5+BfNhbvTWnp3zzI2akeBuUK4FTxV7ppbOV4B2tudsdLb2jGc4Mj/m+M2puUgxuyGIrQTqiKhW3Y7Ix73dOfzeKusY6Fk0/YNjq6mLye22+8ydUy7+zKYpPeVRB2NtbMv6Kc4KtbAbi/PPDn7oDmCC3YLnl5SS3p45yFAqEASemq3qrmId389tzquY+ySWy5yifGpmzmjjlq8mZPx69SJXcd2eCYbcL0vjRKA+0dSRZA/N2L12z+/YEJCy8yfp3f63Rlz3sG6yXoq0/avjq2gFLxF2ioq2sMe7Nl7P941f+q7rxFtVRed3L8x3nfKtoJ0H0PsZizVGRUmXTFJw5XgnKKbDZkRFY6JdjiNyuBFhf016UrPvKdB8r2CYQz5emnXPVJaLEnHWqfxQvoCQ5Sv8fRo1qAJ++Q+Zoh2ppb73s0KRoA7XMoK/7ECclnmIowRULSUPphPRmS6Mc77LIGCLX9BKdpTEICoRcjvPoPXfut4=
+  - secure: uQFHTEfCNPKibsQvZ+PtEZNT0/O1Uka3daxdQrmyp5pnO+JRHm+zGgW8qxOAjjT6Wma3qcwik784Jw+BE+PUHwlVoJCmOn1zOTS41SU6+h2H7ElTuSeNNURjXJ1TeT7Ad/UPHdOPWmBVVJm45Lve44YR6f8+LSCS+Kg+RbNhRGe80fCUn4DC63MBg9ZaclJfz/jZ39GEBVBRPc2rxPvJHin8WyAx9rPl5utWxtPiX+WxthL2PUaRaNIGn9azwCOkUacr1AT4d8wqBAMAdaoXgDbl7zE90xKFdr87X1XegWW/I9nAE0NjcL7ov3fSJcHdFZ53zpQx070CZq1Fz4ChIiRhOxVYq8ejmyxZBHmI0PnZ5UNFtpISQKsAmVZSX8oG1RB1yAliyTocD85NqKqI9ZJ041ZHva9XH5VcYUyZwSn0TUvoVw8NgplfQidNw9dZEzLHQYw5daJcDH94vj/JzMSrvGwQrQEmhgXre7hAa9YAeYm7Sn26fGk1x6/x1/ozIsosPNqKG9Z2X3TW9047O0ZfU0593MtyfoVZUAhjBeFnAKI+OJWUMQmwC58EexF+BZJz5/ElKKdezuKA7ji6V5ku6nxx6CEOQDhnPHiSsxrhXTOo7rWyRQjrpwW4Vvweazw32G/vqR2gunbaaWcCttyEsmPAnZByX93e7XvUD0I=
+services:
+- docker
+install:
+- pip install -r requirements.txt -r test-requirements.txt
+- pip install coveralls
+script: tox
+after_success:
+- coveralls
+deploy:
+- provider: script
+  script: bash ./scripts/docker_push.sh
+  on:
+    branch: master
+- provider: script
+  script: bash ./scripts/docker_push.sh
+  on:
+    branch: develop
+- provider: script
+  script: bash ./scripts/docker_push.sh
+  on:
+    all_branches: true
+    condition: "${TRAVIS_BRANCH} =~ ^release.*$"
