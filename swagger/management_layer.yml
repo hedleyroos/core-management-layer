@@ -101,6 +101,9 @@ parameters:
     name: parent_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: domains
+      label: name
 
   optional_role_filter:
     description: An optional query parameter to filter by role_id
@@ -177,6 +180,9 @@ parameters:
     name: site_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: sites
+      label: name
 
   admin_note_id:
     description: A unique integer value identifying the admin note.
