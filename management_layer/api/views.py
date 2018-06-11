@@ -4865,7 +4865,7 @@ class Users(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True, 'x-related-info': {'rest_resource_name': 'sites', 'label': 'name'}}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -7325,6 +7325,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "integer"
         },
+        "optional_portal_context_header": {
+            "in": "header",
+            "name": "X-GE-Portal-Context",
+            "required": false,
+            "type": "string"
+        },
         "optional_role_filter": {
             "description": "An optional query parameter to filter by role_id",
             "in": "query",
@@ -7469,6 +7475,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -7556,6 +7570,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/admin_note_id",
                     "x-scope": [
@@ -7671,7 +7691,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/clients/{client_id}": {
             "get": {
@@ -7691,13 +7719,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ],
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/client_id",
                     "x-scope": [
@@ -7764,7 +7798,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/countries/{country_code}": {
             "get": {
@@ -7788,6 +7830,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/country_code",
                     "x-scope": [
@@ -7855,6 +7903,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -7933,6 +7989,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
@@ -8051,6 +8113,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:domain:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8129,6 +8199,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
@@ -8240,6 +8316,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8321,6 +8405,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
@@ -8410,6 +8500,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitation:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8488,6 +8586,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
@@ -8599,6 +8703,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8678,6 +8790,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
                         ""
@@ -8727,6 +8845,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -8761,6 +8885,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
@@ -8794,6 +8924,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "description": "A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.",
                     "in": "path",
@@ -8836,6 +8972,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -8869,6 +9011,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -8905,6 +9053,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -8926,6 +9080,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/user_has_permissions/{user_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -9006,6 +9166,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -9046,6 +9212,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -9093,6 +9265,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -9139,6 +9317,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
@@ -9178,6 +9362,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -9242,7 +9432,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/organisationalunits/{organisational_unit_id}": {
             "get": {
@@ -9266,6 +9464,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/organisational_unit_id",
                     "x-scope": [
@@ -9334,6 +9538,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:permission:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9413,6 +9625,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/permission_id",
                     "x-scope": [
                         ""
@@ -9476,6 +9694,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9500,6 +9724,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9526,6 +9756,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9550,6 +9786,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9576,6 +9818,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9600,6 +9848,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9626,6 +9880,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9650,6 +9910,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9725,6 +9991,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:resource:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9803,6 +10077,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/resource_id",
                     "x-scope": [
@@ -9916,6 +10196,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:roleresourcepermission:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9994,6 +10282,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/role_id",
                     "x-scope": [
@@ -10074,6 +10368,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:role:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10258,6 +10560,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10336,6 +10646,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10441,6 +10757,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:siterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10519,6 +10843,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10638,6 +10968,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:site:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10717,6 +11055,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -10764,6 +11108,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/sites/{site_id}/activate": {
             "get": {
+                "deprecated": true,
                 "description": "Activate the site so that users can log in to it.",
                 "responses": {
                     "200": {
@@ -10779,6 +11124,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -10788,6 +11139,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/sites/{site_id}/deactivate": {
             "get": {
+                "deprecated": true,
                 "description": "Deactivate the site so that users cannot log in to it.",
                 "responses": {
                     "200": {
@@ -10802,6 +11154,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10875,6 +11233,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10954,6 +11320,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -11007,7 +11379,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "minLength": 2,
                         "name": "country",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-related-info": {
+                            "label": "name",
+                            "rest_resource_name": "countries"
+                        }
                     },
                     {
                         "description": "An optional date joined range filter",
@@ -11184,7 +11560,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
-                        "uniqueItems": true
+                        "uniqueItems": true,
+                        "x-related-info": {
+                            "label": "name",
+                            "rest_resource_name": "sites"
+                        }
                     }
                 ],
                 "produces": [
@@ -11216,7 +11596,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/users/{user_id}": {
             "delete": {
@@ -11257,6 +11645,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11305,6 +11699,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/users/{user_id}/activate": {
             "get": {
+                "deprecated": true,
                 "description": "Activate the user account.",
                 "responses": {
                     "200": {
@@ -11320,6 +11715,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -11329,6 +11730,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/users/{user_id}/deactivate": {
             "get": {
+                "deprecated": true,
                 "description": "Deactivate the user account.",
                 "responses": {
                     "200": {
@@ -11343,6 +11745,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11410,6 +11818,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -11488,6 +11904,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11605,6 +12027,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -11683,6 +12113,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
