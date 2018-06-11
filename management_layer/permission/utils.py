@@ -10,12 +10,12 @@ import logging
 import typing
 from uuid import UUID
 
-from aiohttp.web import Request
+from aiohttp.web import Request, HTTPForbidden, HTTPBadRequest
 
 from management_layer.constants import MKP_ROLE_RESOURCE_PERMISSION, \
-    MKP_USER_ROLES, TECH_ADMIN_ROLE_LABEL
+    MKP_USER_ROLES, TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
 from management_layer.mappings import Mappings
-from management_layer.settings import CACHE_TIME
+from management_layer.settings import CACHE_TIME, MANAGEMENT_PORTAL_CLIENT_ID
 
 # Convenience types
 from management_layer.utils import client_exception_handler
@@ -336,3 +336,38 @@ async def get_user_roles_for_site(
     # Look up the list of role ids associated with the site key. Return an
     # empty set of it does not exist.
     return set(user_roles.get(f"s:{site_id}", []))
+
+
+def get_context_from_header(request) -> (str, int):
+    """
+    Get the API call context.
+    The Management Portal can provide a context when making an API call.
+    This function tries to find it and performs validation to ensure
+    the context may be used.
+    :param request:
+    :return: A tuple containing the context type ("s" or "d") and id.
+    """
+    context_type = None
+    context_id = None
+    context = request.headers.get(PORTAL_CONTEXT_HEADER, None)
+    if context:
+        # Only the Management Portal is allowed to use this header.
+        if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
+            raise HTTPForbidden(body=json.dumps({
+                "message": "Forbidden"
+            }))
+
+        try:
+            context_type, context_id = context.split(":")
+            context_id = int(context_id)
+        except ValueError:
+            raise HTTPBadRequest(body=json.dumps({
+                "message": "Invalid context header value"
+            }))
+
+        if context_type not in ["s", "d"]:
+            raise HTTPBadRequest(body=json.dumps({
+                "message": "Invalid context header value"
+            }))
+
+    return context_type, context_id

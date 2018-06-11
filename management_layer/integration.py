@@ -5,7 +5,7 @@ from aiohttp import web
 
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings
-from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
 from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
@@ -1842,6 +1842,14 @@ class Implementation(AbstractStubClass):
         :param site_ids (optional): array An optional list of site ids
         :returns: result or (result, headers) tuple
         """
+        context_type, context_id = utils.get_context_from_header(request)
+        if context_type == "s":
+            kwargs["site_ids"] = [context_id]  # Overwrite any filter that may exist.
+        elif context_type == "d":
+            # TODO: Get sites for domain
+            site_ids = []
+            kwargs["site_ids"] = site_ids
+
         with client_exception_handler():
             users, _status, headers = await request.app[
                 "authentication_service_api"].user_list_with_http_info(**kwargs)

@@ -146,38 +146,19 @@ def require_permissions(
 
             # Check if it is the Management Portal making the request on behalf of another site.
             if not allowed:
-                context = request.headers.get(PORTAL_CONTEXT_HEADER, None)
-                if context:
-                    # Only the Management Portal is allowed to use this header.
-                    if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
-                        raise HTTPForbidden(body=json.dumps({
-                            "message": "Forbidden"
-                        }))
-
-                    try:
-                        context_type, context_id = context.split(":")
-                        context_id = int(context_id)
-                    except ValueError:
-                        raise HTTPBadRequest(body=json.dumps({
-                            "message": "Invalid context header value"
-                        }))
-
-                    if context_type == "d":
-                        # See if the user has the required permissions on the specified domain
-                        allowed = await utils.user_has_permissions(
-                            request, user_id, operator, resource_permissions,
-                            domain=context_id, nocache=nocache
-                        )
-                    elif context_type == "s":
-                        # See if the user has the required permissions on the specified site
-                        allowed = await utils.user_has_permissions(
-                            request, user_id, operator, resource_permissions,
-                            site=context_id, nocache=nocache
-                        )
-                    else:
-                        raise HTTPBadRequest(body=json.dumps({
-                            "message": "Invalid context header value"
-                        }))
+                context_type, context_id = utils.get_context_from_header(request)
+                if context_type == "d":
+                    # See if the user has the required permissions on the specified domain
+                    allowed = await utils.user_has_permissions(
+                        request, user_id, operator, resource_permissions,
+                        domain=context_id, nocache=nocache
+                    )
+                elif context_type == "s":
+                    # See if the user has the required permissions on the specified site
+                    allowed = await utils.user_has_permissions(
+                        request, user_id, operator, resource_permissions,
+                        site=context_id, nocache=nocache
+                    )
 
             # Permissions will only be checked if allowed is not already true.
             allowed = allowed or await utils.user_has_permissions(
