@@ -23,6 +23,7 @@ from access_control.models.domain_role_create import DomainRoleCreate
 from access_control.models.domain_role_update import DomainRoleUpdate
 from access_control.models.domain_roles import DomainRoles
 from access_control.models.domain_update import DomainUpdate
+from access_control.models.health_info import HealthInfo
 from access_control.models.invitation import Invitation
 from access_control.models.invitation_create import InvitationCreate
 from access_control.models.invitation_domain_role import InvitationDomainRole

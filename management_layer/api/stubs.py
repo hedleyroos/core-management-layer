@@ -404,6 +404,16 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # get_sites_under_domain -- Synchronisation point for meld
+    @staticmethod
+    async def get_sites_under_domain(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
@@ -2179,6 +2189,75 @@ class MockedStubClass(AbstractStubClass):
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         """
         response_schema = schemas.site
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def get_sites_under_domain(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "client_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "domain_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "is_active": {
+                "type": "boolean"
+            },
+            "name": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "domain_id",
+            "name",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
