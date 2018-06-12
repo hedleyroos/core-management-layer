@@ -9,12 +9,13 @@ import typing
 import uuid
 from functools import wraps
 
-from aiohttp.web_exceptions import HTTPForbidden
+from aiohttp.web_exceptions import HTTPForbidden, HTTPBadRequest
 
-from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
 from management_layer.permission.utils import Operator, ResourcePermissions
 from management_layer.mappings import Mappings
 from management_layer.permission import utils
+from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +56,11 @@ def require_permissions(
         pass
     ```
     This function requires the the user who made the request as well as the
-    site from which the request originated in order to look up roles
-    associated with the user. The user and site UUID values are read from
-    the request field passed to the decorated function. By default we use the first
-    argument as the request field. This can be changed in the decorator, e.g.
+    site from which the request originated (or is made on behalf of) in order to
+    look up roles associated with the user. The user and site UUID values are read from
+    the token associated with the request field passed to the decorated function.
+    By default we use  the first argument as the request field. This can be changed in
+    the decorator, e.g.
     ```
     @require_permissions(all, [("urn:ge:test:baz", "write")],
                          request_field=2)
@@ -92,6 +94,15 @@ def require_permissions(
     ```
     In the example above, if the user specified by the token in the request is the same user
     as the one identified by the function argument "user_id", then the call is allowed.
+
+    IMPORTANT: The Management Portal may make requests on behalf of the other sites.
+    To facilitate this, we look at the X-GE-Portal-Context header in the request:
+     * If the header is not present, the context to use is the "audience" of the requesting token.
+     * If the header is present and the "audience" of the requesting token is not the Management
+       Portal, then return Forbidden.
+     * If the header is present and the "audience" of the the requesting token is the Management
+       Portal, then use the context specified to look up the user's permissions. (If the specified
+       context does not exist, return BadRequest).
 
     :param operator: any or all
     :param resource_permissions: The resource permissions required
@@ -132,6 +143,41 @@ def require_permissions(
                     allowed = (str(user_id) == str(target_user_id))
                 except KeyError:
                     pass
+
+            # Check if it is the Management Portal making the request on behalf of another site.
+            if not allowed:
+                context = request.headers.get(PORTAL_CONTEXT_HEADER, None)
+                if context:
+                    # Only the Management Portal is allowed to use this header.
+                    if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
+                        raise HTTPForbidden(body=json.dumps({
+                            "message": "Forbidden"
+                        }))
+
+                    try:
+                        context_type, context_id = context.split(":")
+                        context_id = int(context_id)
+                    except ValueError:
+                        raise HTTPBadRequest(body=json.dumps({
+                            "message": "Invalid context header value"
+                        }))
+
+                    if context_type == "d":
+                        # See if the user has the required permissions on the specified domain
+                        allowed = await utils.user_has_permissions(
+                            request, user_id, operator, resource_permissions,
+                            domain=context_id, nocache=nocache
+                        )
+                    elif context_type == "s":
+                        # See if the user has the required permissions on the specified site
+                        allowed = await utils.user_has_permissions(
+                            request, user_id, operator, resource_permissions,
+                            site=context_id, nocache=nocache
+                        )
+                    else:
+                        raise HTTPBadRequest(body=json.dumps({
+                            "message": "Invalid context header value"
+                        }))
 
             # Permissions will only be checked if allowed is not already true.
             allowed = allowed or await utils.user_has_permissions(
