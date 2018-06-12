@@ -440,6 +440,42 @@ domain_update = json.loads("""
 }
 """)
 
+health_info = json.loads("""
+{
+    "description": "Health check response",
+    "properties": {
+        "access_control_health": {
+            "type": "object"
+        },
+        "authentication_service_health": {
+            "type": "object"
+        },
+        "host": {
+            "type": "string"
+        },
+        "server_timestamp": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "user_data_store_health": {
+            "type": "object"
+        },
+        "version": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "host",
+        "server_timestamp",
+        "version",
+        "access_control_health",
+        "user_data_store_health",
+        "authentication_service_health"
+    ],
+    "type": "object"
+}
+""")
+
 invitation = json.loads("""
 {
     "properties": {
