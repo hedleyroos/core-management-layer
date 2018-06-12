@@ -82,11 +82,21 @@ MISSING_TOKEN_STATUS = 400
 TOKEN_PREFIX = "bearer "
 TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
+# URLs that do not require authorisation.
+WHITELIST_URLS = ["/healthcheck"]
+
 
 @middleware
 async def auth_middleware(request, handler):
     authorization_header = request.headers.get("authorization", None)
-    if authorization_header:
+
+    if request.method == "OPTIONS":
+        # HTTP OPTION requests do not need a token
+        pass
+    elif request.path in WHITELIST_URLS:
+        # URLs that do not require authorisation
+        pass
+    elif authorization_header:
         if not authorization_header.lower().startswith(TOKEN_PREFIX):
             return json_response({"message": "Malformed authorization header"},
                                  status=INVALID_TOKEN_STATUS)
@@ -141,9 +151,6 @@ async def auth_middleware(request, handler):
 
         LOGGER.debug("Token payload: {}".format(payload))
         request["token"] = payload
-    elif request.method == "OPTIONS":
-        # HTTP OPTION requests do not need a token
-        pass
     else:
         return json_response({"message": "An authentication token is required"},
                              status=MISSING_TOKEN_STATUS)
