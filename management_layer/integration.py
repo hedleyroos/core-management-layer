@@ -619,6 +619,21 @@ class Implementation(AbstractStubClass):
 
         return result
 
+    # get_sites_under_domain -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read")])
+    async def get_sites_under_domain(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            sites = await request.app["operational_api"].get_sites_under_domain(domain_id)
+            transform = transformations.SITE
+            return [transform.apply(site.to_dict()) for site in sites]
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),

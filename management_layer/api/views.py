@@ -1858,6 +1858,92 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "client_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "domain_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "is_active": {
+                "type": "boolean"
+            },
+            "name": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "domain_id",
+            "name",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsGetSitesUnderDomainDomainId instance
+        """
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_sites_under_domain(
+            self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsSiteAndDomainRolesSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.site_and_domain_roles
@@ -8939,6 +9025,43 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 {
                     "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/ops/get_sites_under_domain/{domain_id}": {
+            "get": {
+                "description": "Get a list of all sites linked directly or indirectly to the specified domain.",
+                "operationId": "get_sites_under_domain",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/site",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
                     ]

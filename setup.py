@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 NAME = "management_layer"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 # To install the library, run the following
 #

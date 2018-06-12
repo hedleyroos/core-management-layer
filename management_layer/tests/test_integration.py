@@ -534,6 +534,14 @@ class IntegrationTest(AioHTTPTestCase):
         validate_response_schema(response_body, schemas.domain_roles)
 
     @unittest_run_loop
+    async def test_get_sites_under_domain(self):
+        response = await self.client.get("/ops/get_sites_under_domain/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, {"type": "array", "items": schemas.site})
+
+    @unittest_run_loop
     async def test_get_site_and_domain_roles(self):
         response = await self.client.get("/ops/site_and_domain_roles/1")
         await self.assertStatus(response, 200)
