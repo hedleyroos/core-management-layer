@@ -223,6 +223,15 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # healthcheck -- Synchronisation point for meld
+    @staticmethod
+    async def healthcheck(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # invitationdomainrole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_list(request, **kwargs):
@@ -1776,6 +1785,20 @@ class MockedStubClass(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         """
         response_schema = schemas.domain
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def healthcheck(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        """
+        response_schema = schemas.health_info
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

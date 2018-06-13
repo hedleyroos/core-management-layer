@@ -801,3 +801,13 @@ class IntegrationTest(AioHTTPTestCase):
             "/ops/get_site_from_client_token_id/some_other_id",
             params={"nocache": nocache})
         await self.assertStatus(response, 403)
+
+    @unittest_run_loop
+    async def test_healthcheck(self):
+        response = await self.client.get(
+            # Overwrite the proper auth header set on the client.
+            "/healthcheck", headers={"Authorization": "Unused"}
+        )
+        self.assertEqual(response.status, 200)
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.health_info)

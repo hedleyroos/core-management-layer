@@ -1,9 +1,10 @@
 # coding: utf-8
 
 from setuptools import setup, find_packages
+from management_layer import __version__
 
 NAME = "management_layer"
-VERSION = "1.1.0"
+VERSION = __version__
 
 # To install the library, run the following
 #

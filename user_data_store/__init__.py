@@ -25,6 +25,7 @@ from user_data_store.configuration import Configuration
 from user_data_store.models.admin_note import AdminNote
 from user_data_store.models.admin_note_create import AdminNoteCreate
 from user_data_store.models.admin_note_update import AdminNoteUpdate
+from user_data_store.models.health_info import HealthInfo
 from user_data_store.models.site_data_schema import SiteDataSchema
 from user_data_store.models.site_data_schema_create import SiteDataSchemaCreate
 from user_data_store.models.site_data_schema_update import SiteDataSchemaUpdate

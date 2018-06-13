@@ -1,10 +1,12 @@
+import datetime
 import logging
+import socket
 import uuid
 
-from aiohttp import web
+from aiohttp import web, ClientSession
 
 from management_layer.api.stubs import AbstractStubClass
-from management_layer import transformations, mappings
+from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
@@ -15,6 +17,8 @@ TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
 
 logger = logging.getLogger(__name__)
+
+CLIENT_SESSION = ClientSession()
 
 
 class Implementation(AbstractStubClass):
@@ -400,6 +404,51 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # healthcheck -- Synchronisation point for meld
+    @staticmethod
+    async def healthcheck(request, **kwargs):
+        """
+        The healthcheck for the Management Layer simply returns a structure
+        with the version, timestamp and host name.
+        The health statuses of the backends have been included as well, although
+        they have no effect on whether the management layer is considered healthy
+        or not on its own.
+        :param request: An HttpRequest
+        :returns: result or (result, headers) tuple
+        """
+        try:
+            access_control_health = await request.app["operational_api"].healthcheck()
+            access_control_health = access_control_health.to_dict()
+            for field in ["server_timestamp", "db_timestamp"]:
+                access_control_health[field] = access_control_health[field].isoformat()
+        except Exception as e:
+            access_control_health = {"error": str(e)}
+
+        try:
+            user_data_store_health = await request.app["user_data_api"].healthcheck()
+            user_data_store_health = user_data_store_health.to_dict()
+            for field in ["server_timestamp", "db_timestamp"]:
+                user_data_store_health[field] = user_data_store_health[field].isoformat()
+        except Exception as e:
+            user_data_store_health = {"error": str(e)}
+
+        try:
+            url = settings.AUTHENTICATION_SERVICE_API + "/healthcheck"
+            async with CLIENT_SESSION.get(url) as resp:
+                authentication_service_health = await resp.json()
+        except Exception as e:
+            authentication_service_health = {"error": str(e)}
+
+        result = {
+            "host": socket.getfqdn(),
+            "server_timestamp": datetime.datetime.now().isoformat(),
+            "version": __version__,
+            "access_control_health": access_control_health,
+            "user_data_store_health": user_data_store_health,
+            "authentication_service_health": authentication_service_health
+        }
+        return result
+
     # invitationdomainrole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationdomainrole_list(request, **kwargs):
@@ -589,7 +638,7 @@ class Implementation(AbstractStubClass):
     async def get_site_from_client_token_id(request, client_token_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         :returns: result or (result, headers) tuple
         """
