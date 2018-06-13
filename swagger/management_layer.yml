@@ -1481,7 +1481,46 @@ definitions:
         items:
           type: string
 
+  health_info:
+    description: 'Health check response'
+    type: object
+    properties:
+      host:
+        type: string
+      server_timestamp:
+        type: string
+        format: 'date-time'
+      version:
+        type: string
+      access_control_health:
+        type: object
+      user_data_store_health:
+        type: object
+      authentication_service_health:
+        type: object
+
+    required:
+    - host
+    - server_timestamp
+    - version
+    - access_control_health
+    - user_data_store_health
+    - authentication_service_health
+
 paths:
+  /healthcheck:
+    get:
+      security: [ ]
+      description: 'Get the status of the service.'
+      operationId: healthcheck
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'The service is operating normally.'
+          schema:
+            $ref: '#/definitions/health_info'
+
   /refresh/all:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'

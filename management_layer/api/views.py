@@ -1064,6 +1064,35 @@ class DomainsDomainId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Healthcheck(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.health_info
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Healthcheck instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.healthcheck(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitationdomainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -5993,6 +6022,39 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
+        "health_info": {
+            "description": "Health check response",
+            "properties": {
+                "access_control_health": {
+                    "type": "object"
+                },
+                "authentication_service_health": {
+                    "type": "object"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "server_timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "user_data_store_health": {
+                    "type": "object"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "host",
+                "server_timestamp",
+                "version",
+                "access_control_health",
+                "user_data_store_health",
+                "authentication_service_health"
+            ],
+            "type": "object"
+        },
         "invitation": {
             "properties": {
                 "created_at": {
@@ -8335,6 +8397,27 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:access_control:domain:update"
                 ]
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "description": "Get the status of the service.",
+                "operationId": "healthcheck",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The service is operating normally.",
+                        "schema": {
+                            "$ref": "#/definitions/health_info",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "security": []
             }
         },
         "/invitationdomainroles": {
