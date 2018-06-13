@@ -3,8 +3,7 @@ import logging
 import socket
 import uuid
 
-import aiohttp
-from aiohttp import web
+from aiohttp import web, ClientSession
 
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings, __version__, settings
@@ -19,7 +18,7 @@ CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
 
 logger = logging.getLogger(__name__)
 
-CLIENT_SESSION = aiohttp.ClientSession()
+CLIENT_SESSION = ClientSession()
 
 
 class Implementation(AbstractStubClass):
