@@ -18,8 +18,6 @@ CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
 
 logger = logging.getLogger(__name__)
 
-CLIENT_SESSION = ClientSession()
-
 
 class Implementation(AbstractStubClass):
     """
@@ -64,7 +62,7 @@ class Implementation(AbstractStubClass):
         # The caller of this function is considered the creator.
         body["creator_id"] = request["token"]["sub"]
         with client_exception_handler():
-            admin_note = await request.app["user_data_api"].adminnote_create(data=body)
+            admin_note = await request.app["user_data_api"].adminnote_create(admin_note_create=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -116,7 +114,7 @@ class Implementation(AbstractStubClass):
         """
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_update(admin_note_id,
-                                                                             data=body)
+                                                                             admin_note_update=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -243,7 +241,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain_role = await request.app["access_control_api"].domainrole_create(data=body)
+            domain_role = await request.app["access_control_api"].domainrole_create(
+                domain_role_create=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -299,7 +298,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain_role = await request.app["access_control_api"].domainrole_update(domain_id, role_id, data=body)
+            domain_role = await request.app["access_control_api"].domainrole_update(
+                domain_id, role_id, domain_role_update=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -342,7 +342,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain = await request.app["access_control_api"].domain_create(data=body)
+            domain = await request.app["access_control_api"].domain_create(domain_create=body)
 
         if domain:
             transform = transformations.DOMAIN
@@ -395,7 +395,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain = await request.app["access_control_api"].domain_update(domain_id, data=body)
+            domain = await request.app["access_control_api"].domain_update(domain_id,
+                                                                           domain_update=body)
 
         if domain:
             transform = transformations.DOMAIN
@@ -434,7 +435,7 @@ class Implementation(AbstractStubClass):
 
         try:
             url = settings.AUTHENTICATION_SERVICE_API + "/healthcheck"
-            async with CLIENT_SESSION.get(url) as resp:
+            async with request.app["client_session"].get(url) as resp:
                 authentication_service_health = await resp.json()
         except Exception as e:
             authentication_service_health = {"error": str(e)}
@@ -1050,7 +1051,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            permission = await request.app["access_control_api"].permission_create(data=body)
+            permission = await request.app["access_control_api"].permission_create(
+                permission_create=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -1103,7 +1105,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            permission = await request.app["access_control_api"].permission_update(permission_id, data=body)
+            permission = await request.app["access_control_api"].permission_update(permission_id,
+                                                                                   permission_update=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -1240,7 +1243,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            resource = await request.app["access_control_api"].resource_create(data=body)
+            resource = await request.app["access_control_api"].resource_create(resource_create=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -1293,7 +1296,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            resource = await request.app["access_control_api"].resource_update(resource_id, data=body)
+            resource = await request.app["access_control_api"].resource_update(resource_id,
+                                                                               resource_update=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -1337,7 +1341,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            rrp = await request.app["access_control_api"].roleresourcepermission_create(data=body)
+            rrp = await request.app["access_control_api"].roleresourcepermission_create(
+                role_resource_permission_create=body)
 
         if rrp:
             transform = transformations.ROLE_RESOURCE_PERMISSION
@@ -1417,7 +1422,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            role = await request.app["access_control_api"].role_create(data=body)
+            role = await request.app["access_control_api"].role_create(role_create=body)
 
         if role:
             transform = transformations.ROLE
@@ -1470,7 +1475,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            role = await request.app["access_control_api"].role_update(role_id, data=body)
+            role = await request.app["access_control_api"].role_update(role_id, role_update=body)
 
         if role:
             transform = transformations.ROLE
@@ -1512,7 +1517,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            sds = await request.app["user_data_api"].sitedataschema_create(data=body)
+            sds = await request.app["user_data_api"].sitedataschema_create(
+                site_data_schema_create=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -1565,7 +1571,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            sds = await request.app["user_data_api"].sitedataschema_update(site_id, data=body)
+            sds = await request.app["user_data_api"].sitedataschema_update(
+                site_id, site_data_schema_update=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -1608,7 +1615,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site_role = await request.app["access_control_api"].siterole_create(data=body)
+            site_role = await request.app["access_control_api"].siterole_create(
+                site_role_create=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -1664,7 +1672,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site_role = await request.app["access_control_api"].siterole_update(site_id, role_id, data=body)
+            site_role = await request.app["access_control_api"].siterole_update(
+                site_id, role_id, site_role_update=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -1707,7 +1716,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site = await request.app["access_control_api"].site_create(data=body)
+            site = await request.app["access_control_api"].site_create(site_create=body)
 
         if site:
             transform = transformations.SITE
@@ -1760,7 +1769,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site = await request.app["access_control_api"].site_update(site_id, data=body)
+            site = await request.app["access_control_api"].site_update(site_id, site_update=body)
 
         if site:
             transform = transformations.SITE
@@ -1826,7 +1835,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            udr = await request.app["access_control_api"].userdomainrole_create(data=body)
+            udr = await request.app["access_control_api"].userdomainrole_create(
+                user_domain_role_create=body)
 
         if udr:
             transform = transformations.USER_DOMAIN_ROLE
@@ -1962,7 +1972,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            user = await request.app["authentication_service_api"].user_update(user_id, data=body)
+            user = await request.app["authentication_service_api"].user_update(user_id,
+                                                                               user_update=body)
 
         if user:
             transform = transformations.USER
@@ -2027,7 +2038,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usd = await request.app["user_data_api"].usersitedata_create(data=body)
+            usd = await request.app["user_data_api"].usersitedata_create(user_site_data_create=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -2085,7 +2096,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id, data=body)
+            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id,
+                                                                         user_site_data_update=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -2129,7 +2141,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usr = await request.app["access_control_api"].usersiterole_create(data=body)
+            usr = await request.app["access_control_api"].usersiterole_create(
+                user_site_role_create=body)
 
         if usr:
             transform = transformations.USER_SITE_ROLE
