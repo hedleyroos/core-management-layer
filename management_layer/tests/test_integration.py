@@ -10,7 +10,7 @@ import time
 import uuid
 
 import jwt
-from aiohttp import web
+from aiohttp import web, ClientSession
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, \
     TestClient as Client  # Rename TestClient so that it is not considered a test
 from apitools.datagenerator import DataGenerator
@@ -358,10 +358,15 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
+        app["client_session"] = ClientSession()
+
         app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
 
         add_routes(app, with_ui=False)
         return app
+
+    async def tearDownAsync(self):
+        await self.app["client_session"].close()
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
