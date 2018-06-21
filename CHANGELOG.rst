@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.4.0
+-----
+Added API calls for invitation system
+
 1.3.0
 -----
 Re-worked to use openapi-generator: https://github.com/OpenAPITools/openapi-generator (a fork of swagger-generator).
