@@ -59,9 +59,9 @@ RESOURCES = {
     "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
     "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
     # TODO: Uncomment when these are implemented
-    # "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
-    # "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
-    # "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
+    "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
+    "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
+    "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
     "permissions": Resource(1, schemas.permission, schemas.permission_create, schemas.permission_update),
     "resources": Resource(1, schemas.resource, schemas.resource_create, schemas.resource_update),
     "roles": Resource(1, schemas.role, schemas.role_create, schemas.role_update),
@@ -156,11 +156,11 @@ def get_test_data(schema):
     """
     data = DATA_GENERATOR.random_value(schema)
     # Overwrite fields that expect a UUID
-    for field in ["user_id", "creator_id", "invitation_id"]:
+    for field in ["user_id", "creator_id", "invitation_id", "invitor_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
     # Overwrite fields that expect a datetime
-    for field in ["consented_at", "last_login"]:
+    for field in ["consented_at", "last_login", "expires_at"]:
         if field in data:
             data[field] = "2000-01-01T00:00:00Z"
 

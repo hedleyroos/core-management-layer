@@ -452,6 +452,7 @@ class Implementation(AbstractStubClass):
 
     # invitationdomainrole_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "read")])
     async def invitationdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -462,20 +463,43 @@ class Implementation(AbstractStubClass):
         :param role_id (optional): integer An optional query parameter to filter by role_id
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_roles, _status, headers = await request.app[
+                "access_control_api"].invitationdomainrole_list_with_http_info(**kwargs)
+
+        if invitation_domain_roles:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            invitation_domain_roles = [transform.apply(invitation_domain_role.to_dict())
+                                       for invitation_domain_role in invitation_domain_roles]
+
+        return invitation_domain_roles, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitationdomainrole_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "create")])
     async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_role = await request.app[
+                "access_control_api"].invitationdomainrole_create(
+                invitation_domain_role_create=body)
+
+        if invitation_domain_role:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            result = transform.apply(invitation_domain_role.to_dict())
+            return result
+
+        return None
 
     # invitationdomainrole_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "delete")])
     async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -484,10 +508,15 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitationdomainrole_delete(
+                invitation_id=invitation_id, domain_id=domain_id, role_id=role_id)
+
+        return result
 
     # invitationdomainrole_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "read")])
     async def invitationdomainrole_read(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -496,10 +525,21 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_role = await request.app[
+                "access_control_api"].invitationdomainrole_read(
+                invitation_id=invitation_id, domain_id=domain_id, role_id=role_id)
+
+        if invitation_domain_role:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            result = transform.apply(invitation_domain_role.to_dict())
+            return result
+
+        return None
 
     # invitation_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "read")])
     async def invitation_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -509,40 +549,74 @@ class Implementation(AbstractStubClass):
         :param invitation_ids (optional): array An optional list of invitation ids
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitations, _status, headers = await request.app[
+                "access_control_api"].invitation_list_with_http_info(**kwargs)
+
+        if invitations:
+            transform = transformations.INVITATION
+            invitations = [transform.apply(invitation.to_dict()) for invitation in invitations]
+
+        return invitations, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitation_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "create")])
     async def invitation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_create(
+                invitation_create=body)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitation_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "delete")])
     async def invitation_delete(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitation_delete(invitation_id)
+
+        return result
 
     # invitation_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "read")])
     async def invitation_read(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_read(invitation_id)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitation_update -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "update")])
     async def invitation_update(request, body, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -550,10 +624,20 @@ class Implementation(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_update(
+                invitation_id, invitation_update=body)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])
     async def invitationsiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -564,20 +648,42 @@ class Implementation(AbstractStubClass):
         :param role_id (optional): integer An optional query parameter to filter by role_id
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_roles, _status, headers = await request.app[
+                "access_control_api"].invitationsiterole_list_with_http_info(**kwargs)
+
+        if invitation_site_roles:
+            transform = transformations.INVITATION_SITE_ROLE
+            invitation_site_roles = [transform.apply(invitation_site_role.to_dict())
+                                     for invitation_site_role in invitation_site_roles]
+
+        return invitation_site_roles, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitationsiterole_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "create")])
     async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_role = await request.app[
+                "access_control_api"].invitationsiterole_create(invitation_site_role_create=body)
+
+        if invitation_site_role:
+            transform = transformations.INVITATION_SITE_ROLE
+            result = transform.apply(invitation_site_role.to_dict())
+            return result
+
+        return None
 
     # invitationsiterole_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "delete")])
     async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -586,10 +692,15 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitationsiterole_delete(
+                invitation_id=invitation_id, site_id=site_id, role_id=role_id)
+
+        return result
 
     # invitationsiterole_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])
     async def invitationsiterole_read(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -598,7 +709,16 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_role = await request.app["access_control_api"].invitationsiterole_read(
+                invitation_id=invitation_id, site_id=site_id, role_id=role_id)
+
+        if invitation_site_role:
+            transform = transformations.INVITATION_SITE_ROLE
+            result = transform.apply(invitation_site_role.to_dict())
+            return result
+
+        return None
 
     # get_all_user_roles -- Synchronisation point for meld
     @staticmethod
