@@ -504,6 +504,7 @@ invitation = json.loads("""
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
+            "readOnly": true,
             "type": "string",
             "x-related-info": {
                 "label": "username",
@@ -513,6 +514,13 @@ invitation = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisationalunit"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -526,6 +534,7 @@ invitation = json.loads("""
         "first_name",
         "last_name",
         "email",
+        "organisation_id",
         "expires_at",
         "created_at",
         "updated_at"
@@ -549,25 +558,23 @@ invitation_create = json.loads("""
             "maxLength": 100,
             "type": "string"
         },
-        "invitor_id": {
-            "description": "The user that created the invitation",
-            "format": "uuid",
-            "type": "string",
-            "x-related-info": {
-                "label": "username",
-                "model": "user"
-            }
-        },
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisationalunit"
+            }
         }
     },
     "required": [
-        "invitor_id",
         "first_name",
         "last_name",
-        "email"
+        "email",
+        "organisation_id"
     ],
     "type": "object"
 }
@@ -744,6 +751,13 @@ invitation_update = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisationalunit"
+            }
         }
     },
     "type": "object"

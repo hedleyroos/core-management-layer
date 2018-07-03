@@ -46,7 +46,7 @@ INVITATION = Transformation(
         Mapping("expires_at", conversion=datetime_to_string)
     ],
     copy_fields=["id", "first_name", "last_name", "email",
-                 "invitor_id", "is_system_user"]
+                 "invitor_id", "organisation_id"]
 )
 
 INVITATION_DOMAIN_ROLE = Transformation(
