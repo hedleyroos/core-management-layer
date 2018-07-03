@@ -1958,6 +1958,7 @@ class MockedStubClass(AbstractStubClass):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
+                "readOnly": true,
                 "type": "string",
                 "x-related-info": {
                     "label": "username",
@@ -1967,6 +1968,13 @@ class MockedStubClass(AbstractStubClass):
             "last_name": {
                 "maxLength": 100,
                 "type": "string"
+            },
+            "organisation_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisationalunit"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1980,6 +1988,7 @@ class MockedStubClass(AbstractStubClass):
             "first_name",
             "last_name",
             "email",
+            "organisation_id",
             "expires_at",
             "created_at",
             "updated_at"

@@ -780,6 +780,7 @@ definitions:
         type: string
         format: uuid
         description: The user that created the invitation
+        readOnly: true
         x-related-info:
           model: user
           label: username
@@ -792,6 +793,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisationalunit
+          label: name
       expires_at:
         type: string
         format: 'date-time'
@@ -809,6 +815,7 @@ definitions:
       - first_name
       - last_name
       - email
+      - organisation_id
       - expires_at
       - created_at
       - updated_at
@@ -816,13 +823,6 @@ definitions:
   invitation_create:
     type: object
     properties:
-      invitor_id:
-        type: string
-        format: uuid
-        description: The user that created the invitation
-        x-related-info:
-          model: user
-          label: username
       first_name:
         type: string
         maxLength: 100
@@ -832,14 +832,19 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisationalunit
+          label: name
       expires_at:
         type: string
         format: 'date-time'
     required:
-      - invitor_id
       - first_name
       - last_name
       - email
+      - organisation_id
 
   invitation_update:
     type: object
@@ -853,6 +858,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisationalunit
+          label: name
       expires_at:
         type: string
         format: 'date-time'

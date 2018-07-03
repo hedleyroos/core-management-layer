@@ -1338,6 +1338,7 @@ class Invitations(View, CorsViewMixin):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
+                "readOnly": true,
                 "type": "string",
                 "x-related-info": {
                     "label": "username",
@@ -1347,6 +1348,13 @@ class Invitations(View, CorsViewMixin):
             "last_name": {
                 "maxLength": 100,
                 "type": "string"
+            },
+            "organisation_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisationalunit"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1360,6 +1368,7 @@ class Invitations(View, CorsViewMixin):
             "first_name",
             "last_name",
             "email",
+            "organisation_id",
             "expires_at",
             "created_at",
             "updated_at"
@@ -6082,6 +6091,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "invitor_id": {
                     "description": "The user that created the invitation",
                     "format": "uuid",
+                    "readOnly": true,
                     "type": "string",
                     "x-related-info": {
                         "label": "username",
@@ -6091,6 +6101,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisationalunit"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -6104,6 +6121,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "first_name",
                 "last_name",
                 "email",
+                "organisation_id",
                 "expires_at",
                 "created_at",
                 "updated_at"
@@ -6124,25 +6142,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string"
                 },
-                "invitor_id": {
-                    "description": "The user that created the invitation",
-                    "format": "uuid",
-                    "type": "string",
-                    "x-related-info": {
-                        "label": "username",
-                        "model": "user"
-                    }
-                },
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisationalunit"
+                    }
                 }
             },
             "required": [
-                "invitor_id",
                 "first_name",
                 "last_name",
-                "email"
+                "email",
+                "organisation_id"
             ],
             "type": "object"
         },
@@ -6304,6 +6320,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisationalunit"
+                    }
                 }
             },
             "type": "object"

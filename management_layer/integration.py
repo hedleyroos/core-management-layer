@@ -61,6 +61,7 @@ class Implementation(AbstractStubClass):
         """
         # The caller of this function is considered the creator.
         body["creator_id"] = request["token"]["sub"]
+
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_create(admin_note_create=body)
 
@@ -570,6 +571,9 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
+        # The caller of this function is considered the invitor.
+        body["invitor_id"] = request["token"]["sub"]
+
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_create(
                 invitation_create=body)
