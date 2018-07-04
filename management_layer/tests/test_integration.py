@@ -75,9 +75,9 @@ RESOURCES = {
     "clients": Resource(1, schemas.client, None, None),
     "users": Resource(1, schemas.user, None, schemas.user_update),
     "countries": Resource(1, schemas.country, None, None),
-    "organisationalunits": Resource(1, schemas.organisationalunit, None, None),
+    "organisations": Resource(1, schemas.organisation, None, None),
 }
-SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisationalunits"]
+SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
 
 def wait_for_server(ip, port):
