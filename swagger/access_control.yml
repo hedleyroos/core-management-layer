@@ -628,6 +628,8 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
       expires_at:
         type: string
         format: 'date-time'
@@ -645,6 +647,7 @@ definitions:
       - first_name
       - last_name
       - email
+      - organisation_id
       - expires_at
       - created_at
       - updated_at
@@ -665,6 +668,8 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
       expires_at:
         type: string
         format: 'date-time'
@@ -673,10 +678,15 @@ definitions:
       - first_name
       - last_name
       - email
+      - organisation_id
 
   invitation_update:
     type: object
     properties:
+      invitor_id:
+        type: string
+        format: uuid
+        description: The user that created the invitation
       first_name:
         type: string
         maxLength: 100
@@ -686,6 +696,8 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
       expires_at:
         type: string
         format: 'date-time'
@@ -891,7 +903,63 @@ definitions:
       - permission_id
     additionalProperties: false
 
+  health_info:
+    description: 'Health check response'
+    type: object
+    properties:
+      host:
+        type: string
+      server_timestamp:
+        type: string
+        format: 'date-time'
+      version:
+        type: string
+      db_timestamp:
+        type: string
+        format: 'date-time'
+    required:
+    - host
+    - server_timestamp
+    - version
+    - db_timestamp
+
+
 paths:
+  /ops/healthcheck:
+    get:
+      security: [ ]
+      description: 'Get the status of the service.'
+      operationId: healthcheck
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'The service is operating normally.'
+          schema:
+            $ref: '#/definitions/health_info'
+      tags:
+        - operational
+
+  /ops/get_sites_under_domain/{domain_id}:
+    parameters:
+      - $ref: '#/parameters/domain_id'
+    get:
+      description: 'Get a list of all sites linked directly or indirectly to the specified domain.'
+      operationId: get_sites_under_domain
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/site'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
   /ops/site_role_labels_aggregated/{site_id}:
     parameters:
       - $ref: '#/parameters/site_id'

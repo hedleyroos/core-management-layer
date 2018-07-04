@@ -4,7 +4,7 @@ from management_layer.logging import logging
 
 import asyncio
 import aiomcache
-from aiohttp import web
+from aiohttp import web, ClientSession
 import aiojobs
 from aiojobs.aiohttp import setup
 
@@ -37,6 +37,8 @@ async def on_startup(application: web.Application):
 
 
 async def on_shutdown(app):
+    logger.info("Waiting for client session to finish up...")
+    await app["client_session"].close()
     logger.info("Waiting for memcache to finish up...")
     await app["memcache"].close()
     logger.info("Waiting for clients to finish up...")
@@ -99,6 +101,8 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
+
+    app["client_session"] = ClientSession()
 
     app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
 

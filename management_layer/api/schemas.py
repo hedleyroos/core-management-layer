@@ -440,6 +440,42 @@ domain_update = json.loads("""
 }
 """)
 
+health_info = json.loads("""
+{
+    "description": "Health check response",
+    "properties": {
+        "access_control_health": {
+            "type": "object"
+        },
+        "authentication_service_health": {
+            "type": "object"
+        },
+        "host": {
+            "type": "string"
+        },
+        "server_timestamp": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "user_data_store_health": {
+            "type": "object"
+        },
+        "version": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "host",
+        "server_timestamp",
+        "version",
+        "access_control_health",
+        "user_data_store_health",
+        "authentication_service_health"
+    ],
+    "type": "object"
+}
+""")
+
 invitation = json.loads("""
 {
     "properties": {
@@ -468,6 +504,7 @@ invitation = json.loads("""
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
+            "readOnly": true,
             "type": "string",
             "x-related-info": {
                 "label": "username",
@@ -477,6 +514,13 @@ invitation = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -490,6 +534,7 @@ invitation = json.loads("""
         "first_name",
         "last_name",
         "email",
+        "organisation_id",
         "expires_at",
         "created_at",
         "updated_at"
@@ -513,25 +558,23 @@ invitation_create = json.loads("""
             "maxLength": 100,
             "type": "string"
         },
-        "invitor_id": {
-            "description": "The user that created the invitation",
-            "format": "uuid",
-            "type": "string",
-            "x-related-info": {
-                "label": "username",
-                "model": "user"
-            }
-        },
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         }
     },
     "required": [
-        "invitor_id",
         "first_name",
         "last_name",
-        "email"
+        "email",
+        "organisation_id"
     ],
     "type": "object"
 }
@@ -708,13 +751,20 @@ invitation_update = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         }
     },
     "type": "object"
 }
 """)
 
-organisationalunit = json.loads("""
+organisation = json.loads("""
 {
     "properties": {
         "created_at": {
@@ -1475,12 +1525,12 @@ user = json.loads("""
         "msisdn_verified": {
             "type": "boolean"
         },
-        "organisational_unit_id": {
+        "organisation_id": {
             "readOnly": true,
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         },
         "updated_at": {

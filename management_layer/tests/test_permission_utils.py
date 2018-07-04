@@ -3,18 +3,19 @@ from uuid import uuid1
 
 import aiomcache
 from aiohttp import web
-from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, make_mocked_request
 
 from datetime import datetime
 
-from aiohttp.web import Request
+from aiohttp.web import Request, HTTPBadRequest
 from aiohttp.web_exceptions import HTTPForbidden
 
 from access_control import RoleResourcePermission, AccessControlApi, OperationalApi
-from management_layer.constants import TECH_ADMIN_ROLE_LABEL
+from management_layer.constants import TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
 from management_layer.mappings import Mappings, return_tech_admin_role_for_testing
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
+from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
 
 from management_layer.tests import make_coroutine_returning
 
@@ -31,6 +32,7 @@ TEST_RESOURCE_URN_TO_ID_MAP = {f"urn:resource{i}": i for i in range(1, 11)}
 TEST_SITES = {1: {"name": "Test Site", "client_id": "test_client"}}
 TEST_SITE_NAME_TO_ID_MAP = {v["name"]: k for k, v in TEST_SITES.items()}
 TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP = {v["client_id"]: k for k, v in TEST_SITES.items()}
+TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP[MANAGEMENT_PORTAL_CLIENT_ID] = 11
 
 TEST_DOMAINS = {1: {"name": "Test Domain"}}
 TEST_DOMAIN_NAME_TO_ID_MAP = {v["name"]: k for k, v in TEST_DOMAINS.items()}
@@ -51,11 +53,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         self.user = uuid1()
         self.site_id = 1
         self.client_id = TEST_SITES[self.site_id]["client_id"]
-        self.dummy_request = {
-            "token": {
-                "sub": str(self.user),
-                "aud": self.client_id
-            }
+        self.mocked_request = make_mocked_request("GET", "/")
+        self.mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": self.client_id
         }
 
     async def get_application(self):
@@ -88,10 +89,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # Never gets allowed if the user id in the request token does not match
         # the value in the target user field.
         with self.assertRaises(HTTPForbidden):
-            await example_call_with_user(self.dummy_request, "fake_user_id")
+            await example_call_with_user(self.mocked_request, "fake_user_id")
 
         # Allow the call when the caller is also the target user.
-        self.assertTrue(await example_call_with_user(self.dummy_request, str(self.user)))
+        self.assertTrue(await example_call_with_user(self.mocked_request, str(self.user)))
 
     @unittest_run_loop
     async def test_name_and_docstring(self):
@@ -132,15 +133,15 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         mocked_function.side_effect = make_coroutine_returning({0})  # An arbitrary id
 
         # Always gets allowed, regardless of the user's roles
-        self.assertTrue(await empty_all(self.dummy_request))
+        self.assertTrue(await empty_all(self.mocked_request))
 
         # Never gets allowed unless the user has the TECH_ADMIN role
         with self.assertRaises(HTTPForbidden):
-            await empty_any(self.dummy_request)
+            await empty_any(self.mocked_request)
 
         mocked_function.side_effect = make_coroutine_returning(
             {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)})
-        self.assertEqual(await empty_any(self.dummy_request),
+        self.assertEqual(await empty_any(self.mocked_request),
                          "You must be a tech admin")
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -157,10 +158,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         mocked_function.side_effect = make_coroutine_returning(set())
         # Call the test function...
-        await positional_args("some_value", self.dummy_request)
+        await positional_args("some_value", self.mocked_request)
         # ...and verify that the mocked function was called with the right
         # arguments.
-        mocked_function.assert_called_with(self.dummy_request, self.user, self.site_id,
+        mocked_function.assert_called_with(self.mocked_request, self.user, self.site_id,
                                            nocache=True)
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -177,10 +178,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         mocked_function.side_effect = make_coroutine_returning(set())
         # Call the test function...
-        await keyword_args(arg=123, i_am_a_request=self.dummy_request)
+        await keyword_args(arg=123, i_am_a_request=self.mocked_request)
         # ...and verify that the mocked function was called with the right
         # arguments.
-        mocked_function.assert_called_with(self.dummy_request, self.user, self.site_id,
+        mocked_function.assert_called_with(self.mocked_request, self.user, self.site_id,
                                            nocache=True)
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -204,10 +205,10 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         mocked_function.side_effect = make_coroutine_returning({1000})  # An arbitrary id
 
         with self.assertRaises(HTTPForbidden):
-            await stack(self.dummy_request)
+            await stack(self.mocked_request)
 
         with self.assertRaises(HTTPForbidden):
-            await reverse_stack(self.dummy_request)
+            await reverse_stack(self.mocked_request)
 
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -239,18 +240,18 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
         with self.assertRaises(HTTPForbidden):
-            await single_requirement(self.dummy_request)
+            await single_requirement(self.mocked_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
-            await single_requirement(self.dummy_request)
+            await single_requirement(self.mocked_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
-        self.assertTrue(await single_requirement(self.dummy_request))
+        self.assertTrue(await single_requirement(self.mocked_request))
 
         @require_permissions(all, [("urn:resource1", "permission1"),
                                    ("urn:resource2", "permission2")], nocache=True)
@@ -261,11 +262,11 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
         with self.assertRaises(HTTPForbidden):
-            await multiple_requirements(self.dummy_request)
+            await multiple_requirements(self.mocked_request)
 
         # If the user has all the permissions, then access is allowed.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({"role1", "role2"})
-        self.assertTrue(await multiple_requirements(self.dummy_request))
+        self.assertTrue(await multiple_requirements(self.mocked_request))
 
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -297,18 +298,18 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
         with self.assertRaises(HTTPForbidden):
-            await single_requirement(self.dummy_request)
+            await single_requirement(self.mocked_request)
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
-            await single_requirement(self.dummy_request)
+            await single_requirement(self.mocked_request)
 
         # If the user has a role with the necessary permission,
         # then access is allowed.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
-        self.assertTrue(await single_requirement(self.dummy_request))
+        self.assertTrue(await single_requirement(self.mocked_request))
 
         @require_permissions(any, [("urn:resource1", "permission1"),
                                    ("urn:resource2", "permission2")], nocache=True)
@@ -318,19 +319,19 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has any one of the permissions, then access is
         # allowed.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1"])
-        self.assertTrue(await multiple_requirements(self.dummy_request))
+        self.assertTrue(await multiple_requirements(self.mocked_request))
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role2"])
-        self.assertTrue(await multiple_requirements(self.dummy_request))
+        self.assertTrue(await multiple_requirements(self.mocked_request))
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role1", "role2"])
-        self.assertTrue(await multiple_requirements(self.dummy_request))
+        self.assertTrue(await multiple_requirements(self.mocked_request))
 
         # If the user has a role without the necessary permission,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(["role3"])
         with self.assertRaises(HTTPForbidden):
-            await single_requirement(self.dummy_request)
+            await single_requirement(self.mocked_request)
 
     @patch("management_layer.permission.utils.get_role_resource_permissions")
     @patch("management_layer.permission.utils.get_user_roles_for_site")
@@ -370,33 +371,141 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         # If the user has no roles, then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
         with self.assertRaises(HTTPForbidden):
-            await combo_requirement(self.dummy_request)
+            await combo_requirement(self.mocked_request)
 
         # If the user has roles partially fulfilling the required permissions,
         # then access is denied.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
         with self.assertRaises(HTTPForbidden):
-            await combo_requirement(self.dummy_request)
+            await combo_requirement(self.mocked_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2})
         with self.assertRaises(HTTPForbidden):
-            await combo_requirement(self.dummy_request)
+            await combo_requirement(self.mocked_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({3})
         with self.assertRaises(HTTPForbidden):
-            await combo_requirement(self.dummy_request)
+            await combo_requirement(self.mocked_request)
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({2, 3})
         with self.assertRaises(HTTPForbidden):
-            await combo_requirement(self.dummy_request)
+            await combo_requirement(self.mocked_request)
 
         # If the user has roles with the necessary permissions,
         # then access is allowed.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1, 2})
-        self.assertTrue(await combo_requirement(self.dummy_request))
+        self.assertTrue(await combo_requirement(self.mocked_request))
 
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1, 3})
-        self.assertTrue(await combo_requirement(self.dummy_request))
+        self.assertTrue(await combo_requirement(self.mocked_request))
+
+    @patch("management_layer.permission.utils.get_user_roles_for_site")
+    @patch("management_layer.permission.utils.get_user_roles_for_domain")
+    @unittest_run_loop
+    async def test_context_header(self, mocked_site_function, mocked_domain_function):
+        """
+        """
+        @require_permissions(all, [("urn:resource1", "permission1")], nocache=True)
+        async def somecall(_request):
+            return True
+
+        mocked_site_function.side_effect = make_coroutine_returning(set())  # No roles
+        mocked_domain_function.side_effect = make_coroutine_returning(set())  # No roles
+
+        # Invalid value
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "foo"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+
+        with self.assertRaises(HTTPBadRequest):
+            await somecall(mocked_request)
+
+        # Invalid value
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "foo:bar"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        with self.assertRaises(HTTPBadRequest):
+            await somecall(mocked_request)
+
+        # Invalid value
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "foo:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        with self.assertRaises(HTTPBadRequest):
+            await somecall(mocked_request)
+
+        # Valid header, but Management Portal is not the caller
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "d:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID + "foo"
+        }
+        with self.assertRaises(HTTPForbidden):
+            await somecall(mocked_request)
+
+        # Valid site but not roles
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "s:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        with self.assertRaises(HTTPForbidden):
+            await somecall(mocked_request)
+
+        # Valid domain, but no roles
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "d:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        with self.assertRaises(HTTPForbidden):
+            await somecall(mocked_request)
+
+        # Roles will be returned
+        mocked_site_function.side_effect = make_coroutine_returning(
+            {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)}
+        )
+        mocked_domain_function.side_effect = make_coroutine_returning(
+            {Mappings.role_id_for(TECH_ADMIN_ROLE_LABEL)}
+        )
+
+        # Valid site
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "s:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        self.assertTrue(await somecall(mocked_request))
+
+        # Valid domain, but no roles
+        mocked_request = make_mocked_request("GET", "/", headers={
+            PORTAL_CONTEXT_HEADER: "d:123"
+        })
+        mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": MANAGEMENT_PORTAL_CLIENT_ID
+        }
+        self.assertTrue(await somecall(mocked_request))
 
 
 @patch.multiple("management_layer.mappings.Mappings",
@@ -419,11 +528,10 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         self.user = uuid1()
         self.site_id = 1
         self.client_id = TEST_SITES[self.site_id]["client_id"]
-        self.dummy_request = {
-            "token": {
-                "sub": str(self.user),
-                "aud": self.client_id
-            }
+        self.mocked_request = make_mocked_request("GET", "/")
+        self.mocked_request["token"] = {
+            "sub": str(self.user),
+            "aud": self.client_id
         }
 
     async def get_application(self):
@@ -461,17 +569,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_with_body(self.dummy_request, body)
+            await call_with_body(self.mocked_request, body)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_with_body(self.dummy_request, body))
+        self.assertTrue(await call_with_body(self.mocked_request, body))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_domain.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_with_body(self.dummy_request, body))
+        self.assertTrue(await call_with_body(self.mocked_request, body))
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -496,17 +604,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_with_body(self.dummy_request, body)
+            await call_with_body(self.mocked_request, body)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_with_body(self.dummy_request, body))
+        self.assertTrue(await call_with_body(self.mocked_request, body))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_site.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_with_body(self.dummy_request, body))
+        self.assertTrue(await call_with_body(self.mocked_request, body))
 
     @patch("management_layer.permission.utils.get_user_roles_for_domain")
     @unittest_run_loop
@@ -519,17 +627,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_without_body(self.dummy_request, self.user.hex, 1, 1)
+            await call_without_body(self.mocked_request, self.user.hex, 1, 1)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_without_body(self.dummy_request, self.user.hex, 1, 1))
+        self.assertTrue(await call_without_body(self.mocked_request, self.user.hex, 1, 1))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_domain.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_without_body(self.dummy_request, self.user.hex, 1, 1))
+        self.assertTrue(await call_without_body(self.mocked_request, self.user.hex, 1, 1))
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -542,17 +650,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_without_body(self.dummy_request, self.user.hex, 1, 1)
+            await call_without_body(self.mocked_request, self.user.hex, 1, 1)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_without_body(self.dummy_request, self.user.hex, 1, 1))
+        self.assertTrue(await call_without_body(self.mocked_request, self.user.hex, 1, 1))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_site.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_without_body(self.dummy_request, self.user.hex, 1, 1))
+        self.assertTrue(await call_without_body(self.mocked_request, self.user.hex, 1, 1))
 
     @patch("management_layer.permission.utils.get_user_roles_for_domain")
     @unittest_run_loop
@@ -579,17 +687,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_with_body(body, self.dummy_request)
+            await call_with_body(body, self.mocked_request)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_domain.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_with_body(body, self.dummy_request))
+        self.assertTrue(await call_with_body(body, self.mocked_request))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_domain.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_with_body(body, self.dummy_request))
+        self.assertTrue(await call_with_body(body, self.mocked_request))
 
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
@@ -616,17 +724,17 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning(set())
 
         with self.assertRaises(HTTPForbidden):
-            await call_with_body(body, self.dummy_request)
+            await call_with_body(body, self.mocked_request)
 
         # Test the case where the requester has the role for the specified domain.
         mocked_get_user_roles_for_site.side_effect = make_coroutine_returning({1})
 
-        self.assertTrue(await call_with_body(body, self.dummy_request))
+        self.assertTrue(await call_with_body(body, self.mocked_request))
 
         # Test the case where the requester has the TECH_ADMIN role
         mocked_get_user_roles_for_site.side_effect = return_tech_admin_role_for_testing
 
-        self.assertTrue(await call_with_body(body, self.dummy_request))
+        self.assertTrue(await call_with_body(body, self.mocked_request))
 
 
 @patch.multiple("management_layer.mappings.Mappings",

@@ -10,7 +10,7 @@ import time
 import uuid
 
 import jwt
-from aiohttp import web
+from aiohttp import web, ClientSession
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, \
     TestClient as Client  # Rename TestClient so that it is not considered a test
 from apitools.datagenerator import DataGenerator
@@ -59,9 +59,9 @@ RESOURCES = {
     "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
     "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
     # TODO: Uncomment when these are implemented
-    # "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
-    # "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
-    # "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
+    "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
+    "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
+    "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
     "permissions": Resource(1, schemas.permission, schemas.permission_create, schemas.permission_update),
     "resources": Resource(1, schemas.resource, schemas.resource_create, schemas.resource_update),
     "roles": Resource(1, schemas.role, schemas.role_create, schemas.role_update),
@@ -75,9 +75,9 @@ RESOURCES = {
     "clients": Resource(1, schemas.client, None, None),
     "users": Resource(1, schemas.user, None, schemas.user_update),
     "countries": Resource(1, schemas.country, None, None),
-    "organisationalunits": Resource(1, schemas.organisationalunit, None, None),
+    "organisations": Resource(1, schemas.organisation, None, None),
 }
-SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisationalunits"]
+SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
 
 def wait_for_server(ip, port):
@@ -156,11 +156,11 @@ def get_test_data(schema):
     """
     data = DATA_GENERATOR.random_value(schema)
     # Overwrite fields that expect a UUID
-    for field in ["user_id", "creator_id", "invitation_id"]:
+    for field in ["user_id", "creator_id", "invitation_id", "invitor_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
     # Overwrite fields that expect a datetime
-    for field in ["consented_at", "last_login"]:
+    for field in ["consented_at", "last_login", "expires_at"]:
         if field in data:
             data[field] = "2000-01-01T00:00:00Z"
 
@@ -358,10 +358,15 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
+        app["client_session"] = ClientSession()
+
         app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
 
         add_routes(app, with_ui=False)
         return app
+
+    async def tearDownAsync(self):
+        await self.app["client_session"].close()
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
@@ -532,6 +537,14 @@ class IntegrationTest(AioHTTPTestCase):
         response_body = await response.json()
         response_body = clean_response_data(response_body)
         validate_response_schema(response_body, schemas.domain_roles)
+
+    @unittest_run_loop
+    async def test_get_sites_under_domain(self):
+        response = await self.client.get("/ops/get_sites_under_domain/1")
+        await self.assertStatus(response, 200)
+        response_body = await response.json()
+        response_body = clean_response_data(response_body)
+        validate_response_schema(response_body, {"type": "array", "items": schemas.site})
 
     @unittest_run_loop
     async def test_get_site_and_domain_roles(self):
@@ -793,3 +806,13 @@ class IntegrationTest(AioHTTPTestCase):
             "/ops/get_site_from_client_token_id/some_other_id",
             params={"nocache": nocache})
         await self.assertStatus(response, 403)
+
+    @unittest_run_loop
+    async def test_healthcheck(self):
+        response = await self.client.get(
+            # Overwrite the proper auth header set on the client.
+            "/healthcheck", headers={"Authorization": "Unused"}
+        )
+        self.assertEqual(response.status, 200)
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.health_info)

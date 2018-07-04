@@ -46,6 +46,12 @@ info:
 basePath: /api/v1
 
 parameters:
+  optional_portal_context_header:
+    in: header
+    name: X-GE-Portal-Context
+    type: string
+    required: false
+
   optional_nocache:
     description: An optional query parameter to instructing an API call to by pass caches when reading data.
     in: query
@@ -200,10 +206,10 @@ parameters:
     minLength: 2
     maxLength: 2
 
-  organisational_unit_id:
-    description: An integer identifying an organisational unit
+  organisation_id:
+    description: An integer identifying an organisation
     in: path
-    name: organisational_unit_id
+    name: organisation_id
     required: true
     type: integer
 
@@ -786,6 +792,7 @@ definitions:
         type: string
         format: uuid
         description: The user that created the invitation
+        readOnly: true
         x-related-info:
           model: user
           label: username
@@ -798,6 +805,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
@@ -815,6 +827,7 @@ definitions:
       - first_name
       - last_name
       - email
+      - organisation_id
       - expires_at
       - created_at
       - updated_at
@@ -822,13 +835,6 @@ definitions:
   invitation_create:
     type: object
     properties:
-      invitor_id:
-        type: string
-        format: uuid
-        description: The user that created the invitation
-        x-related-info:
-          model: user
-          label: username
       first_name:
         type: string
         maxLength: 100
@@ -838,14 +844,19 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
     required:
-      - invitor_id
       - first_name
       - last_name
       - email
+      - organisation_id
 
   invitation_update:
     type: object
@@ -859,6 +870,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
@@ -1280,7 +1296,7 @@ definitions:
       - client_id
       - response_type
 
-  organisationalunit:
+  organisation:
     type: object
     properties:
       id:
@@ -1366,11 +1382,11 @@ definitions:
           model: country
           field: code
           label: name
-      organisational_unit_id:
+      organisation_id:
         type: integer
         readOnly: true
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       created_at:
         type: string
@@ -1487,9 +1503,49 @@ definitions:
         items:
           type: string
 
+  health_info:
+    description: 'Health check response'
+    type: object
+    properties:
+      host:
+        type: string
+      server_timestamp:
+        type: string
+        format: 'date-time'
+      version:
+        type: string
+      access_control_health:
+        type: object
+      user_data_store_health:
+        type: object
+      authentication_service_health:
+        type: object
+
+    required:
+    - host
+    - server_timestamp
+    - version
+    - access_control_health
+    - user_data_store_health
+    - authentication_service_health
+
 paths:
+  /healthcheck:
+    get:
+      security: [ ]
+      description: 'Get the status of the service.'
+      operationId: healthcheck
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'The service is operating normally.'
+          schema:
+            $ref: '#/definitions/health_info'
+
   /refresh/all:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh all mapping information"
@@ -1504,6 +1560,7 @@ paths:
 
   /refresh/clients:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh OIDC client information"
@@ -1518,6 +1575,7 @@ paths:
 
   /refresh/domains:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh domain mapping information"
@@ -1532,6 +1590,7 @@ paths:
 
   /refresh/keys:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh JWKS information"
@@ -1546,6 +1605,7 @@ paths:
 
   /refresh/permissions:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh permission mapping information"
@@ -1560,6 +1620,7 @@ paths:
 
   /refresh/resources:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh resource mapping information"
@@ -1574,6 +1635,7 @@ paths:
 
   /refresh/roles:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh role mapping information"
@@ -1588,6 +1650,7 @@ paths:
 
   /refresh/sites:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/optional_nocache'
     get:
       description: "Refresh site mapping information"
@@ -1600,8 +1663,29 @@ paths:
         403:
          description: "Forbidden"
 
+  /ops/get_sites_under_domain/{domain_id}:
+    parameters:
+      - $ref: '#/parameters/domain_id'
+    get:
+      description: 'Get a list of all sites linked directly or indirectly to the specified domain.'
+      operationId: get_sites_under_domain
+      produces:
+        - application/json
+      responses:
+        200:
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/site'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
   /ops/get_site_from_client_token_id/{client_token_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - description: A client token id. This is not the primary key of the client table, but rather the client id
                      that is typically configured along with the client secret.
         in: path
@@ -1626,6 +1710,7 @@ paths:
 
   /ops/user_management_portal_permissions/{user_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/optional_nocache'
     get:
@@ -1649,6 +1734,7 @@ paths:
 
   /ops/user_domain_permissions/{user_id}/{domain_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/domain_id'
       - $ref: '#/parameters/optional_nocache'
@@ -1672,6 +1758,7 @@ paths:
 
   /ops/user_site_permissions/{user_id}/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
       - $ref: '#/parameters/optional_nocache'
@@ -1695,6 +1782,7 @@ paths:
 
   /ops/site_role_labels_aggregated/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     get:
       description: "Get a list of all possible role labels that a user can have from the specified sites perspective."
@@ -1713,6 +1801,7 @@ paths:
 
   /ops/user_site_role_labels_aggregated/{user_id}/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
     get:
@@ -1732,6 +1821,7 @@ paths:
 
   /ops/domain_roles/{domain_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/domain_id'
     get:
       description: "Get the domain and its lineages roles defined for a domain."
@@ -1750,6 +1840,7 @@ paths:
 
   /ops/site_and_domain_roles/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     get:
       description: 'Get the site- and domain lineage roles defined for a given site.'
@@ -1768,6 +1859,7 @@ paths:
 
   /ops/all_user_roles/{user_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
     get:
       description: 'Get the effective roles that a user has at any place in the organisational tree.'
@@ -1788,6 +1880,7 @@ paths:
 
   /ops/users_with_roles_for_domain/{domain_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/domain_id'
     get:
       description: 'Get a list of Users with their effective roles within the given domain.'
@@ -1810,6 +1903,7 @@ paths:
 
   /ops/users_with_roles_for_site/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     get:
       description: 'Get a list of Users with their effective roles within the given site.'
@@ -1832,6 +1926,7 @@ paths:
 
   /ops/user_has_permissions/{user_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - in: body
         name: data
@@ -1859,6 +1954,8 @@ paths:
         - operational
 
   /domains:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: domain_list
       x-aor-permissions:
@@ -1915,6 +2012,7 @@ paths:
 
   /domains/{domain_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/domain_id'
     delete:
       operationId: domain_delete
@@ -1960,6 +2058,8 @@ paths:
         - access_control
 
   /domainroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: domainrole_list
       x-aor-permissions:
@@ -2007,6 +2107,7 @@ paths:
 
   '/domainroles/{domain_id}/{role_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/domain_id'
       - $ref: '#/parameters/role_id'
     delete:
@@ -2053,6 +2154,8 @@ paths:
         - access_control
 
   /invitations:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: invitation_list
       x-aor-permissions:
@@ -2115,6 +2218,7 @@ paths:
 
   '/invitations/{invitation_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/invitation_id'
     delete:
       operationId: invitation_delete
@@ -2160,6 +2264,8 @@ paths:
         - access_control
 
   /invitationdomainroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: invitationdomainrole_list
       x-aor-permissions:
@@ -2208,6 +2314,7 @@ paths:
 
   '/invitationdomainroles/{invitation_id}/{domain_id}/{role_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/invitation_id'
       - $ref: '#/parameters/domain_id'
       - $ref: '#/parameters/role_id'
@@ -2237,6 +2344,8 @@ paths:
         - access_control
 
   /invitationsiteroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: invitationsiterole_list
       x-aor-permissions:
@@ -2285,6 +2394,7 @@ paths:
 
   '/invitationsiteroles/{invitation_id}/{site_id}/{role_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/invitation_id'
       - $ref: '#/parameters/site_id'
       - $ref: '#/parameters/role_id'
@@ -2312,6 +2422,8 @@ paths:
         - access_control
 
   /permissions:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: permission_list
       x-aor-permissions:
@@ -2367,6 +2479,7 @@ paths:
 
   '/permissions/{permission_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/permission_id'
     delete:
       operationId: permission_delete
@@ -2412,6 +2525,8 @@ paths:
         - access_control
 
   /resources:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: resource_list
       x-aor-permissions:
@@ -2472,6 +2587,7 @@ paths:
 
   '/resources/{resource_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/resource_id'
     delete:
       operationId: resource_delete
@@ -2517,6 +2633,8 @@ paths:
         - access_control
 
   /roles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: role_list
       x-aor-permissions:
@@ -2617,6 +2735,8 @@ paths:
         - access_control
 
   /roleresourcepermissions:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: roleresourcepermission_list
       x-aor-permissions:
@@ -2673,6 +2793,7 @@ paths:
 
   /roleresourcepermissions/{role_id}/{resource_id}/{permission_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/role_id'
       - $ref: '#/parameters/resource_id'
       - $ref: '#/parameters/permission_id'
@@ -2700,6 +2821,8 @@ paths:
         - access_control
 
   /sites:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: site_list
       x-aor-permissions:
@@ -2760,6 +2883,7 @@ paths:
 
   /sites/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     delete:
       operationId: site_delete
@@ -2805,6 +2929,8 @@ paths:
         - access_control
 
   /siteroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: siterole_list
       x-aor-permissions:
@@ -2852,6 +2978,7 @@ paths:
 
   '/siteroles/{site_id}/{role_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
       - $ref: '#/parameters/role_id'
     delete:
@@ -2898,6 +3025,8 @@ paths:
         - access_control
 
   /userdomainroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: userdomainrole_list
       x-aor-permissions:
@@ -2946,6 +3075,7 @@ paths:
 
   '/userdomainroles/{user_id}/{domain_id}/{role_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/domain_id'
       - $ref: '#/parameters/role_id'
@@ -2973,6 +3103,8 @@ paths:
         - access_control
 
   /usersiteroles:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: usersiterole_list
       x-aor-permissions:
@@ -3021,6 +3153,7 @@ paths:
 
   /usersiteroles/{user_id}/{site_id}/{role_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
       - $ref: '#/parameters/role_id'
@@ -3048,6 +3181,8 @@ paths:
         - access_control
 
   /usersitedata:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: usersitedata_list
       x-aor-permissions:
@@ -3095,6 +3230,7 @@ paths:
 
   /usersitedata/{user_id}/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
       - $ref: '#/parameters/site_id'
     delete:
@@ -3141,6 +3277,8 @@ paths:
         - user_data
 
   /adminnotes:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: adminnote_list
       x-aor-permissions:
@@ -3208,6 +3346,7 @@ paths:
 
   /adminnotes/{admin_note_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/admin_note_id'
     delete:
       operationId: adminnote_delete
@@ -3259,6 +3398,8 @@ paths:
         - user_data
 
   /sitedataschemas:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: sitedataschema_list
       x-aor-permissions:
@@ -3314,6 +3455,7 @@ paths:
 
   /sitedataschemas/{site_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     delete:
       operationId: sitedataschema_delete
@@ -3359,6 +3501,8 @@ paths:
         - user_data
 
   /clients:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: client_list
       x-aor-permissions:
@@ -3400,6 +3544,7 @@ paths:
 
   /clients/{client_id}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/client_id'
     get:
       operationId: client_read
@@ -3413,9 +3558,11 @@ paths:
           schema:
             $ref: '#/definitions/client'
       tags:
-        - oidc_provider
+        - authentication
 
   /countries:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: country_list
       parameters:
@@ -3452,6 +3599,7 @@ paths:
 
   /countries/{country_code}:
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/country_code'
     get:
       operationId: country_read
@@ -3465,14 +3613,16 @@ paths:
       tags:
         - authentication
 
-  /organisationalunits:
+  /organisations:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
-      operationId: organisational_unit_list
+      operationId: organisation_list
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
-        - name: organisational_unit_ids
-          description: An optional list of organisational unit ids
+        - name: organisation_ids
+          description: An optional list of organisation ids
           in: query
           type: array
           items:
@@ -3489,7 +3639,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/organisationalunit'
+              $ref: '#/definitions/organisation'
           headers:
             X-Total-Count:
               type: integer
@@ -3498,22 +3648,25 @@ paths:
       tags:
         - authentication
 
-  /organisationalunits/{organisational_unit_id}:
+  /organisations/{organisation_id}:
     parameters:
-      - $ref: '#/parameters/organisational_unit_id'
+      - $ref: '#/parameters/optional_portal_context_header'
+      - $ref: '#/parameters/organisation_id'
     get:
-      operationId: organisational_unit_read
+      operationId: organisation_read
       produces:
         - application/json
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/organisationalunit'
+            $ref: '#/definitions/organisation'
       tags:
         - authentication
 
   /users:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: user_list
       x-aor-permissions:
@@ -3605,8 +3758,8 @@ paths:
           required: false
           type: string
           minLength: 3
-        - name: organisational_unit_id
-          description: An optional filter on the organisational unit id
+        - name: organisation_id
+          description: An optional filter on the organisation id
           in: query
           required: false
           type: integer
@@ -3635,8 +3788,8 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: has_organisational_unit
-          description: An optional filter based on whether a user has an organisational unit or not
+        - name: has_organisation
+          description: An optional filter based on whether a user belongs to an organisation or not
           in: query
           required: false
           type: boolean
@@ -3692,6 +3845,7 @@ paths:
 
   '/users/{user_id}':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
     delete:
       operationId: user_delete
@@ -3739,55 +3893,63 @@ paths:
 
   '/users/{user_id}/activate':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
     get:
-       description: "Activate the user account."
-       responses:
-         200:
-           description: Acccount successfully activated
-         403:
-           description: Forbidden
-         404:
-           description: User not found
+      deprecated: true
+      description: "Activate the user account."
+      responses:
+        200:
+          description: Acccount successfully activated
+        403:
+          description: Forbidden
+        404:
+          description: User not found
 
   '/users/{user_id}/deactivate':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/user_id'
     get:
-       description: "Deactivate the user account."
-       responses:
-         200:
-           description: Acccount successfully deactivated
-         403:
-           description: Forbidden
-         404:
-           description: User not found
+      deprecated: true
+      description: "Deactivate the user account."
+      responses:
+        200:
+          description: Acccount successfully deactivated
+        403:
+          description: Forbidden
+        404:
+          description: User not found
 
   '/sites/{site_id}/activate':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     get:
-       description: Activate the site so that users can log in to it.
-       responses:
-         200:
-           description: Site successfully activated
-         403:
-           description: Forbidden
-         404:
-           description: Site not found
+      deprecated: true
+      description: Activate the site so that users can log in to it.
+      responses:
+        200:
+          description: Site successfully activated
+        403:
+          description: Forbidden
+        404:
+          description: Site not found
 
   '/sites/{site_id}/deactivate':
     parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/site_id'
     get:
-       description: Deactivate the site so that users cannot log in to it.
-       responses:
-         200:
-           description: Site successfully deactivated
-         403:
-           description: Forbidden
-         404:
-           description: Site not found
+      deprecated: true
+      description: Deactivate the site so that users cannot log in to it.
+      responses:
+        200:
+          description: Site successfully deactivated
+        403:
+          description: Forbidden
+        404:
+          description: Site not found
 
 x-detail-page-definitions:
   domain:

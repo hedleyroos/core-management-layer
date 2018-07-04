@@ -1,10 +1,12 @@
+import datetime
 import logging
+import socket
 import uuid
 
-from aiohttp import web
+from aiohttp import web, ClientSession
 
 from management_layer.api.stubs import AbstractStubClass
-from management_layer import transformations, mappings
+from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
@@ -59,8 +61,9 @@ class Implementation(AbstractStubClass):
         """
         # The caller of this function is considered the creator.
         body["creator_id"] = request["token"]["sub"]
+
         with client_exception_handler():
-            admin_note = await request.app["user_data_api"].adminnote_create(data=body)
+            admin_note = await request.app["user_data_api"].adminnote_create(admin_note_create=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -112,7 +115,7 @@ class Implementation(AbstractStubClass):
         """
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_update(admin_note_id,
-                                                                             data=body)
+                                                                             admin_note_update=body)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
@@ -239,7 +242,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain_role = await request.app["access_control_api"].domainrole_create(data=body)
+            domain_role = await request.app["access_control_api"].domainrole_create(
+                domain_role_create=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -295,7 +299,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain_role = await request.app["access_control_api"].domainrole_update(domain_id, role_id, data=body)
+            domain_role = await request.app["access_control_api"].domainrole_update(
+                domain_id, role_id, domain_role_update=body)
 
         if domain_role:
             transform = transformations.DOMAIN_ROLE
@@ -338,7 +343,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain = await request.app["access_control_api"].domain_create(data=body)
+            domain = await request.app["access_control_api"].domain_create(domain_create=body)
 
         if domain:
             transform = transformations.DOMAIN
@@ -391,7 +396,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            domain = await request.app["access_control_api"].domain_update(domain_id, data=body)
+            domain = await request.app["access_control_api"].domain_update(domain_id,
+                                                                           domain_update=body)
 
         if domain:
             transform = transformations.DOMAIN
@@ -400,8 +406,54 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # healthcheck -- Synchronisation point for meld
+    @staticmethod
+    async def healthcheck(request, **kwargs):
+        """
+        The healthcheck for the Management Layer simply returns a structure
+        with the version, timestamp and host name.
+        The health statuses of the backends have been included as well, although
+        they have no effect on whether the management layer is considered healthy
+        or not on its own.
+        :param request: An HttpRequest
+        :returns: result or (result, headers) tuple
+        """
+        try:
+            access_control_health = await request.app["operational_api"].healthcheck()
+            access_control_health = access_control_health.to_dict()
+            for field in ["server_timestamp", "db_timestamp"]:
+                access_control_health[field] = access_control_health[field].isoformat()
+        except Exception as e:
+            access_control_health = {"error": str(e)}
+
+        try:
+            user_data_store_health = await request.app["user_data_api"].healthcheck()
+            user_data_store_health = user_data_store_health.to_dict()
+            for field in ["server_timestamp", "db_timestamp"]:
+                user_data_store_health[field] = user_data_store_health[field].isoformat()
+        except Exception as e:
+            user_data_store_health = {"error": str(e)}
+
+        try:
+            url = settings.AUTHENTICATION_SERVICE_API + "/healthcheck"
+            async with request.app["client_session"].get(url) as resp:
+                authentication_service_health = await resp.json()
+        except Exception as e:
+            authentication_service_health = {"error": str(e)}
+
+        result = {
+            "host": socket.getfqdn(),
+            "server_timestamp": datetime.datetime.now().isoformat(),
+            "version": __version__,
+            "access_control_health": access_control_health,
+            "user_data_store_health": user_data_store_health,
+            "authentication_service_health": authentication_service_health
+        }
+        return result
+
     # invitationdomainrole_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "read")])
     async def invitationdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -412,20 +464,43 @@ class Implementation(AbstractStubClass):
         :param role_id (optional): integer An optional query parameter to filter by role_id
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_roles, _status, headers = await request.app[
+                "access_control_api"].invitationdomainrole_list_with_http_info(**kwargs)
+
+        if invitation_domain_roles:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            invitation_domain_roles = [transform.apply(invitation_domain_role.to_dict())
+                                       for invitation_domain_role in invitation_domain_roles]
+
+        return invitation_domain_roles, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitationdomainrole_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "create")])
     async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_role = await request.app[
+                "access_control_api"].invitationdomainrole_create(
+                invitation_domain_role_create=body)
+
+        if invitation_domain_role:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            result = transform.apply(invitation_domain_role.to_dict())
+            return result
+
+        return None
 
     # invitationdomainrole_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "delete")])
     async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -434,10 +509,15 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitationdomainrole_delete(
+                invitation_id=invitation_id, domain_id=domain_id, role_id=role_id)
+
+        return result
 
     # invitationdomainrole_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "read")])
     async def invitationdomainrole_read(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -446,10 +526,21 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_domain_role = await request.app[
+                "access_control_api"].invitationdomainrole_read(
+                invitation_id=invitation_id, domain_id=domain_id, role_id=role_id)
+
+        if invitation_domain_role:
+            transform = transformations.INVITATION_DOMAIN_ROLE
+            result = transform.apply(invitation_domain_role.to_dict())
+            return result
+
+        return None
 
     # invitation_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "read")])
     async def invitation_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -459,40 +550,77 @@ class Implementation(AbstractStubClass):
         :param invitation_ids (optional): array An optional list of invitation ids
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitations, _status, headers = await request.app[
+                "access_control_api"].invitation_list_with_http_info(**kwargs)
+
+        if invitations:
+            transform = transformations.INVITATION
+            invitations = [transform.apply(invitation.to_dict()) for invitation in invitations]
+
+        return invitations, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitation_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "create")])
     async def invitation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        # The caller of this function is considered the invitor.
+        body["invitor_id"] = request["token"]["sub"]
+
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_create(
+                invitation_create=body)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitation_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "delete")])
     async def invitation_delete(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitation_delete(invitation_id)
+
+        return result
 
     # invitation_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "read")])
     async def invitation_read(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_read(invitation_id)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitation_update -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "update")])
     async def invitation_update(request, body, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -500,10 +628,20 @@ class Implementation(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation = await request.app["access_control_api"].invitation_update(
+                invitation_id, invitation_update=body)
+
+        if invitation:
+            transform = transformations.INVITATION
+            result = transform.apply(invitation.to_dict())
+            return result
+
+        return None
 
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])
     async def invitationsiterole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -514,20 +652,42 @@ class Implementation(AbstractStubClass):
         :param role_id (optional): integer An optional query parameter to filter by role_id
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_roles, _status, headers = await request.app[
+                "access_control_api"].invitationsiterole_list_with_http_info(**kwargs)
+
+        if invitation_site_roles:
+            transform = transformations.INVITATION_SITE_ROLE
+            invitation_site_roles = [transform.apply(invitation_site_role.to_dict())
+                                     for invitation_site_role in invitation_site_roles]
+
+        return invitation_site_roles, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
 
     # invitationsiterole_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "create")])
     async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_role = await request.app[
+                "access_control_api"].invitationsiterole_create(invitation_site_role_create=body)
+
+        if invitation_site_role:
+            transform = transformations.INVITATION_SITE_ROLE
+            result = transform.apply(invitation_site_role.to_dict())
+            return result
+
+        return None
 
     # invitationsiterole_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "delete")])
     async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -536,10 +696,15 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitationsiterole_delete(
+                invitation_id=invitation_id, site_id=site_id, role_id=role_id)
+
+        return result
 
     # invitationsiterole_read -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])
     async def invitationsiterole_read(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -548,7 +713,16 @@ class Implementation(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         :returns: result or (result, headers) tuple
         """
-        raise NotImplementedError()
+        with client_exception_handler():
+            invitation_site_role = await request.app["access_control_api"].invitationsiterole_read(
+                invitation_id=invitation_id, site_id=site_id, role_id=role_id)
+
+        if invitation_site_role:
+            transform = transformations.INVITATION_SITE_ROLE
+            result = transform.apply(invitation_site_role.to_dict())
+            return result
+
+        return None
 
     # get_all_user_roles -- Synchronisation point for meld
     @staticmethod
@@ -589,7 +763,7 @@ class Implementation(AbstractStubClass):
     async def get_site_from_client_token_id(request, client_token_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param client_token_id: string An client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
+        :param client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
         :returns: result or (result, headers) tuple
         """
@@ -618,6 +792,21 @@ class Implementation(AbstractStubClass):
                 raise web.HTTPNotFound(text=str(e))
 
         return result
+
+    # get_sites_under_domain -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:domain", "read"),
+                               ("urn:ge:access_control:site", "read")])
+    async def get_sites_under_domain(request, domain_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param domain_id: integer A unique integer value identifying the domain.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            sites = await request.app["operational_api"].get_sites_under_domain(domain_id)
+            transform = transformations.SITE
+            return [transform.apply(site.to_dict()) for site in sites]
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
@@ -908,47 +1097,46 @@ class Implementation(AbstractStubClass):
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
 
-    # organisational_unit_list -- Synchronisation point for meld
+    # organisation_list -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this
-    async def organisational_unit_list(request, **kwargs):
+    async def organisation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :param organisation_ids (optional): array An optional list of organisation ids
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_units, _status, headers = await request.app[
-                "authentication_service_api"].organisational_unit_list_with_http_info(**kwargs)
+            organisations, _status, headers = await request.app[
+                "authentication_service_api"].organisation_list_with_http_info(**kwargs)
 
-        if organisational_units:
+        if organisations:
             transform = transformations.ORGANISATIONAL_UNIT
-            organisational_units = [transform.apply(organisational_unit.to_dict())
-                                    for organisational_unit in organisational_units]
+            organisations = [transform.apply(organisation.to_dict())
+                             for organisation in organisations]
 
-        return organisational_units, {
+        return organisations, {
             TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
         }
 
-    # organisational_unit_read -- Synchronisation point for meld
+    # organisation_read -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this
-    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+    async def organisation_read(request, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :param organisation_id: integer An integer identifying an organisation
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_unit = await request.app[
-                "authentication_service_api"].organisational_unit_read(
-                organisational_unit_id)
+            organisation = await request.app["authentication_service_api"].organisation_read(
+                organisation_id)
 
-        if organisational_unit:
+        if organisation:
             transform = transformations.ORGANISATIONAL_UNIT
-            result = transform.apply(organisational_unit.to_dict())
+            result = transform.apply(organisation.to_dict())
             return result
 
         return None
@@ -986,7 +1174,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            permission = await request.app["access_control_api"].permission_create(data=body)
+            permission = await request.app["access_control_api"].permission_create(
+                permission_create=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -1039,7 +1228,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            permission = await request.app["access_control_api"].permission_update(permission_id, data=body)
+            permission = await request.app["access_control_api"].permission_update(permission_id,
+                                                                                   permission_update=body)
 
         if permission:
             transform = transformations.PERMISSION
@@ -1176,7 +1366,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            resource = await request.app["access_control_api"].resource_create(data=body)
+            resource = await request.app["access_control_api"].resource_create(resource_create=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -1229,7 +1419,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            resource = await request.app["access_control_api"].resource_update(resource_id, data=body)
+            resource = await request.app["access_control_api"].resource_update(resource_id,
+                                                                               resource_update=body)
 
         if resource:
             transform = transformations.RESOURCE
@@ -1273,7 +1464,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            rrp = await request.app["access_control_api"].roleresourcepermission_create(data=body)
+            rrp = await request.app["access_control_api"].roleresourcepermission_create(
+                role_resource_permission_create=body)
 
         if rrp:
             transform = transformations.ROLE_RESOURCE_PERMISSION
@@ -1353,7 +1545,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            role = await request.app["access_control_api"].role_create(data=body)
+            role = await request.app["access_control_api"].role_create(role_create=body)
 
         if role:
             transform = transformations.ROLE
@@ -1406,7 +1598,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            role = await request.app["access_control_api"].role_update(role_id, data=body)
+            role = await request.app["access_control_api"].role_update(role_id, role_update=body)
 
         if role:
             transform = transformations.ROLE
@@ -1448,7 +1640,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            sds = await request.app["user_data_api"].sitedataschema_create(data=body)
+            sds = await request.app["user_data_api"].sitedataschema_create(
+                site_data_schema_create=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -1501,7 +1694,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            sds = await request.app["user_data_api"].sitedataschema_update(site_id, data=body)
+            sds = await request.app["user_data_api"].sitedataschema_update(
+                site_id, site_data_schema_update=body)
 
         if sds:
             transform = transformations.SITE_DATA_SCHEMA
@@ -1544,7 +1738,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site_role = await request.app["access_control_api"].siterole_create(data=body)
+            site_role = await request.app["access_control_api"].siterole_create(
+                site_role_create=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -1600,7 +1795,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site_role = await request.app["access_control_api"].siterole_update(site_id, role_id, data=body)
+            site_role = await request.app["access_control_api"].siterole_update(
+                site_id, role_id, site_role_update=body)
 
         if site_role:
             transform = transformations.SITE_ROLE
@@ -1643,7 +1839,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site = await request.app["access_control_api"].site_create(data=body)
+            site = await request.app["access_control_api"].site_create(site_create=body)
 
         if site:
             transform = transformations.SITE
@@ -1696,7 +1892,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            site = await request.app["access_control_api"].site_update(site_id, data=body)
+            site = await request.app["access_control_api"].site_update(site_id, site_update=body)
 
         if site:
             transform = transformations.SITE
@@ -1762,7 +1958,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            udr = await request.app["access_control_api"].userdomainrole_create(data=body)
+            udr = await request.app["access_control_api"].userdomainrole_create(
+                user_domain_role_create=body)
 
         if udr:
             transform = transformations.USER_DOMAIN_ROLE
@@ -1831,12 +2028,12 @@ class Implementation(AbstractStubClass):
         :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
         :param msisdn_verified (optional): boolean An optional MSISDN verified filter
         :param nickname (optional): string An optional case insensitive nickname inner match filter
-        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param organisation_id (optional): integer An optional filter on the organisation id
         :param updated_at (optional): string An optional updated_at range filter
         :param username (optional): string An optional case insensitive username inner match filter
         :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
         :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
-        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :param site_ids (optional): array An optional list of site ids
@@ -1898,7 +2095,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            user = await request.app["authentication_service_api"].user_update(user_id, data=body)
+            user = await request.app["authentication_service_api"].user_update(user_id,
+                                                                               user_update=body)
 
         if user:
             transform = transformations.USER
@@ -1963,7 +2161,7 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usd = await request.app["user_data_api"].usersitedata_create(data=body)
+            usd = await request.app["user_data_api"].usersitedata_create(user_site_data_create=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -2021,7 +2219,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id, data=body)
+            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id,
+                                                                         user_site_data_update=body)
 
         if usd:
             transform = transformations.USER_SITE_DATA
@@ -2065,7 +2264,8 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usr = await request.app["access_control_api"].usersiterole_create(data=body)
+            usr = await request.app["access_control_api"].usersiterole_create(
+                user_site_role_create=body)
 
         if usr:
             transform = transformations.USER_SITE_ROLE

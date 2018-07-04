@@ -1064,6 +1064,35 @@ class DomainsDomainId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Healthcheck(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.health_info
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Healthcheck instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.healthcheck(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitationdomainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -1309,6 +1338,7 @@ class Invitations(View, CorsViewMixin):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
+                "readOnly": true,
                 "type": "string",
                 "x-related-info": {
                     "label": "username",
@@ -1318,6 +1348,13 @@ class Invitations(View, CorsViewMixin):
             "last_name": {
                 "maxLength": 100,
                 "type": "string"
+            },
+            "organisation_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisation"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1331,6 +1368,7 @@ class Invitations(View, CorsViewMixin):
             "first_name",
             "last_name",
             "email",
+            "organisation_id",
             "expires_at",
             "created_at",
             "updated_at"
@@ -1858,6 +1896,92 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "client_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "domain_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "is_active": {
+                "type": "boolean"
+            },
+            "name": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "domain_id",
+            "name",
+            "is_active",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsGetSitesUnderDomainDomainId instance
+        """
+        try:
+            # domain_id: integer A unique integer value identifying the domain.
+            domain_id = self.request.match_info["domain_id"]
+            domain_id = int(domain_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.get_sites_under_domain(
+            self.request, domain_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsSiteAndDomainRolesSiteId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.site_and_domain_roles
@@ -2251,7 +2375,7 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class Organisationalunits(View, CorsViewMixin):
+class Organisations(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2294,7 +2418,7 @@ class Organisationalunits(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Organisationalunits instance
+        :param self: A Organisations instance
         """
         try:
             optional_args = {}
@@ -2314,27 +2438,27 @@ class Organisationalunits(View, CorsViewMixin):
                 if 100 < limit:
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
-            # organisational_unit_ids (optional): array An optional list of organisational unit ids
-            organisational_unit_ids = self.request.query.get("organisational_unit_ids", None)
-            if organisational_unit_ids is not None:
-                organisational_unit_ids = organisational_unit_ids.split(",")
-            if organisational_unit_ids:
-                organisational_unit_ids = [int(e) for e in organisational_unit_ids]
-            if organisational_unit_ids is not None:
-                schema = {'name': 'organisational_unit_ids', 'description': 'An optional list of organisational unit ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+            # organisation_ids (optional): array An optional list of organisation ids
+            organisation_ids = self.request.query.get("organisation_ids", None)
+            if organisation_ids is not None:
+                organisation_ids = organisation_ids.split(",")
+            if organisation_ids:
+                organisation_ids = [int(e) for e in organisation_ids]
+            if organisation_ids is not None:
+                schema = {'name': 'organisation_ids', 'description': 'An optional list of organisation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(organisational_unit_ids, schema)
-                optional_args["organisational_unit_ids"] = organisational_unit_ids
+                jsonschema.validate(organisation_ids, schema)
+                optional_args["organisation_ids"] = organisation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
-        result = await Stubs.organisational_unit_list(
+        result = await Stubs.organisation_list(
             self.request, **optional_args)
 
         if type(result) is tuple:
@@ -2347,27 +2471,27 @@ class Organisationalunits(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
+class OrganisationsOrganisationId(View, CorsViewMixin):
 
-    GET_RESPONSE_SCHEMA = schemas.organisationalunit
+    GET_RESPONSE_SCHEMA = schemas.organisation
 
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OrganisationalunitsOrganisationalUnitId instance
+        :param self: A OrganisationsOrganisationId instance
         """
         try:
-            # organisational_unit_id: integer An integer identifying an organisational unit
-            organisational_unit_id = self.request.match_info["organisational_unit_id"]
-            organisational_unit_id = int(organisational_unit_id)
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
-        result = await Stubs.organisational_unit_read(
-            self.request, organisational_unit_id, **optional_args)
+        result = await Stubs.organisation_read(
+            self.request, organisation_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -4674,12 +4798,12 @@ class Users(View, CorsViewMixin):
             "msisdn_verified": {
                 "type": "boolean"
             },
-            "organisational_unit_id": {
+            "organisation_id": {
                 "readOnly": true,
                 "type": "integer",
                 "x-related-info": {
                     "label": "name",
-                    "model": "organisationalunit"
+                    "model": "organisation"
                 }
             },
             "updated_at": {
@@ -4800,11 +4924,11 @@ class Users(View, CorsViewMixin):
             if nickname is not None:
                 jsonschema.validate(nickname, {"type": "string"})
                 optional_args["nickname"] = nickname
-            # organisational_unit_id (optional): integer An optional filter on the organisational unit id
-            organisational_unit_id = self.request.query.get("organisational_unit_id", None)
-            if organisational_unit_id is not None:
-                organisational_unit_id = int(organisational_unit_id)
-                optional_args["organisational_unit_id"] = organisational_unit_id
+            # organisation_id (optional): integer An optional filter on the organisation id
+            organisation_id = self.request.query.get("organisation_id", None)
+            if organisation_id is not None:
+                organisation_id = int(organisation_id)
+                optional_args["organisation_id"] = organisation_id
             # updated_at (optional): string An optional updated_at range filter
             updated_at = self.request.query.get("updated_at", None)
             if updated_at is not None:
@@ -4826,12 +4950,12 @@ class Users(View, CorsViewMixin):
                 tfa_enabled = (tfa_enabled.lower() == "true")
                 jsonschema.validate(tfa_enabled, {"type": "boolean"})
                 optional_args["tfa_enabled"] = tfa_enabled
-            # has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
-            has_organisational_unit = self.request.query.get("has_organisational_unit", None)
-            if has_organisational_unit is not None:
-                has_organisational_unit = (has_organisational_unit.lower() == "true")
-                jsonschema.validate(has_organisational_unit, {"type": "boolean"})
-                optional_args["has_organisational_unit"] = has_organisational_unit
+            # has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
+            has_organisation = self.request.query.get("has_organisation", None)
+            if has_organisation is not None:
+                has_organisation = (has_organisation.lower() == "true")
+                jsonschema.validate(has_organisation, {"type": "boolean"})
+                optional_args["has_organisation"] = has_organisation
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
             order_by = self.request.query.get("order_by", None)
             if order_by is not None:
@@ -4865,7 +4989,7 @@ class Users(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True, 'x-related-info': {'rest_resource_name': 'sites', 'label': 'name'}}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -5907,6 +6031,39 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
+        "health_info": {
+            "description": "Health check response",
+            "properties": {
+                "access_control_health": {
+                    "type": "object"
+                },
+                "authentication_service_health": {
+                    "type": "object"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "server_timestamp": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "user_data_store_health": {
+                    "type": "object"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "host",
+                "server_timestamp",
+                "version",
+                "access_control_health",
+                "user_data_store_health",
+                "authentication_service_health"
+            ],
+            "type": "object"
+        },
         "invitation": {
             "properties": {
                 "created_at": {
@@ -5934,6 +6091,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "invitor_id": {
                     "description": "The user that created the invitation",
                     "format": "uuid",
+                    "readOnly": true,
                     "type": "string",
                     "x-related-info": {
                         "label": "username",
@@ -5943,6 +6101,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -5956,6 +6121,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "first_name",
                 "last_name",
                 "email",
+                "organisation_id",
                 "expires_at",
                 "created_at",
                 "updated_at"
@@ -5976,25 +6142,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string"
                 },
-                "invitor_id": {
-                    "description": "The user that created the invitation",
-                    "format": "uuid",
-                    "type": "string",
-                    "x-related-info": {
-                        "label": "username",
-                        "model": "user"
-                    }
-                },
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 }
             },
             "required": [
-                "invitor_id",
                 "first_name",
                 "last_name",
-                "email"
+                "email",
+                "organisation_id"
             ],
             "type": "object"
         },
@@ -6156,11 +6320,18 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 }
             },
             "type": "object"
         },
-        "organisationalunit": {
+        "organisation": {
             "properties": {
                 "created_at": {
                     "format": "date-time",
@@ -6843,12 +7014,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "msisdn_verified": {
                     "type": "boolean"
                 },
-                "organisational_unit_id": {
+                "organisation_id": {
                     "readOnly": true,
                     "type": "integer",
                     "x-related-info": {
                         "label": "name",
-                        "model": "organisationalunit"
+                        "model": "organisation"
                     }
                 },
                 "updated_at": {
@@ -7325,6 +7496,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "integer"
         },
+        "optional_portal_context_header": {
+            "in": "header",
+            "name": "X-GE-Portal-Context",
+            "required": false,
+            "type": "string"
+        },
         "optional_role_filter": {
             "description": "An optional query parameter to filter by role_id",
             "in": "query",
@@ -7347,10 +7524,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "string"
         },
-        "organisational_unit_id": {
-            "description": "An integer identifying an organisational unit",
+        "organisation_id": {
+            "description": "An integer identifying an organisation",
             "in": "path",
-            "name": "organisational_unit_id",
+            "name": "organisation_id",
             "required": true,
             "type": "integer"
         },
@@ -7469,6 +7646,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -7556,6 +7741,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/admin_note_id",
                     "x-scope": [
@@ -7671,7 +7862,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/clients/{client_id}": {
             "get": {
@@ -7691,13 +7890,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     }
                 },
                 "tags": [
-                    "oidc_provider"
+                    "authentication"
                 ],
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/client_id",
                     "x-scope": [
@@ -7764,7 +7969,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/countries/{country_code}": {
             "get": {
@@ -7788,6 +8001,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/country_code",
                     "x-scope": [
@@ -7855,6 +8074,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -7933,6 +8160,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
@@ -8051,6 +8284,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:domain:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8130,6 +8371,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
@@ -8173,6 +8420,27 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:access_control:domain:update"
                 ]
+            }
+        },
+        "/healthcheck": {
+            "get": {
+                "description": "Get the status of the service.",
+                "operationId": "healthcheck",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The service is operating normally.",
+                        "schema": {
+                            "$ref": "#/definitions/health_info",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "security": []
             }
         },
         "/invitationdomainroles": {
@@ -8240,6 +8508,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8321,6 +8597,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
@@ -8410,6 +8692,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitation:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8488,6 +8778,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
@@ -8599,6 +8895,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -8678,6 +8982,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/invitation_id",
                     "x-scope": [
                         ""
@@ -8727,6 +9037,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -8760,6 +9076,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
@@ -8795,6 +9117,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "description": "A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.",
                     "in": "path",
                     "name": "client_token_id",
@@ -8803,6 +9131,43 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 {
                     "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/ops/get_sites_under_domain/{domain_id}": {
+            "get": {
+                "description": "Get a list of all sites linked directly or indirectly to the specified domain.",
+                "operationId": "get_sites_under_domain",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/site",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
                     ]
@@ -8835,6 +9200,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -8869,6 +9240,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -8905,6 +9282,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -8926,6 +9309,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/user_has_permissions/{user_id}": {
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -9006,6 +9395,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -9046,6 +9441,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -9093,6 +9494,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -9139,6 +9546,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/domain_id",
                     "x-scope": [
                         ""
@@ -9179,6 +9592,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -9186,9 +9605,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
-        "/organisationalunits": {
+        "/organisations": {
             "get": {
-                "operationId": "organisational_unit_list",
+                "operationId": "organisation_list",
                 "parameters": [
                     {
                         "$ref": "#/parameters/optional_offset",
@@ -9204,13 +9623,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     },
                     {
                         "collectionFormat": "csv",
-                        "description": "An optional list of organisational unit ids",
+                        "description": "An optional list of organisation ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
                         "minItems": 1,
-                        "name": "organisational_unit_ids",
+                        "name": "organisation_ids",
                         "required": false,
                         "type": "array",
                         "uniqueItems": true
@@ -9230,7 +9649,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         },
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/organisationalunit",
+                                "$ref": "#/definitions/organisation",
                                 "x-scope": [
                                     ""
                                 ]
@@ -9242,11 +9661,19 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
-        "/organisationalunits/{organisational_unit_id}": {
+        "/organisations/{organisation_id}": {
             "get": {
-                "operationId": "organisational_unit_read",
+                "operationId": "organisation_read",
                 "produces": [
                     "application/json"
                 ],
@@ -9254,7 +9681,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/organisationalunit",
+                            "$ref": "#/definitions/organisation",
                             "x-scope": [
                                 ""
                             ]
@@ -9267,7 +9694,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
-                    "$ref": "#/parameters/organisational_unit_id",
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/organisation_id",
                     "x-scope": [
                         ""
                     ]
@@ -9334,6 +9767,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:permission:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9413,6 +9854,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/permission_id",
                     "x-scope": [
                         ""
@@ -9476,6 +9923,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9500,6 +9953,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9526,6 +9985,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9550,6 +10015,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9576,6 +10047,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9600,6 +10077,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9626,6 +10109,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
                         ""
@@ -9650,6 +10139,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/optional_nocache",
                     "x-scope": [
@@ -9725,6 +10220,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:resource:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9803,6 +10306,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/resource_id",
                     "x-scope": [
@@ -9916,6 +10425,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:roleresourcepermission:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -9994,6 +10511,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/role_id",
                     "x-scope": [
@@ -10074,6 +10597,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:role:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10258,6 +10789,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10336,6 +10875,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10441,6 +10986,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:siterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10519,6 +11072,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10638,6 +11197,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:site:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10717,6 +11284,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -10764,6 +11337,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/sites/{site_id}/activate": {
             "get": {
+                "deprecated": true,
                 "description": "Activate the site so that users can log in to it.",
                 "responses": {
                     "200": {
@@ -10779,6 +11353,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
                         ""
@@ -10788,6 +11368,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/sites/{site_id}/deactivate": {
             "get": {
+                "deprecated": true,
                 "description": "Deactivate the site so that users cannot log in to it.",
                 "responses": {
                     "200": {
@@ -10802,6 +11383,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/site_id",
                     "x-scope": [
@@ -10875,6 +11462,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -10954,6 +11549,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -11007,7 +11608,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "minLength": 2,
                         "name": "country",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "x-related-info": {
+                            "label": "name",
+                            "rest_resource_name": "countries"
+                        }
                     },
                     {
                         "description": "An optional date joined range filter",
@@ -11100,9 +11705,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "description": "An optional filter on the organisational unit id",
+                        "description": "An optional filter on the organisation id",
                         "in": "query",
-                        "name": "organisational_unit_id",
+                        "name": "organisation_id",
                         "required": false,
                         "type": "integer"
                     },
@@ -11141,9 +11746,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "boolean"
                     },
                     {
-                        "description": "An optional filter based on whether a user has an organisational unit or not",
+                        "description": "An optional filter based on whether a user belongs to an organisation or not",
                         "in": "query",
-                        "name": "has_organisational_unit",
+                        "name": "has_organisation",
                         "required": false,
                         "type": "boolean"
                     },
@@ -11184,7 +11789,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "site_ids",
                         "required": false,
                         "type": "array",
-                        "uniqueItems": true
+                        "uniqueItems": true,
+                        "x-related-info": {
+                            "label": "name",
+                            "rest_resource_name": "sites"
+                        }
                     }
                 ],
                 "produces": [
@@ -11216,7 +11825,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-aor-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
-            }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
         },
         "/users/{user_id}": {
             "delete": {
@@ -11257,6 +11874,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11305,6 +11928,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/users/{user_id}/activate": {
             "get": {
+                "deprecated": true,
                 "description": "Activate the user account.",
                 "responses": {
                     "200": {
@@ -11320,6 +11944,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "parameters": [
                 {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
                         ""
@@ -11329,6 +11959,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/users/{user_id}/deactivate": {
             "get": {
+                "deprecated": true,
                 "description": "Deactivate the user account.",
                 "responses": {
                     "200": {
@@ -11343,6 +11974,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11410,6 +12047,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -11488,6 +12133,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
@@ -11605,6 +12256,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
             "post": {
                 "consumes": [
                     "application/json"
@@ -11683,6 +12342,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             },
             "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
                 {
                     "$ref": "#/parameters/user_id",
                     "x-scope": [
