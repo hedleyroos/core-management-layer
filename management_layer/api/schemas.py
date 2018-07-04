@@ -519,7 +519,7 @@ invitation = json.loads("""
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         },
         "updated_at": {
@@ -566,7 +566,7 @@ invitation_create = json.loads("""
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         }
     },
@@ -756,7 +756,7 @@ invitation_update = json.loads("""
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         }
     },
@@ -764,7 +764,7 @@ invitation_update = json.loads("""
 }
 """)
 
-organisationalunit = json.loads("""
+organisation = json.loads("""
 {
     "properties": {
         "created_at": {
@@ -1525,12 +1525,12 @@ user = json.loads("""
         "msisdn_verified": {
             "type": "boolean"
         },
-        "organisational_unit_id": {
+        "organisation_id": {
             "readOnly": true,
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         },
         "updated_at": {

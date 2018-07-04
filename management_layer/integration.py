@@ -1097,47 +1097,46 @@ class Implementation(AbstractStubClass):
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
 
-    # organisational_unit_list -- Synchronisation point for meld
+    # organisation_list -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this
-    async def organisational_unit_list(request, **kwargs):
+    async def organisation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :param organisation_ids (optional): array An optional list of organisation ids
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_units, _status, headers = await request.app[
-                "authentication_service_api"].organisational_unit_list_with_http_info(**kwargs)
+            organisations, _status, headers = await request.app[
+                "authentication_service_api"].organisation_list_with_http_info(**kwargs)
 
-        if organisational_units:
+        if organisations:
             transform = transformations.ORGANISATIONAL_UNIT
-            organisational_units = [transform.apply(organisational_unit.to_dict())
-                                    for organisational_unit in organisational_units]
+            organisations = [transform.apply(organisation.to_dict())
+                             for organisation in organisations]
 
-        return organisational_units, {
+        return organisations, {
             TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
         }
 
-    # organisational_unit_read -- Synchronisation point for meld
+    # organisation_read -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this
-    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+    async def organisation_read(request, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :param organisation_id: integer An integer identifying an organisation
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_unit = await request.app[
-                "authentication_service_api"].organisational_unit_read(
-                organisational_unit_id)
+            organisation = await request.app["authentication_service_api"].organisation_read(
+                organisation_id)
 
-        if organisational_unit:
+        if organisation:
             transform = transformations.ORGANISATIONAL_UNIT
-            result = transform.apply(organisational_unit.to_dict())
+            result = transform.apply(organisation.to_dict())
             return result
 
         return None
@@ -2029,12 +2028,12 @@ class Implementation(AbstractStubClass):
         :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
         :param msisdn_verified (optional): boolean An optional MSISDN verified filter
         :param nickname (optional): string An optional case insensitive nickname inner match filter
-        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param organisation_id (optional): integer An optional filter on the organisation id
         :param updated_at (optional): string An optional updated_at range filter
         :param username (optional): string An optional case insensitive username inner match filter
         :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
         :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
-        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :param site_ids (optional): array An optional list of site ids

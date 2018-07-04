@@ -194,10 +194,10 @@ parameters:
     minLength: 2
     maxLength: 2
 
-  organisational_unit_id:
-    description: An integer identifying an organisational unit
+  organisation_id:
+    description: An integer identifying an organisation
     in: path
-    name: organisational_unit_id
+    name: organisation_id
     required: true
     type: integer
 
@@ -796,7 +796,7 @@ definitions:
       organisation_id:
         type: integer
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       expires_at:
         type: string
@@ -835,7 +835,7 @@ definitions:
       organisation_id:
         type: integer
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       expires_at:
         type: string
@@ -861,7 +861,7 @@ definitions:
       organisation_id:
         type: integer
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       expires_at:
         type: string
@@ -1284,7 +1284,7 @@ definitions:
       - client_id
       - response_type
 
-  organisationalunit:
+  organisation:
     type: object
     properties:
       id:
@@ -1370,11 +1370,11 @@ definitions:
           model: country
           field: code
           label: name
-      organisational_unit_id:
+      organisation_id:
         type: integer
         readOnly: true
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       created_at:
         type: string
@@ -3601,16 +3601,16 @@ paths:
       tags:
         - authentication
 
-  /organisationalunits:
+  /organisations:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
     get:
-      operationId: organisational_unit_list
+      operationId: organisation_list
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
-        - name: organisational_unit_ids
-          description: An optional list of organisational unit ids
+        - name: organisation_ids
+          description: An optional list of organisation ids
           in: query
           type: array
           items:
@@ -3627,7 +3627,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/organisationalunit'
+              $ref: '#/definitions/organisation'
           headers:
             X-Total-Count:
               type: integer
@@ -3636,19 +3636,19 @@ paths:
       tags:
         - authentication
 
-  /organisationalunits/{organisational_unit_id}:
+  /organisations/{organisation_id}:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
-      - $ref: '#/parameters/organisational_unit_id'
+      - $ref: '#/parameters/organisation_id'
     get:
-      operationId: organisational_unit_read
+      operationId: organisation_read
       produces:
         - application/json
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/organisationalunit'
+            $ref: '#/definitions/organisation'
       tags:
         - authentication
 
@@ -3746,8 +3746,8 @@ paths:
           required: false
           type: string
           minLength: 3
-        - name: organisational_unit_id
-          description: An optional filter on the organisational unit id
+        - name: organisation_id
+          description: An optional filter on the organisation id
           in: query
           required: false
           type: integer
@@ -3776,8 +3776,8 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: has_organisational_unit
-          description: An optional filter based on whether a user has an organisational unit or not
+        - name: has_organisation
+          description: An optional filter based on whether a user belongs to an organisation or not
           in: query
           required: false
           type: boolean
