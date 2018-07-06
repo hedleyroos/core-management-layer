@@ -7450,7 +7450,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "in": "query",
             "name": "domain_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "domains"
+            }
         },
         "optional_invitation_filter": {
             "description": "An optional query parameter to filter by invitation_id",
@@ -7494,7 +7498,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "in": "query",
             "name": "parent_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "domains"
+            }
         },
         "optional_portal_context_header": {
             "in": "header",
@@ -7507,14 +7515,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "in": "query",
             "name": "role_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label",
+                "rest_resource_name": "roles"
+            }
         },
         "optional_site_filter": {
             "description": "An optional query parameter to filter by site_id",
             "in": "query",
             "name": "site_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "sites"
+            }
         },
         "optional_user_filter": {
             "description": "An optional query parameter to filter by user_id",

@@ -25,7 +25,8 @@ def require_permissions(
     resource_permissions: ResourcePermissions,
     nocache: bool = False,
     request_field: typing.Union[int, str] = 0,
-    target_user_field: typing.Union[int, str] = None
+    target_user_field: typing.Union[int, str] = None,
+    allow_for_management_portal = False
 ) -> typing.Callable:
     """
     This function is used as a decorator to restrict functions by specifying
@@ -104,6 +105,16 @@ def require_permissions(
        Portal, then use the context specified to look up the user's permissions. (If the specified
        context does not exist, return BadRequest).
 
+    IMPORTANT: The Management Portal needs to be able to perform certain calls (list sites and
+    domains, for instance) even if the user does not have explicit permissions to do this.
+    For API calls like these, use the `allow_for_manangement_portal` flag, e.g.
+    ```
+    @require_permissions(all, [("urn:ge:access_control:domain", "list")],
+                         allow_for_management_portal=True)
+    def domain_list(request, **kwargs):
+        pass
+    ```
+
     :param operator: any or all
     :param resource_permissions: The resource permissions required
     :param nocache: Bypass the cache if True
@@ -111,6 +122,8 @@ def require_permissions(
         argument or the name of the keyword argument identifying the request parameter.
     :param target_user_field: An integer or string identifying either the positional
         argument or the name of the keyword argument identifying the target user parameter.
+    :param allow_for_management_portal: A boolean flag indicating whether access is implied when the
+        request is made by the management portal
     :raises: Forbidden if the user does not have the required permissions.
     """
     if operator not in [any, all]:
@@ -129,12 +142,14 @@ def require_permissions(
 
             user_id, site_id = _get_user_and_site(request)
 
-            # Start off with the assumption that the function call is not allowed
-            allowed = False
+            # Start by checking if we should allow the call if it was made from the
+            # Management Portal and whether the call was in fact made by the Management Portal.
+            allowed = allow_for_management_portal and \
+                      request["token"]["aud"] == MANAGEMENT_PORTAL_CLIENT_ID
 
             # If the target user field is specified and the target user is the user
             # that is making the request, then we allow the function call.
-            if target_user_field is not None:
+            if not allowed and target_user_field is not None:
                 # For some calls the specified field may be optional
                 try:
                     target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
