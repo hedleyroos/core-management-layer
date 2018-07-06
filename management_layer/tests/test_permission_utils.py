@@ -1,3 +1,4 @@
+from copy import copy
 from unittest.mock import patch, Mock
 from uuid import uuid1
 
@@ -93,6 +94,31 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
 
         # Allow the call when the caller is also the target user.
         self.assertTrue(await example_call_with_user(self.mocked_request, str(self.user)))
+
+    @patch("management_layer.permission.utils.get_user_roles_for_site")
+    @unittest_run_loop
+    async def test_management_portal_allowed_permission(self, mocked_function):
+        """
+        When a permission decorator specifies that the Management Portal should be
+        allowed to make the request, even if the user does not have the permission, the
+        permission is granted.
+        """
+        @require_permissions(any, [], nocache=True, allow_for_management_portal=True)
+        def example_call(_request):
+            # The caller is also the target user
+            return _request["token"]["aud"] == MANAGEMENT_PORTAL_CLIENT_ID
+
+        mocked_function.side_effect = make_coroutine_returning(set())  # No roles
+
+        # This call is not allowed because the request is not made from the Management Portal
+        with self.assertRaises(HTTPForbidden):
+            await example_call(self.mocked_request)
+
+        mocked_request_from_management_portal = copy(self.mocked_request)
+        mocked_request_from_management_portal["token"]["aud"] = MANAGEMENT_PORTAL_CLIENT_ID
+
+        # Allow the call when the call is made from the Management Portal
+        self.assertTrue(await example_call(mocked_request_from_management_portal))
 
     @unittest_run_loop
     async def test_name_and_docstring(self):
