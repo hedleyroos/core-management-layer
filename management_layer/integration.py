@@ -311,7 +311,7 @@ class Implementation(AbstractStubClass):
 
     # domain_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
+    # GEINFRA-31: Any user should be able to list the domains. There is no sensitive information.
     async def domain_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -368,7 +368,7 @@ class Implementation(AbstractStubClass):
 
     # domain_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
+    # GEINFRA-31: Any user should be able to read a domain. There is no sensitive information.
     async def domain_read(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1807,7 +1807,7 @@ class Implementation(AbstractStubClass):
 
     # site_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:site", "read")])
+    # GEINFRA-31: Any user should be able to list sites. There is no sensitive information.
     async def site_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1864,7 +1864,7 @@ class Implementation(AbstractStubClass):
 
     # site_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:site", "read")])
+    # GEINFRA-31: Any user should be able to read a site. There is no sensitive information.
     async def site_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
