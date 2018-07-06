@@ -95,7 +95,7 @@ def client_exception_handler():
             headers={"content-type": "application/json"},
             text=json.dumps({
                 "exception_type": "{}.{}".format(cre.__module__, cre.__class__.__name__),
-                "status": cre.code,
+                "status": cre.status,
                 "reason": cre.message,
                 "body": str(cre)
             }))
@@ -190,17 +190,39 @@ TEST_CLIENT = {
     "reuse_consent": True
 }
 
+TEST_USER = {
+    "id": "b001e842-4994-4c74-8db1-bb2caa42298a",
+    "username": "username",
+    "first_name": "first_name",
+    "last_name": "last_name",
+    "email": "email@example.com",
+    "is_active": True,
+    "date_joined": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "last_login": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "birth_date": datetime.datetime(2000, 1, 1, 0, 0, 0),
+    "country_code": "za",
+    "organisation_id": 1,
+    "created_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "updated_at": datetime.datetime(2018, 1, 1, 0, 0, 0)
+}
 
-async def return_site(*args, **kwargs):
+
+async def return_sites(*args, **kwargs):
     """
-    Some tests require a test site to be returned
+    Some tests require a test site list to be returned
     """
     return [Site(**TEST_SITE)]
 
 
-async def return_client(*args, **kwargs):
+async def return_clients(*args, **kwargs):
     """
-    Some tests require a test client to be returned
+    Some tests require a test client list to be returned
     """
     return [Client(**TEST_CLIENT)]
 
+
+async def return_user(*args, **kwargs):
+    """
+    Some tests require a test user to be returned
+    """
+    return User(**TEST_USER)
