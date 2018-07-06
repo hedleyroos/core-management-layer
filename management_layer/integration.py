@@ -798,7 +798,8 @@ class Implementation(AbstractStubClass):
     # get_sites_under_domain -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
-                               ("urn:ge:access_control:site", "read")])
+                               ("urn:ge:access_control:site", "read")],
+                         allow_for_management_portal=True)
     async def get_sites_under_domain(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1962,12 +1963,21 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            udr = await request.app["access_control_api"].userdomainrole_create(
+            user = await request.app["authentication_service_api"].user_read(user_id=body[
+                "user_id"])
+
+            if not user:
+                raise web.HTTPForbidden(text="The target user does not exist")
+
+            if user.organisation_id is None:
+                raise web.HTTPForbidden(text="The target user is not linked to an organisation")
+
+            user_domain_role = await request.app["access_control_api"].userdomainrole_create(
                 user_domain_role_create=body)
 
-        if udr:
+        if user_domain_role:
             transform = transformations.USER_DOMAIN_ROLE
-            result = transform.apply(udr.to_dict())
+            result = transform.apply(user_domain_role.to_dict())
             return result
 
         return None
@@ -2268,12 +2278,21 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usr = await request.app["access_control_api"].usersiterole_create(
+            user = await request.app["authentication_service_api"].user_read(user_id=body[
+                "user_id"])
+
+            if not user:
+                raise web.HTTPForbidden(text="The target user does not exist")
+
+            if user.organisation_id is None:
+                raise web.HTTPForbidden(text="The target user is not linked to an organisation")
+
+            user_site_role = await request.app["access_control_api"].usersiterole_create(
                 user_site_role_create=body)
 
-        if usr:
+        if user_site_role:
             transform = transformations.USER_SITE_ROLE
-            result = transform.apply(usr.to_dict())
+            result = transform.apply(user_site_role.to_dict())
             return result
 
         return None
