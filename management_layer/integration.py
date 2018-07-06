@@ -798,7 +798,8 @@ class Implementation(AbstractStubClass):
     # get_sites_under_domain -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
-                               ("urn:ge:access_control:site", "read")])
+                               ("urn:ge:access_control:site", "read")],
+                         allow_for_management_portal=True)
     async def get_sites_under_domain(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
