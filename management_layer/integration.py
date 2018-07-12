@@ -1116,13 +1116,46 @@ class Implementation(AbstractStubClass):
                 "authentication_service_api"].organisation_list_with_http_info(**kwargs)
 
         if organisations:
-            transform = transformations.ORGANISATIONAL_UNIT
+            transform = transformations.ORGANISATION
             organisations = [transform.apply(organisation.to_dict())
                              for organisation in organisations]
 
         return organisations, {
             TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
         }
+
+    # organisation_create -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisation = await request.app["authentication_service_api"].organisation_create(
+                organisation_create=body)
+
+        if organisation:
+            transform = transformations.ORGANISATION
+            result = transform.apply(organisation.to_dict())
+            return result
+
+        return None
+
+    # organisation_delete -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["authentication_service_api"].organisation_delete(
+                organisation_id)
+
+        return result
 
     # organisation_read -- Synchronisation point for meld
     @staticmethod
@@ -1138,7 +1171,29 @@ class Implementation(AbstractStubClass):
                 organisation_id)
 
         if organisation:
-            transform = transformations.ORGANISATIONAL_UNIT
+            transform = transformations.ORGANISATION
+            result = transform.apply(organisation.to_dict())
+            return result
+
+        return None
+
+    # organisation_update -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisation = await request.app["authentication_service_api"].organisation_update(
+                organisation_id=organisation_id,
+                organisation_update=body
+            )
+
+        if organisation:
+            transform = transformations.ORGANISATION
             result = transform.apply(organisation.to_dict())
             return result
 

@@ -532,11 +532,42 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # organisation_create -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisation_delete -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # organisation_read -- Synchronisation point for meld
     @staticmethod
     async def organisation_read(request, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisation_update -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
         :param organisation_id: integer An integer identifying an organisation
         :returns: result or (result, headers) tuple
         """
@@ -2560,9 +2591,55 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def organisation_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.organisation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def organisation_read(request, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        """
+        response_schema = schemas.organisation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
         :param organisation_id: integer An integer identifying an organisation
         """
         response_schema = schemas.organisation

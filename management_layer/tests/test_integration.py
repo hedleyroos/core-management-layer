@@ -75,7 +75,7 @@ RESOURCES = {
     "clients": Resource(1, schemas.client, None, None),
     "users": Resource(1, schemas.user, None, schemas.user_update),
     "countries": Resource(1, schemas.country, None, None),
-    "organisations": Resource(1, schemas.organisation, None, None),
+    "organisations": Resource(1, schemas.organisation, schemas.organisation_create, schemas.organisation_update),
 }
 SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
