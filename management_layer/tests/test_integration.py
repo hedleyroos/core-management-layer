@@ -810,6 +810,22 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 403)
 
     @unittest_run_loop
+    async def test_purge_expired_invitations_async(self):
+        response = await self.client.get("/invitations/purge/expired")
+        await self.assertStatus(response, 200)
+        purged_invitations = await response.json()
+        validate_response_schema(purged_invitations, schemas.purged_invitations)
+        self.assertEqual(purged_invitations["mode"], "asynchronous")
+
+    @unittest_run_loop
+    async def test_purge_expired_invitations_sync(self):
+        response = await self.client.get("/invitations/purge/expired?synchronous_mode=true")
+        await self.assertStatus(response, 200)
+        purged_invitations = await response.json()
+        validate_response_schema(purged_invitations, schemas.purged_invitations)
+        self.assertEqual(purged_invitations["mode"], "synchronous")
+
+    @unittest_run_loop
     async def test_healthcheck(self):
         response = await self.client.get(
             # Overwrite the proper auth header set on the client.

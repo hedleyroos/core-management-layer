@@ -129,6 +129,22 @@ parameters:
     type: string
     format: uuid
 
+  optional_cutoff_date:
+    description: An optional cutoff date to purge invites before this date
+    in: query
+    name: cutoff_date
+    required: false
+    type: string
+    format: date
+
+  synchronous_mode:
+    description: Change the mode of the call to synchronous.
+    in: query
+    name: synchronous_mode
+    required: false
+    type: boolean
+    default: false
+
   domain_id:
     description: A unique integer value identifying the domain.
     in: path
@@ -1547,6 +1563,19 @@ definitions:
     - access_control_health
     - user_data_store_health
     - authentication_service_health
+
+  purged_invitations:
+    type: object
+    properties:
+      mode:
+        type: string
+        enum:
+          - asynchronous
+          - synchronous
+      amount:
+        type: integer
+    required:
+      - mode
 
 paths:
   /healthcheck:
@@ -3653,6 +3682,24 @@ paths:
           description: 'An invitation email was successfully queued for sending.'
       tags:
         - authentication
+
+  /invitations/purge/expired:
+    get:
+      operationId: purge_expired_invitations
+      parameters:
+        - $ref: '#/parameters/synchronous_mode'
+        - $ref: '#/parameters/optional_cutoff_date'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Expired Invitations Purged'
+          schema:
+            $ref: '#/definitions/purged_invitations'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
 
   /organisations:
     parameters:

@@ -829,6 +829,27 @@ class Implementation(AbstractStubClass):
             transform = transformations.SITE
             return [transform.apply(site.to_dict()) for site in sites]
 
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        synchronous_mode = kwargs.get("synchronous_mode", False)
+        cutoff_date = kwargs.get("cutoff_date", None)
+        with client_exception_handler():
+            request_kwargs = {
+                "cutoff_date": cutoff_date
+            } if cutoff_date else {}
+            api = "operational_api" if synchronous_mode else "authentication_service_api"
+            response = await request.app[api].purge_expired_invitations(**request_kwargs)
+            purged_invitations = response.to_dict() if synchronous_mode else {}
+            purged_invitations["mode"] = "synchronous" if synchronous_mode else "asynchronous"
+            return purged_invitations
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),

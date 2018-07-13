@@ -899,6 +899,23 @@ permission_update = json.loads("""
 }
 """)
 
+purged_invitations = json.loads("""
+{
+    "properties": {
+        "amount": {
+            "type": "integer"
+        },
+        "mode": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "mode"
+    ],
+    "type": "object"
+}
+""")
+
 resource = json.loads("""
 {
     "properties": {

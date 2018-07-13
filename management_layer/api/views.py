@@ -1616,6 +1616,46 @@ class InvitationsInvitationIdSend(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class InvitationsPurgeExpired(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.purged_invitations
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsPurgeExpired instance
+        """
+        try:
+            optional_args = {}
+            # synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+            synchronous_mode = self.request.query.get("synchronous_mode", None)
+            if synchronous_mode is not None:
+                synchronous_mode = (synchronous_mode.lower() == "true")
+                jsonschema.validate(synchronous_mode, {"type": "boolean"})
+                optional_args["synchronous_mode"] = synchronous_mode
+            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
+            cutoff_date = self.request.query.get("cutoff_date", None)
+            if cutoff_date is not None:
+                jsonschema.validate(cutoff_date, {"type": "string"})
+                optional_args["cutoff_date"] = cutoff_date
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.purge_expired_invitations(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitationsiteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -6590,6 +6630,20 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
+        "purged_invitations": {
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mode"
+            ],
+            "type": "object"
+        },
         "resource": {
             "properties": {
                 "created_at": {
@@ -7613,6 +7667,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": true,
             "type": "string"
         },
+        "optional_cutoff_date": {
+            "description": "An optional cutoff date to purge invites before this date",
+            "format": "date",
+            "in": "query",
+            "name": "cutoff_date",
+            "required": false,
+            "type": "string"
+        },
         "optional_domain_filter": {
             "description": "An optional query parameter to filter by domain_id",
             "in": "query",
@@ -7742,6 +7804,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "site_id",
             "required": true,
             "type": "integer"
+        },
+        "synchronous_mode": {
+            "default": false,
+            "description": "Change the mode of the call to synchronous.",
+            "in": "query",
+            "name": "synchronous_mode",
+            "required": false,
+            "type": "boolean"
         },
         "user_id": {
             "description": "A UUID value identifying the user.",
@@ -8920,6 +8990,45 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ],
                 "x-aor-permissions": [
                     "urn:ge:access_control:invitation:create"
+                ]
+            }
+        },
+        "/invitations/purge/expired": {
+            "get": {
+                "operationId": "purge_expired_invitations",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/synchronous_mode",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_cutoff_date",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Expired Invitations Purged",
+                        "schema": {
+                            "$ref": "#/definitions/purged_invitations",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
                 ]
             }
         },
