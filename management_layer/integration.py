@@ -641,6 +641,24 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # invitation_send -- Synchronisation point for meld
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string
+        :param language (optional): string
+        :returns: result or (result, headers) tuple
+        """
+        language = kwargs.get("language")
+        with client_exception_handler():
+            # Note that invitations are sent by the Authentication Service and not
+            # the Access Control component.
+            result = await request.app[
+                "authentication_service_api"].invitation_send(invitation_id, language=language)
+
+        return result
+
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])

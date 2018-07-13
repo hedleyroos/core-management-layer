@@ -334,6 +334,17 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_send -- Synchronisation point for meld
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string 
+        :param language (optional): string 
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_list(request, **kwargs):
@@ -2092,6 +2103,22 @@ class MockedStubClass(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         """
         response_schema = schemas.invitation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string 
+        :param language (optional): string 
+        """
+        response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
