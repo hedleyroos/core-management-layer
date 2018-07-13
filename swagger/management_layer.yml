@@ -137,6 +137,14 @@ parameters:
     type: string
     format: date
 
+  synchronous_mode:
+    description: Change the mode of the call to synchronous.
+    in: query
+    name: synchronous_mode
+    required: false
+    type: boolean
+    default: false
+
   domain_id:
     description: A unique integer value identifying the domain.
     in: path
@@ -1559,10 +1567,12 @@ definitions:
   purged_invitations:
     type: object
     properties:
+      mode:
+        type: string
       amount:
         type: integer
     required:
-      - amount
+      - mode
 
 paths:
   /healthcheck:
@@ -3670,10 +3680,11 @@ paths:
       tags:
         - authentication
 
-  /invitations/purge/ac:
+  /invitations/purge/expired:
     get:
-      operationId: purge_expired_invitations_ac
+      operationId: purge_expired_invitations
       parameters:
+        - $ref: '#/parameters/synchronous_mode'
         - $ref: '#/parameters/optional_cutoff_date'
       produces:
         - application/json
@@ -3682,19 +3693,6 @@ paths:
           description: 'Expired Invitations Purged'
           schema:
             $ref: '#/definitions/purged_invitations'
-        403:
-          description: 'Forbidden'
-      tags:
-        - operational
-
-  /invitations/purge/as:
-    get:
-      operationId: purge_expired_invitations_as
-      parameters:
-        - $ref: '#/parameters/optional_cutoff_date'
-      responses:
-        200:
-          description: 'Began task to purge invitations.'
         403:
           description: 'Forbidden'
       tags:

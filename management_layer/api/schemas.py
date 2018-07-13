@@ -904,10 +904,13 @@ purged_invitations = json.loads("""
     "properties": {
         "amount": {
             "type": "integer"
+        },
+        "mode": {
+            "type": "string"
         }
     },
     "required": [
-        "amount"
+        "mode"
     ],
     "type": "object"
 }
