@@ -818,3 +818,13 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertEqual(response.status, 200)
         response_body = await response.json()
         validate_response_schema(response_body, schemas.health_info)
+
+    @unittest_run_loop
+    async def test_invitation_send(self):
+        invitation_id = uuid.uuid4()
+        response = await self.client.get(
+            f"/invitations/{invitation_id.hex}/send"
+        )
+        self.assertEqual(response.status, 200)
+        response_body = await response.json()
+        self.assertEqual(response_body, None)
