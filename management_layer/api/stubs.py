@@ -433,9 +433,9 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
-    # purge_expired_invitations -- Synchronisation point for meld
+    # purge_expired_invitations_as -- Synchronisation point for meld
     @staticmethod
-    async def purge_expired_invitations(request, **kwargs):
+    async def purge_expired_invitations_as(request, **kwargs):
         """
         :param request: An HttpRequest
         :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
@@ -2365,7 +2365,7 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def purge_expired_invitations(request, **kwargs):
+    async def purge_expired_invitations_as(request, **kwargs):
         """
         :param request: An HttpRequest
         :param cutoff_date (optional): string An optional cutoff date to purge invites before this date

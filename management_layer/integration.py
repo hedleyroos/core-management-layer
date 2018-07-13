@@ -821,13 +821,16 @@ class Implementation(AbstractStubClass):
         """
         cutoff_date = kwargs.get("cutoff_date", None)
         with client_exception_handler():
+            request_kwargs = {
+                "cutoff_date": cutoff_date
+            } if cutoff_date else {}
             purged_invitations = await request.app["operational_api"].purge_expired_invitations(
-                cutoff_date=cutoff_date)
+                **request_kwargs)
             return purged_invitations.to_dict()
 
     # purge_expired_invitations -- Synchronisation point for meld
     @staticmethod
-    async def purge_expired_invitations(request, **kwargs):
+    async def purge_expired_invitations_as(request, **kwargs):
         """
         :param request: An HttpRequest
         :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
@@ -835,8 +838,11 @@ class Implementation(AbstractStubClass):
         """
         cutoff_date = kwargs.get("cutoff_date", None)
         with client_exception_handler():
+            request_kwargs = {
+                "cutoff_date": cutoff_date
+            } if cutoff_date else {}
             await request.app["authentication_service_api"].purge_expired_invitations(
-                cutoff_date=cutoff_date)
+                **request_kwargs)
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod

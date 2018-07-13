@@ -2007,7 +2007,7 @@ paths:
 
   /ops/purge_expired_invitations_as:
     get:
-      operationId: purge_expired_invitations
+      operationId: purge_expired_invitations_as
       parameters:
         - $ref: '#/parameters/optional_cutoff_date'
       responses:

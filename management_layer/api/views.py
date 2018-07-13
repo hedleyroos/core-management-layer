@@ -2037,7 +2037,7 @@ class OpsPurgeExpiredInvitationsAs(View, CorsViewMixin):
         except ValueError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
-        result = await Stubs.purge_expired_invitations(
+        result = await Stubs.purge_expired_invitations_as(
             self.request, **optional_args)
 
         if type(result) is tuple:
@@ -9443,7 +9443,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/purge_expired_invitations_as": {
             "get": {
-                "operationId": "purge_expired_invitations",
+                "operationId": "purge_expired_invitations_as",
                 "parameters": [
                     {
                         "$ref": "#/parameters/optional_cutoff_date",
