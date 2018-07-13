@@ -423,6 +423,26 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # purge_expired_invitations_ac -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations_ac(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_site_and_domain_roles(request, site_id, **kwargs):
@@ -2321,6 +2341,36 @@ class MockedStubClass(AbstractStubClass):
     },
     "type": "array"
 }""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def purge_expired_invitations_ac(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        """
+        response_schema = schemas.purged_invitations
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        """
+        response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

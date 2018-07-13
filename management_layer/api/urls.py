@@ -52,6 +52,8 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/ops/user_domain_permissions/{user_id}/{domain_id}", views.OpsUserDomainPermissionsUserIdDomainId)
     app.router.add_view(r"/ops/site_role_labels_aggregated/{site_id}", views.OpsSiteRoleLabelsAggregatedSiteId)
     app.router.add_view(r"/ops/site_and_domain_roles/{site_id}", views.OpsSiteAndDomainRolesSiteId)
+    app.router.add_view(r"/ops/purge_expired_invitations_as", views.OpsPurgeExpiredInvitationsAs)
+    app.router.add_view(r"/ops/purge_expired_invitations_ac", views.OpsPurgeExpiredInvitationsAc)
     app.router.add_view(r"/ops/get_sites_under_domain/{domain_id}", views.OpsGetSitesUnderDomainDomainId)
     app.router.add_view(r"/ops/get_site_from_client_token_id/{client_token_id}", views.OpsGetSiteFromClientTokenIdClientTokenId)
     app.router.add_view(r"/ops/domain_roles/{domain_id}", views.OpsDomainRolesDomainId)

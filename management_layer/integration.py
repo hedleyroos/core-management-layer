@@ -811,6 +811,33 @@ class Implementation(AbstractStubClass):
             transform = transformations.SITE
             return [transform.apply(site.to_dict()) for site in sites]
 
+    # purge_expired_invitations_ac -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations_ac(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        cutoff_date = kwargs.get("cutoff_date", None)
+        with client_exception_handler():
+            purged_invitations = await request.app["operational_api"].purge_expired_invitations(
+                cutoff_date=cutoff_date)
+            return purged_invitations.to_dict()
+
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        cutoff_date = kwargs.get("cutoff_date", None)
+        with client_exception_handler():
+            await request.app["authentication_service_api"].purge_expired_invitations(
+                cutoff_date=cutoff_date)
+
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
@@ -1099,6 +1126,8 @@ class Implementation(AbstractStubClass):
             # Get access control response.
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
+
+
 
     # organisation_list -- Synchronisation point for meld
     @staticmethod

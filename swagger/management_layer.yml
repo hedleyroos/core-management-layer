@@ -129,6 +129,14 @@ parameters:
     type: string
     format: uuid
 
+  optional_cutoff_date:
+    description: An optional cutoff date to purge invites before this date
+    in: query
+    name: cutoff_date
+    required: false
+    type: string
+    format: date
+
   domain_id:
     description: A unique integer value identifying the domain.
     in: path
@@ -1548,6 +1556,14 @@ definitions:
     - user_data_store_health
     - authentication_service_health
 
+  purged_invitations:
+    type: object
+    properties:
+      amount:
+        type: integer
+    required:
+      - amount
+
 paths:
   /healthcheck:
     get:
@@ -1971,6 +1987,37 @@ paths:
           description: 'User not found'
       tags:
         - operational
+
+  /ops/purge_expired_invitations_ac:
+    get:
+      operationId: purge_expired_invitations_ac
+      parameters:
+        - $ref: '#/parameters/optional_cutoff_date'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Expired Invitations Purged'
+          schema:
+            $ref: '#/definitions/purged_invitations'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
+  /ops/purge_expired_invitations_as:
+    get:
+      operationId: purge_expired_invitations
+      parameters:
+        - $ref: '#/parameters/optional_cutoff_date'
+      responses:
+        200:
+          description: 'Began task to purge invitations.'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
 
   /domains:
     parameters:
