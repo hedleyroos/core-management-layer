@@ -652,8 +652,10 @@ class Implementation(AbstractStubClass):
         """
         language = kwargs.get("language")
         with client_exception_handler():
+            # Note that invitations are sent by the Authentication Service and not
+            # the Access Control component.
             result = await request.app[
-                "access_control_api"].invitation_send(invitation_id, language=language)
+                "authentication_service_api"].invitation_send(invitation_id, language=language)
 
         return result
 
