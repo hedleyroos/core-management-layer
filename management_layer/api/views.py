@@ -1616,6 +1616,74 @@ class InvitationsInvitationIdSend(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class InvitationsPurgeAc(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.purged_invitations
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsPurgeAc instance
+        """
+        try:
+            optional_args = {}
+            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
+            cutoff_date = self.request.query.get("cutoff_date", None)
+            if cutoff_date is not None:
+                jsonschema.validate(cutoff_date, {"type": "string"})
+                optional_args["cutoff_date"] = cutoff_date
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.purge_expired_invitations_ac(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class InvitationsPurgeAs(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsPurgeAs instance
+        """
+        try:
+            optional_args = {}
+            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
+            cutoff_date = self.request.query.get("cutoff_date", None)
+            if cutoff_date is not None:
+                jsonschema.validate(cutoff_date, {"type": "string"})
+                optional_args["cutoff_date"] = cutoff_date
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.purge_expired_invitations_as(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitationsiteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -2008,74 +2076,6 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
 
         result = await Stubs.get_sites_under_domain(
             self.request, domain_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class OpsPurgeExpiredInvitationsAc(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.purged_invitations
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OpsPurgeExpiredInvitationsAc instance
-        """
-        try:
-            optional_args = {}
-            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
-            cutoff_date = self.request.query.get("cutoff_date", None)
-            if cutoff_date is not None:
-                jsonschema.validate(cutoff_date, {"type": "string"})
-                optional_args["cutoff_date"] = cutoff_date
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.purge_expired_invitations_ac(
-            self.request, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class OpsPurgeExpiredInvitationsAs(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OpsPurgeExpiredInvitationsAs instance
-        """
-        try:
-            optional_args = {}
-            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
-            cutoff_date = self.request.query.get("cutoff_date", None)
-            if cutoff_date is not None:
-                jsonschema.validate(cutoff_date, {"type": "string"})
-                optional_args["cutoff_date"] = cutoff_date
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.purge_expired_invitations_as(
-            self.request, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -9010,6 +9010,63 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
+        "/invitations/purge/ac": {
+            "get": {
+                "operationId": "purge_expired_invitations_ac",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_cutoff_date",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Expired Invitations Purged",
+                        "schema": {
+                            "$ref": "#/definitions/purged_invitations",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            }
+        },
+        "/invitations/purge/as": {
+            "get": {
+                "operationId": "purge_expired_invitations_as",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_cutoff_date",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Began task to purge invitations."
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
+                ]
+            }
+        },
         "/invitations/{invitation_id}": {
             "delete": {
                 "operationId": "invitation_delete",
@@ -9476,63 +9533,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
-        },
-        "/ops/purge_expired_invitations_ac": {
-            "get": {
-                "operationId": "purge_expired_invitations_ac",
-                "parameters": [
-                    {
-                        "$ref": "#/parameters/optional_cutoff_date",
-                        "x-scope": [
-                            ""
-                        ]
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Expired Invitations Purged",
-                        "schema": {
-                            "$ref": "#/definitions/purged_invitations",
-                            "x-scope": [
-                                ""
-                            ]
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                },
-                "tags": [
-                    "operational"
-                ]
-            }
-        },
-        "/ops/purge_expired_invitations_as": {
-            "get": {
-                "operationId": "purge_expired_invitations_as",
-                "parameters": [
-                    {
-                        "$ref": "#/parameters/optional_cutoff_date",
-                        "x-scope": [
-                            ""
-                        ]
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Began task to purge invitations."
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    }
-                },
-                "tags": [
-                    "operational"
-                ]
-            }
         },
         "/ops/site_and_domain_roles/{site_id}": {
             "get": {

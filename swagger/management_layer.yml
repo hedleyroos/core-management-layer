@@ -1988,37 +1988,6 @@ paths:
       tags:
         - operational
 
-  /ops/purge_expired_invitations_ac:
-    get:
-      operationId: purge_expired_invitations_ac
-      parameters:
-        - $ref: '#/parameters/optional_cutoff_date'
-      produces:
-        - application/json
-      responses:
-        200:
-          description: 'Expired Invitations Purged'
-          schema:
-            $ref: '#/definitions/purged_invitations'
-        403:
-          description: 'Forbidden'
-      tags:
-        - operational
-
-  /ops/purge_expired_invitations_as:
-    get:
-      operationId: purge_expired_invitations_as
-      parameters:
-        - $ref: '#/parameters/optional_cutoff_date'
-      responses:
-        200:
-          description: 'Began task to purge invitations.'
-        403:
-          description: 'Forbidden'
-      tags:
-        - operational
-
-
   /domains:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
@@ -3700,6 +3669,36 @@ paths:
           description: 'An invitation email was successfully queued for sending.'
       tags:
         - authentication
+
+  /invitations/purge/ac:
+    get:
+      operationId: purge_expired_invitations_ac
+      parameters:
+        - $ref: '#/parameters/optional_cutoff_date'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Expired Invitations Purged'
+          schema:
+            $ref: '#/definitions/purged_invitations'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
+  /invitations/purge/as:
+    get:
+      operationId: purge_expired_invitations_as
+      parameters:
+        - $ref: '#/parameters/optional_cutoff_date'
+      responses:
+        200:
+          description: 'Began task to purge invitations.'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
 
   /organisations:
     parameters:

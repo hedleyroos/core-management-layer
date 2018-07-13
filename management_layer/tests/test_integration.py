@@ -811,14 +811,14 @@ class IntegrationTest(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_purge_expired_invitations_ac(self):
-        response = await self.client.get("/ops/purge_expired_invitations_ac")
+        response = await self.client.get("/invitations/purge/ac")
         await self.assertStatus(response, 200)
-        purged_invitations = response.json()
+        purged_invitations = await response.json()
         validate_response_schema(purged_invitations, schemas.purged_invitations)
 
     @unittest_run_loop
     async def test_purge_expired_invitations_as(self):
-        response = await self.client.get("/ops/purge_expired_invitations_as")
+        response = await self.client.get("/invitations/purge/as")
         await self.assertStatus(response, 200)
 
     @unittest_run_loop
