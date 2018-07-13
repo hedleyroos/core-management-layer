@@ -1569,6 +1569,9 @@ definitions:
     properties:
       mode:
         type: string
+        enum:
+          - asynchronous
+          - synchronous
       amount:
         type: integer
     required:

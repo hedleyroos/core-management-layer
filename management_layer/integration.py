@@ -838,14 +838,14 @@ class Implementation(AbstractStubClass):
         :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
         :returns: result or (result, headers) tuple
         """
-        synchronous_mode = kwargs.get("synchronous_mode")
+        synchronous_mode = kwargs.get("synchronous_mode", False)
         cutoff_date = kwargs.get("cutoff_date", None)
         with client_exception_handler():
             request_kwargs = {
                 "cutoff_date": cutoff_date
             } if cutoff_date else {}
-            api = request.app["operational_api" if synchronous_mode else "authentication_service_api"]
-            response = await api.purge_expired_invitations(**request_kwargs)
+            api = "operational_api" if synchronous_mode else "authentication_service_api"
+            response = await request.app[api].purge_expired_invitations(**request_kwargs)
             purged_invitations = response.to_dict() if synchronous_mode else {}
             purged_invitations["mode"] = "synchronous" if synchronous_mode else "asynchronous"
             return purged_invitations
@@ -1138,8 +1138,6 @@ class Implementation(AbstractStubClass):
             # Get access control response.
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
-
-
 
     # organisation_list -- Synchronisation point for meld
     @staticmethod
