@@ -1320,6 +1320,25 @@ definitions:
       - created_at
       - updated_at
 
+  organisation_create:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+
+  organisation_update:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    minProperties: 1
+
   user:
     type: object
     properties:
@@ -3618,6 +3637,8 @@ paths:
       - $ref: '#/parameters/optional_portal_context_header'
     get:
       operationId: organisation_list
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3644,7 +3665,26 @@ paths:
             X-Total-Count:
               type: integer
               description: The total number of results matching the query
-
+      tags:
+        - authentication
+    post:
+      consumes:
+        - application/json
+      operationId: organisation_create
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:create'
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/organisation_create'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/organisation'
       tags:
         - authentication
 
@@ -3652,8 +3692,39 @@ paths:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
       - $ref: '#/parameters/organisation_id'
+    delete:
+      operationId: organisation_delete
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:delete'
+      responses:
+        '204':
+          description: ''
+      tags:
+        - authentication
     get:
       operationId: organisation_read
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:read'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/organisation'
+      tags:
+        - authentication
+    put:
+      consumes:
+        - application/json
+      operationId: organisation_update
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:update'
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/organisation_update'
       produces:
         - application/json
       responses:

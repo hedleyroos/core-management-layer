@@ -65,7 +65,7 @@ INVITATION_SITE_ROLE = Transformation(
     copy_fields=["invitation_id", "site_id", "role_id"]
 )
 
-ORGANISATIONAL_UNIT = Transformation(
+ORGANISATION = Transformation(
     mappings=[
         Mapping("created_at", conversion=datetime_to_string),
         Mapping("updated_at", conversion=datetime_to_string)

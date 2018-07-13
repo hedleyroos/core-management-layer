@@ -2414,6 +2414,8 @@ class Organisations(View, CorsViewMixin):
     },
     "type": "array"
 }""")
+    POST_RESPONSE_SCHEMA = schemas.organisation
+    POST_BODY_SCHEMA = schemas.organisation_create
 
     async def get(self):
         """
@@ -2470,10 +2472,75 @@ class Organisations(View, CorsViewMixin):
 
         return json_response(result, headers=headers)
 
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Organisations instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.organisation_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
 
 class OrganisationsOrganisationId(View, CorsViewMixin):
 
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.organisation
+    PUT_RESPONSE_SCHEMA = schemas.organisation
+    PUT_BODY_SCHEMA = schemas.organisation_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationsOrganisationId instance
+        """
+        try:
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.organisation_delete(
+            self.request, organisation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
 
     async def get(self):
         """
@@ -2499,6 +2566,44 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationsOrganisationId instance
+        """
+        try:
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.organisation_update(
+            self.request, body, organisation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -6362,6 +6467,32 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "organisation_create": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "type": "object"
+        },
+        "organisation_update": {
+            "minProperties": 1,
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "permission": {
             "properties": {
                 "created_at": {
@@ -9676,6 +9807,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:read"
                 ]
             },
             "parameters": [
@@ -9685,9 +9819,61 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ""
                     ]
                 }
-            ]
+            ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "organisation_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/organisation_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/organisation",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:create"
+                ]
+            }
         },
         "/organisations/{organisation_id}": {
+            "delete": {
+                "operationId": "organisation_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:delete"
+                ]
+            },
             "get": {
                 "operationId": "organisation_read",
                 "produces": [
@@ -9706,6 +9892,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:read"
                 ]
             },
             "parameters": [
@@ -9721,7 +9910,45 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ""
                     ]
                 }
-            ]
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "organisation_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/organisation_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/organisation",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:update"
+                ]
+            }
         },
         "/permissions": {
             "get": {
