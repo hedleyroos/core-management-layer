@@ -60,6 +60,7 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/ops/all_user_roles/{user_id}", views.OpsAllUserRolesUserId)
     app.router.add_view(r"/invitationsiteroles/{invitation_id}/{site_id}/{role_id}", views.InvitationsiterolesInvitationIdSiteIdRoleId)
     app.router.add_view(r"/invitationsiteroles", views.Invitationsiteroles)
+    app.router.add_view(r"/invitations/{invitation_id}/send", views.InvitationsInvitationIdSend)
     app.router.add_view(r"/invitations/{invitation_id}", views.InvitationsInvitationId)
     app.router.add_view(r"/invitations", views.Invitations)
     app.router.add_view(r"/invitationdomainroles/{invitation_id}/{domain_id}/{role_id}", views.InvitationdomainrolesInvitationIdDomainIdRoleId)

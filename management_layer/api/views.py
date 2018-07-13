@@ -1579,6 +1579,43 @@ class InvitationsInvitationId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class InvitationsInvitationIdSend(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsInvitationIdSend instance
+        """
+        try:
+            # invitation_id: string 
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            optional_args = {}
+            # language (optional): string 
+            language = self.request.query.get("language", None)
+            if language is not None:
+                jsonschema.validate(language, {"type": "string"})
+                optional_args["language"] = language
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.invitation_send(
+            self.request, invitation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitationsiteroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -9063,6 +9100,38 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitation:update"
                 ]
             }
+        },
+        "/invitations/{invitation_id}/send": {
+            "get": {
+                "operationId": "invitation_send",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An invitation email was successfully queued for sending."
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            },
+            "parameters": [
+                {
+                    "format": "uuid",
+                    "in": "path",
+                    "name": "invitation_id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "default": "en",
+                    "in": "query",
+                    "name": "language",
+                    "required": false,
+                    "type": "string"
+                }
+            ]
         },
         "/invitationsiteroles": {
             "get": {
