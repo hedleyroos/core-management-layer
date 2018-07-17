@@ -650,7 +650,7 @@ class Implementation(AbstractStubClass):
         :param language (optional): string
         :returns: result or (result, headers) tuple
         """
-        language = kwargs.get("language")
+        language = kwargs.get("language", "en")
         with client_exception_handler():
             # Note that invitations are sent by the Authentication Service and not
             # the Access Control component.
