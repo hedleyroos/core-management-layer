@@ -360,13 +360,15 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
-        app["client_session"] = ClientSession()
-
         app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+
+        async def on_startup(the_app):
+            the_app["client_session"] = ClientSession()
 
         async def on_shutdown(the_app):
             await the_app["client_session"].close()
 
+        app.on_startup.append(on_startup)
         app.on_shutdown.append(on_shutdown)
 
         add_routes(app, with_ui=False)
