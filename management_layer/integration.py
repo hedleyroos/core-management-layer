@@ -3,7 +3,7 @@ import logging
 import socket
 import uuid
 
-from aiohttp import web, ClientSession
+from aiohttp import web
 
 from management_layer.api.stubs import AbstractStubClass
 from management_layer import transformations, mappings, __version__, settings

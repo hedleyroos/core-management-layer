@@ -364,11 +364,13 @@ class IntegrationTest(AioHTTPTestCase):
 
         app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
 
+        async def on_shutdown(the_app):
+            await the_app["client_session"].close()
+
+        app.on_shutdown.append(on_shutdown)
+
         add_routes(app, with_ui=False)
         return app
-
-    async def tearDownAsync(self):
-        await self.app["client_session"].close()
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
