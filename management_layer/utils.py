@@ -156,7 +156,7 @@ async def get_until_complete(request, api, operation, offset=0, limit=100, **kwa
             result.extend(data)
             offset += limit
             data = await api_call(offset=offset, limit=limit, **kwargs)
-        return data
+        return result
 
 
 async def return_users_with_roles(*args, **kwargs):
