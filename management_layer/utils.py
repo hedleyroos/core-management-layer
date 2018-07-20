@@ -149,12 +149,13 @@ async def get_until_complete(request, api, operation, offset=0, limit=100, **kwa
     :return: List of data returned.
     """
     try:
-        if "_with_http_info" not in operation:
+        if not operation.endswith("_with_http_info"):
             operation = "{}_with_http_info".format(operation)
         api_call = getattr(request.app[api], operation)
         result_tuple = await api_call(offset=offset, limit=limit, **kwargs)
         data = result_tuple[0]
-        count = result_tuple[2]["X-Total-Count"]
+        # Get X-Total-Count if it exists, else just end the call cycle.
+        count = result_tuple[2].get("X-Total-Count", len(data))
         if int(count) > len(data):
             data.extend(get_until_complete(
                 request, api, operation, offset + len(data), **kwargs))
@@ -177,7 +178,7 @@ async def return_users_with_roles(*args, **kwargs):
     ]
 
 
-async def return_user_ids(*args, **kwargs):
+async def return_users(*args, **kwargs):
     """
     Some test functions require to obtain a list of users with at least
     an id and username that is what this will do.
@@ -193,6 +194,31 @@ async def return_user_ids(*args, **kwargs):
             updated_at=datetime.datetime.now()
         )
     ]
+
+
+async def return_users_with_http_info(*args, **kwargs):
+    """
+    Some test functions require a list of users along with the http info
+    :param args:
+    :param kwargs:
+    :return: A tuple with users, status and headers
+    """
+    return (
+        [
+            User(
+                id=TESTING_USER_ID,
+                username="Jake",
+                is_active=True,
+                date_joined=datetime.date.today(),
+                created_at=datetime.datetime.now(),
+                updated_at=datetime.datetime.now()
+            )
+        ],
+        200,
+        {
+            "X-Total-Count": 1
+        }
+    )
 
 TEST_SITE = {
     "id": 1,

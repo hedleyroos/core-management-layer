@@ -27,7 +27,8 @@ from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
-from management_layer.utils import return_users_with_roles, return_user_ids, return_sites, \
+from management_layer.utils import return_users_with_roles, return_users, \
+    return_users_with_http_info, return_sites, \
     TEST_SITE, return_clients, return_user
 from user_data_store import UserDataApi
 
@@ -266,7 +267,9 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch("access_control.api.operational_api.OperationalApi.get_users_with_roles_for_site",
        Mock(side_effect=return_users_with_roles))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.user_list",
-       Mock(side_effect=return_user_ids))
+       Mock(side_effect=return_users))
+@patch("authentication_service.api.authentication_api.AuthenticationApi.user_list_with_http_info",
+       Mock(side_effect=return_users_with_http_info))
 @patch("access_control.api.access_control_api.AccessControlApi.site_list",
        Mock(side_effect=return_sites))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.client_list",
