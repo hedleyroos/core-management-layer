@@ -1415,10 +1415,8 @@ class Invitations(View, CorsViewMixin):
             invitation_ids = self.request.query.get("invitation_ids", None)
             if invitation_ids is not None:
                 invitation_ids = invitation_ids.split(",")
-            if invitation_ids:
-                invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
-                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -6636,6 +6634,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "integer"
                 },
                 "mode": {
+                    "enum": [
+                        "asynchronous",
+                        "synchronous"
+                    ],
                     "type": "string"
                 }
             },
@@ -8907,7 +8909,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "items": {
                             "format": "uuid",
-                            "type": "integer"
+                            "type": "string"
                         },
                         "minItems": 1,
                         "name": "invitation_ids",

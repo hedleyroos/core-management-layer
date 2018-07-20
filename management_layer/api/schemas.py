@@ -906,6 +906,10 @@ purged_invitations = json.loads("""
             "type": "integer"
         },
         "mode": {
+            "enum": [
+                "asynchronous",
+                "synchronous"
+            ],
             "type": "string"
         }
     },

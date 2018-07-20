@@ -2222,7 +2222,7 @@ paths:
           in: query
           type: array
           items:
-            type: integer
+            type: string
             format: uuid
           required: false
           minItems: 1
