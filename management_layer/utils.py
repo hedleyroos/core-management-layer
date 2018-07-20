@@ -179,7 +179,7 @@ async def return_users(*args, **kwargs):
     an id and username that is what this will do.
     :return: A list of uuid user_ids
     """
-    return [
+    data = [
         User(
             id=TESTING_USER_ID,
             username="Jake",
@@ -189,6 +189,7 @@ async def return_users(*args, **kwargs):
             updated_at=datetime.datetime.now()
         )
     ]
+    return data[kwargs["offset"]:]
 
 
 TEST_SITE = {
