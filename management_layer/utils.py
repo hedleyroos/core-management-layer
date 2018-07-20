@@ -115,8 +115,8 @@ async def transform_users_with_roles(request, response, **kwargs):
     ]
     if user_ids:
         # Get all the user names of the user IDs found.
-        users = await request.app[
-            "authentication_service_api"].user_list(user_ids=user_ids, **kwargs)
+        users = await get_until_complete(
+            request, "authentication_service_api", "user_list", **kwargs)
 
         if users:
             transform = transformations.USER
@@ -133,8 +133,30 @@ async def transform_users_with_roles(request, response, **kwargs):
                         for role_id in user_with_roles["role_ids"]
                     ]
                 } for user_with_roles in users_with_roles
+                if user_with_roles["user_id"] in user_mapping
             ]
     return users_with_roles
+
+
+async def get_until_complete(request, api, operation, offset=0, limit=100, **kwargs):
+    """
+    Perform continuous get calls until all the requested data has been obtained.
+    :param request: The current request object.
+    :param api: The API to be queried.
+    :param operation: The operation to be performed on the given API (with http info).
+    :param offset: The current offset of the API call.
+    :param limit: The limit of returned results from each call.
+    :return: List of data returned.
+    """
+    with client_exception_handler():
+        result = []
+        api_call = getattr(request.app[api], operation)
+        data = await api_call(offset=offset, limit=limit, **kwargs)
+        while data:
+            result.extend(data)
+            offset += limit
+            data = await api_call(offset=offset, limit=limit, **kwargs)
+        return result
 
 
 async def return_users_with_roles(*args, **kwargs):
@@ -151,13 +173,13 @@ async def return_users_with_roles(*args, **kwargs):
     ]
 
 
-async def return_user_ids(*args, **kwargs):
+async def return_users(*args, **kwargs):
     """
     Some test functions require to obtain a list of users with at least
     an id and username that is what this will do.
     :return: A list of uuid user_ids
     """
-    return [
+    data = [
         User(
             id=TESTING_USER_ID,
             username="Jake",
@@ -167,6 +189,8 @@ async def return_user_ids(*args, **kwargs):
             updated_at=datetime.datetime.now()
         )
     ]
+    return data[kwargs["offset"]:]
+
 
 TEST_SITE = {
     "id": 1,
