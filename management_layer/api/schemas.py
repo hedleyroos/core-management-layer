@@ -65,16 +65,6 @@ admin_note = json.loads("""
 admin_note_create = json.loads("""
 {
     "properties": {
-        "creator_id": {
-            "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
-            "format": "uuid",
-            "readOnly": true,
-            "type": "string",
-            "x-related-info": {
-                "label": "username",
-                "model": "user"
-            }
-        },
         "note": {
             "type": "string"
         },
@@ -88,7 +78,6 @@ admin_note_create = json.loads("""
     },
     "required": [
         "user_id",
-        "creator_id",
         "note"
     ],
     "type": "object"

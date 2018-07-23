@@ -1141,20 +1141,10 @@ definitions:
         format: uuid
         x-related-info:
           label: username
-      creator_id:
-        type: string
-        format: uuid
-        readOnly: true
-        description: The user making the request will be considered the creator and thus this field is not available
-          when creating admin note.
-        x-related-info:
-          model: user
-          label: username
       note:
         type: string
     required:
       - user_id
-      - creator_id
       - note
 
   admin_note_update:
@@ -3351,7 +3341,6 @@ paths:
           minItems: 1
           collectionFormat: csv
           uniqueItems: true
-
       produces:
         - application/json
       responses:
