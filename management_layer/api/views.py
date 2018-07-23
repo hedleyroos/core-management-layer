@@ -131,9 +131,13 @@ class Adminnotes(View, CorsViewMixin):
                 jsonschema.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
             # admin_note_ids (optional): array An optional list of adminnote ids
-            admin_note_ids = self.request.query.getall("admin_note_ids", None)
+            admin_note_ids = self.request.query.get("admin_note_ids", None)
             if admin_note_ids is not None:
-                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 0, 'collectionFormat': 'multi', 'uniqueItems': True}
+                admin_note_ids = admin_note_ids.split(",")
+            if admin_note_ids:
+                admin_note_ids = [int(e) for e in admin_note_ids]
+            if admin_note_ids is not None:
+                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -7841,13 +7845,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of adminnote ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "admin_note_ids",
                         "required": false,
                         "type": "array",
