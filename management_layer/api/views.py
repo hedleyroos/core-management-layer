@@ -5871,16 +5871,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "admin_note_create": {
             "properties": {
-                "creator_id": {
-                    "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
-                    "format": "uuid",
-                    "readOnly": true,
-                    "type": "string",
-                    "x-related-info": {
-                        "label": "username",
-                        "model": "user"
-                    }
-                },
                 "note": {
                     "type": "string"
                 },
