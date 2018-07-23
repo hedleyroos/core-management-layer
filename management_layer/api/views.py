@@ -5894,7 +5894,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "required": [
                 "user_id",
-                "creator_id",
                 "note"
             ],
             "type": "object"

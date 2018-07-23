@@ -1154,7 +1154,6 @@ definitions:
         type: string
     required:
       - user_id
-      - creator_id
       - note
 
   admin_note_update:

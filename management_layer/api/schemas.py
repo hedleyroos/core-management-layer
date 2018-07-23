@@ -88,7 +88,6 @@ admin_note_create = json.loads("""
     },
     "required": [
         "user_id",
-        "creator_id",
         "note"
     ],
     "type": "object"
