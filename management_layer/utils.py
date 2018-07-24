@@ -64,13 +64,14 @@ def client_exception_handler():
         # The server, while acting as a gateway or proxy, received an invalid
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
+        error = json.loads(re.body)["error"]
         raise web.HTTPBadGateway(
             headers={"content-type": "application/json"},
             text=json.dumps({
                 "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
                 "status": re.status,
                 "reason": re.reason,
-                "body": re.body
+                "error": error
             }))
     except ClientConnectorError as cce:
         raise web.HTTPBadGateway(
@@ -79,7 +80,7 @@ def client_exception_handler():
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce.os_error),
-                "body": str(cce)
+                "error": str(cce)
             }))
     except ClientConnectionError as cce:
         raise web.HTTPBadGateway(
@@ -88,7 +89,7 @@ def client_exception_handler():
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce),
-                "body": str(cce)
+                "error": str(cce)
             }))
     except ClientResponseError as cre:
         raise web.HTTPBadGateway(
@@ -97,7 +98,7 @@ def client_exception_handler():
                 "exception_type": "{}.{}".format(cre.__module__, cre.__class__.__name__),
                 "status": cre.status,
                 "reason": cre.message,
-                "body": str(cre)
+                "error": str(cre)
             }))
 
 
