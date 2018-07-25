@@ -11,13 +11,13 @@ import access_control.rest
 import authentication_service.rest
 import user_data_store.rest
 from contextlib import contextmanager
-from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
 from access_control import UserWithRoles, Site
 from authentication_service import User, Client
 
 from management_layer import mappings, transformations
+from management_layer.exceptions import JSONBadGateway
 from management_layer.sentry import sentry
 
 logger = logging.getLogger(__name__)
@@ -64,41 +64,38 @@ def client_exception_handler():
         # The server, while acting as a gateway or proxy, received an invalid
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        error = json.loads(re.body)["error"] if re.body else None
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
                 "status": re.status,
                 "reason": re.reason,
-                "body": re.body
-            }))
+                "error": error
+            })
     except ClientConnectorError as cce:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce.os_error),
-                "body": str(cce)
-            }))
+                "error": str(cce)
+            })
     except ClientConnectionError as cce:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce),
-                "body": str(cce)
-            }))
+                "error": str(cce)
+            })
     except ClientResponseError as cre:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cre.__module__, cre.__class__.__name__),
                 "status": cre.status,
                 "reason": cre.message,
-                "body": str(cre)
-            }))
+                "error": str(cre)
+            })
 
 
 async def transform_users_with_roles(request, response, **kwargs):
