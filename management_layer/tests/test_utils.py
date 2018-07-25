@@ -1,8 +1,8 @@
 from unittest import TestCase
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, \
     ClientConnectionError
-from aiohttp.web import HTTPBadGateway
 
+from management_layer.exceptions import JSONBadGateway
 from management_layer.utils import client_exception_handler
 import access_control.rest
 import authentication_service.rest
@@ -19,24 +19,24 @@ class ConnectionKey():
 class TestClientExceptionHandler(TestCase):
 
     def test_catch_api_client_errors(self):
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 raise access_control.rest.ApiException
 
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 raise authentication_service.rest.ApiException
 
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 raise user_data_store.rest.ApiException
 
     def test_connection_errors(self):
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 raise ClientConnectionError()
 
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 connection_key = ConnectionKey(
                     "http://foo.bar", 80, False
@@ -46,7 +46,7 @@ class TestClientExceptionHandler(TestCase):
                     os_error=OSError(1, "one")
                 )
 
-        with self.assertRaises(HTTPBadGateway):
+        with self.assertRaises(JSONBadGateway):
             with client_exception_handler():
                 raise ClientResponseError(
                     request_info="something",
