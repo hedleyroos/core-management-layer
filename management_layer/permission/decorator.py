@@ -9,9 +9,8 @@ import typing
 import uuid
 from functools import wraps
 
-from aiohttp.web_exceptions import HTTPForbidden, HTTPBadRequest
-
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
+from management_layer.exceptions import JSONForbidden, JSONBadRequest
 from management_layer.permission.utils import Operator, ResourcePermissions
 from management_layer.mappings import Mappings
 from management_layer.permission import utils
@@ -165,17 +164,13 @@ def require_permissions(
                 if context:
                     # Only the Management Portal is allowed to use this header.
                     if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
-                        raise HTTPForbidden(body=json.dumps({
-                            "message": "Forbidden"
-                        }))
+                        raise JSONForbidden(message="Forbidden")
 
                     try:
                         context_type, context_id = context.split(":")
                         context_id = int(context_id)
                     except ValueError:
-                        raise HTTPBadRequest(body=json.dumps({
-                            "message": "Invalid context header value"
-                        }))
+                        raise JSONBadRequest(message="Invalid context header value")
 
                     if context_type == "d":
                         # See if the user has the required permissions on the specified domain
@@ -190,9 +185,7 @@ def require_permissions(
                             site=context_id, nocache=nocache
                         )
                     else:
-                        raise HTTPBadRequest(body=json.dumps({
-                            "message": "Invalid context header value"
-                        }))
+                        raise JSONBadRequest(message="Invalid context header value")
 
             # Permissions will only be checked if allowed is not already true.
             allowed = allowed or await utils.user_has_permissions(
@@ -206,9 +199,7 @@ def require_permissions(
                 else:
                     return f(*args, **kwargs)
 
-            raise HTTPForbidden(body=json.dumps({
-                "message": "Forbidden"
-            }))
+            raise JSONForbidden(message="Forbidden")
 
         return wrapped_f
 
@@ -345,9 +336,7 @@ def requester_has_role(
 
             logger.debug(log_message)
 
-            raise HTTPForbidden(body=json.dumps({
-                "message": log_message
-            }))
+            raise JSONForbidden(message=log_message)
 
         return wrapped_f
 
@@ -393,8 +382,6 @@ def _get_user_and_site(request):
     try:
         site_id = Mappings.site_id_for(client_id)
     except KeyError:
-        raise HTTPForbidden(body=json.dumps({
-            "message": f"No site linked to the client '{client_id}'"
-        }))
+        raise JSONForbidden(message=f"No site linked to the client '{client_id}'")
 
     return user_id, site_id
