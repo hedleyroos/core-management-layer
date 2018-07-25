@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+1.4.1
+-----
 Bugfix for Admin notes
 Made changes to the adminnote paths based on current UDS definition.
 Removed creator_id from adminnote_create object and marked as not required.
