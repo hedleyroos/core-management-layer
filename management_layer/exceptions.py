@@ -8,7 +8,9 @@ class JSONException(web.HTTPException):
 
     def __init__(self, *, headers=None, reason=None, body=None,
                  text=None, message=None):
+        # Use the text object given or create a message object using the string in message.
         text = json.dumps(text) if text else json.dumps({"message": message})
+        # Super the web HTTPException, however force the content_type to application/json.
         super().__init__(headers=headers, reason=reason, body=body,
                          text=text, content_type="application/json")
 
