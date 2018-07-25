@@ -66,7 +66,7 @@ def client_exception_handler():
         # the request.
         error = json.loads(re.body)["error"] if re.body else None
         raise JSONBadGateway(
-            text={
+            json_data={
                 "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
                 "status": re.status,
                 "reason": re.reason,
@@ -74,7 +74,7 @@ def client_exception_handler():
             })
     except ClientConnectorError as cce:
         raise JSONBadGateway(
-            text={
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce.os_error),
@@ -82,7 +82,7 @@ def client_exception_handler():
             })
     except ClientConnectionError as cce:
         raise JSONBadGateway(
-            text={
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce),
@@ -90,7 +90,7 @@ def client_exception_handler():
             })
     except ClientResponseError as cre:
         raise JSONBadGateway(
-            text={
+            json_data={
                 "exception_type": "{}.{}".format(cre.__module__, cre.__class__.__name__),
                 "status": cre.status,
                 "reason": cre.message,
