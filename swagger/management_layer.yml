@@ -89,6 +89,9 @@ parameters:
     name: domain_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: domains
+      label: name
 
   optional_invitation_filter:
     description: An optional query parameter to filter by invitation_id
@@ -104,6 +107,9 @@ parameters:
     name: parent_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: domains
+      label: name
 
   optional_role_filter:
     description: An optional query parameter to filter by role_id
@@ -111,6 +117,9 @@ parameters:
     name: role_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: roles
+      label: label
 
   optional_user_filter:
     description: An optional query parameter to filter by user_id
@@ -119,6 +128,22 @@ parameters:
     required: false
     type: string
     format: uuid
+
+  optional_cutoff_date:
+    description: An optional cutoff date to purge invites before this date
+    in: query
+    name: cutoff_date
+    required: false
+    type: string
+    format: date
+
+  synchronous_mode:
+    description: Change the mode of the call to synchronous.
+    in: query
+    name: synchronous_mode
+    required: false
+    type: boolean
+    default: false
 
   domain_id:
     description: A unique integer value identifying the domain.
@@ -177,6 +202,9 @@ parameters:
     name: site_id
     required: false
     type: integer
+    x-related-info:
+      rest_resource_name: sites
+      label: name
 
   admin_note_id:
     description: A unique integer value identifying the admin note.
@@ -194,10 +222,10 @@ parameters:
     minLength: 2
     maxLength: 2
 
-  organisational_unit_id:
-    description: An integer identifying an organisational unit
+  organisation_id:
+    description: An integer identifying an organisation
     in: path
-    name: organisational_unit_id
+    name: organisation_id
     required: true
     type: integer
 
@@ -780,6 +808,7 @@ definitions:
         type: string
         format: uuid
         description: The user that created the invitation
+        readOnly: true
         x-related-info:
           model: user
           label: username
@@ -792,6 +821,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
@@ -809,6 +843,7 @@ definitions:
       - first_name
       - last_name
       - email
+      - organisation_id
       - expires_at
       - created_at
       - updated_at
@@ -816,13 +851,6 @@ definitions:
   invitation_create:
     type: object
     properties:
-      invitor_id:
-        type: string
-        format: uuid
-        description: The user that created the invitation
-        x-related-info:
-          model: user
-          label: username
       first_name:
         type: string
         maxLength: 100
@@ -832,14 +860,19 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
     required:
-      - invitor_id
       - first_name
       - last_name
       - email
+      - organisation_id
 
   invitation_update:
     type: object
@@ -853,6 +886,11 @@ definitions:
       email:
         type: string
         format: email
+      organisation_id:
+        type: integer
+        x-related-info:
+          model: organisation
+          label: name
       expires_at:
         type: string
         format: 'date-time'
@@ -1103,20 +1141,10 @@ definitions:
         format: uuid
         x-related-info:
           label: username
-      creator_id:
-        type: string
-        format: uuid
-        readOnly: true
-        description: The user making the request will be considered the creator and thus this field is not available
-          when creating admin note.
-        x-related-info:
-          model: user
-          label: username
       note:
         type: string
     required:
       - user_id
-      - creator_id
       - note
 
   admin_note_update:
@@ -1274,7 +1302,7 @@ definitions:
       - client_id
       - response_type
 
-  organisationalunit:
+  organisation:
     type: object
     properties:
       id:
@@ -1297,6 +1325,25 @@ definitions:
       - description
       - created_at
       - updated_at
+
+  organisation_create:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+
+  organisation_update:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+    minProperties: 1
 
   user:
     type: object
@@ -1360,11 +1407,11 @@ definitions:
           model: country
           field: code
           label: name
-      organisational_unit_id:
+      organisation_id:
         type: integer
         readOnly: true
         x-related-info:
-          model: organisationalunit
+          model: organisation
           label: name
       created_at:
         type: string
@@ -1506,6 +1553,19 @@ definitions:
     - access_control_health
     - user_data_store_health
     - authentication_service_health
+
+  purged_invitations:
+    type: object
+    properties:
+      mode:
+        type: string
+        enum:
+          - asynchronous
+          - synchronous
+      amount:
+        type: integer
+    required:
+      - mode
 
 paths:
   /healthcheck:
@@ -2152,7 +2212,7 @@ paths:
           in: query
           type: array
           items:
-            type: integer
+            type: string
             format: uuid
           required: false
           minItems: 1
@@ -3281,7 +3341,6 @@ paths:
           minItems: 1
           collectionFormat: csv
           uniqueItems: true
-
       produces:
         - application/json
       responses:
@@ -3591,16 +3650,58 @@ paths:
       tags:
         - authentication
 
-  /organisationalunits:
+  /invitations/{invitation_id}/send:
+    parameters:
+      - name: invitation_id
+        type: string
+        format: uuid
+        in: path
+        required: true
+      - name: language
+        type: string
+        in: query
+        required: false
+        default: "en"
+    get:
+      operationId: invitation_send
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'An invitation email was successfully queued for sending.'
+      tags:
+        - authentication
+
+  /invitations/purge/expired:
+    get:
+      operationId: purge_expired_invitations
+      parameters:
+        - $ref: '#/parameters/synchronous_mode'
+        - $ref: '#/parameters/optional_cutoff_date'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: 'Expired Invitations Purged'
+          schema:
+            $ref: '#/definitions/purged_invitations'
+        403:
+          description: 'Forbidden'
+      tags:
+        - operational
+
+  /organisations:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
     get:
-      operationId: organisational_unit_list
+      operationId: organisation_list
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
-        - name: organisational_unit_ids
-          description: An optional list of organisational unit ids
+        - name: organisation_ids
+          description: An optional list of organisation ids
           in: query
           type: array
           items:
@@ -3617,28 +3718,78 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/organisationalunit'
+              $ref: '#/definitions/organisation'
           headers:
             X-Total-Count:
               type: integer
               description: The total number of results matching the query
-
+      tags:
+        - authentication
+    post:
+      consumes:
+        - application/json
+      operationId: organisation_create
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:create'
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/organisation_create'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/organisation'
       tags:
         - authentication
 
-  /organisationalunits/{organisational_unit_id}:
+  /organisations/{organisation_id}:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
-      - $ref: '#/parameters/organisational_unit_id'
+      - $ref: '#/parameters/organisation_id'
+    delete:
+      operationId: organisation_delete
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:delete'
+      responses:
+        '204':
+          description: ''
+      tags:
+        - authentication
     get:
-      operationId: organisational_unit_read
+      operationId: organisation_read
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:read'
       produces:
         - application/json
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/organisationalunit'
+            $ref: '#/definitions/organisation'
+      tags:
+        - authentication
+    put:
+      consumes:
+        - application/json
+      operationId: organisation_update
+      x-aor-permissions:
+        - 'urn:ge:identity_provider:organisation:update'
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/organisation_update'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/organisation'
       tags:
         - authentication
 
@@ -3736,8 +3887,8 @@ paths:
           required: false
           type: string
           minLength: 3
-        - name: organisational_unit_id
-          description: An optional filter on the organisational unit id
+        - name: organisation_id
+          description: An optional filter on the organisation id
           in: query
           required: false
           type: integer
@@ -3766,8 +3917,8 @@ paths:
           in: query
           required: false
           type: boolean
-        - name: has_organisational_unit
-          description: An optional filter based on whether a user has an organisational unit or not
+        - name: has_organisation
+          description: An optional filter based on whether a user belongs to an organisation or not
           in: query
           required: false
           type: boolean

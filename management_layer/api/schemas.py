@@ -65,16 +65,6 @@ admin_note = json.loads("""
 admin_note_create = json.loads("""
 {
     "properties": {
-        "creator_id": {
-            "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
-            "format": "uuid",
-            "readOnly": true,
-            "type": "string",
-            "x-related-info": {
-                "label": "username",
-                "model": "user"
-            }
-        },
         "note": {
             "type": "string"
         },
@@ -88,7 +78,6 @@ admin_note_create = json.loads("""
     },
     "required": [
         "user_id",
-        "creator_id",
         "note"
     ],
     "type": "object"
@@ -504,6 +493,7 @@ invitation = json.loads("""
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
+            "readOnly": true,
             "type": "string",
             "x-related-info": {
                 "label": "username",
@@ -513,6 +503,13 @@ invitation = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -526,6 +523,7 @@ invitation = json.loads("""
         "first_name",
         "last_name",
         "email",
+        "organisation_id",
         "expires_at",
         "created_at",
         "updated_at"
@@ -549,25 +547,23 @@ invitation_create = json.loads("""
             "maxLength": 100,
             "type": "string"
         },
-        "invitor_id": {
-            "description": "The user that created the invitation",
-            "format": "uuid",
-            "type": "string",
-            "x-related-info": {
-                "label": "username",
-                "model": "user"
-            }
-        },
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         }
     },
     "required": [
-        "invitor_id",
         "first_name",
         "last_name",
-        "email"
+        "email",
+        "organisation_id"
     ],
     "type": "object"
 }
@@ -744,13 +740,20 @@ invitation_update = json.loads("""
         "last_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "organisation_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "organisation"
+            }
         }
     },
     "type": "object"
 }
 """)
 
-organisationalunit = json.loads("""
+organisation = json.loads("""
 {
     "properties": {
         "created_at": {
@@ -780,6 +783,38 @@ organisationalunit = json.loads("""
         "created_at",
         "updated_at"
     ],
+    "type": "object"
+}
+""")
+
+organisation_create = json.loads("""
+{
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "name"
+    ],
+    "type": "object"
+}
+""")
+
+organisation_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "name": {
+            "type": "string"
+        }
+    },
     "type": "object"
 }
 """)
@@ -849,6 +884,27 @@ permission_update = json.loads("""
             "type": "string"
         }
     },
+    "type": "object"
+}
+""")
+
+purged_invitations = json.loads("""
+{
+    "properties": {
+        "amount": {
+            "type": "integer"
+        },
+        "mode": {
+            "enum": [
+                "asynchronous",
+                "synchronous"
+            ],
+            "type": "string"
+        }
+    },
+    "required": [
+        "mode"
+    ],
     "type": "object"
 }
 """)
@@ -1511,12 +1567,12 @@ user = json.loads("""
         "msisdn_verified": {
             "type": "boolean"
         },
-        "organisational_unit_id": {
+        "organisation_id": {
             "readOnly": true,
             "type": "integer",
             "x-related-info": {
                 "label": "name",
-                "model": "organisationalunit"
+                "model": "organisation"
             }
         },
         "updated_at": {

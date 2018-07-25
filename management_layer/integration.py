@@ -3,9 +3,8 @@ import logging
 import socket
 import uuid
 
-from aiohttp import web, ClientSession
-
 from management_layer.api.stubs import AbstractStubClass
+from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound
 from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
@@ -61,6 +60,7 @@ class Implementation(AbstractStubClass):
         """
         # The caller of this function is considered the creator.
         body["creator_id"] = request["token"]["sub"]
+
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_create(admin_note_create=body)
 
@@ -310,7 +310,8 @@ class Implementation(AbstractStubClass):
 
     # domain_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
+    @require_permissions(all, [("urn:ge:access_control:domain", "read")],
+                         allow_for_management_portal=True)
     async def domain_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -367,7 +368,8 @@ class Implementation(AbstractStubClass):
 
     # domain_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:domain", "read")])
+    @require_permissions(all, [("urn:ge:access_control:domain", "read")],
+                         allow_for_management_portal=True)
     async def domain_read(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -570,6 +572,9 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
+        # The caller of this function is considered the invitor.
+        body["invitor_id"] = request["token"]["sub"]
+
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_create(
                 invitation_create=body)
@@ -634,6 +639,24 @@ class Implementation(AbstractStubClass):
             return result
 
         return None
+
+    # invitation_send -- Synchronisation point for meld
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string
+        :param language (optional): string
+        :returns: result or (result, headers) tuple
+        """
+        language = kwargs.get("language", "en")
+        with client_exception_handler():
+            # Note that invitations are sent by the Authentication Service and not
+            # the Access Control component.
+            result = await request.app[
+                "authentication_service_api"].invitation_send(invitation_id, language=language)
+
+        return result
 
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
@@ -766,7 +789,7 @@ class Implementation(AbstractStubClass):
         # In order to be allowed to request the site info for a particular client ID, the client ID
         # needs to be the audience of the JWT token used to make the request.
         if request["token"]["aud"] != client_token_id:
-            raise web.HTTPForbidden(text="Token client id must match the one used in the API call")
+            raise JSONForbidden(message="Token client id must match the one used in the API call")
 
         nocache = kwargs.get("nocache", False)
         if nocache:
@@ -779,20 +802,21 @@ class Implementation(AbstractStubClass):
                     transform = transformations.SITE
                     result = transform.apply(site.to_dict())
                 except Exception as e:
-                    raise web.HTTPNotFound(text=str(e))
+                    raise JSONNotFound(message=str(e))
         else:
             try:
                 site_id = mappings.Mappings.site_id_for(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
             except KeyError as e:
-                raise web.HTTPNotFound(text=str(e))
+                raise JSONNotFound(message=str(e))
 
         return result
 
     # get_sites_under_domain -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
-                               ("urn:ge:access_control:site", "read")])
+                               ("urn:ge:access_control:site", "read")],
+                         allow_for_management_portal=True)
     async def get_sites_under_domain(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -803,6 +827,27 @@ class Implementation(AbstractStubClass):
             sites = await request.app["operational_api"].get_sites_under_domain(domain_id)
             transform = transformations.SITE
             return [transform.apply(site.to_dict()) for site in sites]
+
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        synchronous_mode = kwargs.get("synchronous_mode", False)
+        cutoff_date = kwargs.get("cutoff_date", None)
+        with client_exception_handler():
+            request_kwargs = {
+                "cutoff_date": cutoff_date
+            } if cutoff_date else {}
+            api = "operational_api" if synchronous_mode else "authentication_service_api"
+            response = await request.app[api].purge_expired_invitations(**request_kwargs)
+            purged_invitations = response.to_dict() if synchronous_mode else {}
+            purged_invitations["mode"] = "synchronous" if synchronous_mode else "asynchronous"
+            return purged_invitations
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
@@ -855,7 +900,7 @@ class Implementation(AbstractStubClass):
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         nocache = kwargs.get("nocache", False)
         roles_for_domain = await utils.get_user_roles_for_domain(request, user, domain_id,
@@ -911,7 +956,7 @@ class Implementation(AbstractStubClass):
                 for item in body["resource_permissions"]
             ]
         except KeyError as e:
-            raise web.HTTPBadRequest(text=str(e))
+            raise JSONBadRequest(message=str(e))
 
         nocache = body.get("nocache", False)
         operator_string = body["operator"]
@@ -920,7 +965,7 @@ class Implementation(AbstractStubClass):
         elif operator_string == "all":
             operator = all
         else:
-            raise web.HTTPBadRequest(text=f"Invalid operator specified: {operator_string}.")
+            raise JSONBadRequest(message=f"Invalid operator specified: {operator_string}.")
 
         site_id = body.get("site_id")
         domain_id = body.get("domain_id")
@@ -928,7 +973,7 @@ class Implementation(AbstractStubClass):
         # Either a site_id or domain_id needs to be specified.
         if site_id is None and domain_id is None or \
            site_id is not None and domain_id is not None:
-            raise web.HTTPBadRequest(text="Either site_id or domain_id needs to be specified")
+            raise JSONBadRequest(message="Either site_id or domain_id needs to be specified")
 
         result = await utils.user_has_permissions(request, user_id, operator, resource_permissions,
                                                   site=site_id, domain=domain_id, nocache=nocache)
@@ -948,17 +993,17 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
-            raise web.HTTPForbidden(text="Only the Management Portal can use this API call")
+            raise JSONForbidden(message="Only the Management Portal can use this API call")
 
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         try:
             management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
         except KeyError:
-            raise web.HTTPBadRequest(text="Misconfigured Management Portal Client ID")
+            raise JSONBadRequest(message="Misconfigured Management Portal Client ID")
 
         nocache = kwargs.get("nocache", False)
         roles = await utils.get_user_roles_for_site(request, user, management_portal_site_id,
@@ -1009,7 +1054,7 @@ class Implementation(AbstractStubClass):
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         nocache = kwargs.get("nocache", False)
         roles_for_site = await utils.get_user_roles_for_site(request, user, site_id,
@@ -1093,47 +1138,101 @@ class Implementation(AbstractStubClass):
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
 
-    # organisational_unit_list -- Synchronisation point for meld
+    # organisation_list -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this
-    async def organisational_unit_list(request, **kwargs):
+    async def organisation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :param organisation_ids (optional): array An optional list of organisation ids
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_units, _status, headers = await request.app[
-                "authentication_service_api"].organisational_unit_list_with_http_info(**kwargs)
+            organisations, _status, headers = await request.app[
+                "authentication_service_api"].organisation_list_with_http_info(**kwargs)
 
-        if organisational_units:
-            transform = transformations.ORGANISATIONAL_UNIT
-            organisational_units = [transform.apply(organisational_unit.to_dict())
-                                    for organisational_unit in organisational_units]
+        if organisations:
+            transform = transformations.ORGANISATION
+            organisations = [transform.apply(organisation.to_dict())
+                             for organisation in organisations]
 
-        return organisational_units, {
+        return organisations, {
             TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
         }
 
-    # organisational_unit_read -- Synchronisation point for meld
+    # organisation_create -- Synchronisation point for meld
     @staticmethod
-    # No permissions are required for this
-    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+    async def organisation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
-        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            organisational_unit = await request.app[
-                "authentication_service_api"].organisational_unit_read(
-                organisational_unit_id)
+            organisation = await request.app["authentication_service_api"].organisation_create(
+                organisation_create=body)
 
-        if organisational_unit:
-            transform = transformations.ORGANISATIONAL_UNIT
-            result = transform.apply(organisational_unit.to_dict())
+        if organisation:
+            transform = transformations.ORGANISATION
+            result = transform.apply(organisation.to_dict())
+            return result
+
+        return None
+
+    # organisation_delete -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["authentication_service_api"].organisation_delete(
+                organisation_id)
+
+        return result
+
+    # organisation_read -- Synchronisation point for meld
+    @staticmethod
+    # No permissions are required for this
+    async def organisation_read(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisation = await request.app["authentication_service_api"].organisation_read(
+                organisation_id)
+
+        if organisation:
+            transform = transformations.ORGANISATION
+            result = transform.apply(organisation.to_dict())
+            return result
+
+        return None
+
+    # organisation_update -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            organisation = await request.app["authentication_service_api"].organisation_update(
+                organisation_id=organisation_id,
+                organisation_update=body
+            )
+
+        if organisation:
+            transform = transformations.ORGANISATION
+            result = transform.apply(organisation.to_dict())
             return result
 
         return None
@@ -1804,7 +1903,8 @@ class Implementation(AbstractStubClass):
 
     # site_list -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:site", "read")])
+    @require_permissions(all, [("urn:ge:access_control:site", "read")],
+                         allow_for_management_portal=True)
     async def site_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1861,7 +1961,8 @@ class Implementation(AbstractStubClass):
 
     # site_read -- Synchronisation point for meld
     @staticmethod
-    @require_permissions(all, [("urn:ge:access_control:site", "read")])
+    @require_permissions(all, [("urn:ge:access_control:site", "read")],
+                         allow_for_management_portal=True)
     async def site_read(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1955,12 +2056,21 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            udr = await request.app["access_control_api"].userdomainrole_create(
+            user = await request.app["authentication_service_api"].user_read(user_id=body[
+                "user_id"])
+
+            if not user:
+                raise JSONForbidden(message="The target user does not exist")
+
+            if user.organisation_id is None:
+                raise JSONForbidden(message="The target user is not linked to an organisation")
+
+            user_domain_role = await request.app["access_control_api"].userdomainrole_create(
                 user_domain_role_create=body)
 
-        if udr:
+        if user_domain_role:
             transform = transformations.USER_DOMAIN_ROLE
-            result = transform.apply(udr.to_dict())
+            result = transform.apply(user_domain_role.to_dict())
             return result
 
         return None
@@ -2025,12 +2135,12 @@ class Implementation(AbstractStubClass):
         :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
         :param msisdn_verified (optional): boolean An optional MSISDN verified filter
         :param nickname (optional): string An optional case insensitive nickname inner match filter
-        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param organisation_id (optional): integer An optional filter on the organisation id
         :param updated_at (optional): string An optional updated_at range filter
         :param username (optional): string An optional case insensitive username inner match filter
         :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
         :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
-        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :param site_ids (optional): array An optional list of site ids
@@ -2261,12 +2371,21 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         with client_exception_handler():
-            usr = await request.app["access_control_api"].usersiterole_create(
+            user = await request.app["authentication_service_api"].user_read(user_id=body[
+                "user_id"])
+
+            if not user:
+                raise JSONForbidden(message="The target user does not exist")
+
+            if user.organisation_id is None:
+                raise JSONForbidden(message="The target user is not linked to an organisation")
+
+            user_site_role = await request.app["access_control_api"].usersiterole_create(
                 user_site_role_create=body)
 
-        if usr:
+        if user_site_role:
             transform = transformations.USER_SITE_ROLE
-            result = transform.apply(usr.to_dict())
+            result = transform.apply(user_site_role.to_dict())
             return result
 
         return None

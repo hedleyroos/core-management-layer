@@ -16,7 +16,9 @@ from __future__ import absolute_import
 # import models into model package
 from authentication_service.models.client import Client
 from authentication_service.models.country import Country
-from authentication_service.models.organisational_unit import OrganisationalUnit
+from authentication_service.models.organisation import Organisation
+from authentication_service.models.organisation_create import OrganisationCreate
+from authentication_service.models.organisation_update import OrganisationUpdate
 from authentication_service.models.user import User
 from authentication_service.models.user_site import UserSite
 from authentication_service.models.user_update import UserUpdate

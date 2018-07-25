@@ -27,8 +27,8 @@ from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware
-from management_layer.utils import return_users_with_roles, return_user_ids, return_site, TEST_SITE, \
-    return_client
+from management_layer.utils import return_users_with_roles, return_users, \
+    return_sites, TEST_SITE, return_clients, return_user
 from user_data_store import UserDataApi
 
 LOGGER = logging.getLogger(__name__)
@@ -75,9 +75,9 @@ RESOURCES = {
     "clients": Resource(1, schemas.client, None, None),
     "users": Resource(1, schemas.user, None, schemas.user_update),
     "countries": Resource(1, schemas.country, None, None),
-    "organisationalunits": Resource(1, schemas.organisationalunit, None, None),
+    "organisations": Resource(1, schemas.organisation, schemas.organisation_create, schemas.organisation_update),
 }
-SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisationalunits"]
+SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
 
 def wait_for_server(ip, port):
@@ -266,11 +266,13 @@ class ExampleTestCase(AioHTTPTestCase):
 @patch("access_control.api.operational_api.OperationalApi.get_users_with_roles_for_site",
        Mock(side_effect=return_users_with_roles))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.user_list",
-       Mock(side_effect=return_user_ids))
+       Mock(side_effect=return_users))
 @patch("access_control.api.access_control_api.AccessControlApi.site_list",
-       Mock(side_effect=return_site))
+       Mock(side_effect=return_sites))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.client_list",
-       Mock(side_effect=return_client))
+       Mock(side_effect=return_clients))
+@patch("authentication_service.api.authentication_api.AuthenticationApi.user_read",
+       Mock(side_effect=return_user))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
@@ -358,15 +360,19 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
-        app["client_session"] = ClientSession()
-
         app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+
+        async def on_startup(the_app):
+            the_app["client_session"] = ClientSession()
+
+        async def on_shutdown(the_app):
+            await the_app["client_session"].close()
+
+        app.on_startup.append(on_startup)
+        app.on_shutdown.append(on_shutdown)
 
         add_routes(app, with_ui=False)
         return app
-
-    async def tearDownAsync(self):
-        await self.app["client_session"].close()
 
     @parameterized.expand([
         (resource, info) for resource, info in RESOURCES.items()
@@ -808,6 +814,22 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 403)
 
     @unittest_run_loop
+    async def test_purge_expired_invitations_async(self):
+        response = await self.client.get("/invitations/purge/expired")
+        await self.assertStatus(response, 200)
+        purged_invitations = await response.json()
+        validate_response_schema(purged_invitations, schemas.purged_invitations)
+        self.assertEqual(purged_invitations["mode"], "asynchronous")
+
+    @unittest_run_loop
+    async def test_purge_expired_invitations_sync(self):
+        response = await self.client.get("/invitations/purge/expired?synchronous_mode=true")
+        await self.assertStatus(response, 200)
+        purged_invitations = await response.json()
+        validate_response_schema(purged_invitations, schemas.purged_invitations)
+        self.assertEqual(purged_invitations["mode"], "synchronous")
+
+    @unittest_run_loop
     async def test_healthcheck(self):
         response = await self.client.get(
             # Overwrite the proper auth header set on the client.
@@ -816,3 +838,13 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertEqual(response.status, 200)
         response_body = await response.json()
         validate_response_schema(response_body, schemas.health_info)
+
+    @unittest_run_loop
+    async def test_invitation_send(self):
+        invitation_id = uuid.uuid4()
+        response = await self.client.get(
+            f"/invitations/{invitation_id.hex}/send"
+        )
+        self.assertEqual(response.status, 200)
+        response_body = await response.json()
+        self.assertEqual(response_body, None)

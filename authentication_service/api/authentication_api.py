@@ -442,47 +442,45 @@ class AuthenticationApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def organisational_unit_list(self, **kwargs):  # noqa: E501
-        """organisational_unit_list  # noqa: E501
+    def invitation_send(self, invitation_id, **kwargs):  # noqa: E501
+        """invitation_send  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.organisational_unit_list(async=True)
+        >>> thread = api.invitation_send(invitation_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param int offset: An optional query parameter specifying the offset in the result set to start from.
-        :param int limit: An optional query parameter to limit the number of results returned.
-        :param list[int] organisational_unit_ids: An optional list of organisational unit ids
-        :return: list[OrganisationalUnit]
+        :param str invitation_id: (required)
+        :param str language:
+        :return: None
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.organisational_unit_list_with_http_info(**kwargs)  # noqa: E501
+            return self.invitation_send_with_http_info(invitation_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.organisational_unit_list_with_http_info(**kwargs)  # noqa: E501
+            (data) = self.invitation_send_with_http_info(invitation_id, **kwargs)  # noqa: E501
             return data
 
-    def organisational_unit_list_with_http_info(self, **kwargs):  # noqa: E501
-        """organisational_unit_list  # noqa: E501
+    def invitation_send_with_http_info(self, invitation_id, **kwargs):  # noqa: E501
+        """invitation_send  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.organisational_unit_list_with_http_info(async=True)
+        >>> thread = api.invitation_send_with_http_info(invitation_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param int offset: An optional query parameter specifying the offset in the result set to start from.
-        :param int limit: An optional query parameter to limit the number of results returned.
-        :param list[int] organisational_unit_ids: An optional list of organisational unit ids
-        :return: list[OrganisationalUnit]
+        :param str invitation_id: (required)
+        :param str language:
+        :return: None
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'organisational_unit_ids']  # noqa: E501
+        all_params = ['invitation_id', 'language']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -493,20 +491,297 @@ class AuthenticationApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method organisational_unit_list" % key
+                    " to method invitation_send" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'invitation_id' is set
+        if ('invitation_id' not in params or
+                params['invitation_id'] is None):
+            raise ValueError("Missing the required parameter `invitation_id` when calling `invitation_send`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'invitation_id' in params:
+            path_params['invitation_id'] = params['invitation_id']  # noqa: E501
+
+        query_params = []
+        if 'language' in params:
+            query_params.append(('language', params['language']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/invitations/{invitation_id}/send', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type=None,  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisation_create(self, **kwargs):  # noqa: E501
+        """organisation_create  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_create(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param OrganisationCreate organisation_create:
+        :return: Organisation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisation_create_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.organisation_create_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def organisation_create_with_http_info(self, **kwargs):  # noqa: E501
+        """organisation_create  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_create_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param OrganisationCreate organisation_create:
+        :return: Organisation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['organisation_create']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisation_create" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'organisation_create' in params:
+            body_params = params['organisation_create']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/organisations', 'POST',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Organisation',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisation_delete(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_delete  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_delete(organisation_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisation_delete_with_http_info(organisation_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.organisation_delete_with_http_info(organisation_id, **kwargs)  # noqa: E501
+            return data
+
+    def organisation_delete_with_http_info(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_delete  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_delete_with_http_info(organisation_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['organisation_id']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisation_delete" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'organisation_id' is set
+        if ('organisation_id' not in params or
+                params['organisation_id'] is None):
+            raise ValueError("Missing the required parameter `organisation_id` when calling `organisation_delete`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'organisation_id' in params:
+            path_params['organisation_id'] = params['organisation_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/organisations/{organisation_id}', 'DELETE',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type=None,  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisation_list(self, **kwargs):  # noqa: E501
+        """organisation_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_list(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] organisation_ids: An optional list of organisation ids
+        :return: list[Organisation]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisation_list_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.organisation_list_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def organisation_list_with_http_info(self, **kwargs):  # noqa: E501
+        """organisation_list  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_list_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int offset: An optional query parameter specifying the offset in the result set to start from.
+        :param int limit: An optional query parameter to limit the number of results returned.
+        :param list[int] organisation_ids: An optional list of organisation ids
+        :return: list[Organisation]
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['offset', 'limit', 'organisation_ids']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisation_list" % key
                 )
             params[key] = val
         del params['kwargs']
 
         if 'offset' in params and params['offset'] < 0:  # noqa: E501
-            raise ValueError("Invalid value for parameter `offset` when calling `organisational_unit_list`, must be a value greater than or equal to `0`")  # noqa: E501
+            raise ValueError("Invalid value for parameter `offset` when calling `organisation_list`, must be a value greater than or equal to `0`")  # noqa: E501
         if 'limit' in params and params['limit'] > 100:  # noqa: E501
-            raise ValueError("Invalid value for parameter `limit` when calling `organisational_unit_list`, must be a value less than or equal to `100`")  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `organisation_list`, must be a value less than or equal to `100`")  # noqa: E501
         if 'limit' in params and params['limit'] < 1:  # noqa: E501
-            raise ValueError("Invalid value for parameter `limit` when calling `organisational_unit_list`, must be a value greater than or equal to `1`")  # noqa: E501
-        if ('organisational_unit_ids' in params and
-                len(params['organisational_unit_ids']) < 1):
-            raise ValueError("Invalid value for parameter `organisational_unit_ids` when calling `organisational_unit_list`, number of items must be greater than or equal to `1`")  # noqa: E501
+            raise ValueError("Invalid value for parameter `limit` when calling `organisation_list`, must be a value greater than or equal to `1`")  # noqa: E501
+        if ('organisation_ids' in params and
+                len(params['organisation_ids']) < 1):
+            raise ValueError("Invalid value for parameter `organisation_ids` when calling `organisation_list`, number of items must be greater than or equal to `1`")  # noqa: E501
         collection_formats = {}
 
         path_params = {}
@@ -516,9 +791,9 @@ class AuthenticationApi(object):
             query_params.append(('offset', params['offset']))  # noqa: E501
         if 'limit' in params:
             query_params.append(('limit', params['limit']))  # noqa: E501
-        if 'organisational_unit_ids' in params:
-            query_params.append(('organisational_unit_ids', params['organisational_unit_ids']))  # noqa: E501
-            collection_formats['organisational_unit_ids'] = 'csv'  # noqa: E501
+        if 'organisation_ids' in params:
+            query_params.append(('organisation_ids', params['organisation_ids']))  # noqa: E501
+            collection_formats['organisation_ids'] = 'csv'  # noqa: E501
 
         header_params = {}
 
@@ -534,14 +809,14 @@ class AuthenticationApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/organisational_units', 'GET',
+            '/organisations', 'GET',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[OrganisationalUnit]',  # noqa: E501
+            response_type='list[Organisation]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -549,43 +824,43 @@ class AuthenticationApi(object):
             _request_timeout=params.get('_request_timeout'),
             collection_formats=collection_formats)
 
-    def organisational_unit_read(self, organisational_unit_id, **kwargs):  # noqa: E501
-        """organisational_unit_read  # noqa: E501
+    def organisation_read(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_read  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.organisational_unit_read(organisational_unit_id, async=True)
+        >>> thread = api.organisation_read(organisation_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param int organisational_unit_id: An integer identifying an organisational unit (required)
-        :return: OrganisationalUnit
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :return: Organisation
                  If the method is called asynchronously,
                  returns the request thread.
         """
         kwargs['_return_http_data_only'] = True
         if kwargs.get('async'):
-            return self.organisational_unit_read_with_http_info(organisational_unit_id, **kwargs)  # noqa: E501
+            return self.organisation_read_with_http_info(organisation_id, **kwargs)  # noqa: E501
         else:
-            (data) = self.organisational_unit_read_with_http_info(organisational_unit_id, **kwargs)  # noqa: E501
+            (data) = self.organisation_read_with_http_info(organisation_id, **kwargs)  # noqa: E501
             return data
 
-    def organisational_unit_read_with_http_info(self, organisational_unit_id, **kwargs):  # noqa: E501
-        """organisational_unit_read  # noqa: E501
+    def organisation_read_with_http_info(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_read  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
         asynchronous HTTP request, please pass async=True
-        >>> thread = api.organisational_unit_read_with_http_info(organisational_unit_id, async=True)
+        >>> thread = api.organisation_read_with_http_info(organisation_id, async=True)
         >>> result = thread.get()
 
         :param async bool
-        :param int organisational_unit_id: An integer identifying an organisational unit (required)
-        :return: OrganisationalUnit
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :return: Organisation
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['organisational_unit_id']  # noqa: E501
+        all_params = ['organisation_id']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -596,20 +871,20 @@ class AuthenticationApi(object):
             if key not in all_params:
                 raise TypeError(
                     "Got an unexpected keyword argument '%s'"
-                    " to method organisational_unit_read" % key
+                    " to method organisation_read" % key
                 )
             params[key] = val
         del params['kwargs']
-        # verify the required parameter 'organisational_unit_id' is set
-        if ('organisational_unit_id' not in params or
-                params['organisational_unit_id'] is None):
-            raise ValueError("Missing the required parameter `organisational_unit_id` when calling `organisational_unit_read`")  # noqa: E501
+        # verify the required parameter 'organisation_id' is set
+        if ('organisation_id' not in params or
+                params['organisation_id'] is None):
+            raise ValueError("Missing the required parameter `organisation_id` when calling `organisation_read`")  # noqa: E501
 
         collection_formats = {}
 
         path_params = {}
-        if 'organisational_unit_id' in params:
-            path_params['organisational_unit_id'] = params['organisational_unit_id']  # noqa: E501
+        if 'organisation_id' in params:
+            path_params['organisation_id'] = params['organisation_id']  # noqa: E501
 
         query_params = []
 
@@ -627,14 +902,200 @@ class AuthenticationApi(object):
         auth_settings = ['APIKeyHeader']  # noqa: E501
 
         return self.api_client.call_api(
-            '/organisational_units/{organisational_unit_id}', 'GET',
+            '/organisations/{organisation_id}', 'GET',
             path_params,
             query_params,
             header_params,
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='OrganisationalUnit',  # noqa: E501
+            response_type='Organisation',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def organisation_update(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_update  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_update(organisation_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :param OrganisationUpdate organisation_update:
+        :return: Organisation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.organisation_update_with_http_info(organisation_id, **kwargs)  # noqa: E501
+        else:
+            (data) = self.organisation_update_with_http_info(organisation_id, **kwargs)  # noqa: E501
+            return data
+
+    def organisation_update_with_http_info(self, organisation_id, **kwargs):  # noqa: E501
+        """organisation_update  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.organisation_update_with_http_info(organisation_id, async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param int organisation_id: An integer identifying an organisation a user belongs to (required)
+        :param OrganisationUpdate organisation_update:
+        :return: Organisation
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['organisation_id', 'organisation_update']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method organisation_update" % key
+                )
+            params[key] = val
+        del params['kwargs']
+        # verify the required parameter 'organisation_id' is set
+        if ('organisation_id' not in params or
+                params['organisation_id'] is None):
+            raise ValueError("Missing the required parameter `organisation_id` when calling `organisation_update`")  # noqa: E501
+
+        collection_formats = {}
+
+        path_params = {}
+        if 'organisation_id' in params:
+            path_params['organisation_id'] = params['organisation_id']  # noqa: E501
+
+        query_params = []
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        if 'organisation_update' in params:
+            body_params = params['organisation_update']
+        # HTTP header `Accept`
+        header_params['Accept'] = self.api_client.select_header_accept(
+            ['application/json'])  # noqa: E501
+
+        # HTTP header `Content-Type`
+        header_params['Content-Type'] = self.api_client.select_header_content_type(  # noqa: E501
+            ['application/json'])  # noqa: E501
+
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/organisations/{organisation_id}', 'PUT',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type='Organisation',  # noqa: E501
+            auth_settings=auth_settings,
+            async=params.get('async'),
+            _return_http_data_only=params.get('_return_http_data_only'),
+            _preload_content=params.get('_preload_content', True),
+            _request_timeout=params.get('_request_timeout'),
+            collection_formats=collection_formats)
+
+    def purge_expired_invitations(self, **kwargs):  # noqa: E501
+        """purge_expired_invitations  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.purge_expired_invitations(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param date cutoff_date: An optional cutoff date to purge invites before this date
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+        kwargs['_return_http_data_only'] = True
+        if kwargs.get('async'):
+            return self.purge_expired_invitations_with_http_info(**kwargs)  # noqa: E501
+        else:
+            (data) = self.purge_expired_invitations_with_http_info(**kwargs)  # noqa: E501
+            return data
+
+    def purge_expired_invitations_with_http_info(self, **kwargs):  # noqa: E501
+        """purge_expired_invitations  # noqa: E501
+
+        This method makes a synchronous HTTP request by default. To make an
+        asynchronous HTTP request, please pass async=True
+        >>> thread = api.purge_expired_invitations_with_http_info(async=True)
+        >>> result = thread.get()
+
+        :param async bool
+        :param date cutoff_date: An optional cutoff date to purge invites before this date
+        :return: None
+                 If the method is called asynchronously,
+                 returns the request thread.
+        """
+
+        all_params = ['cutoff_date']  # noqa: E501
+        all_params.append('async')
+        all_params.append('_return_http_data_only')
+        all_params.append('_preload_content')
+        all_params.append('_request_timeout')
+
+        params = locals()
+        for key, val in six.iteritems(params['kwargs']):
+            if key not in all_params:
+                raise TypeError(
+                    "Got an unexpected keyword argument '%s'"
+                    " to method purge_expired_invitations" % key
+                )
+            params[key] = val
+        del params['kwargs']
+
+        collection_formats = {}
+
+        path_params = {}
+
+        query_params = []
+        if 'cutoff_date' in params:
+            query_params.append(('cutoff_date', params['cutoff_date']))  # noqa: E501
+
+        header_params = {}
+
+        form_params = []
+        local_var_files = {}
+
+        body_params = None
+        # Authentication setting
+        auth_settings = ['APIKeyHeader']  # noqa: E501
+
+        return self.api_client.call_api(
+            '/invitations/purge_expired', 'GET',
+            path_params,
+            query_params,
+            header_params,
+            body=body_params,
+            post_params=form_params,
+            files=local_var_files,
+            response_type=None,  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -755,12 +1216,12 @@ class AuthenticationApi(object):
         :param str msisdn: An optional case insensitive MSISDN inner match filter
         :param bool msisdn_verified: An optional MSISDN verified filter
         :param str nickname: An optional case insensitive nickname inner match filter
-        :param int organisational_unit_id: An optional filter on the organisational unit id
+        :param int organisation_id: An optional filter on the organisation id
         :param str updated_at: An optional updated_at range filter
         :param str username: An optional case insensitive username inner match filter
         :param str q: An optional case insensitive inner match filter across all searchable text fields
         :param bool tfa_enabled: An optional filter based on whether a user has 2FA enabled or not
-        :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
+        :param bool has_organisation: An optional filter based on whether a user belongs to an organisation or not
         :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
         :param list[int] site_ids: An optional list of site ids
@@ -799,12 +1260,12 @@ class AuthenticationApi(object):
         :param str msisdn: An optional case insensitive MSISDN inner match filter
         :param bool msisdn_verified: An optional MSISDN verified filter
         :param str nickname: An optional case insensitive nickname inner match filter
-        :param int organisational_unit_id: An optional filter on the organisational unit id
+        :param int organisation_id: An optional filter on the organisation id
         :param str updated_at: An optional updated_at range filter
         :param str username: An optional case insensitive username inner match filter
         :param str q: An optional case insensitive inner match filter across all searchable text fields
         :param bool tfa_enabled: An optional filter based on whether a user has 2FA enabled or not
-        :param bool has_organisational_unit: An optional filter based on whether a user has an organisational unit or not
+        :param bool has_organisation: An optional filter based on whether a user belongs to an organisation or not
         :param list[str] order_by: Fields and directions to order by, e.g. \"-created_at,username\". Add \"-\" in front of a field name to indicate descending order.
         :param list[str] user_ids: An optional list of user ids
         :param list[int] site_ids: An optional list of site ids
@@ -813,7 +1274,7 @@ class AuthenticationApi(object):
                  returns the request thread.
         """
 
-        all_params = ['offset', 'limit', 'birth_date', 'country', 'date_joined', 'email', 'email_verified', 'first_name', 'gender', 'is_active', 'last_login', 'last_name', 'msisdn', 'msisdn_verified', 'nickname', 'organisational_unit_id', 'updated_at', 'username', 'q', 'tfa_enabled', 'has_organisational_unit', 'order_by', 'user_ids', 'site_ids']  # noqa: E501
+        all_params = ['offset', 'limit', 'birth_date', 'country', 'date_joined', 'email', 'email_verified', 'first_name', 'gender', 'is_active', 'last_login', 'last_name', 'msisdn', 'msisdn_verified', 'nickname', 'organisation_id', 'updated_at', 'username', 'q', 'tfa_enabled', 'has_organisation', 'order_by', 'user_ids', 'site_ids']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -903,8 +1364,8 @@ class AuthenticationApi(object):
             query_params.append(('msisdn_verified', params['msisdn_verified']))  # noqa: E501
         if 'nickname' in params:
             query_params.append(('nickname', params['nickname']))  # noqa: E501
-        if 'organisational_unit_id' in params:
-            query_params.append(('organisational_unit_id', params['organisational_unit_id']))  # noqa: E501
+        if 'organisation_id' in params:
+            query_params.append(('organisation_id', params['organisation_id']))  # noqa: E501
         if 'updated_at' in params:
             query_params.append(('updated_at', params['updated_at']))  # noqa: E501
         if 'username' in params:
@@ -913,8 +1374,8 @@ class AuthenticationApi(object):
             query_params.append(('q', params['q']))  # noqa: E501
         if 'tfa_enabled' in params:
             query_params.append(('tfa_enabled', params['tfa_enabled']))  # noqa: E501
-        if 'has_organisational_unit' in params:
-            query_params.append(('has_organisational_unit', params['has_organisational_unit']))  # noqa: E501
+        if 'has_organisation' in params:
+            query_params.append(('has_organisation', params['has_organisation']))  # noqa: E501
         if 'order_by' in params:
             query_params.append(('order_by', params['order_by']))  # noqa: E501
             collection_formats['order_by'] = 'csv'  # noqa: E501

@@ -46,7 +46,7 @@ INVITATION = Transformation(
         Mapping("expires_at", conversion=datetime_to_string)
     ],
     copy_fields=["id", "first_name", "last_name", "email",
-                 "invitor_id", "is_system_user"]
+                 "invitor_id", "organisation_id"]
 )
 
 INVITATION_DOMAIN_ROLE = Transformation(
@@ -65,7 +65,7 @@ INVITATION_SITE_ROLE = Transformation(
     copy_fields=["invitation_id", "site_id", "role_id"]
 )
 
-ORGANISATIONAL_UNIT = Transformation(
+ORGANISATION = Transformation(
     mappings=[
         Mapping("created_at", conversion=datetime_to_string),
         Mapping("updated_at", conversion=datetime_to_string)
@@ -185,5 +185,5 @@ USER = Transformation(
     ],
     copy_fields=["id", "username", "first_name", "last_name", "email",
                  "is_active", "email_verified", "msisdn_verified", "msisdn",
-                 "gender", "avatar", "country_code", "organisational_unit_id"]
+                 "gender", "avatar", "country_code", "organisation_id"]
 )

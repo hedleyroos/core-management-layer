@@ -1338,6 +1338,7 @@ class Invitations(View, CorsViewMixin):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
+                "readOnly": true,
                 "type": "string",
                 "x-related-info": {
                     "label": "username",
@@ -1347,6 +1348,13 @@ class Invitations(View, CorsViewMixin):
             "last_name": {
                 "maxLength": 100,
                 "type": "string"
+            },
+            "organisation_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisation"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1360,6 +1368,7 @@ class Invitations(View, CorsViewMixin):
             "first_name",
             "last_name",
             "email",
+            "organisation_id",
             "expires_at",
             "created_at",
             "updated_at"
@@ -1406,10 +1415,8 @@ class Invitations(View, CorsViewMixin):
             invitation_ids = self.request.query.get("invitation_ids", None)
             if invitation_ids is not None:
                 invitation_ids = invitation_ids.split(",")
-            if invitation_ids:
-                invitation_ids = [int(e) for e in invitation_ids]
             if invitation_ids is not None:
-                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
@@ -1566,6 +1573,83 @@ class InvitationsInvitationId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class InvitationsInvitationIdSend(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsInvitationIdSend instance
+        """
+        try:
+            # invitation_id: string 
+            invitation_id = self.request.match_info["invitation_id"]
+            jsonschema.validate(invitation_id, {"type": "string"})
+            optional_args = {}
+            # language (optional): string 
+            language = self.request.query.get("language", None)
+            if language is not None:
+                jsonschema.validate(language, {"type": "string"})
+                optional_args["language"] = language
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.invitation_send(
+            self.request, invitation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class InvitationsPurgeExpired(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.purged_invitations
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationsPurgeExpired instance
+        """
+        try:
+            optional_args = {}
+            # synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+            synchronous_mode = self.request.query.get("synchronous_mode", None)
+            if synchronous_mode is not None:
+                synchronous_mode = (synchronous_mode.lower() == "true")
+                jsonschema.validate(synchronous_mode, {"type": "boolean"})
+                optional_args["synchronous_mode"] = synchronous_mode
+            # cutoff_date (optional): string An optional cutoff date to purge invites before this date
+            cutoff_date = self.request.query.get("cutoff_date", None)
+            if cutoff_date is not None:
+                jsonschema.validate(cutoff_date, {"type": "string"})
+                optional_args["cutoff_date"] = cutoff_date
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.purge_expired_invitations(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -2366,7 +2450,7 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class Organisationalunits(View, CorsViewMixin):
+class Organisations(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -2405,11 +2489,13 @@ class Organisationalunits(View, CorsViewMixin):
     },
     "type": "array"
 }""")
+    POST_RESPONSE_SCHEMA = schemas.organisation
+    POST_BODY_SCHEMA = schemas.organisation_create
 
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Organisationalunits instance
+        :param self: A Organisations instance
         """
         try:
             optional_args = {}
@@ -2429,27 +2515,27 @@ class Organisationalunits(View, CorsViewMixin):
                 if 100 < limit:
                     raise ValidationError("limit exceeds its maximum limit")
                 optional_args["limit"] = limit
-            # organisational_unit_ids (optional): array An optional list of organisational unit ids
-            organisational_unit_ids = self.request.query.get("organisational_unit_ids", None)
-            if organisational_unit_ids is not None:
-                organisational_unit_ids = organisational_unit_ids.split(",")
-            if organisational_unit_ids:
-                organisational_unit_ids = [int(e) for e in organisational_unit_ids]
-            if organisational_unit_ids is not None:
-                schema = {'name': 'organisational_unit_ids', 'description': 'An optional list of organisational unit ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
+            # organisation_ids (optional): array An optional list of organisation ids
+            organisation_ids = self.request.query.get("organisation_ids", None)
+            if organisation_ids is not None:
+                organisation_ids = organisation_ids.split(",")
+            if organisation_ids:
+                organisation_ids = [int(e) for e in organisation_ids]
+            if organisation_ids is not None:
+                schema = {'name': 'organisation_ids', 'description': 'An optional list of organisation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
                 # Remove Swagger fields that clash with JSONSchema names at this level
                 for field in ["name", "in", "required", "collectionFormat"]:
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(organisational_unit_ids, schema)
-                optional_args["organisational_unit_ids"] = organisational_unit_ids
+                jsonschema.validate(organisation_ids, schema)
+                optional_args["organisation_ids"] = organisation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
-        result = await Stubs.organisational_unit_list(
+        result = await Stubs.organisation_list(
             self.request, **optional_args)
 
         if type(result) is tuple:
@@ -2461,28 +2547,93 @@ class Organisationalunits(View, CorsViewMixin):
 
         return json_response(result, headers=headers)
 
-
-class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.organisationalunit
-
-    async def get(self):
+    async def post(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A OrganisationalunitsOrganisationalUnitId instance
+        :param self: A Organisations instance
         """
         try:
-            # organisational_unit_id: integer An integer identifying an organisational unit
-            organisational_unit_id = self.request.match_info["organisational_unit_id"]
-            organisational_unit_id = int(organisational_unit_id)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
         except ValueError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
-        result = await Stubs.organisational_unit_read(
-            self.request, organisational_unit_id, **optional_args)
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.organisation_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class OrganisationsOrganisationId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.organisation
+    PUT_RESPONSE_SCHEMA = schemas.organisation
+    PUT_BODY_SCHEMA = schemas.organisation_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationsOrganisationId instance
+        """
+        try:
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.organisation_delete(
+            self.request, organisation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationsOrganisationId instance
+        """
+        try:
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.organisation_read(
+            self.request, organisation_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -2490,6 +2641,44 @@ class OrganisationalunitsOrganisationalUnitId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OrganisationsOrganisationId instance
+        """
+        try:
+            # organisation_id: integer An integer identifying an organisation
+            organisation_id = self.request.match_info["organisation_id"]
+            organisation_id = int(organisation_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.organisation_update(
+            self.request, body, organisation_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -4789,12 +4978,12 @@ class Users(View, CorsViewMixin):
             "msisdn_verified": {
                 "type": "boolean"
             },
-            "organisational_unit_id": {
+            "organisation_id": {
                 "readOnly": true,
                 "type": "integer",
                 "x-related-info": {
                     "label": "name",
-                    "model": "organisationalunit"
+                    "model": "organisation"
                 }
             },
             "updated_at": {
@@ -4915,11 +5104,11 @@ class Users(View, CorsViewMixin):
             if nickname is not None:
                 jsonschema.validate(nickname, {"type": "string"})
                 optional_args["nickname"] = nickname
-            # organisational_unit_id (optional): integer An optional filter on the organisational unit id
-            organisational_unit_id = self.request.query.get("organisational_unit_id", None)
-            if organisational_unit_id is not None:
-                organisational_unit_id = int(organisational_unit_id)
-                optional_args["organisational_unit_id"] = organisational_unit_id
+            # organisation_id (optional): integer An optional filter on the organisation id
+            organisation_id = self.request.query.get("organisation_id", None)
+            if organisation_id is not None:
+                organisation_id = int(organisation_id)
+                optional_args["organisation_id"] = organisation_id
             # updated_at (optional): string An optional updated_at range filter
             updated_at = self.request.query.get("updated_at", None)
             if updated_at is not None:
@@ -4941,12 +5130,12 @@ class Users(View, CorsViewMixin):
                 tfa_enabled = (tfa_enabled.lower() == "true")
                 jsonschema.validate(tfa_enabled, {"type": "boolean"})
                 optional_args["tfa_enabled"] = tfa_enabled
-            # has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
-            has_organisational_unit = self.request.query.get("has_organisational_unit", None)
-            if has_organisational_unit is not None:
-                has_organisational_unit = (has_organisational_unit.lower() == "true")
-                jsonschema.validate(has_organisational_unit, {"type": "boolean"})
-                optional_args["has_organisational_unit"] = has_organisational_unit
+            # has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
+            has_organisation = self.request.query.get("has_organisation", None)
+            if has_organisation is not None:
+                has_organisation = (has_organisation.lower() == "true")
+                jsonschema.validate(has_organisation, {"type": "boolean"})
+                optional_args["has_organisation"] = has_organisation
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
             order_by = self.request.query.get("order_by", None)
             if order_by is not None:
@@ -5682,16 +5871,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "admin_note_create": {
             "properties": {
-                "creator_id": {
-                    "description": "The user making the request will be considered the creator and thus this field is not available when creating admin note.",
-                    "format": "uuid",
-                    "readOnly": true,
-                    "type": "string",
-                    "x-related-info": {
-                        "label": "username",
-                        "model": "user"
-                    }
-                },
                 "note": {
                     "type": "string"
                 },
@@ -5705,7 +5884,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "required": [
                 "user_id",
-                "creator_id",
                 "note"
             ],
             "type": "object"
@@ -6082,6 +6260,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "invitor_id": {
                     "description": "The user that created the invitation",
                     "format": "uuid",
+                    "readOnly": true,
                     "type": "string",
                     "x-related-info": {
                         "label": "username",
@@ -6091,6 +6270,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -6104,6 +6290,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "first_name",
                 "last_name",
                 "email",
+                "organisation_id",
                 "expires_at",
                 "created_at",
                 "updated_at"
@@ -6124,25 +6311,23 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string"
                 },
-                "invitor_id": {
-                    "description": "The user that created the invitation",
-                    "format": "uuid",
-                    "type": "string",
-                    "x-related-info": {
-                        "label": "username",
-                        "model": "user"
-                    }
-                },
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 }
             },
             "required": [
-                "invitor_id",
                 "first_name",
                 "last_name",
-                "email"
+                "email",
+                "organisation_id"
             ],
             "type": "object"
         },
@@ -6304,11 +6489,18 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
+                },
+                "organisation_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "organisation"
+                    }
                 }
             },
             "type": "object"
         },
-        "organisationalunit": {
+        "organisation": {
             "properties": {
                 "created_at": {
                     "format": "date-time",
@@ -6337,6 +6529,32 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "created_at",
                 "updated_at"
             ],
+            "type": "object"
+        },
+        "organisation_create": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "type": "object"
+        },
+        "organisation_update": {
+            "minProperties": 1,
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
             "type": "object"
         },
         "permission": {
@@ -6397,6 +6615,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 }
             },
+            "type": "object"
+        },
+        "purged_invitations": {
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "enum": [
+                        "asynchronous",
+                        "synchronous"
+                    ],
+                    "type": "string"
+                }
+            },
+            "required": [
+                "mode"
+            ],
             "type": "object"
         },
         "resource": {
@@ -6991,12 +7227,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "msisdn_verified": {
                     "type": "boolean"
                 },
-                "organisational_unit_id": {
+                "organisation_id": {
                     "readOnly": true,
                     "type": "integer",
                     "x-related-info": {
                         "label": "name",
-                        "model": "organisationalunit"
+                        "model": "organisation"
                     }
                 },
                 "updated_at": {
@@ -7422,12 +7658,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": true,
             "type": "string"
         },
+        "optional_cutoff_date": {
+            "description": "An optional cutoff date to purge invites before this date",
+            "format": "date",
+            "in": "query",
+            "name": "cutoff_date",
+            "required": false,
+            "type": "string"
+        },
         "optional_domain_filter": {
             "description": "An optional query parameter to filter by domain_id",
             "in": "query",
             "name": "domain_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "domains"
+            }
         },
         "optional_invitation_filter": {
             "description": "An optional query parameter to filter by invitation_id",
@@ -7471,7 +7719,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "in": "query",
             "name": "parent_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "domains"
+            }
         },
         "optional_portal_context_header": {
             "in": "header",
@@ -7484,14 +7736,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "in": "query",
             "name": "role_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label",
+                "rest_resource_name": "roles"
+            }
         },
         "optional_site_filter": {
             "description": "An optional query parameter to filter by site_id",
             "in": "query",
             "name": "site_id",
             "required": false,
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "rest_resource_name": "sites"
+            }
         },
         "optional_user_filter": {
             "description": "An optional query parameter to filter by user_id",
@@ -7501,10 +7761,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "string"
         },
-        "organisational_unit_id": {
-            "description": "An integer identifying an organisational unit",
+        "organisation_id": {
+            "description": "An integer identifying an organisation",
             "in": "path",
-            "name": "organisational_unit_id",
+            "name": "organisation_id",
             "required": true,
             "type": "integer"
         },
@@ -7535,6 +7795,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "site_id",
             "required": true,
             "type": "integer"
+        },
+        "synchronous_mode": {
+            "default": false,
+            "description": "Change the mode of the call to synchronous.",
+            "in": "query",
+            "name": "synchronous_mode",
+            "required": false,
+            "type": "boolean"
         },
         "user_id": {
             "description": "A UUID value identifying the user.",
@@ -8630,7 +8898,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "query",
                         "items": {
                             "format": "uuid",
-                            "type": "integer"
+                            "type": "string"
                         },
                         "minItems": 1,
                         "name": "invitation_ids",
@@ -8713,6 +8981,45 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ],
                 "x-aor-permissions": [
                     "urn:ge:access_control:invitation:create"
+                ]
+            }
+        },
+        "/invitations/purge/expired": {
+            "get": {
+                "operationId": "purge_expired_invitations",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/synchronous_mode",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_cutoff_date",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Expired Invitations Purged",
+                        "schema": {
+                            "$ref": "#/definitions/purged_invitations",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "operational"
                 ]
             }
         },
@@ -8806,6 +9113,38 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:access_control:invitation:update"
                 ]
             }
+        },
+        "/invitations/{invitation_id}/send": {
+            "get": {
+                "operationId": "invitation_send",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "An invitation email was successfully queued for sending."
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            },
+            "parameters": [
+                {
+                    "format": "uuid",
+                    "in": "path",
+                    "name": "invitation_id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "default": "en",
+                    "in": "query",
+                    "name": "language",
+                    "required": false,
+                    "type": "string"
+                }
+            ]
         },
         "/invitationsiteroles": {
             "get": {
@@ -9582,9 +9921,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
-        "/organisationalunits": {
+        "/organisations": {
             "get": {
-                "operationId": "organisational_unit_list",
+                "operationId": "organisation_list",
                 "parameters": [
                     {
                         "$ref": "#/parameters/optional_offset",
@@ -9600,13 +9939,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     },
                     {
                         "collectionFormat": "csv",
-                        "description": "An optional list of organisational unit ids",
+                        "description": "An optional list of organisation ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
                         "minItems": 1,
-                        "name": "organisational_unit_ids",
+                        "name": "organisation_ids",
                         "required": false,
                         "type": "array",
                         "uniqueItems": true
@@ -9626,7 +9965,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         },
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/organisationalunit",
+                                "$ref": "#/definitions/organisation",
                                 "x-scope": [
                                     ""
                                 ]
@@ -9637,6 +9976,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:read"
                 ]
             },
             "parameters": [
@@ -9646,19 +9988,32 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ""
                     ]
                 }
-            ]
-        },
-        "/organisationalunits/{organisational_unit_id}": {
-            "get": {
-                "operationId": "organisational_unit_read",
+            ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "organisation_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/organisation_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/organisationalunit",
+                            "$ref": "#/definitions/organisation",
                             "x-scope": [
                                 ""
                             ]
@@ -9667,6 +10022,48 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:create"
+                ]
+            }
+        },
+        "/organisations/{organisation_id}": {
+            "delete": {
+                "operationId": "organisation_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:delete"
+                ]
+            },
+            "get": {
+                "operationId": "organisation_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/organisation",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:read"
                 ]
             },
             "parameters": [
@@ -9677,12 +10074,50 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 },
                 {
-                    "$ref": "#/parameters/organisational_unit_id",
+                    "$ref": "#/parameters/organisation_id",
                     "x-scope": [
                         ""
                     ]
                 }
-            ]
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "organisation_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/organisation_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/organisation",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:identity_provider:organisation:update"
+                ]
+            }
         },
         "/permissions": {
             "get": {
@@ -11682,9 +12117,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "string"
                     },
                     {
-                        "description": "An optional filter on the organisational unit id",
+                        "description": "An optional filter on the organisation id",
                         "in": "query",
-                        "name": "organisational_unit_id",
+                        "name": "organisation_id",
                         "required": false,
                         "type": "integer"
                     },
@@ -11723,9 +12158,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "type": "boolean"
                     },
                     {
-                        "description": "An optional filter based on whether a user has an organisational unit or not",
+                        "description": "An optional filter based on whether a user belongs to an organisation or not",
                         "in": "query",
-                        "name": "has_organisational_unit",
+                        "name": "has_organisation",
                         "required": false,
                         "type": "boolean"
                     },

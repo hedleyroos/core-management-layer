@@ -11,13 +11,13 @@ import access_control.rest
 import authentication_service.rest
 import user_data_store.rest
 from contextlib import contextmanager
-from aiohttp import web
 from aiohttp.client_exceptions import ClientResponseError, ClientConnectorError, ClientConnectionError
 
 from access_control import UserWithRoles, Site
 from authentication_service import User, Client
 
 from management_layer import mappings, transformations
+from management_layer.exceptions import JSONBadGateway
 from management_layer.sentry import sentry
 
 logger = logging.getLogger(__name__)
@@ -64,41 +64,38 @@ def client_exception_handler():
         # The server, while acting as a gateway or proxy, received an invalid
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        error = json.loads(re.body)["error"] if re.body else None
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
                 "status": re.status,
                 "reason": re.reason,
-                "body": re.body
-            }))
+                "error": error
+            })
     except ClientConnectorError as cce:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce.os_error),
-                "body": str(cce)
-            }))
+                "error": str(cce)
+            })
     except ClientConnectionError as cce:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cce.__module__, cce.__class__.__name__),
                 "status": "N/A",
                 "reason": str(cce),
-                "body": str(cce)
-            }))
+                "error": str(cce)
+            })
     except ClientResponseError as cre:
-        raise web.HTTPBadGateway(
-            headers={"content-type": "application/json"},
-            text=json.dumps({
+        raise JSONBadGateway(
+            json_data={
                 "exception_type": "{}.{}".format(cre.__module__, cre.__class__.__name__),
-                "status": cre.code,
+                "status": cre.status,
                 "reason": cre.message,
-                "body": str(cre)
-            }))
+                "error": str(cre)
+            })
 
 
 async def transform_users_with_roles(request, response, **kwargs):
@@ -115,8 +112,8 @@ async def transform_users_with_roles(request, response, **kwargs):
     ]
     if user_ids:
         # Get all the user names of the user IDs found.
-        users = await request.app[
-            "authentication_service_api"].user_list(user_ids=user_ids, **kwargs)
+        users = await get_until_complete(
+            request, "authentication_service_api", "user_list", **kwargs)
 
         if users:
             transform = transformations.USER
@@ -133,8 +130,30 @@ async def transform_users_with_roles(request, response, **kwargs):
                         for role_id in user_with_roles["role_ids"]
                     ]
                 } for user_with_roles in users_with_roles
+                if user_with_roles["user_id"] in user_mapping
             ]
     return users_with_roles
+
+
+async def get_until_complete(request, api, operation, offset=0, limit=100, **kwargs):
+    """
+    Perform continuous get calls until all the requested data has been obtained.
+    :param request: The current request object.
+    :param api: The API to be queried.
+    :param operation: The operation to be performed on the given API (with http info).
+    :param offset: The current offset of the API call.
+    :param limit: The limit of returned results from each call.
+    :return: List of data returned.
+    """
+    with client_exception_handler():
+        result = []
+        api_call = getattr(request.app[api], operation)
+        data = await api_call(offset=offset, limit=limit, **kwargs)
+        while data:
+            result.extend(data)
+            offset += limit
+            data = await api_call(offset=offset, limit=limit, **kwargs)
+        return result
 
 
 async def return_users_with_roles(*args, **kwargs):
@@ -151,13 +170,13 @@ async def return_users_with_roles(*args, **kwargs):
     ]
 
 
-async def return_user_ids(*args, **kwargs):
+async def return_users(*args, **kwargs):
     """
     Some test functions require to obtain a list of users with at least
     an id and username that is what this will do.
     :return: A list of uuid user_ids
     """
-    return [
+    data = [
         User(
             id=TESTING_USER_ID,
             username="Jake",
@@ -167,6 +186,8 @@ async def return_user_ids(*args, **kwargs):
             updated_at=datetime.datetime.now()
         )
     ]
+    return data[kwargs["offset"]:]
+
 
 TEST_SITE = {
     "id": 1,
@@ -190,17 +211,39 @@ TEST_CLIENT = {
     "reuse_consent": True
 }
 
+TEST_USER = {
+    "id": "b001e842-4994-4c74-8db1-bb2caa42298a",
+    "username": "username",
+    "first_name": "first_name",
+    "last_name": "last_name",
+    "email": "email@example.com",
+    "is_active": True,
+    "date_joined": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "last_login": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "birth_date": datetime.datetime(2000, 1, 1, 0, 0, 0),
+    "country_code": "za",
+    "organisation_id": 1,
+    "created_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "updated_at": datetime.datetime(2018, 1, 1, 0, 0, 0)
+}
 
-async def return_site(*args, **kwargs):
+
+async def return_sites(*args, **kwargs):
     """
-    Some tests require a test site to be returned
+    Some tests require a test site list to be returned
     """
     return [Site(**TEST_SITE)]
 
 
-async def return_client(*args, **kwargs):
+async def return_clients(*args, **kwargs):
     """
-    Some tests require a test client to be returned
+    Some tests require a test client list to be returned
     """
     return [Client(**TEST_CLIENT)]
 
+
+async def return_user(*args, **kwargs):
+    """
+    Some tests require a test user to be returned
+    """
+    return User(**TEST_USER)

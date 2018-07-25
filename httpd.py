@@ -22,6 +22,8 @@ logger.setLevel(settings.LOG_LEVEL)
 
 
 async def on_startup(application: web.Application):
+    application["client_session"] = ClientSession()
+
     logger.info("Setting up scheduled jobs...")
 
     # Create a closure that will be used to refresh data.
@@ -101,8 +103,6 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
-
-    app["client_session"] = ClientSession()
 
     app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
 

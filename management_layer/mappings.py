@@ -29,7 +29,6 @@ import logging
 
 from typing import Callable, Tuple, List, Dict, TypeVar, Awaitable
 
-import aiohttp
 import aiomcache
 import jwt
 from aiohttp import web
@@ -361,9 +360,8 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
             items_by_id = json.loads(items, encoding="utf8")
             logger.debug(f"Loaded {len(items_by_id)} definitions from cache")
         else:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(AUTHENTICATION_SERVICE_JWKS) as response:
-                    jwks = await response.json()
+            async with app["client_session"].get(AUTHENTICATION_SERVICE_JWKS) as response:
+                jwks = await response.json()
 
             for entry in jwks["keys"]:
                 items_by_id[entry["kid"]] = entry

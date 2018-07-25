@@ -334,6 +334,28 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitation_send -- Synchronisation point for meld
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string 
+        :param language (optional): string 
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
     async def invitationsiterole_list(request, **kwargs):
@@ -520,24 +542,55 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
-    # organisational_unit_list -- Synchronisation point for meld
+    # organisation_list -- Synchronisation point for meld
     @staticmethod
-    async def organisational_unit_list(request, **kwargs):
+    async def organisation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :param organisation_ids (optional): array An optional list of organisation ids
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
 
-    # organisational_unit_read -- Synchronisation point for meld
+    # organisation_create -- Synchronisation point for meld
     @staticmethod
-    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+    async def organisation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
-        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisation_delete -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisation_read -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_read(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # organisation_update -- Synchronisation point for meld
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param organisation_id: integer An integer identifying an organisation
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -1082,12 +1135,12 @@ class AbstractStubClass(object):
         :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
         :param msisdn_verified (optional): boolean An optional MSISDN verified filter
         :param nickname (optional): string An optional case insensitive nickname inner match filter
-        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param organisation_id (optional): integer An optional filter on the organisation id
         :param updated_at (optional): string An optional updated_at range filter
         :param username (optional): string An optional case insensitive username inner match filter
         :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
         :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
-        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :param site_ids (optional): array An optional list of site ids
@@ -1958,6 +2011,7 @@ class MockedStubClass(AbstractStubClass):
             "invitor_id": {
                 "description": "The user that created the invitation",
                 "format": "uuid",
+                "readOnly": true,
                 "type": "string",
                 "x-related-info": {
                     "label": "username",
@@ -1967,6 +2021,13 @@ class MockedStubClass(AbstractStubClass):
             "last_name": {
                 "maxLength": 100,
                 "type": "string"
+            },
+            "organisation_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "organisation"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -1980,6 +2041,7 @@ class MockedStubClass(AbstractStubClass):
             "first_name",
             "last_name",
             "email",
+            "organisation_id",
             "expires_at",
             "created_at",
             "updated_at"
@@ -2052,6 +2114,38 @@ class MockedStubClass(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         """
         response_schema = schemas.invitation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitation_send(request, invitation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitation_id: string 
+        :param language (optional): string 
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        """
+        response_schema = schemas.purged_invitations
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -2498,12 +2592,12 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def organisational_unit_list(request, **kwargs):
+    async def organisation_list(request, **kwargs):
         """
         :param request: An HttpRequest
         :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
         :param limit (optional): integer An optional query parameter to limit the number of results returned.
-        :param organisational_unit_ids (optional): array An optional list of organisational unit ids
+        :param organisation_ids (optional): array An optional list of organisation ids
         """
         response_schema = json.loads("""{
     "items": {
@@ -2551,12 +2645,58 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def organisational_unit_read(request, organisational_unit_id, **kwargs):
+    async def organisation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
-        :param organisational_unit_id: integer An integer identifying an organisational unit
+        :param body: dict A dictionary containing the parsed and validated body
         """
-        response_schema = schemas.organisationalunit
+        response_schema = schemas.organisation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisation_delete(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisation_read(request, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param organisation_id: integer An integer identifying an organisation
+        """
+        response_schema = schemas.organisation
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def organisation_update(request, body, organisation_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param organisation_id: integer An integer identifying an organisation
+        """
+        response_schema = schemas.organisation
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -3685,12 +3825,12 @@ class MockedStubClass(AbstractStubClass):
         :param msisdn (optional): string An optional case insensitive MSISDN inner match filter
         :param msisdn_verified (optional): boolean An optional MSISDN verified filter
         :param nickname (optional): string An optional case insensitive nickname inner match filter
-        :param organisational_unit_id (optional): integer An optional filter on the organisational unit id
+        :param organisation_id (optional): integer An optional filter on the organisation id
         :param updated_at (optional): string An optional updated_at range filter
         :param username (optional): string An optional case insensitive username inner match filter
         :param q (optional): string An optional case insensitive inner match filter across all searchable text fields
         :param tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
-        :param has_organisational_unit (optional): boolean An optional filter based on whether a user has an organisational unit or not
+        :param has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
         :param order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
         :param user_ids (optional): array An optional list of user ids
         :param site_ids (optional): array An optional list of site ids
@@ -3769,12 +3909,12 @@ class MockedStubClass(AbstractStubClass):
             "msisdn_verified": {
                 "type": "boolean"
             },
-            "organisational_unit_id": {
+            "organisation_id": {
                 "readOnly": true,
                 "type": "integer",
                 "x-related-info": {
                     "label": "name",
-                    "model": "organisationalunit"
+                    "model": "organisation"
                 }
             },
             "updated_at": {
