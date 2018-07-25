@@ -3,9 +3,8 @@ import logging
 import socket
 import uuid
 
-from aiohttp import web
-
 from management_layer.api.stubs import AbstractStubClass
+from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound
 from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
@@ -790,7 +789,7 @@ class Implementation(AbstractStubClass):
         # In order to be allowed to request the site info for a particular client ID, the client ID
         # needs to be the audience of the JWT token used to make the request.
         if request["token"]["aud"] != client_token_id:
-            raise web.HTTPForbidden(text="Token client id must match the one used in the API call")
+            raise JSONForbidden(text="Token client id must match the one used in the API call")
 
         nocache = kwargs.get("nocache", False)
         if nocache:
@@ -803,13 +802,13 @@ class Implementation(AbstractStubClass):
                     transform = transformations.SITE
                     result = transform.apply(site.to_dict())
                 except Exception as e:
-                    raise web.HTTPNotFound(text=str(e))
+                    raise JSONNotFound(text=str(e))
         else:
             try:
                 site_id = mappings.Mappings.site_id_for(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
             except KeyError as e:
-                raise web.HTTPNotFound(text=str(e))
+                raise JSONNotFound(text=str(e))
 
         return result
 
@@ -901,7 +900,7 @@ class Implementation(AbstractStubClass):
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(text="Malformed user id")
 
         nocache = kwargs.get("nocache", False)
         roles_for_domain = await utils.get_user_roles_for_domain(request, user, domain_id,
@@ -957,7 +956,7 @@ class Implementation(AbstractStubClass):
                 for item in body["resource_permissions"]
             ]
         except KeyError as e:
-            raise web.HTTPBadRequest(text=str(e))
+            raise JSONBadRequest(message=str(e))
 
         nocache = body.get("nocache", False)
         operator_string = body["operator"]
@@ -966,7 +965,7 @@ class Implementation(AbstractStubClass):
         elif operator_string == "all":
             operator = all
         else:
-            raise web.HTTPBadRequest(text=f"Invalid operator specified: {operator_string}.")
+            raise JSONBadRequest(message=f"Invalid operator specified: {operator_string}.")
 
         site_id = body.get("site_id")
         domain_id = body.get("domain_id")
@@ -974,7 +973,7 @@ class Implementation(AbstractStubClass):
         # Either a site_id or domain_id needs to be specified.
         if site_id is None and domain_id is None or \
            site_id is not None and domain_id is not None:
-            raise web.HTTPBadRequest(text="Either site_id or domain_id needs to be specified")
+            raise JSONBadRequest(message="Either site_id or domain_id needs to be specified")
 
         result = await utils.user_has_permissions(request, user_id, operator, resource_permissions,
                                                   site=site_id, domain=domain_id, nocache=nocache)
@@ -994,17 +993,17 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         if request["token"]["aud"] != MANAGEMENT_PORTAL_CLIENT_ID:
-            raise web.HTTPForbidden(text="Only the Management Portal can use this API call")
+            raise JSONForbidden(message="Only the Management Portal can use this API call")
 
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         try:
             management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
         except KeyError:
-            raise web.HTTPBadRequest(text="Misconfigured Management Portal Client ID")
+            raise JSONBadRequest(message="Misconfigured Management Portal Client ID")
 
         nocache = kwargs.get("nocache", False)
         roles = await utils.get_user_roles_for_site(request, user, management_portal_site_id,
@@ -1055,7 +1054,7 @@ class Implementation(AbstractStubClass):
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise web.HTTPBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         nocache = kwargs.get("nocache", False)
         roles_for_site = await utils.get_user_roles_for_site(request, user, site_id,
@@ -2061,10 +2060,10 @@ class Implementation(AbstractStubClass):
                 "user_id"])
 
             if not user:
-                raise web.HTTPForbidden(text="The target user does not exist")
+                raise JSONForbidden(message="The target user does not exist")
 
             if user.organisation_id is None:
-                raise web.HTTPForbidden(text="The target user is not linked to an organisation")
+                raise JSONForbidden(message="The target user is not linked to an organisation")
 
             user_domain_role = await request.app["access_control_api"].userdomainrole_create(
                 user_domain_role_create=body)
@@ -2376,10 +2375,10 @@ class Implementation(AbstractStubClass):
                 "user_id"])
 
             if not user:
-                raise web.HTTPForbidden(text="The target user does not exist")
+                raise JSONForbidden(message="The target user does not exist")
 
             if user.organisation_id is None:
-                raise web.HTTPForbidden(text="The target user is not linked to an organisation")
+                raise JSONForbidden(message="The target user is not linked to an organisation")
 
             user_site_role = await request.app["access_control_api"].usersiterole_create(
                 user_site_role_create=body)
