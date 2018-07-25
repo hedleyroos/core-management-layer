@@ -349,10 +349,12 @@ class Clients(View, CorsViewMixin):
             },
             "terms_url": {
                 "description": "External reference to the privacy policy of the client.",
+                "format": "uri",
                 "type": "string"
             },
             "website_url": {
                 "description": "",
+                "format": "uri",
                 "type": "string"
             }
         },
@@ -5983,10 +5985,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "terms_url": {
                     "description": "External reference to the privacy policy of the client.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "website_url": {
                     "description": "",
+                    "format": "uri",
                     "type": "string"
                 }
             },

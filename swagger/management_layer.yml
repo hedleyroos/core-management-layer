@@ -1294,9 +1294,11 @@ definitions:
       terms_url:
         description: External reference to the privacy policy of the client.
         type: string
+        format: uri
       website_url:
         description: ''
         type: string
+        format: uri
     required:
       - id
       - client_id
