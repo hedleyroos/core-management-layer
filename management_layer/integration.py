@@ -789,7 +789,7 @@ class Implementation(AbstractStubClass):
         # In order to be allowed to request the site info for a particular client ID, the client ID
         # needs to be the audience of the JWT token used to make the request.
         if request["token"]["aud"] != client_token_id:
-            raise JSONForbidden(text="Token client id must match the one used in the API call")
+            raise JSONForbidden(message="Token client id must match the one used in the API call")
 
         nocache = kwargs.get("nocache", False)
         if nocache:
@@ -802,13 +802,13 @@ class Implementation(AbstractStubClass):
                     transform = transformations.SITE
                     result = transform.apply(site.to_dict())
                 except Exception as e:
-                    raise JSONNotFound(text=str(e))
+                    raise JSONNotFound(message=str(e))
         else:
             try:
                 site_id = mappings.Mappings.site_id_for(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
             except KeyError as e:
-                raise JSONNotFound(text=str(e))
+                raise JSONNotFound(message=str(e))
 
         return result
 
@@ -900,7 +900,7 @@ class Implementation(AbstractStubClass):
         try:
             user = uuid.UUID(user_id)
         except ValueError:
-            raise JSONBadRequest(text="Malformed user id")
+            raise JSONBadRequest(message="Malformed user id")
 
         nocache = kwargs.get("nocache", False)
         roles_for_domain = await utils.get_user_roles_for_domain(request, user, domain_id,
