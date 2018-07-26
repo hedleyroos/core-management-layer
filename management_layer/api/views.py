@@ -12822,22 +12822,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
     },
     "swagger": "2.0",
     "x-detail-page-definitions": {
-        "adminnote": {
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "client": {
-            "sortable_fields": [
-                "id",
-                "client_id"
-            ]
-        },
-        "country": {
-            "sortable_fields": [
-                "code"
-            ]
-        },
         "domain": {
             "inlines": [
                 {
@@ -12861,15 +12845,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Roles",
                     "model": "domain_role"
                 }
-            ],
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "domainrole": {
-            "sortable_fields": [
-                "domain_id",
-                "role_id"
             ]
         },
         "invitation": {
@@ -12896,38 +12871,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Site Roles",
                     "model": "invitation_site_role"
                 }
-            ],
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "invitationdomainrole": {
-            "sortable_fields": [
-                "invitation_id",
-                "domain_id",
-                "role_id"
-            ]
-        },
-        "invitationsiterole": {
-            "sortable_fields": [
-                "invitation_id",
-                "site_id",
-                "role_id"
-            ]
-        },
-        "organisation": {
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "permission": {
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "resource": {
-            "sortable_fields": [
-                "id"
             ]
         },
         "role": {
@@ -12943,14 +12886,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Resource Permissions",
                     "model": "role_resource_permission"
                 }
-            ],
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "roleresourcepermission": {
-            "sortable_fields": [
-                "id"
             ]
         },
         "site": {
@@ -12965,20 +12900,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Roles",
                     "model": "site_role"
                 }
-            ],
-            "sortable_fields": [
-                "id"
-            ]
-        },
-        "sitedataschema": {
-            "sortable_fields": [
-                "site_id"
-            ]
-        },
-        "siteroles": {
-            "sortable_fields": [
-                "site_id",
-                "role_id"
             ]
         },
         "user": {
@@ -13020,26 +12941,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "sortable_fields": [
                 "id"
-            ]
-        },
-        "userdomainrole": {
-            "sortable_fields": [
-                "user_id",
-                "domain_id",
-                "role_id"
-            ]
-        },
-        "usersitedata": {
-            "sortable_fields": [
-                "user_id",
-                "site_id"
-            ]
-        },
-        "usersiterole": {
-            "sortable_fields": [
-                "user_id",
-                "domain_id",
-                "role_id"
             ]
         }
     }
