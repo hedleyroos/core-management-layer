@@ -1294,9 +1294,11 @@ definitions:
       terms_url:
         description: External reference to the privacy policy of the client.
         type: string
+        format: uri
       website_url:
         description: ''
         type: string
+        format: uri
     required:
       - id
       - client_id
@@ -4098,6 +4100,12 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    sortable_fields:
+      - id
+  domainrole:
+    sortable_fields:
+      - domain_id
+      - role_id
   invitation:
     inlines:
     - model: invitation_domain_role
@@ -4116,6 +4124,24 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    sortable_fields:
+      - id
+  invitationdomainrole:
+    sortable_fields:
+      - invitation_id
+      - domain_id
+      - role_id
+  invitationsiterole:
+    sortable_fields:
+      - invitation_id
+      - site_id
+      - role_id
+  permission:
+    sortable_fields:
+      - id
+  resource:
+    sortable_fields:
+      - id
   role:
     inlines:
     - model: role_resource_permission
@@ -4126,6 +4152,11 @@ x-detail-page-definitions:
         - permission_id
         - created_at
         - updated_at
+    sortable_fields:
+      - id
+  roleresourcepermission:
+    sortable_fields:
+      - id
   site:
     inlines:
     - model: site_role
@@ -4135,6 +4166,42 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    sortable_fields:
+      - id
+  siteroles:
+    sortable_fields:
+      - site_id
+      - role_id
+  userdomainrole:
+    sortable_fields:
+      - user_id
+      - domain_id
+      - role_id
+  usersiterole:
+    sortable_fields:
+      - user_id
+      - domain_id
+      - role_id
+  usersitedata:
+    sortable_fields:
+      - user_id
+      - site_id
+  adminnote:
+    sortable_fields:
+      - id
+  sitedataschema:
+    sortable_fields:
+      - site_id
+  client:
+    sortable_fields:
+      - id
+      - client_id
+  country:
+    sortable_fields:
+      - code
+  organisation:
+    sortable_fields:
+      - id
   user:
     inlines:
     - model: user_domain_role
@@ -4162,3 +4229,5 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    sortable_fields:
+      - id
