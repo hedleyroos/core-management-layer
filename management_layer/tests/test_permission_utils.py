@@ -9,6 +9,7 @@ from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, make_mocked_r
 from datetime import datetime
 
 from aiohttp.web import Request
+from parameterized import parameterized
 
 from access_control import RoleResourcePermission, AccessControlApi, OperationalApi
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL, PORTAL_CONTEXT_HEADER
@@ -642,11 +643,20 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
 
         self.assertTrue(await call_with_body(self.mocked_request, body))
 
+    @parameterized.expand(["target_user_id_field", "target_invitation_id_field"])
     @patch("management_layer.permission.utils.get_user_roles_for_domain")
     @unittest_run_loop
-    async def test_no_body_field_with_domain_use_case(self, mocked_get_user_roles_for_domain):
-        @requester_has_role(target_user_id_field=1, domain_id_field=2, role_id_field=3)
-        def call_without_body(request, user, domain, role, **kwargs):
+    async def test_no_body_field_with_domain_use_case(
+        self, field, mocked_get_user_roles_for_domain
+    ):
+        kwargs = {
+            field: 1,
+            "domain_id_field": 2,
+            "role_id_field": 3
+        }
+
+        @requester_has_role(**kwargs)
+        def call_without_body(request, user_or_invitation, domain, role, **kwargs):
             return True
 
         # Test the case where the requester has no roles for the specified domain.
@@ -665,11 +675,20 @@ class TestRequesterHasRoleDecorator(AioHTTPTestCase):
 
         self.assertTrue(await call_without_body(self.mocked_request, self.user.hex, 1, 1))
 
+    @parameterized.expand(["target_user_id_field", "target_invitation_id_field"])
     @patch("management_layer.permission.utils.get_user_roles_for_site")
     @unittest_run_loop
-    async def test_no_body_field_with_site_use_case(self, mocked_get_user_roles_for_site):
-        @requester_has_role(target_user_id_field=1, site_id_field=2, role_id_field=3)
-        def call_without_body(request, user, site, role, **kwargs):
+    async def test_no_body_field_with_site_use_case(
+        self, field, mocked_get_user_roles_for_site
+    ):
+        kwargs = {
+            field: 1,
+            "site_id_field": 2,
+            "role_id_field": 3
+        }
+
+        @requester_has_role(**kwargs)
+        def call_without_body(request, user_or_invitation, site, role, **kwargs):
             return True
 
         # Test the case where the requester has no roles for the specified domain.
