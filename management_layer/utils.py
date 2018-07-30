@@ -66,7 +66,7 @@ def client_exception_handler():
         # the request.
         try:
             error = json.loads(re.body)["error"]
-        except ValueError as e:
+        except (ValueError, KeyError, TypeError):
             error = None
         raise JSONBadGateway(
             json_data={

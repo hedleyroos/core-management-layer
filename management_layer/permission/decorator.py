@@ -210,6 +210,7 @@ def requester_has_role(
     request_field: typing.Union[int, str] = 0,
     body_field: typing.Union[int, str] = None,
     target_user_id_field: typing.Union[int, str] = None,
+    target_invitation_id_field: typing.Union[int, str] = None,
     role_id_field: typing.Union[int, str] = None,
     domain_id_field: typing.Union[int, str] = None,
     site_id_field: typing.Union[int, str] = None,
@@ -252,6 +253,9 @@ def requester_has_role(
     :param target_user_id_field: An integer or string identifying either the positional argument
         or the name of the keyword argument identifying the user_id field of the target user,
         i.e. the user for which a role must be set or removed.
+    :param target_invitation_id_field: An integer or string identifying either the positional
+        argument or the name of the keyword argument identifying the invitation_id field of the
+        target invitation, i.e. the invitation for which a role must be set or removed.
     :param role_id_field: An integer or string identifying either the positional argument
         or the name of the keyword argument identifying the role_id field.
     :param domain_id_field: An integer or string identifying either the positional argument
@@ -279,6 +283,7 @@ def requester_has_role(
             # decorated function.
             role_id = None
             target_user_id = None
+            target_invitation_id = None
             domain_id = None
             site_id = None
 
@@ -288,7 +293,8 @@ def requester_has_role(
                 # When body_field is specified, the xxx_field arguments must be the names of the
                 # fields in the body dictionary or None, in which case the defaults will be used.
                 role_id = body[role_id_field or "role_id"]
-                target_user_id = body[target_user_id_field or "user_id"]
+                target_user_id = body.get(target_user_id_field or "user_id")
+                target_invitation_id = body.get(target_invitation_id or "invitation_id")
                 # We expect either a domain_id or a site_id to be provided
                 domain_id = body.get(domain_id_field or "domain_id")
                 site_id = body.get(site_id_field or "site_id")
@@ -308,8 +314,15 @@ def requester_has_role(
                 else:
                     site_id = _get_value_from_args_or_kwargs(site_id_field, args, kwargs)
 
-                # Extract the user_id for which a role must be a assigned/revoked
-                target_user_id = _get_value_from_args_or_kwargs(target_user_id_field, args, kwargs)
+                # Extract the user_id or invitation_id for which a role must be a assigned/revoked
+                if target_user_id_field is not None:
+                    target_user_id = _get_value_from_args_or_kwargs(
+                        target_user_id_field, args, kwargs
+                    )
+                else:
+                    target_invitation_id = _get_value_from_args_or_kwargs(
+                        target_invitation_id_field, args, kwargs
+                    )
 
             if domain_id:
                 user_roles = await utils.get_user_roles_for_domain(request, user_id, domain_id,
@@ -325,8 +338,13 @@ def requester_has_role(
                 else:
                     return f(*args, **kwargs)
 
-            log_message = f"User {user_id} cannot assign role {Mappings.role_label_for(role_id)}" \
-                          f" to target user {target_user_id} on "
+            if target_user_id_field is not None:
+                log_message = f"User {user_id} cannot assign role {Mappings.role_label_for(role_id)}" \
+                              f" to target user {target_user_id} on "
+            else:
+                log_message = f"User {user_id} cannot assign role {Mappings.role_label_for(role_id)}" \
+                              f" to target invitation {target_invitation_id} on "
+
             if domain_id:
                 log_message += f"domain {Mappings.domain_name_for(domain_id)} "
             else:

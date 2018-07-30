@@ -481,6 +481,7 @@ class Implementation(AbstractStubClass):
     # invitationdomainrole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "create")])
+    @requester_has_role(body_field=1)
     async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -502,6 +503,7 @@ class Implementation(AbstractStubClass):
     # invitationdomainrole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "delete")])
+    @requester_has_role(target_invitation_id_field=1, domain_id_field=2, role_id_field=3)
     async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -687,6 +689,7 @@ class Implementation(AbstractStubClass):
     # invitationsiterole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "create")])
+    @requester_has_role(body_field=1)
     async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -707,6 +710,7 @@ class Implementation(AbstractStubClass):
     # invitationsiterole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "delete")])
+    @requester_has_role(target_invitation_id_field=1, site_id_field=2, role_id_field=3)
     async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
