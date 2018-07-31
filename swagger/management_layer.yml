@@ -1403,6 +1403,22 @@ definitions:
         type: string
     minProperties: 1
 
+  request_user_deletion:
+    type: object
+    properties:
+      user_id:
+        type: string
+        format: uuid
+      deleter_id:
+        type: string
+        format: uuid
+      reason:
+        type: string
+    required:
+      - user_id
+      - deleter_id
+      - reason
+
   client:
     type: object
     properties:
@@ -4005,6 +4021,25 @@ paths:
           description: 'Forbidden'
       tags:
         - operational
+
+  /request_user_deletion:
+    post:
+      operationId: request_user_deletion
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/request_user_deletion'
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+      tags:
+        - authentication
 
   /organisations:
     parameters:

@@ -843,6 +843,7 @@ class Implementation(AbstractStubClass):
 
     # invitation_send -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitation", "read")])
     async def invitation_send(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -861,6 +862,7 @@ class Implementation(AbstractStubClass):
 
     # purge_expired_invitations -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(any, [])  # Tech admin only
     async def purge_expired_invitations(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -1630,6 +1632,21 @@ class Implementation(AbstractStubClass):
         """
         await mappings.refresh_sites(request.app, **kwargs)
         return {}
+
+    # request_user_deletion -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(any, [])  # Tech admin only
+    async def request_user_deletion(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["authentication_service_api"].request_user_deletion(
+                request_user_deletion=body)
+
+        return result
 
     # resource_list -- Synchronisation point for meld
     @staticmethod

@@ -27,6 +27,7 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/roleresourcepermissions", views.Roleresourcepermissions)
     app.router.add_view(r"/resources/{resource_id}", views.ResourcesResourceId)
     app.router.add_view(r"/resources", views.Resources)
+    app.router.add_view(r"/request_user_deletion", views.RequestUserDeletion)
     app.router.add_view(r"/refresh/sites", views.RefreshSites)
     app.router.add_view(r"/refresh/roles", views.RefreshRoles)
     app.router.add_view(r"/refresh/resources", views.RefreshResources)
