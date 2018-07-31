@@ -187,3 +187,23 @@ USER = Transformation(
                  "is_active", "email_verified", "msisdn_verified", "msisdn",
                  "gender", "avatar", "country_code", "organisation_id"]
 )
+
+DELETED_USER = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string),
+        Mapping("deleted_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["id", "username", "email", "msisdn", "reason", "deleter_id"]
+)
+
+DELETED_USER_SITE = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string),
+        Mapping("deletion_requested_at", conversion=datetime_to_string),
+        Mapping("deletion_confirmed_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["deleted_user_id", "site_id", "deletion_requested_via", "deletion_confirmed_via"]
+)
+

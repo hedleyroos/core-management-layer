@@ -225,6 +225,214 @@ country = json.loads("""
 }
 """)
 
+deleted_user = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "deleted_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deleter_id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "email": {
+            "format": "email",
+            "type": "string"
+        },
+        "id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "msisdn": {
+            "type": "string"
+        },
+        "reason": {
+            "type": "string"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "username": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "username",
+        "reason",
+        "created_at",
+        "updated_at",
+        "deleter_id"
+    ],
+    "type": "object"
+}
+""")
+
+deleted_user_create = json.loads("""
+{
+    "properties": {
+        "email": {
+            "format": "email",
+            "type": "string"
+        },
+        "id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "msisdn": {
+            "type": "string"
+        },
+        "reason": {
+            "type": "string"
+        },
+        "username": {
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "username",
+        "reason"
+    ],
+    "type": "object"
+}
+""")
+
+deleted_user_site = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "deleted_user_id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "deletion_confirmed_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_confirmed_via": {
+            "type": "string"
+        },
+        "deletion_requested_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_requested_via": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        }
+    },
+    "required": [
+        "deleted_user_id",
+        "site_id",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+deleted_user_site_create = json.loads("""
+{
+    "properties": {
+        "deleted_user_id": {
+            "format": "uuid",
+            "type": "string"
+        },
+        "deletion_confirmed_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_confirmed_via": {
+            "type": "string"
+        },
+        "deletion_requested_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_requested_via": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "deleted_user_id",
+        "site_id"
+    ],
+    "type": "object"
+}
+""")
+
+deleted_user_site_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "deletion_confirmed_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_confirmed_via": {
+            "type": "string"
+        },
+        "deletion_requested_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "deletion_requested_via": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+
+deleted_user_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "deleted_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "email": {
+            "format": "email",
+            "type": "string"
+        },
+        "msisdn": {
+            "type": "string"
+        },
+        "reason": {
+            "type": "string"
+        },
+        "username": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+
 domain = json.loads("""
 {
     "properties": {

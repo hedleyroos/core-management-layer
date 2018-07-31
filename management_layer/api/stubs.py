@@ -112,6 +112,115 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # deleteduser_list -- Synchronisation point for meld
+    @staticmethod
+    async def deleteduser_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param deleter_id (optional): string An optional query parameter to filter by deleter_id
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deleteduser_create -- Synchronisation point for meld
+    @staticmethod
+    async def deleteduser_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deleteduser_delete -- Synchronisation point for meld
+    @staticmethod
+    async def deleteduser_delete(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deleteduser_read -- Synchronisation point for meld
+    @staticmethod
+    async def deleteduser_read(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deleteduser_update -- Synchronisation point for meld
+    @staticmethod
+    async def deleteduser_update(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletedusersite_list -- Synchronisation point for meld
+    @staticmethod
+    async def deletedusersite_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param user_id (optional): string An optional query parameter to filter by user_id
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletedusersite_create -- Synchronisation point for meld
+    @staticmethod
+    async def deletedusersite_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletedusersite_delete -- Synchronisation point for meld
+    @staticmethod
+    async def deletedusersite_delete(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletedusersite_read -- Synchronisation point for meld
+    @staticmethod
+    async def deletedusersite_read(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletedusersite_update -- Synchronisation point for meld
+    @staticmethod
+    async def deletedusersite_update(request, body, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # domainrole_list -- Synchronisation point for meld
     @staticmethod
     async def domainrole_list(request, **kwargs):
@@ -1047,26 +1156,6 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
-    # get__api_v1_sites_site_id_activate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_sites_site_id_activate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
-    # get__api_v1_sites_site_id_deactivate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_sites_site_id_deactivate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
     # userdomainrole_list -- Synchronisation point for meld
     @staticmethod
     async def userdomainrole_list(request, **kwargs):
@@ -1174,26 +1263,6 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
-        :param user_id: string A UUID value identifying the user.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
-    # get__api_v1_users_user_id_activate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
-    # get__api_v1_users_user_id_deactivate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_users_user_id_deactivate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
         :param user_id: string A UUID value identifying the user.
         :returns: result or (result, headers) tuple
         """
@@ -1593,6 +1662,265 @@ class MockedStubClass(AbstractStubClass):
         :param country_code: string A unique two-character value identifying the country.
         """
         response_schema = schemas.country
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deleteduser_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param deleter_id (optional): string An optional query parameter to filter by deleter_id
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deleter_id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "email": {
+                "format": "email",
+                "type": "string"
+            },
+            "id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "msisdn": {
+                "type": "string"
+            },
+            "reason": {
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "username": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "username",
+            "reason",
+            "created_at",
+            "updated_at",
+            "deleter_id"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deleteduser_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.deleted_user
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deleteduser_delete(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deleteduser_read(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        """
+        response_schema = schemas.deleted_user
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deleteduser_update(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        """
+        response_schema = schemas.deleted_user
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletedusersite_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param user_id (optional): string An optional query parameter to filter by user_id
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_user_id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "deletion_confirmed_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_confirmed_via": {
+                "type": "string"
+            },
+            "deletion_requested_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_requested_via": {
+                "type": "string"
+            },
+            "site_id": {
+                "type": "integer"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "deleted_user_id",
+            "site_id",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletedusersite_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.deleted_user_site
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletedusersite_delete(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletedusersite_read(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        """
+        response_schema = schemas.deleted_user_site
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletedusersite_update(request, body, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        """
+        response_schema = schemas.deleted_user_site
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -3665,36 +3993,6 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
-    async def get__api_v1_sites_site_id_activate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        """
-        response_schema = schemas.__UNSPECIFIED__
-        if "type" not in response_schema:
-            response_schema["type"] = "object"
-
-        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
-            response_schema["items"]["type"] = "object"
-
-        return MockedStubClass.GENERATOR.random_value(response_schema)
-
-    @staticmethod
-    async def get__api_v1_sites_site_id_deactivate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        """
-        response_schema = schemas.__UNSPECIFIED__
-        if "type" not in response_schema:
-            response_schema["type"] = "object"
-
-        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
-            response_schema["items"]["type"] = "object"
-
-        return MockedStubClass.GENERATOR.random_value(response_schema)
-
-    @staticmethod
     async def userdomainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -3991,36 +4289,6 @@ class MockedStubClass(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         """
         response_schema = schemas.user
-        if "type" not in response_schema:
-            response_schema["type"] = "object"
-
-        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
-            response_schema["items"]["type"] = "object"
-
-        return MockedStubClass.GENERATOR.random_value(response_schema)
-
-    @staticmethod
-    async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        """
-        response_schema = schemas.__UNSPECIFIED__
-        if "type" not in response_schema:
-            response_schema["type"] = "object"
-
-        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
-            response_schema["items"]["type"] = "object"
-
-        return MockedStubClass.GENERATOR.random_value(response_schema)
-
-    @staticmethod
-    async def get__api_v1_users_user_id_deactivate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        """
-        response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

@@ -577,6 +577,489 @@ class CountriesCountryCode(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Deleteduser(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deleter_id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "email": {
+                "format": "email",
+                "type": "string"
+            },
+            "id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "msisdn": {
+                "type": "string"
+            },
+            "reason": {
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "username": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "username",
+            "reason",
+            "created_at",
+            "updated_at",
+            "deleter_id"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deleted_user
+    POST_BODY_SCHEMA = schemas.deleted_user_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deleteduser instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # deleter_id (optional): string An optional query parameter to filter by deleter_id
+            deleter_id = self.request.query.get("deleter_id", None)
+            if deleter_id is not None:
+                jsonschema.validate(deleter_id, {"type": "string"})
+                optional_args["deleter_id"] = deleter_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deleteduser instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deleteduser_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeleteduserUserId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deleted_user
+    PUT_RESPONSE_SCHEMA = schemas.deleted_user
+    PUT_BODY_SCHEMA = schemas.deleted_user_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeleteduserUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_delete(
+            self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeleteduserUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_read(
+            self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeleteduserUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deleteduser_update(
+            self.request, body, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class Deletedusersite(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_user_id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "deletion_confirmed_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_confirmed_via": {
+                "type": "string"
+            },
+            "deletion_requested_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_requested_via": {
+                "type": "string"
+            },
+            "site_id": {
+                "type": "integer"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "deleted_user_id",
+            "site_id",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deleted_user_site
+    POST_BODY_SCHEMA = schemas.deleted_user_site_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusersite instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # user_id (optional): string An optional query parameter to filter by user_id
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                jsonschema.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusersite instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletedusersite_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeletedusersiteUserIdSiteId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deleted_user_site
+    PUT_RESPONSE_SCHEMA = schemas.deleted_user_site
+    PUT_BODY_SCHEMA = schemas.deleted_user_site_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersiteUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_delete(
+            self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersiteUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_read(
+            self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersiteUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            jsonschema.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletedusersite_update(
+            self.request, body, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Domainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -4625,70 +5108,6 @@ class SitesSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class SitesSiteIdActivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A SitesSiteIdActivate instance
-        """
-        try:
-            # site_id: integer A unique integer value identifying the site.
-            site_id = self.request.match_info["site_id"]
-            site_id = int(site_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_sites_site_id_activate(
-            self.request, site_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class SitesSiteIdDeactivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A SitesSiteIdDeactivate instance
-        """
-        try:
-            # site_id: integer A unique integer value identifying the site.
-            site_id = self.request.match_info["site_id"]
-            site_id = int(site_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_sites_site_id_deactivate(
-            self.request, site_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
 class Userdomainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -5293,70 +5712,6 @@ class UsersUserId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class UsersUserIdActivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A UsersUserIdActivate instance
-        """
-        try:
-            # user_id: string A UUID value identifying the user.
-            user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_users_user_id_activate(
-            self.request, user_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class UsersUserIdDeactivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A UsersUserIdDeactivate instance
-        """
-        try:
-            # user_id: string A UUID value identifying the user.
-            user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_users_user_id_deactivate(
-            self.request, user_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -6017,6 +6372,196 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "code",
                 "name"
             ],
+            "type": "object"
+        },
+        "deleted_user": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deleter_id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "username",
+                "reason",
+                "created_at",
+                "updated_at",
+                "deleter_id"
+            ],
+            "type": "object"
+        },
+        "deleted_user_create": {
+            "properties": {
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "username",
+                "reason"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "deleted_user_id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "deleted_user_id",
+                "site_id",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site_create": {
+            "properties": {
+                "deleted_user_id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "deleted_user_id",
+                "site_id"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site_update": {
+            "minProperties": 1,
+            "properties": {
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "deleted_user_update": {
+            "minProperties": 1,
+            "properties": {
+                "deleted_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
             "type": "object"
         },
         "domain": {
@@ -7670,6 +8215,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "string"
         },
+        "optional_deleter_id_filter": {
+            "description": "An optional query parameter to filter by deleter_id",
+            "format": "uuid",
+            "in": "query",
+            "name": "deleter_id",
+            "required": false,
+            "type": "string"
+        },
         "optional_domain_filter": {
             "description": "An optional query parameter to filter by domain_id",
             "in": "query",
@@ -8263,6 +8816,336 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/deleteduser": {
+            "get": {
+                "operationId": "deleteduser_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_deleter_id_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deleted_user",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deleteduser_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            }
+        },
+        "/deleteduser/{user_id}": {
+            "delete": {
+                "operationId": "deleteduser_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "get": {
+                "operationId": "deleteduser_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deleteduser_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            }
+        },
+        "/deletedusersite": {
+            "get": {
+                "operationId": "deletedusersite_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_user_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deleted_user_site",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletedusersite_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            }
+        },
+        "/deletedusersite/{user_id}/{site_id}": {
+            "delete": {
+                "operationId": "deletedusersite_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "get": {
+                "operationId": "deletedusersite_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/site_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletedusersite_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            }
         },
         "/domainroles": {
             "get": {
@@ -11751,68 +12634,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
-        "/sites/{site_id}/activate": {
-            "get": {
-                "deprecated": true,
-                "description": "Activate the site so that users can log in to it.",
-                "responses": {
-                    "200": {
-                        "description": "Site successfully activated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Site not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/site_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
-        "/sites/{site_id}/deactivate": {
-            "get": {
-                "deprecated": true,
-                "description": "Deactivate the site so that users cannot log in to it.",
-                "responses": {
-                    "200": {
-                        "description": "Site successfully deactivated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Site not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/site_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
         "/userdomainroles": {
             "get": {
                 "operationId": "userdomainrole_list",
@@ -12341,68 +13162,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "urn:ge:identity_provider:user:update"
                 ]
             }
-        },
-        "/users/{user_id}/activate": {
-            "get": {
-                "deprecated": true,
-                "description": "Activate the user account.",
-                "responses": {
-                    "200": {
-                        "description": "Acccount successfully activated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/user_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
-        "/users/{user_id}/deactivate": {
-            "get": {
-                "deprecated": true,
-                "description": "Deactivate the user account.",
-                "responses": {
-                    "200": {
-                        "description": "Acccount successfully deactivated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/user_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
         },
         "/usersitedata": {
             "get": {
