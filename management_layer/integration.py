@@ -207,6 +207,205 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # deleteduser_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deleteduser", "read")])
+    async def deleteduser_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param deleter_id (optional): string An optional query parameter to filter by deleter_id
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_users, _status, headers = await request.app[
+                "user_data_api"].deleteduser_list_with_http_info(**kwargs)
+
+        if deleted_users:
+            transform = transformations.DELETED_USER
+            deleted_users = [transform.apply(deleted_user.to_dict())
+                             for deleted_user in deleted_users]
+
+        return deleted_users, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # deleteduser_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deleteduser", "create")])
+    async def deleteduser_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        # The caller of this function is considered the deleter.
+        body["deleter_id"] = request["token"]["sub"]
+
+        with client_exception_handler():
+            deleted_user = await request.app["user_data_api"].deleteduser_create(
+                deleted_user_create=body)
+
+        if deleted_user:
+            transform = transformations.DELETED_USER
+            return transform.apply(deleted_user.to_dict())
+
+        return None
+
+    # deleteduser_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deleteduser", "delete")])
+    async def deleteduser_delete(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["user_data_api"].deleteduser_delete(user_id)
+
+        return result
+
+    # deleteduser_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deleteduser", "read")])
+    async def deleteduser_read(request, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user = await request.app["user_data_api"].deleteduser_read(user_id)
+
+        if deleted_user:
+            transform = transformations.DELETED_USER
+            result = transform.apply(deleted_user.to_dict())
+            return result
+
+        return None
+
+    # deleteduser_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deleteduser", "update")])
+    async def deleteduser_update(request, body, user_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user = await request.app["user_data_api"].deleteduser_update(
+                user_id, deleted_user_update=body)
+
+        if deleted_user:
+            transform = transformations.DELETED_USER
+            return transform.apply(deleted_user.to_dict())
+
+        return None
+
+    # deletedusersite_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deletedusersite", "read")])
+    async def deletedusersite_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param user_id (optional): string An optional query parameter to filter by user_id
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user_sites, _status, headers = await request.app[
+                "user_data_api"].deletedusersite_list_with_http_info(**kwargs)
+
+        if deleted_user_sites:
+            transform = transformations.DELETED_USER_SITE
+            deleted_user_sites = [transform.apply(deleted_user_site.to_dict())
+                                  for deleted_user_site in deleted_user_sites]
+
+        return deleted_user_sites, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # deletedusersite_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deletedusersite", "create")])
+    async def deletedusersite_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user_site = await request.app["user_data_api"].deletedusersite_create(
+                deleted_user_site_create=body)
+
+        if deleted_user_site:
+            transform = transformations.DELETED_USER_SITE
+            return transform.apply(deleted_user_site.to_dict())
+
+        return None
+
+    # deletedusersite_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deletedusersite", "delete")])
+    async def deletedusersite_delete(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["user_data_api"].deletedusersite_delete(user_id, site_id)
+
+        return result
+
+    # deletedusersite_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deletedusersite", "read")])
+    async def deletedusersite_read(request, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user_site = await request.app[
+                "user_data_api"].deletedusersite_read(user_id, site_id)
+
+        if deleted_user_site:
+            transform = transformations.DELETED_USER_SITE
+            result = transform.apply(deleted_user_site.to_dict())
+            return result
+
+        return None
+
+    # deletedusersite_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:user_data:deletedusersite", "update")])
+    async def deletedusersite_update(request, body, user_id, site_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param user_id: string A UUID value identifying the user.
+        :param site_id: integer A unique integer value identifying the site.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deleted_user_site = await request.app["user_data_api"].deletedusersite_update(
+                user_id, site_id, deleted_user_site_update=body)
+
+        if deleted_user_site:
+            transform = transformations.DELETED_USER_SITE
+            return transform.apply(deleted_user_site.to_dict())
+
+        return None
+
     # domainrole_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "read")])
@@ -660,6 +859,27 @@ class Implementation(AbstractStubClass):
 
         return result
 
+    # purge_expired_invitations -- Synchronisation point for meld
+    @staticmethod
+    async def purge_expired_invitations(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
+        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
+        :returns: result or (result, headers) tuple
+        """
+        synchronous_mode = kwargs.get("synchronous_mode", False)
+        cutoff_date = kwargs.get("cutoff_date", None)
+        with client_exception_handler():
+            request_kwargs = {
+                "cutoff_date": cutoff_date
+            } if cutoff_date else {}
+            api = "operational_api" if synchronous_mode else "authentication_service_api"
+            response = await request.app[api].purge_expired_invitations(**request_kwargs)
+            purged_invitations = response.to_dict() if synchronous_mode else {}
+            purged_invitations["mode"] = "synchronous" if synchronous_mode else "asynchronous"
+            return purged_invitations
+
     # invitationsiterole_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "read")])
@@ -831,27 +1051,6 @@ class Implementation(AbstractStubClass):
             sites = await request.app["operational_api"].get_sites_under_domain(domain_id)
             transform = transformations.SITE
             return [transform.apply(site.to_dict()) for site in sites]
-
-    # purge_expired_invitations -- Synchronisation point for meld
-    @staticmethod
-    async def purge_expired_invitations(request, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param synchronous_mode (optional): boolean Change the mode of the call to synchronous.
-        :param cutoff_date (optional): string An optional cutoff date to purge invites before this date
-        :returns: result or (result, headers) tuple
-        """
-        synchronous_mode = kwargs.get("synchronous_mode", False)
-        cutoff_date = kwargs.get("cutoff_date", None)
-        with client_exception_handler():
-            request_kwargs = {
-                "cutoff_date": cutoff_date
-            } if cutoff_date else {}
-            api = "operational_api" if synchronous_mode else "authentication_service_api"
-            response = await request.app[api].purge_expired_invitations(**request_kwargs)
-            purged_invitations = response.to_dict() if synchronous_mode else {}
-            purged_invitations["mode"] = "synchronous" if synchronous_mode else "asynchronous"
-            return purged_invitations
 
     # get_site_and_domain_roles -- Synchronisation point for meld
     @staticmethod
@@ -2003,26 +2202,6 @@ class Implementation(AbstractStubClass):
 
         return None
 
-    # get__api_v1_sites_site_id_activate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_sites_site_id_activate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
-    # get__api_v1_sites_site_id_deactivate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_sites_site_id_deactivate(request, site_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param site_id: integer A unique integer value identifying the site.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
     # userdomainrole_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "read")],
@@ -2215,26 +2394,6 @@ class Implementation(AbstractStubClass):
             return result
 
         return None
-
-    # get__api_v1_users_user_id_activate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_users_user_id_activate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
-
-    # get__api_v1_users_user_id_deactivate -- Synchronisation point for meld
-    @staticmethod
-    async def get__api_v1_users_user_id_deactivate(request, user_id, **kwargs):
-        """
-        :param request: An HttpRequest
-        :param user_id: string A UUID value identifying the user.
-        :returns: result or (result, headers) tuple
-        """
-        raise NotImplementedError()
 
     # usersitedata_list -- Synchronisation point for meld
     @staticmethod
