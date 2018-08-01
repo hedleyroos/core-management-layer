@@ -3486,6 +3486,8 @@ paths:
   /deleteduser:
     get:
       operationId: deleteduser_list
+      x-aor-permissions:
+        - 'urn:ge:user_data:deleteduser:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3507,6 +3509,8 @@ paths:
         - user_data
     post:
       operationId: deleteduser_create
+      x-aor-permissions:
+        - 'urn:ge:user_data:deleteduser:create'
       parameters:
         - in: body
           name: data
@@ -3529,6 +3533,8 @@ paths:
       - $ref: '#/parameters/user_id'
     delete:
       operationId: deleteduser_delete
+      x-aor-permissions:
+        - 'urn:ge:user_data:deleteduser:delete'
       responses:
         '204':
           description: ''
@@ -3536,6 +3542,8 @@ paths:
         - user_data
     get:
       operationId: deleteduser_read
+      x-aor-permissions:
+        - 'urn:ge:user_data:deleteduser:read'
       produces:
         - application/json
       responses:
@@ -3547,6 +3555,8 @@ paths:
         - user_data
     put:
       operationId: deleteduser_update
+      x-aor-permissions:
+        - 'urn:ge:user_data:deleteduser:update'
       parameters:
         - in: body
           name: data
@@ -3567,6 +3577,8 @@ paths:
   /deletedusersite:
     get:
       operationId: deletedusersite_list
+      x-aor-permissions:
+        - 'urn:ge:user_data:deletedusersite:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
         - $ref: '#/parameters/optional_limit'
@@ -3588,6 +3600,8 @@ paths:
         - user_data
     post:
       operationId: deletedusersite_create
+      x-aor-permissions:
+        - 'urn:ge:user_data:deletedusersite:create'
       parameters:
         - in: body
           name: data
@@ -3611,6 +3625,8 @@ paths:
       - $ref: '#/parameters/site_id'
     delete:
       operationId: deletedusersite_delete
+      x-aor-permissions:
+        - 'urn:ge:user_data:deletedusersite:delete'
       responses:
         '204':
           description: ''
@@ -3618,6 +3634,8 @@ paths:
         - user_data
     get:
       operationId: deletedusersite_read
+      x-aor-permissions:
+        - 'urn:ge:user_data:deletedusersite:read'
       produces:
         - application/json
       responses:
@@ -3629,6 +3647,8 @@ paths:
         - user_data
     put:
       operationId: deletedusersite_update
+      x-aor-permissions:
+        - 'urn:ge:user_data:deletedusersite:update'
       parameters:
         - in: body
           name: data
