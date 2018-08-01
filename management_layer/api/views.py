@@ -577,7 +577,7 @@ class CountriesCountryCode(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class Deleteduser(View, CorsViewMixin):
+class Deletedusers(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -639,7 +639,7 @@ class Deleteduser(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Deleteduser instance
+        :param self: A Deletedusers instance
         """
         try:
             optional_args = {}
@@ -684,7 +684,7 @@ class Deleteduser(View, CorsViewMixin):
     async def post(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Deleteduser instance
+        :param self: A Deletedusers instance
         """
         try:
             optional_args = {}
@@ -717,7 +717,7 @@ class Deleteduser(View, CorsViewMixin):
         return json_response(result, status=201, headers=headers)
 
 
-class DeleteduserUserId(View, CorsViewMixin):
+class DeletedusersUserId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.deleted_user
@@ -727,7 +727,7 @@ class DeleteduserUserId(View, CorsViewMixin):
     async def delete(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeleteduserUserId instance
+        :param self: A DeletedusersUserId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -754,7 +754,7 @@ class DeleteduserUserId(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeleteduserUserId instance
+        :param self: A DeletedusersUserId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -781,7 +781,7 @@ class DeleteduserUserId(View, CorsViewMixin):
     async def put(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeleteduserUserId instance
+        :param self: A DeletedusersUserId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -817,7 +817,7 @@ class DeleteduserUserId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
-class Deletedusersite(View, CorsViewMixin):
+class Deletedusersites(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
     "items": {
@@ -873,7 +873,7 @@ class Deletedusersite(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Deletedusersite instance
+        :param self: A Deletedusersites instance
         """
         try:
             optional_args = {}
@@ -918,7 +918,7 @@ class Deletedusersite(View, CorsViewMixin):
     async def post(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A Deletedusersite instance
+        :param self: A Deletedusersites instance
         """
         try:
             optional_args = {}
@@ -951,7 +951,7 @@ class Deletedusersite(View, CorsViewMixin):
         return json_response(result, status=201, headers=headers)
 
 
-class DeletedusersiteUserIdSiteId(View, CorsViewMixin):
+class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
     GET_RESPONSE_SCHEMA = schemas.deleted_user_site
@@ -961,7 +961,7 @@ class DeletedusersiteUserIdSiteId(View, CorsViewMixin):
     async def delete(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeletedusersiteUserIdSiteId instance
+        :param self: A DeletedusersitesUserIdSiteId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -991,7 +991,7 @@ class DeletedusersiteUserIdSiteId(View, CorsViewMixin):
     async def get(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeletedusersiteUserIdSiteId instance
+        :param self: A DeletedusersitesUserIdSiteId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -1021,7 +1021,7 @@ class DeletedusersiteUserIdSiteId(View, CorsViewMixin):
     async def put(self):
         """
         No parameters are passed explicitly. We unpack it from the request.
-        :param self: A DeletedusersiteUserIdSiteId instance
+        :param self: A DeletedusersitesUserIdSiteId instance
         """
         try:
             # user_id: string A UUID value identifying the user.
@@ -8879,7 +8879,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
-        "/deleteduser": {
+        "/deletedusers": {
             "get": {
                 "operationId": "deleteduser_list",
                 "parameters": [
@@ -8927,6 +8927,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:read"
                 ]
             },
             "post": {
@@ -8962,10 +8965,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:create"
                 ]
             }
         },
-        "/deleteduser/{user_id}": {
+        "/deletedusers/{user_id}": {
             "delete": {
                 "operationId": "deleteduser_delete",
                 "responses": {
@@ -8975,6 +8981,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:delete"
                 ]
             },
             "get": {
@@ -8995,6 +9004,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:read"
                 ]
             },
             "parameters": [
@@ -9038,10 +9050,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:update"
                 ]
             }
         },
-        "/deletedusersite": {
+        "/deletedusersites": {
             "get": {
                 "operationId": "deletedusersite_list",
                 "parameters": [
@@ -9089,6 +9104,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:read"
                 ]
             },
             "post": {
@@ -9124,10 +9142,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:create"
                 ]
             }
         },
-        "/deletedusersite/{user_id}/{site_id}": {
+        "/deletedusersites/{user_id}/{site_id}": {
             "delete": {
                 "operationId": "deletedusersite_delete",
                 "responses": {
@@ -9137,6 +9158,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:delete"
                 ]
             },
             "get": {
@@ -9157,6 +9181,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:read"
                 ]
             },
             "parameters": [
@@ -9206,6 +9233,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:update"
                 ]
             }
         },
