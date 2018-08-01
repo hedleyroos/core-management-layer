@@ -3682,6 +3682,47 @@ class RefreshSites(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class RequestUserDeletion(View, CorsViewMixin):
+
+    POST_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    POST_BODY_SCHEMA = schemas.request_user_deletion
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RequestUserDeletion instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.request_user_deletion(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Resources(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -7181,6 +7222,27 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "required": [
                 "mode"
+            ],
+            "type": "object"
+        },
+        "request_user_deletion": {
+            "properties": {
+                "deleter_id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "format": "uuid",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user_id",
+                "deleter_id",
+                "reason"
             ],
             "type": "object"
         },
@@ -11451,6 +11513,38 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/request_user_deletion": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "request_user_deletion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request_user_deletion",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            }
         },
         "/resources": {
             "get": {

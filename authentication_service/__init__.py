@@ -26,6 +26,7 @@ from authentication_service.models.country import Country
 from authentication_service.models.organisation import Organisation
 from authentication_service.models.organisation_create import OrganisationCreate
 from authentication_service.models.organisation_update import OrganisationUpdate
+from authentication_service.models.request_user_deletion import RequestUserDeletion
 from authentication_service.models.user import User
 from authentication_service.models.user_site import UserSite
 from authentication_service.models.user_update import UserUpdate
