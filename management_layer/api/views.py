@@ -7227,10 +7227,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "request_user_deletion": {
             "properties": {
-                "deleter_id": {
-                    "format": "uuid",
-                    "type": "string"
-                },
                 "reason": {
                     "type": "string"
                 },
@@ -7241,7 +7237,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "required": [
                 "user_id",
-                "deleter_id",
                 "reason"
             ],
             "type": "object"

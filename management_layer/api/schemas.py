@@ -1122,10 +1122,6 @@ purged_invitations = json.loads("""
 request_user_deletion = json.loads("""
 {
     "properties": {
-        "deleter_id": {
-            "format": "uuid",
-            "type": "string"
-        },
         "reason": {
             "type": "string"
         },
@@ -1136,7 +1132,6 @@ request_user_deletion = json.loads("""
     },
     "required": [
         "user_id",
-        "deleter_id",
         "reason"
     ],
     "type": "object"

@@ -1409,14 +1409,10 @@ definitions:
       user_id:
         type: string
         format: uuid
-      deleter_id:
-        type: string
-        format: uuid
       reason:
         type: string
     required:
       - user_id
-      - deleter_id
       - reason
 
   client:

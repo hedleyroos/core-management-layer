@@ -1642,6 +1642,9 @@ class Implementation(AbstractStubClass):
         :param body: dict A dictionary containing the parsed and validated body
         :returns: result or (result, headers) tuple
         """
+        # The caller of this function is considered the deleter.
+        body["deleter_id"] = request["token"]["sub"]
+
         with client_exception_handler():
             result = await request.app["authentication_service_api"].request_user_deletion(
                 request_user_deletion=body)
