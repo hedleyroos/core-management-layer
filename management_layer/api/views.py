@@ -829,7 +829,11 @@ class Deletedusersites(View, CorsViewMixin):
             },
             "deleted_user_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "deleted_user"
+                }
             },
             "deletion_confirmed_at": {
                 "format": "date-time",
@@ -846,7 +850,11 @@ class Deletedusersites(View, CorsViewMixin):
                 "type": "string"
             },
             "site_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "site"
+                }
             },
             "updated_at": {
                 "format": "date-time",
@@ -6499,7 +6507,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "deleted_user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "deleted_user"
+                    }
                 },
                 "deletion_confirmed_at": {
                     "format": "date-time",
@@ -6516,7 +6528,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "site"
+                    }
                 },
                 "updated_at": {
                     "format": "date-time",
@@ -6536,7 +6552,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "properties": {
                 "deleted_user_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "deleted_user"
+                    }
                 },
                 "deletion_confirmed_at": {
                     "format": "date-time",
@@ -6553,7 +6573,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "site_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "site"
+                    }
                 }
             },
             "required": [
@@ -13700,6 +13724,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
     },
     "swagger": "2.0",
     "x-detail-page-definitions": {
+        "deleteduser": {
+            "inlines": [
+                {
+                    "fields": [
+                        "site_id",
+                        "deletion_requested_at",
+                        "deletion_requested_via",
+                        "deletion_confirmed_at",
+                        "deletion_confirmed_via",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "deleted_user_id",
+                    "label": "Sites which the user visited",
+                    "model": "deleted_user_site"
+                }
+            ]
+        },
         "domain": {
             "inlines": [
                 {

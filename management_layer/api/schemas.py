@@ -316,7 +316,11 @@ deleted_user_site = json.loads("""
         },
         "deleted_user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "deleted_user"
+            }
         },
         "deletion_confirmed_at": {
             "format": "date-time",
@@ -333,7 +337,11 @@ deleted_user_site = json.loads("""
             "type": "string"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "site"
+            }
         },
         "updated_at": {
             "format": "date-time",
@@ -356,7 +364,11 @@ deleted_user_site_create = json.loads("""
     "properties": {
         "deleted_user_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "deleted_user"
+            }
         },
         "deletion_confirmed_at": {
             "format": "date-time",
@@ -373,7 +385,11 @@ deleted_user_site_create = json.loads("""
             "type": "string"
         },
         "site_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "name",
+                "model": "site"
+            }
         }
     },
     "required": [

@@ -1340,8 +1340,14 @@ definitions:
       deleted_user_id:
         type: string
         format: uuid
+        x-related-info:
+          model: deleted_user
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          model: site
+          label: name
       created_at:
         type: string
         format: date-time
@@ -1372,8 +1378,14 @@ definitions:
       deleted_user_id:
         type: string
         format: uuid
+        x-related-info:
+          model: deleted_user
+          label: username
       site_id:
         type: integer
+        x-related-info:
+          model: site
+          label: name
       deletion_requested_at:
         type: string
         format: date-time
@@ -4536,3 +4548,17 @@ x-detail-page-definitions:
         - updated_at
     sortable_fields:
       - id
+  deleteduser:
+    inlines:
+    - model: deleted_user_site
+      label: Sites which the user visited
+      key: deleted_user_id
+      fields:
+      - site_id
+      - deletion_requested_at
+      - deletion_requested_via
+      - deletion_confirmed_at
+      - deletion_confirmed_via
+      - created_at
+      - updated_at
+
