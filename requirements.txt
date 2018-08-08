@@ -17,3 +17,8 @@ cryptography>=2.2.0,<3.0
 environs>=2.1.0,<3.0
 raven  # Sentry
 raven-aiohttp >= 0.7.0  # aiohttp support for Sentry
+
+# The following requirements are required by jsonschema
+# in order to do proper validation of certain formats.
+rfc3987
+strict-rfc3339

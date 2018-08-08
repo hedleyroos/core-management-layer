@@ -34,7 +34,7 @@ Stubs = getattr(Module, class_name)
 def maybe_validate_result(result, schema):
     if VALIDATE_RESPONSES:
         try:
-            jsonschema.validate(result, schema)
+            utils.validate(result, schema)
         except ValidationError as e:
             LOGGER.error(e.message)
 
@@ -123,12 +123,12 @@ class Adminnotes(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
             creator_id = self.request.query.get("creator_id", None)
             if creator_id is not None:
-                jsonschema.validate(creator_id, {"type": "string"})
+                utils.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
             # admin_note_ids (optional): array An optional list of adminnote ids
             admin_note_ids = self.request.query.get("admin_note_ids", None)
@@ -143,7 +143,7 @@ class Adminnotes(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(admin_note_ids, schema)
+                utils.validate(admin_note_ids, schema)
                 optional_args["admin_note_ids"] = admin_note_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -179,7 +179,7 @@ class Adminnotes(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -279,7 +279,7 @@ class AdminnotesAdminNoteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -407,12 +407,12 @@ class Clients(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(client_ids, schema)
+                utils.validate(client_ids, schema)
                 optional_args["client_ids"] = client_ids
             # client_token_id (optional): string An optional client id to filter on. This is not the primary key.
             client_token_id = self.request.query.get("client_token_id", None)
             if client_token_id is not None:
-                jsonschema.validate(client_token_id, {"type": "string"})
+                utils.validate(client_token_id, {"type": "string"})
                 optional_args["client_token_id"] = client_token_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -525,7 +525,7 @@ class Countries(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(country_codes, schema)
+                utils.validate(country_codes, schema)
                 optional_args["country_codes"] = country_codes
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -557,7 +557,7 @@ class CountriesCountryCode(View, CorsViewMixin):
         try:
             # country_code: string A unique two-character value identifying the country.
             country_code = self.request.match_info["country_code"]
-            jsonschema.validate(country_code, {"type": "string"})
+            utils.validate(country_code, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -662,7 +662,7 @@ class Deletedusers(View, CorsViewMixin):
             # deleter_id (optional): string An optional query parameter to filter by deleter_id
             deleter_id = self.request.query.get("deleter_id", None)
             if deleter_id is not None:
-                jsonschema.validate(deleter_id, {"type": "string"})
+                utils.validate(deleter_id, {"type": "string"})
                 optional_args["deleter_id"] = deleter_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -698,7 +698,7 @@ class Deletedusers(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -732,7 +732,7 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -759,7 +759,7 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -786,7 +786,7 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -798,7 +798,7 @@ class DeletedusersUserId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -904,7 +904,7 @@ class Deletedusersites(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -940,7 +940,7 @@ class Deletedusersites(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -974,7 +974,7 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -1004,7 +1004,7 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -1034,7 +1034,7 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -1049,7 +1049,7 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1183,7 +1183,7 @@ class Domainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1292,7 +1292,7 @@ class DomainrolesDomainIdRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1402,7 +1402,7 @@ class Domains(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(domain_ids, schema)
+                utils.validate(domain_ids, schema)
                 optional_args["domain_ids"] = domain_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1438,7 +1438,7 @@ class Domains(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1538,7 +1538,7 @@ class DomainsDomainId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1664,7 +1664,7 @@ class Invitationdomainroles(View, CorsViewMixin):
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                jsonschema.validate(invitation_id, {"type": "string"})
+                utils.validate(invitation_id, {"type": "string"})
                 optional_args["invitation_id"] = invitation_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
@@ -1710,7 +1710,7 @@ class Invitationdomainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1742,7 +1742,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -1775,7 +1775,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -1902,7 +1902,7 @@ class Invitations(View, CorsViewMixin):
             # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
             invitor_id = self.request.query.get("invitor_id", None)
             if invitor_id is not None:
-                jsonschema.validate(invitor_id, {"type": "string"})
+                utils.validate(invitor_id, {"type": "string"})
                 optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
             invitation_ids = self.request.query.get("invitation_ids", None)
@@ -1915,7 +1915,7 @@ class Invitations(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(invitation_ids, schema)
+                utils.validate(invitation_ids, schema)
                 optional_args["invitation_ids"] = invitation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1951,7 +1951,7 @@ class Invitations(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1985,7 +1985,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2012,7 +2012,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2039,7 +2039,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2051,7 +2051,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2082,12 +2082,12 @@ class InvitationsInvitationIdSend(View, CorsViewMixin):
         try:
             # invitation_id: string 
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
             # language (optional): string 
             language = self.request.query.get("language", None)
             if language is not None:
-                jsonschema.validate(language, {"type": "string"})
+                utils.validate(language, {"type": "string"})
                 optional_args["language"] = language
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2122,12 +2122,12 @@ class InvitationsPurgeExpired(View, CorsViewMixin):
             synchronous_mode = self.request.query.get("synchronous_mode", None)
             if synchronous_mode is not None:
                 synchronous_mode = (synchronous_mode.lower() == "true")
-                jsonschema.validate(synchronous_mode, {"type": "boolean"})
+                utils.validate(synchronous_mode, {"type": "boolean"})
                 optional_args["synchronous_mode"] = synchronous_mode
             # cutoff_date (optional): string An optional cutoff date to purge invites before this date
             cutoff_date = self.request.query.get("cutoff_date", None)
             if cutoff_date is not None:
-                jsonschema.validate(cutoff_date, {"type": "string"})
+                utils.validate(cutoff_date, {"type": "string"})
                 optional_args["cutoff_date"] = cutoff_date
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2225,7 +2225,7 @@ class Invitationsiteroles(View, CorsViewMixin):
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                jsonschema.validate(invitation_id, {"type": "string"})
+                utils.validate(invitation_id, {"type": "string"})
                 optional_args["invitation_id"] = invitation_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -2271,7 +2271,7 @@ class Invitationsiteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2303,7 +2303,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -2336,7 +2336,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -2374,7 +2374,7 @@ class OpsAllUserRolesUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2438,13 +2438,13 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         try:
             # client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
             client_token_id = self.request.match_info["client_token_id"]
-            jsonschema.validate(client_token_id, {"type": "string"})
+            utils.validate(client_token_id, {"type": "string"})
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2632,7 +2632,7 @@ class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -2641,7 +2641,7 @@ class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2674,7 +2674,7 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2686,7 +2686,7 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2723,13 +2723,13 @@ class OpsUserManagementPortalPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2767,7 +2767,7 @@ class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -2776,7 +2776,7 @@ class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2808,7 +2808,7 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -3021,7 +3021,7 @@ class Organisations(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(organisation_ids, schema)
+                utils.validate(organisation_ids, schema)
                 optional_args["organisation_ids"] = organisation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3057,7 +3057,7 @@ class Organisations(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3157,7 +3157,7 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3255,7 +3255,7 @@ class Permissions(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(permission_ids, schema)
+                utils.validate(permission_ids, schema)
                 optional_args["permission_ids"] = permission_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3291,7 +3291,7 @@ class Permissions(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3391,7 +3391,7 @@ class PermissionsPermissionId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3425,7 +3425,7 @@ class RefreshAll(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3460,7 +3460,7 @@ class RefreshClients(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3495,7 +3495,7 @@ class RefreshDomains(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3530,7 +3530,7 @@ class RefreshKeys(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3565,7 +3565,7 @@ class RefreshPermissions(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3600,7 +3600,7 @@ class RefreshResources(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3635,7 +3635,7 @@ class RefreshRoles(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3670,7 +3670,7 @@ class RefreshSites(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3712,7 +3712,7 @@ class RequestUserDeletion(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3800,7 +3800,7 @@ class Resources(View, CorsViewMixin):
             # prefix (optional): string An optional URN prefix filter
             prefix = self.request.query.get("prefix", None)
             if prefix is not None:
-                jsonschema.validate(prefix, {"type": "string"})
+                utils.validate(prefix, {"type": "string"})
                 optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
             resource_ids = self.request.query.get("resource_ids", None)
@@ -3815,7 +3815,7 @@ class Resources(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(resource_ids, schema)
+                utils.validate(resource_ids, schema)
                 optional_args["resource_ids"] = resource_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3851,7 +3851,7 @@ class Resources(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3951,7 +3951,7 @@ class ResourcesResourceId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4093,7 +4093,7 @@ class Roleresourcepermissions(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4271,7 +4271,7 @@ class Roles(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(role_ids, schema)
+                utils.validate(role_ids, schema)
                 optional_args["role_ids"] = role_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4307,7 +4307,7 @@ class Roles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4407,7 +4407,7 @@ class RolesRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4503,7 +4503,7 @@ class Sitedataschemas(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4539,7 +4539,7 @@ class Sitedataschemas(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4639,7 +4639,7 @@ class SitedataschemasSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4773,7 +4773,7 @@ class Siteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4882,7 +4882,7 @@ class SiterolesSiteIdRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4997,7 +4997,7 @@ class Sites(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
             # client_id (optional): integer An optional client id to filter on
             client_id = self.request.query.get("client_id", None)
@@ -5038,7 +5038,7 @@ class Sites(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5138,7 +5138,7 @@ class SitesSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5235,7 +5235,7 @@ class Userdomainroles(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
@@ -5281,7 +5281,7 @@ class Userdomainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5313,7 +5313,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -5346,7 +5346,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -5509,70 +5509,70 @@ class Users(View, CorsViewMixin):
             # birth_date (optional): string An optional birth_date range filter
             birth_date = self.request.query.get("birth_date", None)
             if birth_date is not None:
-                jsonschema.validate(birth_date, {"type": "string"})
+                utils.validate(birth_date, {"type": "string"})
                 optional_args["birth_date"] = birth_date
             # country (optional): string An optional country filter
             country = self.request.query.get("country", None)
             if country is not None:
-                jsonschema.validate(country, {"type": "string"})
+                utils.validate(country, {"type": "string"})
                 optional_args["country"] = country
             # date_joined (optional): string An optional date joined range filter
             date_joined = self.request.query.get("date_joined", None)
             if date_joined is not None:
-                jsonschema.validate(date_joined, {"type": "string"})
+                utils.validate(date_joined, {"type": "string"})
                 optional_args["date_joined"] = date_joined
             # email (optional): string An optional case insensitive email inner match filter
             email = self.request.query.get("email", None)
             if email is not None:
-                jsonschema.validate(email, {"type": "string"})
+                utils.validate(email, {"type": "string"})
                 optional_args["email"] = email
             # email_verified (optional): boolean An optional email verified filter
             email_verified = self.request.query.get("email_verified", None)
             if email_verified is not None:
                 email_verified = (email_verified.lower() == "true")
-                jsonschema.validate(email_verified, {"type": "boolean"})
+                utils.validate(email_verified, {"type": "boolean"})
                 optional_args["email_verified"] = email_verified
             # first_name (optional): string An optional case insensitive first name inner match filter
             first_name = self.request.query.get("first_name", None)
             if first_name is not None:
-                jsonschema.validate(first_name, {"type": "string"})
+                utils.validate(first_name, {"type": "string"})
                 optional_args["first_name"] = first_name
             # gender (optional): string An optional gender filter
             gender = self.request.query.get("gender", None)
             if gender is not None:
-                jsonschema.validate(gender, {"type": "string"})
+                utils.validate(gender, {"type": "string"})
                 optional_args["gender"] = gender
             # is_active (optional): boolean An optional is_active filter
             is_active = self.request.query.get("is_active", None)
             if is_active is not None:
                 is_active = (is_active.lower() == "true")
-                jsonschema.validate(is_active, {"type": "boolean"})
+                utils.validate(is_active, {"type": "boolean"})
                 optional_args["is_active"] = is_active
             # last_login (optional): string An optional last login range filter
             last_login = self.request.query.get("last_login", None)
             if last_login is not None:
-                jsonschema.validate(last_login, {"type": "string"})
+                utils.validate(last_login, {"type": "string"})
                 optional_args["last_login"] = last_login
             # last_name (optional): string An optional case insensitive last name inner match filter
             last_name = self.request.query.get("last_name", None)
             if last_name is not None:
-                jsonschema.validate(last_name, {"type": "string"})
+                utils.validate(last_name, {"type": "string"})
                 optional_args["last_name"] = last_name
             # msisdn (optional): string An optional case insensitive MSISDN inner match filter
             msisdn = self.request.query.get("msisdn", None)
             if msisdn is not None:
-                jsonschema.validate(msisdn, {"type": "string"})
+                utils.validate(msisdn, {"type": "string"})
                 optional_args["msisdn"] = msisdn
             # msisdn_verified (optional): boolean An optional MSISDN verified filter
             msisdn_verified = self.request.query.get("msisdn_verified", None)
             if msisdn_verified is not None:
                 msisdn_verified = (msisdn_verified.lower() == "true")
-                jsonschema.validate(msisdn_verified, {"type": "boolean"})
+                utils.validate(msisdn_verified, {"type": "boolean"})
                 optional_args["msisdn_verified"] = msisdn_verified
             # nickname (optional): string An optional case insensitive nickname inner match filter
             nickname = self.request.query.get("nickname", None)
             if nickname is not None:
-                jsonschema.validate(nickname, {"type": "string"})
+                utils.validate(nickname, {"type": "string"})
                 optional_args["nickname"] = nickname
             # organisation_id (optional): integer An optional filter on the organisation id
             organisation_id = self.request.query.get("organisation_id", None)
@@ -5582,29 +5582,29 @@ class Users(View, CorsViewMixin):
             # updated_at (optional): string An optional updated_at range filter
             updated_at = self.request.query.get("updated_at", None)
             if updated_at is not None:
-                jsonschema.validate(updated_at, {"type": "string"})
+                utils.validate(updated_at, {"type": "string"})
                 optional_args["updated_at"] = updated_at
             # username (optional): string An optional case insensitive username inner match filter
             username = self.request.query.get("username", None)
             if username is not None:
-                jsonschema.validate(username, {"type": "string"})
+                utils.validate(username, {"type": "string"})
                 optional_args["username"] = username
             # q (optional): string An optional case insensitive inner match filter across all searchable text fields
             q = self.request.query.get("q", None)
             if q is not None:
-                jsonschema.validate(q, {"type": "string"})
+                utils.validate(q, {"type": "string"})
                 optional_args["q"] = q
             # tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
             tfa_enabled = self.request.query.get("tfa_enabled", None)
             if tfa_enabled is not None:
                 tfa_enabled = (tfa_enabled.lower() == "true")
-                jsonschema.validate(tfa_enabled, {"type": "boolean"})
+                utils.validate(tfa_enabled, {"type": "boolean"})
                 optional_args["tfa_enabled"] = tfa_enabled
             # has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
             has_organisation = self.request.query.get("has_organisation", None)
             if has_organisation is not None:
                 has_organisation = (has_organisation.lower() == "true")
-                jsonschema.validate(has_organisation, {"type": "boolean"})
+                utils.validate(has_organisation, {"type": "boolean"})
                 optional_args["has_organisation"] = has_organisation
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
             order_by = self.request.query.get("order_by", None)
@@ -5617,7 +5617,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(order_by, schema)
+                utils.validate(order_by, schema)
                 optional_args["order_by"] = order_by
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.get("user_ids", None)
@@ -5630,7 +5630,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(user_ids, schema)
+                utils.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.get("site_ids", None)
@@ -5645,7 +5645,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5680,7 +5680,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5707,7 +5707,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5734,7 +5734,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5746,7 +5746,7 @@ class UsersUserId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5840,7 +5840,7 @@ class Usersitedata(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -5881,7 +5881,7 @@ class Usersitedata(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5915,7 +5915,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5945,7 +5945,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5975,7 +5975,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5990,7 +5990,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -6087,7 +6087,7 @@ class Usersiteroles(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -6133,7 +6133,7 @@ class Usersiteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -6165,7 +6165,7 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -6198,7 +6198,7 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
