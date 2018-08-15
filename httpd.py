@@ -24,6 +24,8 @@ logger.setLevel(settings.LOG_LEVEL)
 async def on_startup(application: web.Application):
     application["client_session"] = ClientSession()
 
+    application["redis"] = await aioredis.create_redis_pool(REDIS, minsize=5, maxsize=10)
+
     logger.info("Setting up scheduled jobs...")
 
     # Create a closure that will be used to refresh data.
@@ -104,8 +106,6 @@ if __name__ == "__main__":
             configuration=authentication_service_configuration
         )
     )
-
-    app["redis"] = await aioredis.create_redis_pool(REDIS, minsize=5, maxsize=10)
 
     logger.info("Access Control/Operational: {}".format(access_control_configuration.host))
     logger.info("Authentication Service: {}".format(authentication_service_configuration.host))
