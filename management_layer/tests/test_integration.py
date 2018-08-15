@@ -1,6 +1,6 @@
 import json
 
-import aiomcache
+import aioredis
 import jsonschema
 import logging
 import os
@@ -367,13 +367,20 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
-        app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+        app["redis"] = await aioredis.create_redis_pool("redis://localhost:6379", loop=self.loop)
 
         async def on_startup(the_app):
             the_app["client_session"] = ClientSession()
 
         async def on_shutdown(the_app):
             await the_app["client_session"].close()
+            for backend in [
+                "access_control_api",
+                "operational_api",
+                "authentication_service_api",
+                "user_data_api"
+            ]:
+                await the_app[backend].api_client.rest_client.pool_manager.close()
 
         app.on_startup.append(on_startup)
         app.on_shutdown.append(on_shutdown)

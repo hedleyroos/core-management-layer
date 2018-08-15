@@ -14,11 +14,11 @@ uses an event loop, since it is single-threaded in nature.
 
 The values stored in the mapping class are refreshed when a scheduled
 job calls one of the refresh_* functions. Typically a refresh will use a cached
-value from memcache, but, if the value is not in memcache or it expired, the
+value from redis, but, if the value is not in redis or it expired, the
 API will be queried and the cache updated.
 
 If multiple instances of the management-layer is running, typically only one
-will have to refresh memcache, after which the rest will use the cached values.
+will have to refresh redis, after which the rest will use the cached values.
 
 IMPORTANT: Dictionaries with integer keys that are serialised to JSON will have those keys
 converted to strings when cached and those keys need to be transformed back to integers
@@ -29,7 +29,7 @@ import logging
 
 from typing import Callable, Tuple, List, Dict, TypeVar, Awaitable
 
-import aiomcache
+import aioredis
 import jwt
 from aiohttp import web
 
@@ -192,7 +192,7 @@ MAPPING_DATA_LIMIT = 100
 
 async def _load(
     api_call: Callable[..., Awaitable[List[T]]],
-    memcache: aiomcache.Client, transform: transformations.Transformation,
+    redis: aioredis.ConnectionsPool, transform: transformations.Transformation,
     key: bytes, name_field: str, nocache: bool=False
 ) -> Tuple[Dict[int, T], Dict[str, int]]:
     """
@@ -200,7 +200,7 @@ async def _load(
     or Access Control component.
 
     :param api_call: The API call that returns the needed information
-    :param memcache: The memcache client to use
+    :param redis: The redis pool to use
     :param transform: The transformation to apply to results
     :param key: The cache key to use
     :param name_field: The name of the field in which the text name can be found
@@ -209,7 +209,7 @@ async def _load(
         mapping.
     """
     items_by_id = {}  # type: Dict[int, T]
-    items = None if nocache else await memcache.get(key)
+    items = None if nocache else await redis.get(key)
     if items:
         items_by_id = json.loads(items, encoding="utf8")
         # When items_by_id is JSON-encoded to cache, the integer ids are (implicitly) converted to
@@ -236,7 +236,7 @@ async def _load(
             # Call API again with new offset
             offset += MAPPING_DATA_LIMIT
 
-        await memcache.set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
+        await redis.set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
         logger.debug(f"Loaded {len(items_by_id)} definitions from the API")
 
     name_to_id_map = {
@@ -252,7 +252,7 @@ async def refresh_domains(app: web.Application, nocache: bool=False):
     logger.info("Refreshing domains")
     try:
         Mappings._domains, Mappings._domain_name_to_id_map = await _load(
-            app["access_control_api"].domain_list, app["memcache"], transformations.DOMAIN,
+            app["access_control_api"].domain_list, app["redis"], transformations.DOMAIN,
             bytes(f"{__name__}:domains", encoding="utf8"), "name", nocache
         )
     except Exception as e:
@@ -266,7 +266,7 @@ async def refresh_permissions(app: web.Application, nocache: bool=False):
     logger.info("Refreshing permissions")
     try:
         Mappings._permissions, Mappings._permission_name_to_id_map = await _load(
-            app["access_control_api"].permission_list, app["memcache"], transformations.PERMISSION,
+            app["access_control_api"].permission_list, app["redis"], transformations.PERMISSION,
             bytes(f"{__name__}:permissions", encoding="utf8"), "name", nocache
         )
     except Exception as e:
@@ -280,7 +280,7 @@ async def refresh_resources(app: web.Application, nocache: bool=False):
     logger.info("Refreshing resources")
     try:
         Mappings._resources, Mappings._resource_urn_to_id_map = await _load(
-            app["access_control_api"].resource_list, app["memcache"], transformations.RESOURCE,
+            app["access_control_api"].resource_list, app["redis"], transformations.RESOURCE,
             bytes(f"{__name__}:resources", encoding="utf8"), "urn", nocache
         )
     except Exception as e:
@@ -294,7 +294,7 @@ async def refresh_roles(app: web.Application, nocache: bool=False):
     logger.info("Refreshing roles")
     try:
         Mappings._roles, Mappings._role_label_to_id_map = await _load(
-            app["access_control_api"].role_list, app["memcache"], transformations.ROLE,
+            app["access_control_api"].role_list, app["redis"], transformations.ROLE,
             bytes(f"{__name__}:roles", encoding="utf8"), "label", nocache
         )
     except Exception as e:
@@ -308,7 +308,7 @@ async def refresh_sites(app: web.Application, nocache: bool=False):
     logger.info("Refreshing sites")
     try:
         Mappings._sites, Mappings._site_name_to_id_map = await _load(
-            app["access_control_api"].site_list, app["memcache"], transformations.SITE,
+            app["access_control_api"].site_list, app["redis"], transformations.SITE,
             bytes(f"{__name__}:sites", encoding="utf8"), "name", nocache
         )
 
@@ -330,7 +330,7 @@ async def refresh_clients(app: web.Application, nocache: bool=False):
     logger.info("Refreshing clients")
     try:
         Mappings._clients, Mappings._client_name_to_id_map = await _load(
-            app["authentication_service_api"].client_list, app["memcache"], transformations.CLIENT,
+            app["authentication_service_api"].client_list, app["redis"], transformations.CLIENT,
             bytes(f"{__name__}:clients", encoding="utf8"), "name", nocache
         )
 
@@ -355,7 +355,7 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
     try:
         items_by_id = {}  # type: Dict[int, T]
         key = bytes(f"{__name__}:jwks", encoding="utf8")
-        items = None if nocache else await app["memcache"].get(key)
+        items = None if nocache else await app["redis"].get(key)
         if items:
             items_by_id = json.loads(items, encoding="utf8")
             logger.debug(f"Loaded {len(items_by_id)} definitions from cache")
@@ -366,13 +366,13 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
             for entry in jwks["keys"]:
                 items_by_id[entry["kid"]] = entry
 
-            await app["memcache"].set(key, json.dumps(items_by_id).encode("utf8"),
+            await app["redis"].set(key, json.dumps(items_by_id).encode("utf8"),
                                       CACHE_TIME)
             logger.debug(f"Loaded {len(items_by_id)} definitions from the JWKS end-point")
 
         for k, parameters in items_by_id.items():
             # We compute the public key based on the parameters provided. The public key is not
-            # cached in memcache. Only its parameters are.
+            # cached in redis. Only its parameters are.
             public_key = jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(parameters))
             # We store the computed public key along with the parameters
             items_by_id[k]["public_key"] = public_key

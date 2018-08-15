@@ -2,7 +2,7 @@ from copy import copy
 from unittest.mock import patch, Mock
 from uuid import uuid1
 
-import aiomcache
+import aioredis
 from aiohttp import web
 from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop, make_mocked_request
 
@@ -797,7 +797,8 @@ class TestUtils(AioHTTPTestCase):
 
     async def tearDownAsync(self):
         await super().tearDownAsync()
-        await self.app["memcache"].close()
+        self.app["redis"].close()
+        await self.app["redis"].wait_closed()
         for backend in ["access_control_api", "operational_api"]:
             await self.app[backend].api_client.rest_client.pool_manager.close()
 
@@ -812,7 +813,7 @@ class TestUtils(AioHTTPTestCase):
         app = web.Application(loop=self.loop)
         app["access_control_api"] = AccessControlApi()
         app["operational_api"] = OperationalApi()
-        app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+        app["redis"] = await aioredis.create_redis_pool("redis://localhost:6379", loop=self.loop)
         app.router.add_get('/', hello)
 
         return app

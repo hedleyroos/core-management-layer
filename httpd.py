@@ -3,7 +3,7 @@
 from management_layer.logging import logging
 
 import asyncio
-import aiomcache
+import aioredis
 from aiohttp import web, ClientSession
 import aiojobs
 from aiojobs.aiohttp import setup
@@ -15,7 +15,7 @@ from management_layer import settings, views
 from management_layer.api.urls import add_routes
 from management_layer.mappings import refresh_all
 from management_layer.middleware import auth_middleware, sentry_middleware
-from management_layer.settings import MEMCACHE_HOST, MEMCACHE_PORT, MAPPING_REFRESH_SLEEP_SECONDS
+from management_layer.settings import REDIS, MAPPING_REFRESH_SLEEP_SECONDS
 
 logger = logging.getLogger()
 logger.setLevel(settings.LOG_LEVEL)
@@ -41,8 +41,9 @@ async def on_startup(application: web.Application):
 async def on_shutdown(app):
     logger.info("Waiting for client session to finish up...")
     await app["client_session"].close()
-    logger.info("Waiting for memcache to finish up...")
-    await app["memcache"].close()
+    logger.info("Waiting for redis to finish up...")
+    app["redis"].close()
+    await app["redis"].wait_closed()
     logger.info("Waiting for clients to finish up...")
     for backend in [
         "access_control_api",
@@ -104,12 +105,12 @@ if __name__ == "__main__":
         )
     )
 
-    app["memcache"] = aiomcache.Client(MEMCACHE_HOST, MEMCACHE_PORT)
+    app["redis"] = await aioredis.create_redis_pool(REDIS, minsize=5, maxsize=10)
 
     logger.info("Access Control/Operational: {}".format(access_control_configuration.host))
     logger.info("Authentication Service: {}".format(authentication_service_configuration.host))
     logger.info("User Data Store: {}".format(user_data_store_configuration.host))
-    logger.info("Memcache: {}:{}".format(MEMCACHE_HOST, MEMCACHE_PORT))
+    logger.info("Redis: {}".format(REDIS))
 
     setup(app)  # Set up aiojobs scheduler
     app.on_startup.append(on_startup)
