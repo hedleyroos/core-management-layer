@@ -236,7 +236,7 @@ async def _load(
             # Call API again with new offset
             offset += MAPPING_DATA_LIMIT
 
-        await redis.set(key, json.dumps(items_by_id).encode("utf8"), CACHE_TIME)
+        await redis.set(key, json.dumps(items_by_id).encode("utf8"), expire=CACHE_TIME)
         logger.debug(f"Loaded {len(items_by_id)} definitions from the API")
 
     name_to_id_map = {
@@ -366,8 +366,7 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
             for entry in jwks["keys"]:
                 items_by_id[entry["kid"]] = entry
 
-            await app["redis"].set(key, json.dumps(items_by_id).encode("utf8"),
-                                      CACHE_TIME)
+            await app["redis"].set(key, json.dumps(items_by_id).encode("utf8"), expire=CACHE_TIME)
             logger.debug(f"Loaded {len(items_by_id)} definitions from the JWKS end-point")
 
         for k, parameters in items_by_id.items():
