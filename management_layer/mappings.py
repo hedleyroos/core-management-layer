@@ -44,13 +44,14 @@ logger = logging.getLogger(__name__)
 
 class Mappings:
     # Internal copies of definitions. These are mappings of ids to dictionaries.
-    _domains = {}  # type: Dict[int, Dict] (refer to transformations.DOMAIN for more detail)
-    _permissions = {}  # type: Dict[int, Dict] (refer to transformations.PERMISSION for more detail)
-    _resources = {}  # type: Dict[int, Dict] (refer to transformations.RESOURCE for more detail)
-    _roles = {}  # type: Dict[int, Dict] (refer to transformations.ROLE for more detail)
-    _sites = {}  # type: Dict[int, Dict] (refer to transformations.SITE for more detail)
-    _clients = {}  # type: Dict[int, Dict] (refer to transformations.CLIENT for more detail)
-    _keys = {}  # type: Dict[str, Dict]  (refer to JWKS documentation)
+    _domains = {}  # type: Dict[int, Dict] # (refer to transformations.DOMAIN for more detail)
+    _permissions = {}  # type: Dict[int, Dict] # (refer to transformations.PERMISSION for more
+    # detail)
+    _resources = {}  # type: Dict[int, Dict] # (refer to transformations.RESOURCE for more detail)
+    _roles = {}  # type: Dict[int, Dict] # (refer to transformations.ROLE for more detail)
+    _sites = {}  # type: Dict[int, Dict] # (refer to transformations.SITE for more detail)
+    _clients = {}  # type: Dict[int, Dict] # (refer to transformations.CLIENT for more detail)
+    _keys = {}  # type: Dict[str, Dict] # (refer to JWKS documentation)
 
     # Name/label to id mappings.
     _domain_name_to_id_map = {}  # type: Dict[str, int]
