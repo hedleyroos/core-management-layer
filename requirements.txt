@@ -1,7 +1,7 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@master#egg=swagger-django-generator
 -e git+https://github.com/praekelt/apitools@master#egg=apitools
 python_dateutil == 2.6.0
-aiomcache
+aioredis
 jsonschema
 aiohttp >= 3.3.2,<4.0
 aiohttp-cors
@@ -17,3 +17,8 @@ cryptography>=2.2.0,<3.0
 environs>=2.1.0,<3.0
 raven  # Sentry
 raven-aiohttp >= 0.7.0  # aiohttp support for Sentry
+
+# The following requirements are required by jsonschema
+# in order to do proper validation of certain formats.
+rfc3987
+strict-rfc3339

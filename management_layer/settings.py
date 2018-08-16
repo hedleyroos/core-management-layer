@@ -5,7 +5,7 @@ from environs import Env
 env = Env()
 
 
-CACHE_TIME = 5 * 60
+CACHE_TIME = env.int("CACHE_TIME", 5 * 60)
 
 # Authentication middleware related settings
 JWT_SECRET = env.str("JWT_SECRET", None)
@@ -37,9 +37,8 @@ LOG_LEVEL = env.str("LOG_LEVEL", "INFO")
 # Optional Sentry DSN
 SENTRY_DSN = env.str("SENTRY_DSN", None)
 
-# Optional Memcache settings
-MEMCACHE_HOST = env.str("MEMCACHE_HOST", "localhost")
-MEMCACHE_PORT = env.int("MEMCACHE_PORT", 11211)
+# Optional Redis settings
+REDIS = env.str("REDIS", "redis://localhost:6379")
 
 # Time period between refreshing mapping information.
-MAPPING_REFRESH_SLEEP_SECONDS = 300.0
+MAPPING_REFRESH_SLEEP_SECONDS = env.int("MAPPING_REFRESH_SLEEP_SECONDS", 300)

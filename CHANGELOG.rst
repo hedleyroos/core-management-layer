@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.5.0
+-----
+Replaced Memcache with Redis
+
+1.4.2
+-----
+Added checks to ensure that only a user that has certain roles can assign/delete those roles
+when creating or editing invitations.
+
 1.4.1
 -----
 Bugfix for Admin notes

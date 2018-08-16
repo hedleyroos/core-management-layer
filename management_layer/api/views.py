@@ -34,7 +34,7 @@ Stubs = getattr(Module, class_name)
 def maybe_validate_result(result, schema):
     if VALIDATE_RESPONSES:
         try:
-            jsonschema.validate(result, schema)
+            utils.validate(result, schema)
         except ValidationError as e:
             LOGGER.error(e.message)
 
@@ -123,12 +123,12 @@ class Adminnotes(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
             creator_id = self.request.query.get("creator_id", None)
             if creator_id is not None:
-                jsonschema.validate(creator_id, {"type": "string"})
+                utils.validate(creator_id, {"type": "string"})
                 optional_args["creator_id"] = creator_id
             # admin_note_ids (optional): array An optional list of adminnote ids
             admin_note_ids = self.request.query.get("admin_note_ids", None)
@@ -143,7 +143,7 @@ class Adminnotes(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(admin_note_ids, schema)
+                utils.validate(admin_note_ids, schema)
                 optional_args["admin_note_ids"] = admin_note_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -179,7 +179,7 @@ class Adminnotes(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -279,7 +279,7 @@ class AdminnotesAdminNoteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -349,10 +349,12 @@ class Clients(View, CorsViewMixin):
             },
             "terms_url": {
                 "description": "External reference to the privacy policy of the client.",
+                "format": "uri",
                 "type": "string"
             },
             "website_url": {
                 "description": "",
+                "format": "uri",
                 "type": "string"
             }
         },
@@ -405,12 +407,12 @@ class Clients(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(client_ids, schema)
+                utils.validate(client_ids, schema)
                 optional_args["client_ids"] = client_ids
             # client_token_id (optional): string An optional client id to filter on. This is not the primary key.
             client_token_id = self.request.query.get("client_token_id", None)
             if client_token_id is not None:
-                jsonschema.validate(client_token_id, {"type": "string"})
+                utils.validate(client_token_id, {"type": "string"})
                 optional_args["client_token_id"] = client_token_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -523,7 +525,7 @@ class Countries(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(country_codes, schema)
+                utils.validate(country_codes, schema)
                 optional_args["country_codes"] = country_codes
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -555,7 +557,7 @@ class CountriesCountryCode(View, CorsViewMixin):
         try:
             # country_code: string A unique two-character value identifying the country.
             country_code = self.request.match_info["country_code"]
-            jsonschema.validate(country_code, {"type": "string"})
+            utils.validate(country_code, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -571,6 +573,497 @@ class CountriesCountryCode(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class Deletedusers(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deleter_id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "email": {
+                "format": "email",
+                "type": "string"
+            },
+            "id": {
+                "format": "uuid",
+                "type": "string"
+            },
+            "msisdn": {
+                "type": "string"
+            },
+            "reason": {
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "username": {
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "username",
+            "reason",
+            "created_at",
+            "updated_at",
+            "deleter_id"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deleted_user
+    POST_BODY_SCHEMA = schemas.deleted_user_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusers instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # deleter_id (optional): string An optional query parameter to filter by deleter_id
+            deleter_id = self.request.query.get("deleter_id", None)
+            if deleter_id is not None:
+                utils.validate(deleter_id, {"type": "string"})
+                optional_args["deleter_id"] = deleter_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusers instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deleteduser_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeletedusersUserId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deleted_user
+    PUT_RESPONSE_SCHEMA = schemas.deleted_user
+    PUT_BODY_SCHEMA = schemas.deleted_user_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_delete(
+            self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deleteduser_read(
+            self.request, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deleteduser_update(
+            self.request, body, user_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class Deletedusersites(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "deleted_user_id": {
+                "format": "uuid",
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "deleted_user"
+                }
+            },
+            "deletion_confirmed_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_confirmed_via": {
+                "type": "string"
+            },
+            "deletion_requested_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "deletion_requested_via": {
+                "type": "string"
+            },
+            "site_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name",
+                    "model": "site"
+                }
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "deleted_user_id",
+            "site_id",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deleted_user_site
+    POST_BODY_SCHEMA = schemas.deleted_user_site_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusersites instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                if offset < 0:
+                    raise ValidationError("offset exceeds its minimum limit")
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                if limit < 1:
+                    raise ValidationError("limit exceeds its minimum limit")
+                if 100 < limit:
+                    raise ValidationError("limit exceeds its maximum limit")
+                optional_args["limit"] = limit
+            # user_id (optional): string An optional query parameter to filter by user_id
+            user_id = self.request.query.get("user_id", None)
+            if user_id is not None:
+                utils.validate(user_id, {"type": "string"})
+                optional_args["user_id"] = user_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletedusersites instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletedusersite_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deleted_user_site
+    PUT_RESPONSE_SCHEMA = schemas.deleted_user_site
+    PUT_BODY_SCHEMA = schemas.deleted_user_site_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersitesUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_delete(
+            self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersitesUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletedusersite_read(
+            self.request, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletedusersitesUserIdSiteId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            utils.validate(user_id, {"type": "string"})
+            # site_id: integer A unique integer value identifying the site.
+            site_id = self.request.match_info["site_id"]
+            site_id = int(site_id)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletedusersite_update(
+            self.request, body, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -690,7 +1183,7 @@ class Domainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -799,7 +1292,7 @@ class DomainrolesDomainIdRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -909,7 +1402,7 @@ class Domains(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(domain_ids, schema)
+                utils.validate(domain_ids, schema)
                 optional_args["domain_ids"] = domain_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -945,7 +1438,7 @@ class Domains(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1045,7 +1538,7 @@ class DomainsDomainId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1171,7 +1664,7 @@ class Invitationdomainroles(View, CorsViewMixin):
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                jsonschema.validate(invitation_id, {"type": "string"})
+                utils.validate(invitation_id, {"type": "string"})
                 optional_args["invitation_id"] = invitation_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
@@ -1217,7 +1710,7 @@ class Invitationdomainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1249,7 +1742,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -1282,7 +1775,7 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -1409,7 +1902,7 @@ class Invitations(View, CorsViewMixin):
             # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
             invitor_id = self.request.query.get("invitor_id", None)
             if invitor_id is not None:
-                jsonschema.validate(invitor_id, {"type": "string"})
+                utils.validate(invitor_id, {"type": "string"})
                 optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
             invitation_ids = self.request.query.get("invitation_ids", None)
@@ -1422,7 +1915,7 @@ class Invitations(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(invitation_ids, schema)
+                utils.validate(invitation_ids, schema)
                 optional_args["invitation_ids"] = invitation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1458,7 +1951,7 @@ class Invitations(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1492,7 +1985,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1519,7 +2012,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1546,7 +2039,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1558,7 +2051,7 @@ class InvitationsInvitationId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1589,12 +2082,12 @@ class InvitationsInvitationIdSend(View, CorsViewMixin):
         try:
             # invitation_id: string 
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             optional_args = {}
             # language (optional): string 
             language = self.request.query.get("language", None)
             if language is not None:
-                jsonschema.validate(language, {"type": "string"})
+                utils.validate(language, {"type": "string"})
                 optional_args["language"] = language
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1629,12 +2122,12 @@ class InvitationsPurgeExpired(View, CorsViewMixin):
             synchronous_mode = self.request.query.get("synchronous_mode", None)
             if synchronous_mode is not None:
                 synchronous_mode = (synchronous_mode.lower() == "true")
-                jsonschema.validate(synchronous_mode, {"type": "boolean"})
+                utils.validate(synchronous_mode, {"type": "boolean"})
                 optional_args["synchronous_mode"] = synchronous_mode
             # cutoff_date (optional): string An optional cutoff date to purge invites before this date
             cutoff_date = self.request.query.get("cutoff_date", None)
             if cutoff_date is not None:
-                jsonschema.validate(cutoff_date, {"type": "string"})
+                utils.validate(cutoff_date, {"type": "string"})
                 optional_args["cutoff_date"] = cutoff_date
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1732,7 +2225,7 @@ class Invitationsiteroles(View, CorsViewMixin):
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                jsonschema.validate(invitation_id, {"type": "string"})
+                utils.validate(invitation_id, {"type": "string"})
                 optional_args["invitation_id"] = invitation_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -1778,7 +2271,7 @@ class Invitationsiteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -1810,7 +2303,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -1843,7 +2336,7 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            jsonschema.validate(invitation_id, {"type": "string"})
+            utils.validate(invitation_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -1881,7 +2374,7 @@ class OpsAllUserRolesUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1945,13 +2438,13 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         try:
             # client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
             client_token_id = self.request.match_info["client_token_id"]
-            jsonschema.validate(client_token_id, {"type": "string"})
+            utils.validate(client_token_id, {"type": "string"})
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2139,7 +2632,7 @@ class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -2148,7 +2641,7 @@ class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2181,7 +2674,7 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2193,7 +2686,7 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2230,13 +2723,13 @@ class OpsUserManagementPortalPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2274,7 +2767,7 @@ class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -2283,7 +2776,7 @@ class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2315,7 +2808,7 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -2528,7 +3021,7 @@ class Organisations(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(organisation_ids, schema)
+                utils.validate(organisation_ids, schema)
                 optional_args["organisation_ids"] = organisation_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2564,7 +3057,7 @@ class Organisations(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2664,7 +3157,7 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2762,7 +3255,7 @@ class Permissions(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(permission_ids, schema)
+                utils.validate(permission_ids, schema)
                 optional_args["permission_ids"] = permission_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2798,7 +3291,7 @@ class Permissions(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2898,7 +3391,7 @@ class PermissionsPermissionId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -2932,7 +3425,7 @@ class RefreshAll(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2967,7 +3460,7 @@ class RefreshClients(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3002,7 +3495,7 @@ class RefreshDomains(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3037,7 +3530,7 @@ class RefreshKeys(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3072,7 +3565,7 @@ class RefreshPermissions(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3107,7 +3600,7 @@ class RefreshResources(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3142,7 +3635,7 @@ class RefreshRoles(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3177,7 +3670,7 @@ class RefreshSites(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                jsonschema.validate(nocache, {"type": "boolean"})
+                utils.validate(nocache, {"type": "boolean"})
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3193,6 +3686,47 @@ class RefreshSites(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class RequestUserDeletion(View, CorsViewMixin):
+
+    POST_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    POST_BODY_SCHEMA = schemas.request_user_deletion
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RequestUserDeletion instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.request_user_deletion(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -3266,7 +3800,7 @@ class Resources(View, CorsViewMixin):
             # prefix (optional): string An optional URN prefix filter
             prefix = self.request.query.get("prefix", None)
             if prefix is not None:
-                jsonschema.validate(prefix, {"type": "string"})
+                utils.validate(prefix, {"type": "string"})
                 optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
             resource_ids = self.request.query.get("resource_ids", None)
@@ -3281,7 +3815,7 @@ class Resources(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(resource_ids, schema)
+                utils.validate(resource_ids, schema)
                 optional_args["resource_ids"] = resource_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3317,7 +3851,7 @@ class Resources(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3417,7 +3951,7 @@ class ResourcesResourceId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3559,7 +4093,7 @@ class Roleresourcepermissions(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3737,7 +4271,7 @@ class Roles(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(role_ids, schema)
+                utils.validate(role_ids, schema)
                 optional_args["role_ids"] = role_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3773,7 +4307,7 @@ class Roles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3873,7 +4407,7 @@ class RolesRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -3969,7 +4503,7 @@ class Sitedataschemas(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4005,7 +4539,7 @@ class Sitedataschemas(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4105,7 +4639,7 @@ class SitedataschemasSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4239,7 +4773,7 @@ class Siteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4348,7 +4882,7 @@ class SiterolesSiteIdRoleId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4463,7 +4997,7 @@ class Sites(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
             # client_id (optional): integer An optional client id to filter on
             client_id = self.request.query.get("client_id", None)
@@ -4504,7 +5038,7 @@ class Sites(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4604,7 +5138,7 @@ class SitesSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4619,70 +5153,6 @@ class SitesSiteId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class SitesSiteIdActivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A SitesSiteIdActivate instance
-        """
-        try:
-            # site_id: integer A unique integer value identifying the site.
-            site_id = self.request.match_info["site_id"]
-            site_id = int(site_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_sites_site_id_activate(
-            self.request, site_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class SitesSiteIdDeactivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A SitesSiteIdDeactivate instance
-        """
-        try:
-            # site_id: integer A unique integer value identifying the site.
-            site_id = self.request.match_info["site_id"]
-            site_id = int(site_id)
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_sites_site_id_deactivate(
-            self.request, site_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -4765,7 +5235,7 @@ class Userdomainroles(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
@@ -4811,7 +5281,7 @@ class Userdomainroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -4843,7 +5313,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -4876,7 +5346,7 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
@@ -5039,70 +5509,70 @@ class Users(View, CorsViewMixin):
             # birth_date (optional): string An optional birth_date range filter
             birth_date = self.request.query.get("birth_date", None)
             if birth_date is not None:
-                jsonschema.validate(birth_date, {"type": "string"})
+                utils.validate(birth_date, {"type": "string"})
                 optional_args["birth_date"] = birth_date
             # country (optional): string An optional country filter
             country = self.request.query.get("country", None)
             if country is not None:
-                jsonschema.validate(country, {"type": "string"})
+                utils.validate(country, {"type": "string"})
                 optional_args["country"] = country
             # date_joined (optional): string An optional date joined range filter
             date_joined = self.request.query.get("date_joined", None)
             if date_joined is not None:
-                jsonschema.validate(date_joined, {"type": "string"})
+                utils.validate(date_joined, {"type": "string"})
                 optional_args["date_joined"] = date_joined
             # email (optional): string An optional case insensitive email inner match filter
             email = self.request.query.get("email", None)
             if email is not None:
-                jsonschema.validate(email, {"type": "string"})
+                utils.validate(email, {"type": "string"})
                 optional_args["email"] = email
             # email_verified (optional): boolean An optional email verified filter
             email_verified = self.request.query.get("email_verified", None)
             if email_verified is not None:
                 email_verified = (email_verified.lower() == "true")
-                jsonschema.validate(email_verified, {"type": "boolean"})
+                utils.validate(email_verified, {"type": "boolean"})
                 optional_args["email_verified"] = email_verified
             # first_name (optional): string An optional case insensitive first name inner match filter
             first_name = self.request.query.get("first_name", None)
             if first_name is not None:
-                jsonschema.validate(first_name, {"type": "string"})
+                utils.validate(first_name, {"type": "string"})
                 optional_args["first_name"] = first_name
             # gender (optional): string An optional gender filter
             gender = self.request.query.get("gender", None)
             if gender is not None:
-                jsonschema.validate(gender, {"type": "string"})
+                utils.validate(gender, {"type": "string"})
                 optional_args["gender"] = gender
             # is_active (optional): boolean An optional is_active filter
             is_active = self.request.query.get("is_active", None)
             if is_active is not None:
                 is_active = (is_active.lower() == "true")
-                jsonschema.validate(is_active, {"type": "boolean"})
+                utils.validate(is_active, {"type": "boolean"})
                 optional_args["is_active"] = is_active
             # last_login (optional): string An optional last login range filter
             last_login = self.request.query.get("last_login", None)
             if last_login is not None:
-                jsonschema.validate(last_login, {"type": "string"})
+                utils.validate(last_login, {"type": "string"})
                 optional_args["last_login"] = last_login
             # last_name (optional): string An optional case insensitive last name inner match filter
             last_name = self.request.query.get("last_name", None)
             if last_name is not None:
-                jsonschema.validate(last_name, {"type": "string"})
+                utils.validate(last_name, {"type": "string"})
                 optional_args["last_name"] = last_name
             # msisdn (optional): string An optional case insensitive MSISDN inner match filter
             msisdn = self.request.query.get("msisdn", None)
             if msisdn is not None:
-                jsonschema.validate(msisdn, {"type": "string"})
+                utils.validate(msisdn, {"type": "string"})
                 optional_args["msisdn"] = msisdn
             # msisdn_verified (optional): boolean An optional MSISDN verified filter
             msisdn_verified = self.request.query.get("msisdn_verified", None)
             if msisdn_verified is not None:
                 msisdn_verified = (msisdn_verified.lower() == "true")
-                jsonschema.validate(msisdn_verified, {"type": "boolean"})
+                utils.validate(msisdn_verified, {"type": "boolean"})
                 optional_args["msisdn_verified"] = msisdn_verified
             # nickname (optional): string An optional case insensitive nickname inner match filter
             nickname = self.request.query.get("nickname", None)
             if nickname is not None:
-                jsonschema.validate(nickname, {"type": "string"})
+                utils.validate(nickname, {"type": "string"})
                 optional_args["nickname"] = nickname
             # organisation_id (optional): integer An optional filter on the organisation id
             organisation_id = self.request.query.get("organisation_id", None)
@@ -5112,29 +5582,29 @@ class Users(View, CorsViewMixin):
             # updated_at (optional): string An optional updated_at range filter
             updated_at = self.request.query.get("updated_at", None)
             if updated_at is not None:
-                jsonschema.validate(updated_at, {"type": "string"})
+                utils.validate(updated_at, {"type": "string"})
                 optional_args["updated_at"] = updated_at
             # username (optional): string An optional case insensitive username inner match filter
             username = self.request.query.get("username", None)
             if username is not None:
-                jsonschema.validate(username, {"type": "string"})
+                utils.validate(username, {"type": "string"})
                 optional_args["username"] = username
             # q (optional): string An optional case insensitive inner match filter across all searchable text fields
             q = self.request.query.get("q", None)
             if q is not None:
-                jsonschema.validate(q, {"type": "string"})
+                utils.validate(q, {"type": "string"})
                 optional_args["q"] = q
             # tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
             tfa_enabled = self.request.query.get("tfa_enabled", None)
             if tfa_enabled is not None:
                 tfa_enabled = (tfa_enabled.lower() == "true")
-                jsonschema.validate(tfa_enabled, {"type": "boolean"})
+                utils.validate(tfa_enabled, {"type": "boolean"})
                 optional_args["tfa_enabled"] = tfa_enabled
             # has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
             has_organisation = self.request.query.get("has_organisation", None)
             if has_organisation is not None:
                 has_organisation = (has_organisation.lower() == "true")
-                jsonschema.validate(has_organisation, {"type": "boolean"})
+                utils.validate(has_organisation, {"type": "boolean"})
                 optional_args["has_organisation"] = has_organisation
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
             order_by = self.request.query.get("order_by", None)
@@ -5147,7 +5617,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(order_by, schema)
+                utils.validate(order_by, schema)
                 optional_args["order_by"] = order_by
             # user_ids (optional): array An optional list of user ids
             user_ids = self.request.query.get("user_ids", None)
@@ -5160,7 +5630,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(user_ids, schema)
+                utils.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.get("site_ids", None)
@@ -5175,7 +5645,7 @@ class Users(View, CorsViewMixin):
                     if field in schema:
                         del schema[field]
 
-                jsonschema.validate(site_ids, schema)
+                utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5210,7 +5680,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5237,7 +5707,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5264,7 +5734,7 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5276,7 +5746,7 @@ class UsersUserId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5291,70 +5761,6 @@ class UsersUserId(View, CorsViewMixin):
             headers = {}
 
         maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class UsersUserIdActivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A UsersUserIdActivate instance
-        """
-        try:
-            # user_id: string A UUID value identifying the user.
-            user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_users_user_id_activate(
-            self.request, user_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
-
-        return json_response(result, headers=headers)
-
-
-class UsersUserIdDeactivate(View, CorsViewMixin):
-
-    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-
-    async def get(self):
-        """
-        No parameters are passed explicitly. We unpack it from the request.
-        :param self: A UsersUserIdDeactivate instance
-        """
-        try:
-            # user_id: string A UUID value identifying the user.
-            user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
-            optional_args = {}
-        except ValidationError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
-        except ValueError as ve:
-            return Response(status=400, text="Parameter validation failed: {}".format(ve))
-
-        result = await Stubs.get__api_v1_users_user_id_deactivate(
-            self.request, user_id, **optional_args)
-
-        if type(result) is tuple:
-            result, headers = result
-        else:
-            headers = {}
-
-        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
 
@@ -5434,7 +5840,7 @@ class Usersitedata(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -5475,7 +5881,7 @@ class Usersitedata(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5509,7 +5915,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5539,7 +5945,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5569,7 +5975,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5584,7 +5990,7 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.PUT_BODY_SCHEMA)
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5681,7 +6087,7 @@ class Usersiteroles(View, CorsViewMixin):
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                jsonschema.validate(user_id, {"type": "string"})
+                utils.validate(user_id, {"type": "string"})
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
@@ -5727,7 +6133,7 @@ class Usersiteroles(View, CorsViewMixin):
             if not body:
                 return Response(status=400, text="Body required")
 
-            jsonschema.validate(body, schema=self.POST_BODY_SCHEMA)
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
         except ValidationError as ve:
             return Response(status=400, text="Body validation failed: {}".format(ve.message))
         except Exception:
@@ -5759,7 +6165,7 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5792,7 +6198,7 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            jsonschema.validate(user_id, {"type": "string"})
+            utils.validate(user_id, {"type": "string"})
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
@@ -5983,10 +6389,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "terms_url": {
                     "description": "External reference to the privacy policy of the client.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "website_url": {
                     "description": "",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -6013,6 +6421,212 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "code",
                 "name"
             ],
+            "type": "object"
+        },
+        "deleted_user": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deleter_id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "username",
+                "reason",
+                "created_at",
+                "updated_at",
+                "deleter_id"
+            ],
+            "type": "object"
+        },
+        "deleted_user_create": {
+            "properties": {
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "id": {
+                    "format": "uuid",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "username",
+                "reason"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "deleted_user_id": {
+                    "format": "uuid",
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "deleted_user"
+                    }
+                },
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "site"
+                    }
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "deleted_user_id",
+                "site_id",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site_create": {
+            "properties": {
+                "deleted_user_id": {
+                    "format": "uuid",
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "deleted_user"
+                    }
+                },
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name",
+                        "model": "site"
+                    }
+                }
+            },
+            "required": [
+                "deleted_user_id",
+                "site_id"
+            ],
+            "type": "object"
+        },
+        "deleted_user_site_update": {
+            "minProperties": 1,
+            "properties": {
+                "deletion_confirmed_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_confirmed_via": {
+                    "type": "string"
+                },
+                "deletion_requested_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "deletion_requested_via": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "deleted_user_update": {
+            "minProperties": 1,
+            "properties": {
+                "deleted_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "msisdn": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            },
             "type": "object"
         },
         "domain": {
@@ -6632,6 +7246,22 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "required": [
                 "mode"
+            ],
+            "type": "object"
+        },
+        "request_user_deletion": {
+            "properties": {
+                "reason": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "format": "uuid",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "user_id",
+                "reason"
             ],
             "type": "object"
         },
@@ -7666,6 +8296,14 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": false,
             "type": "string"
         },
+        "optional_deleter_id_filter": {
+            "description": "An optional query parameter to filter by deleter_id",
+            "format": "uuid",
+            "in": "query",
+            "name": "deleter_id",
+            "required": false,
+            "type": "string"
+        },
         "optional_domain_filter": {
             "description": "An optional query parameter to filter by domain_id",
             "in": "query",
@@ -8259,6 +8897,366 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/deletedusers": {
+            "get": {
+                "operationId": "deleteduser_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_deleter_id_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deleted_user",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:read"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deleteduser_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:create"
+                ]
+            }
+        },
+        "/deletedusers/{user_id}": {
+            "delete": {
+                "operationId": "deleteduser_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:delete"
+                ]
+            },
+            "get": {
+                "operationId": "deleteduser_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deleteduser_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deleteduser:update"
+                ]
+            }
+        },
+        "/deletedusersites": {
+            "get": {
+                "operationId": "deletedusersite_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_user_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deleted_user_site",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:read"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletedusersite_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:create"
+                ]
+            }
+        },
+        "/deletedusersites/{user_id}/{site_id}": {
+            "delete": {
+                "operationId": "deletedusersite_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:delete"
+                ]
+            },
+            "get": {
+                "operationId": "deletedusersite_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/site_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletedusersite_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deleted_user_site",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:user_data:deletedusersite:update"
+                ]
+            }
         },
         "/domainroles": {
             "get": {
@@ -10565,6 +11563,38 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/request_user_deletion": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "request_user_deletion",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request_user_deletion",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "authentication"
+                ]
+            }
+        },
         "/resources": {
             "get": {
                 "operationId": "resource_list",
@@ -11747,68 +12777,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
-        "/sites/{site_id}/activate": {
-            "get": {
-                "deprecated": true,
-                "description": "Activate the site so that users can log in to it.",
-                "responses": {
-                    "200": {
-                        "description": "Site successfully activated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Site not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/site_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
-        "/sites/{site_id}/deactivate": {
-            "get": {
-                "deprecated": true,
-                "description": "Deactivate the site so that users cannot log in to it.",
-                "responses": {
-                    "200": {
-                        "description": "Site successfully deactivated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "Site not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/site_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
         "/userdomainroles": {
             "get": {
                 "operationId": "userdomainrole_list",
@@ -12338,68 +13306,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ]
             }
         },
-        "/users/{user_id}/activate": {
-            "get": {
-                "deprecated": true,
-                "description": "Activate the user account.",
-                "responses": {
-                    "200": {
-                        "description": "Acccount successfully activated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/user_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
-        "/users/{user_id}/deactivate": {
-            "get": {
-                "deprecated": true,
-                "description": "Deactivate the user account.",
-                "responses": {
-                    "200": {
-                        "description": "Acccount successfully deactivated"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "404": {
-                        "description": "User not found"
-                    }
-                }
-            },
-            "parameters": [
-                {
-                    "$ref": "#/parameters/optional_portal_context_header",
-                    "x-scope": [
-                        ""
-                    ]
-                },
-                {
-                    "$ref": "#/parameters/user_id",
-                    "x-scope": [
-                        ""
-                    ]
-                }
-            ]
-        },
         "/usersitedata": {
             "get": {
                 "operationId": "usersitedata_list",
@@ -12818,6 +13724,24 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
     },
     "swagger": "2.0",
     "x-detail-page-definitions": {
+        "deleteduser": {
+            "inlines": [
+                {
+                    "fields": [
+                        "site_id",
+                        "deletion_requested_at",
+                        "deletion_requested_via",
+                        "deletion_confirmed_at",
+                        "deletion_confirmed_via",
+                        "created_at",
+                        "updated_at"
+                    ],
+                    "key": "deleted_user_id",
+                    "label": "Sites which the user visited",
+                    "model": "deleted_user_site"
+                }
+            ]
+        },
         "domain": {
             "inlines": [
                 {
@@ -12934,6 +13858,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Site Roles",
                     "model": "user_site_role"
                 }
+            ],
+            "sortable_fields": [
+                "id"
             ]
         }
     }

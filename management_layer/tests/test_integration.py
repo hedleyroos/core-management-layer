@@ -1,6 +1,6 @@
 import json
 
-import aiomcache
+import aioredis
 import jsonschema
 import logging
 import os
@@ -56,9 +56,10 @@ Resource = namedtuple("Resource", [
 # A list of resources. Used to parameterise tests.
 RESOURCES = {
     "adminnotes": Resource(1, schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
+    "deletedusers": Resource(1, schemas.deleted_user, schemas.deleted_user_create, schemas.deleted_user_update),
+    "deletedusersites": Resource(2, schemas.deleted_user_site, schemas.deleted_user_site_create, schemas.deleted_user_site_update),
     "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
     "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
-    # TODO: Uncomment when these are implemented
     "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
     "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
     "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
@@ -156,11 +157,17 @@ def get_test_data(schema):
     """
     data = DATA_GENERATOR.random_value(schema)
     # Overwrite fields that expect a UUID
-    for field in ["user_id", "creator_id", "invitation_id", "invitor_id"]:
+    for field in ["user_id", "creator_id", "invitation_id", "invitor_id",
+                  "deleted_user_id", "deleter_id"]:
         if field in data:
             data[field] = str(uuid.uuid1())
+
+    if schema == schemas.deleted_user_create:
+        data["id"] = str(uuid.uuid1())
+
     # Overwrite fields that expect a datetime
-    for field in ["consented_at", "last_login", "expires_at"]:
+    for field in ["consented_at", "last_login", "expires_at", "deleted_at",
+                  "deletion_requested_at", "deletion_confirmed_at"]:
         if field in data:
             data[field] = "2000-01-01T00:00:00Z"
 
@@ -360,13 +367,20 @@ class IntegrationTest(AioHTTPTestCase):
             )
         )
 
-        app["memcache"] = aiomcache.Client(host="localhost", port=11211, loop=self.loop)
+        app["redis"] = await aioredis.create_redis_pool("redis://localhost:6379", loop=self.loop)
 
         async def on_startup(the_app):
             the_app["client_session"] = ClientSession()
 
         async def on_shutdown(the_app):
             await the_app["client_session"].close()
+            for backend in [
+                "access_control_api",
+                "operational_api",
+                "authentication_service_api",
+                "user_data_api"
+            ]:
+                await the_app[backend].api_client.rest_client.pool_manager.close()
 
         app.on_startup.append(on_startup)
         app.on_shutdown.append(on_shutdown)

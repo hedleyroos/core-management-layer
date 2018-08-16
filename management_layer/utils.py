@@ -64,7 +64,10 @@ def client_exception_handler():
         # The server, while acting as a gateway or proxy, received an invalid
         # response from the upstream server it accessed in attempting to fulfill
         # the request.
-        error = json.loads(re.body)["error"] if re.body else None
+        try:
+            error = json.loads(re.body)["error"]
+        except (ValueError, KeyError, TypeError):
+            error = None
         raise JSONBadGateway(
             json_data={
                 "exception_type": "{}.{}".format(re.__module__, re.__class__.__name__),
