@@ -1,7 +1,7 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@master#egg=swagger-django-generator
 -e git+https://github.com/praekelt/apitools@master#egg=apitools
 python_dateutil == 2.6.0
-aiomcache
+aioredis
 jsonschema
 aiohttp >= 3.3.2,<4.0
 aiohttp-cors

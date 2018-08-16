@@ -216,7 +216,7 @@ async def get_role_resource_permissions(
     key = bytes(f"{MKP_ROLE_RESOURCE_PERMISSION}:{role_id}:{resource_id}",
                 encoding="utf8")
     with client_exception_handler():
-        role_resource_permissions = None if nocache else await request.app["memcache"].get(key)
+        role_resource_permissions = None if nocache else await request.app["redis"].get(key)
 
     if not role_resource_permissions:
         # The API call returns a List[RoleResourcePermission]
@@ -232,8 +232,8 @@ async def get_role_resource_permissions(
         ]
 
         with client_exception_handler():
-            await request.app["memcache"].set(
-                key, json.dumps(role_resource_permissions).encode("utf8"), exptime=CACHE_TIME
+            await request.app["redis"].set(
+                key, json.dumps(role_resource_permissions).encode("utf8"), expire=CACHE_TIME
             )
     else:
         role_resource_permissions = json.loads(role_resource_permissions, encoding="utf8")
@@ -275,7 +275,7 @@ async def get_all_user_roles(
     """
     key = bytes(f"{MKP_USER_ROLES}:{user.hex}", encoding="utf8")
     with client_exception_handler():
-        user_roles = None if nocache else await request.app["memcache"].get(key)
+        user_roles = None if nocache else await request.app["redis"].get(key)
 
     if user_roles is None:
         # The API returns an AllUserRoles object
@@ -287,8 +287,8 @@ async def get_all_user_roles(
         # We store the roles_map part of the response
         user_roles = response.roles_map
         with client_exception_handler():
-            await request.app["memcache"].set(
-                key, json.dumps(user_roles).encode("utf8"), exptime=CACHE_TIME)
+            await request.app["redis"].set(
+                key, json.dumps(user_roles).encode("utf8"), expire=CACHE_TIME)
     else:
         user_roles = json.loads(user_roles, encoding="utf8")
 
