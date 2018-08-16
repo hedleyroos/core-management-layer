@@ -51,32 +51,40 @@ _PRISM_COMMAND = "./prism run --validate --mockDynamic -s {}/{} -p {}"
 _TOTAL_COUNT_HEADER = "X-Total-Count"
 
 Resource = namedtuple("Resource", [
-    "num_identifying_parts", "schema", "create_schema", "update_schema"
+    "resource_path", "schema", "create_schema", "update_schema"
 ])
 # A list of resources. Used to parameterise tests.
 RESOURCES = {
-    "adminnotes": Resource(1, schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
-    "deletedusers": Resource(1, schemas.deleted_user, schemas.deleted_user_create, schemas.deleted_user_update),
-    "deletedusersites": Resource(2, schemas.deleted_user_site, schemas.deleted_user_site_create, schemas.deleted_user_site_update),
-    "domains": Resource(1, schemas.domain, schemas.domain_create, schemas.domain_update),
-    "domainroles": Resource(2, schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
-    "invitations": Resource(1, schemas.invitation, schemas.invitation_create, schemas.invitation_update),
-    "invitationdomainroles": Resource(3, schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
-    "invitationsiteroles": Resource(3, schemas.invitation_site_role, schemas.invitation_site_role_create, None),
-    "permissions": Resource(1, schemas.permission, schemas.permission_create, schemas.permission_update),
-    "resources": Resource(1, schemas.resource, schemas.resource_create, schemas.resource_update),
-    "roles": Resource(1, schemas.role, schemas.role_create, schemas.role_update),
-    "roleresourcepermissions": Resource(3, schemas.role_resource_permission, schemas.role_resource_permission_create, None),
-    "sites": Resource(1, schemas.site, schemas.site_create, schemas.site_update),
-    "sitedataschemas": Resource(1, schemas.site_data_schema, schemas.site_data_schema_create, schemas.site_data_schema_update),
-    "siteroles": Resource(2, schemas.site_role, schemas.site_role_create, schemas.site_role_update),
-    "userdomainroles": Resource(3, schemas.user_domain_role, schemas.user_domain_role_create, None),
-    "usersitedata": Resource(2, schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
-    "usersiteroles": Resource(3, schemas.user_site_role, schemas.user_site_role_create, None),
-    "clients": Resource(1, schemas.client, None, None),
-    "users": Resource(1, schemas.user, None, schemas.user_update),
-    "countries": Resource(1, schemas.country, None, None),
-    "organisations": Resource(1, schemas.organisation, schemas.organisation_create, schemas.organisation_update),
+    "adminnotes": Resource("/1", schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
+    "deletedusers": Resource("/{}".format(uuid.uuid4()),
+                             schemas.deleted_user, schemas.deleted_user_create, schemas.deleted_user_update),
+    "deletedusersites": Resource("/{}/{}".format(uuid.uuid4(), 1),
+                                 schemas.deleted_user_site, schemas.deleted_user_site_create, schemas.deleted_user_site_update),
+    "domains": Resource("/1", schemas.domain, schemas.domain_create, schemas.domain_update),
+    "domainroles": Resource("/1/1", schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
+    "invitations": Resource("/{}".format(uuid.uuid4()),
+                            schemas.invitation, schemas.invitation_create, schemas.invitation_update),
+    "invitationdomainroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
+                                      schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
+    "invitationsiteroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
+                                    schemas.invitation_site_role, schemas.invitation_site_role_create, None),
+    "permissions": Resource("/1", schemas.permission, schemas.permission_create, schemas.permission_update),
+    "resources": Resource("/1", schemas.resource, schemas.resource_create, schemas.resource_update),
+    "roles": Resource("/1", schemas.role, schemas.role_create, schemas.role_update),
+    "roleresourcepermissions": Resource("/1/1/1", schemas.role_resource_permission, schemas.role_resource_permission_create, None),
+    "sites": Resource("/1", schemas.site, schemas.site_create, schemas.site_update),
+    "sitedataschemas": Resource("/1", schemas.site_data_schema, schemas.site_data_schema_create, schemas.site_data_schema_update),
+    "siteroles": Resource("/1/1", schemas.site_role, schemas.site_role_create, schemas.site_role_update),
+    "userdomainroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
+                                schemas.user_domain_role, schemas.user_domain_role_create, None),
+    "usersitedata": Resource("/{}/{}".format(uuid.uuid4(), 1),
+                             schemas.user_site_data, schemas.user_site_data_create, schemas.user_site_data_update),
+    "usersiteroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
+                              schemas.user_site_role, schemas.user_site_role_create, None),
+    "clients": Resource("/1", schemas.client, None, None),
+    "users": Resource("/{}".format(uuid.uuid4()), schemas.user, None, schemas.user_update),
+    "countries": Resource("/za", schemas.country, None, None),
+    "organisations": Resource("/1", schemas.organisation, schemas.organisation_create, schemas.organisation_update),
 }
 SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
@@ -472,13 +480,13 @@ class IntegrationTest(AioHTTPTestCase):
     @unittest_run_loop
     async def test_delete(self, resource, info):
         response = await self.client.delete("/{}{}".format(
-            resource, "/1" * info.num_identifying_parts)
+            resource, info.resource_path)
         )
         await self.assertStatus(response, 204)
 
         # Quick check that CORS is working
         response = await self.client.request(
-            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            "OPTIONS", "/{}{}".format(resource, info.resource_path),
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "DELETE"
@@ -491,13 +499,8 @@ class IntegrationTest(AioHTTPTestCase):
     ])
     @unittest_run_loop
     async def test_read(self, resource, info):
-        if resource == "countries":
-            key = "/za"
-        else:
-            key = "/1" * info.num_identifying_parts
-
         response = await self.client.get("/{}{}".format(
-            resource, key)
+            resource, info.resource_path)
         )
         await self.assertStatus(response, 200)
         response_body = await response.json()
@@ -506,7 +509,7 @@ class IntegrationTest(AioHTTPTestCase):
 
         # Quick check that CORS is working
         response = await self.client.request(
-            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            "OPTIONS", "/{}{}".format(resource, info.resource_path),
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "GET"
@@ -524,7 +527,7 @@ class IntegrationTest(AioHTTPTestCase):
 
         data = get_test_data(info.update_schema)
         response = await self.client.put(
-            "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            "/{}{}".format(resource, info.resource_path),
             data=json.dumps(data)
         )
         await self.assertStatus(response, 200)
@@ -534,7 +537,7 @@ class IntegrationTest(AioHTTPTestCase):
 
         # Quick check that CORS is working
         response = await self.client.request(
-            "OPTIONS", "/{}{}".format(resource, "/1" * info.num_identifying_parts),
+            "OPTIONS", "/{}{}".format(resource, info.resource_path),
             headers={
                 "Origin": "http://foo.bar",
                 "Access-Control-Request-Method": "PUT"
