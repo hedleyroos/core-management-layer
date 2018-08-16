@@ -108,27 +108,27 @@ class Adminnotes(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                utils.validate(user_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(user_id, schema)
                 optional_args["user_id"] = user_id
             # creator_id (optional): string An optional query parameter to filter by creator (a user_id)
             creator_id = self.request.query.get("creator_id", None)
             if creator_id is not None:
-                utils.validate(creator_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(creator_id, schema)
                 optional_args["creator_id"] = creator_id
             # admin_note_ids (optional): array An optional list of adminnote ids
             admin_note_ids = self.request.query.get("admin_note_ids", None)
@@ -137,12 +137,7 @@ class Adminnotes(View, CorsViewMixin):
             if admin_note_ids:
                 admin_note_ids = [int(e) for e in admin_note_ids]
             if admin_note_ids is not None:
-                schema = {'name': 'admin_note_ids', 'description': 'An optional list of adminnote ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(admin_note_ids, schema)
                 optional_args["admin_note_ids"] = admin_note_ids
         except ValidationError as ve:
@@ -214,6 +209,8 @@ class AdminnotesAdminNoteId(View, CorsViewMixin):
             # admin_note_id: integer A unique integer value identifying the admin note.
             admin_note_id = self.request.match_info["admin_note_id"]
             admin_note_id = int(admin_note_id)
+            schema = {'type': 'integer'}
+            utils.validate(admin_note_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -241,6 +238,8 @@ class AdminnotesAdminNoteId(View, CorsViewMixin):
             # admin_note_id: integer A unique integer value identifying the admin note.
             admin_note_id = self.request.match_info["admin_note_id"]
             admin_note_id = int(admin_note_id)
+            schema = {'type': 'integer'}
+            utils.validate(admin_note_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -268,6 +267,8 @@ class AdminnotesAdminNoteId(View, CorsViewMixin):
             # admin_note_id: integer A unique integer value identifying the admin note.
             admin_note_id = self.request.match_info["admin_note_id"]
             admin_note_id = int(admin_note_id)
+            schema = {'type': 'integer'}
+            utils.validate(admin_note_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -382,17 +383,15 @@ class Clients(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # client_ids (optional): array An optional list of client ids
             client_ids = self.request.query.get("client_ids", None)
@@ -401,18 +400,14 @@ class Clients(View, CorsViewMixin):
             if client_ids:
                 client_ids = [int(e) for e in client_ids]
             if client_ids is not None:
-                schema = {'name': 'client_ids', 'description': 'An optional list of client ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(client_ids, schema)
                 optional_args["client_ids"] = client_ids
             # client_token_id (optional): string An optional client id to filter on. This is not the primary key.
             client_token_id = self.request.query.get("client_token_id", None)
             if client_token_id is not None:
-                utils.validate(client_token_id, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(client_token_id, schema)
                 optional_args["client_token_id"] = client_token_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -445,6 +440,8 @@ class ClientsClientId(View, CorsViewMixin):
             # client_id: integer A integer identifying the client
             client_id = self.request.match_info["client_id"]
             client_id = int(client_id)
+            schema = {'type': 'integer'}
+            utils.validate(client_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -502,29 +499,22 @@ class Countries(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # country_codes (optional): array An optional list of country codes
             country_codes = self.request.query.get("country_codes", None)
             if country_codes is not None:
                 country_codes = country_codes.split(",")
             if country_codes is not None:
-                schema = {'name': 'country_codes', 'description': 'An optional list of country codes', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'minLength': 2, 'maxLength': 2}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'string', 'minLength': 2, 'maxLength': 2}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(country_codes, schema)
                 optional_args["country_codes"] = country_codes
         except ValidationError as ve:
@@ -557,7 +547,8 @@ class CountriesCountryCode(View, CorsViewMixin):
         try:
             # country_code: string A unique two-character value identifying the country.
             country_code = self.request.match_info["country_code"]
-            utils.validate(country_code, {"type": "string"})
+            schema = {'type': 'string', 'minLength': 2, 'maxLength': 2}
+            utils.validate(country_code, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -647,22 +638,21 @@ class Deletedusers(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # deleter_id (optional): string An optional query parameter to filter by deleter_id
             deleter_id = self.request.query.get("deleter_id", None)
             if deleter_id is not None:
-                utils.validate(deleter_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(deleter_id, schema)
                 optional_args["deleter_id"] = deleter_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -732,7 +722,8 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -759,7 +750,8 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -786,7 +778,8 @@ class DeletedusersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -889,22 +882,21 @@ class Deletedusersites(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                utils.validate(user_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(user_id, schema)
                 optional_args["user_id"] = user_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -974,10 +966,13 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1004,10 +999,13 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1034,10 +1032,13 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1127,27 +1128,29 @@ class Domainroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
             if domain_id is not None:
                 domain_id = int(domain_id)
+                schema = {'type': 'integer'}
+                utils.validate(domain_id, schema)
                 optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1218,9 +1221,13 @@ class DomainrolesDomainIdRoleId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1248,9 +1255,13 @@ class DomainrolesDomainIdRoleId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1278,9 +1289,13 @@ class DomainrolesDomainIdRoleId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1372,22 +1387,22 @@ class Domains(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # parent_id (optional): integer An optional query parameter to filter by parent_id
             parent_id = self.request.query.get("parent_id", None)
             if parent_id is not None:
                 parent_id = int(parent_id)
+                schema = {'type': 'integer'}
+                utils.validate(parent_id, schema)
                 optional_args["parent_id"] = parent_id
             # domain_ids (optional): array An optional list of domain ids
             domain_ids = self.request.query.get("domain_ids", None)
@@ -1396,12 +1411,7 @@ class Domains(View, CorsViewMixin):
             if domain_ids:
                 domain_ids = [int(e) for e in domain_ids]
             if domain_ids is not None:
-                schema = {'name': 'domain_ids', 'description': 'An optional list of domain ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(domain_ids, schema)
                 optional_args["domain_ids"] = domain_ids
         except ValidationError as ve:
@@ -1473,6 +1483,8 @@ class DomainsDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1500,6 +1512,8 @@ class DomainsDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1527,6 +1541,8 @@ class DomainsDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1649,32 +1665,35 @@ class Invitationdomainroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                utils.validate(invitation_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(invitation_id, schema)
                 optional_args["invitation_id"] = invitation_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
             if domain_id is not None:
                 domain_id = int(domain_id)
+                schema = {'type': 'integer'}
+                utils.validate(domain_id, schema)
                 optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1742,13 +1761,18 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1775,13 +1799,18 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -1887,34 +1916,28 @@ class Invitations(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # invitor_id (optional): string Optional filter based on the invitor (the user who created the invitation)
             invitor_id = self.request.query.get("invitor_id", None)
             if invitor_id is not None:
-                utils.validate(invitor_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(invitor_id, schema)
                 optional_args["invitor_id"] = invitor_id
             # invitation_ids (optional): array An optional list of invitation ids
             invitation_ids = self.request.query.get("invitation_ids", None)
             if invitation_ids is not None:
                 invitation_ids = invitation_ids.split(",")
             if invitation_ids is not None:
-                schema = {'name': 'invitation_ids', 'description': 'An optional list of invitation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(invitation_ids, schema)
                 optional_args["invitation_ids"] = invitation_ids
         except ValidationError as ve:
@@ -1985,7 +2008,8 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2012,7 +2036,8 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2039,7 +2064,8 @@ class InvitationsInvitationId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2082,12 +2108,14 @@ class InvitationsInvitationIdSend(View, CorsViewMixin):
         try:
             # invitation_id: string 
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             optional_args = {}
             # language (optional): string 
             language = self.request.query.get("language", None)
             if language is not None:
-                utils.validate(language, {"type": "string"})
+                schema = {'type': 'string', 'default': 'en'}
+                utils.validate(language, schema)
                 optional_args["language"] = language
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2122,12 +2150,14 @@ class InvitationsPurgeExpired(View, CorsViewMixin):
             synchronous_mode = self.request.query.get("synchronous_mode", None)
             if synchronous_mode is not None:
                 synchronous_mode = (synchronous_mode.lower() == "true")
-                utils.validate(synchronous_mode, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(synchronous_mode, schema)
                 optional_args["synchronous_mode"] = synchronous_mode
             # cutoff_date (optional): string An optional cutoff date to purge invites before this date
             cutoff_date = self.request.query.get("cutoff_date", None)
             if cutoff_date is not None:
-                utils.validate(cutoff_date, {"type": "string"})
+                schema = {'type': 'string', 'format': 'date'}
+                utils.validate(cutoff_date, schema)
                 optional_args["cutoff_date"] = cutoff_date
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2210,32 +2240,35 @@ class Invitationsiteroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # invitation_id (optional): string An optional query parameter to filter by invitation_id
             invitation_id = self.request.query.get("invitation_id", None)
             if invitation_id is not None:
-                utils.validate(invitation_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(invitation_id, schema)
                 optional_args["invitation_id"] = invitation_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
             if site_id is not None:
                 site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
                 optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2303,13 +2336,18 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2336,13 +2374,18 @@ class InvitationsiterolesInvitationIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # invitation_id: string A UUID value identifying the invitation.
             invitation_id = self.request.match_info["invitation_id"]
-            utils.validate(invitation_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(invitation_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2374,7 +2417,8 @@ class OpsAllUserRolesUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2407,6 +2451,8 @@ class OpsDomainRolesDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2438,13 +2484,15 @@ class OpsGetSiteFromClientTokenIdClientTokenId(View, CorsViewMixin):
         try:
             # client_token_id: string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.
             client_token_id = self.request.match_info["client_token_id"]
-            utils.validate(client_token_id, {"type": "string"})
+            schema = {'type': 'string'}
+            utils.validate(client_token_id, schema)
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2531,6 +2579,8 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2563,6 +2613,8 @@ class OpsSiteAndDomainRolesSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2595,6 +2647,8 @@ class OpsSiteRoleLabelsAggregatedSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2632,16 +2686,20 @@ class OpsUserDomainPermissionsUserIdDomainId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2674,7 +2732,8 @@ class OpsUserHasPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2723,13 +2782,15 @@ class OpsUserManagementPortalPermissionsUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2767,16 +2828,20 @@ class OpsUserSitePermissionsUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
             # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2808,10 +2873,13 @@ class OpsUserSiteRoleLabelsAggregatedUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2868,6 +2936,8 @@ class OpsUsersWithRolesForDomainDomainId(View, CorsViewMixin):
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2924,6 +2994,8 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -2996,17 +3068,15 @@ class Organisations(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # organisation_ids (optional): array An optional list of organisation ids
             organisation_ids = self.request.query.get("organisation_ids", None)
@@ -3015,12 +3085,7 @@ class Organisations(View, CorsViewMixin):
             if organisation_ids:
                 organisation_ids = [int(e) for e in organisation_ids]
             if organisation_ids is not None:
-                schema = {'name': 'organisation_ids', 'description': 'An optional list of organisation ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(organisation_ids, schema)
                 optional_args["organisation_ids"] = organisation_ids
         except ValidationError as ve:
@@ -3092,6 +3157,8 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             # organisation_id: integer An integer identifying an organisation
             organisation_id = self.request.match_info["organisation_id"]
             organisation_id = int(organisation_id)
+            schema = {'type': 'integer'}
+            utils.validate(organisation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3119,6 +3186,8 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             # organisation_id: integer An integer identifying an organisation
             organisation_id = self.request.match_info["organisation_id"]
             organisation_id = int(organisation_id)
+            schema = {'type': 'integer'}
+            utils.validate(organisation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3146,6 +3215,8 @@ class OrganisationsOrganisationId(View, CorsViewMixin):
             # organisation_id: integer An integer identifying an organisation
             organisation_id = self.request.match_info["organisation_id"]
             organisation_id = int(organisation_id)
+            schema = {'type': 'integer'}
+            utils.validate(organisation_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3230,17 +3301,15 @@ class Permissions(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # permission_ids (optional): array An optional list of permission ids
             permission_ids = self.request.query.get("permission_ids", None)
@@ -3249,12 +3318,7 @@ class Permissions(View, CorsViewMixin):
             if permission_ids:
                 permission_ids = [int(e) for e in permission_ids]
             if permission_ids is not None:
-                schema = {'name': 'permission_ids', 'description': 'An optional list of permission ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(permission_ids, schema)
                 optional_args["permission_ids"] = permission_ids
         except ValidationError as ve:
@@ -3326,6 +3390,8 @@ class PermissionsPermissionId(View, CorsViewMixin):
             # permission_id: integer A unique integer value identifying the permission.
             permission_id = self.request.match_info["permission_id"]
             permission_id = int(permission_id)
+            schema = {'type': 'integer'}
+            utils.validate(permission_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3353,6 +3419,8 @@ class PermissionsPermissionId(View, CorsViewMixin):
             # permission_id: integer A unique integer value identifying the permission.
             permission_id = self.request.match_info["permission_id"]
             permission_id = int(permission_id)
+            schema = {'type': 'integer'}
+            utils.validate(permission_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3380,6 +3448,8 @@ class PermissionsPermissionId(View, CorsViewMixin):
             # permission_id: integer A unique integer value identifying the permission.
             permission_id = self.request.match_info["permission_id"]
             permission_id = int(permission_id)
+            schema = {'type': 'integer'}
+            utils.validate(permission_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3425,7 +3495,8 @@ class RefreshAll(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3460,7 +3531,8 @@ class RefreshClients(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3495,7 +3567,8 @@ class RefreshDomains(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3530,7 +3603,8 @@ class RefreshKeys(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3565,7 +3639,8 @@ class RefreshPermissions(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3600,7 +3675,8 @@ class RefreshResources(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3635,7 +3711,8 @@ class RefreshRoles(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3670,7 +3747,8 @@ class RefreshSites(View, CorsViewMixin):
             nocache = self.request.query.get("nocache", None)
             if nocache is not None:
                 nocache = (nocache.lower() == "true")
-                utils.validate(nocache, {"type": "boolean"})
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
                 optional_args["nocache"] = nocache
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3785,22 +3863,21 @@ class Resources(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # prefix (optional): string An optional URN prefix filter
             prefix = self.request.query.get("prefix", None)
             if prefix is not None:
-                utils.validate(prefix, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(prefix, schema)
                 optional_args["prefix"] = prefix
             # resource_ids (optional): array An optional list of resource ids
             resource_ids = self.request.query.get("resource_ids", None)
@@ -3809,12 +3886,7 @@ class Resources(View, CorsViewMixin):
             if resource_ids:
                 resource_ids = [int(e) for e in resource_ids]
             if resource_ids is not None:
-                schema = {'name': 'resource_ids', 'description': 'An optional list of resource ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(resource_ids, schema)
                 optional_args["resource_ids"] = resource_ids
         except ValidationError as ve:
@@ -3886,6 +3958,8 @@ class ResourcesResourceId(View, CorsViewMixin):
             # resource_id: integer A unique integer value identifying the resource.
             resource_id = self.request.match_info["resource_id"]
             resource_id = int(resource_id)
+            schema = {'type': 'integer'}
+            utils.validate(resource_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3913,6 +3987,8 @@ class ResourcesResourceId(View, CorsViewMixin):
             # resource_id: integer A unique integer value identifying the resource.
             resource_id = self.request.match_info["resource_id"]
             resource_id = int(resource_id)
+            schema = {'type': 'integer'}
+            utils.validate(resource_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -3940,6 +4016,8 @@ class ResourcesResourceId(View, CorsViewMixin):
             # resource_id: integer A unique integer value identifying the resource.
             resource_id = self.request.match_info["resource_id"]
             resource_id = int(resource_id)
+            schema = {'type': 'integer'}
+            utils.validate(resource_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4032,32 +4110,36 @@ class Roleresourcepermissions(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
             # resource_id (optional): integer An optional resource filter
             resource_id = self.request.query.get("resource_id", None)
             if resource_id is not None:
                 resource_id = int(resource_id)
+                schema = {'type': 'integer'}
+                utils.validate(resource_id, schema)
                 optional_args["resource_id"] = resource_id
             # permission_id (optional): integer An optional permission filter
             permission_id = self.request.query.get("permission_id", None)
             if permission_id is not None:
                 permission_id = int(permission_id)
+                schema = {'type': 'integer'}
+                utils.validate(permission_id, schema)
                 optional_args["permission_id"] = permission_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4126,12 +4208,18 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View, CorsViewMixin):
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             # resource_id: integer A unique integer value identifying the resource.
             resource_id = self.request.match_info["resource_id"]
             resource_id = int(resource_id)
+            schema = {'type': 'integer'}
+            utils.validate(resource_id, schema)
             # permission_id: integer A unique integer value identifying the permission.
             permission_id = self.request.match_info["permission_id"]
             permission_id = int(permission_id)
+            schema = {'type': 'integer'}
+            utils.validate(permission_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4159,12 +4247,18 @@ class RoleresourcepermissionsRoleIdResourceIdPermissionId(View, CorsViewMixin):
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             # resource_id: integer A unique integer value identifying the resource.
             resource_id = self.request.match_info["resource_id"]
             resource_id = int(resource_id)
+            schema = {'type': 'integer'}
+            utils.validate(resource_id, schema)
             # permission_id: integer A unique integer value identifying the permission.
             permission_id = self.request.match_info["permission_id"]
             permission_id = int(permission_id)
+            schema = {'type': 'integer'}
+            utils.validate(permission_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4246,17 +4340,15 @@ class Roles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # role_ids (optional): array An optional list of role ids
             role_ids = self.request.query.get("role_ids", None)
@@ -4265,12 +4357,7 @@ class Roles(View, CorsViewMixin):
             if role_ids:
                 role_ids = [int(e) for e in role_ids]
             if role_ids is not None:
-                schema = {'name': 'role_ids', 'description': 'An optional list of role ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(role_ids, schema)
                 optional_args["role_ids"] = role_ids
         except ValidationError as ve:
@@ -4342,6 +4429,8 @@ class RolesRoleId(View, CorsViewMixin):
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4369,6 +4458,8 @@ class RolesRoleId(View, CorsViewMixin):
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4396,6 +4487,8 @@ class RolesRoleId(View, CorsViewMixin):
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4478,17 +4571,15 @@ class Sitedataschemas(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.get("site_ids", None)
@@ -4497,12 +4588,7 @@ class Sitedataschemas(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
@@ -4574,6 +4660,8 @@ class SitedataschemasSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4601,6 +4689,8 @@ class SitedataschemasSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4628,6 +4718,8 @@ class SitedataschemasSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4717,27 +4809,29 @@ class Siteroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
             if site_id is not None:
                 site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
                 optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4808,9 +4902,13 @@ class SiterolesSiteIdRoleId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4838,9 +4936,13 @@ class SiterolesSiteIdRoleId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4868,9 +4970,13 @@ class SiterolesSiteIdRoleId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -4972,17 +5078,15 @@ class Sites(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # site_ids (optional): array An optional list of site ids
             site_ids = self.request.query.get("site_ids", None)
@@ -4991,18 +5095,15 @@ class Sites(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
             # client_id (optional): integer An optional client id to filter on
             client_id = self.request.query.get("client_id", None)
             if client_id is not None:
                 client_id = int(client_id)
+                schema = {'type': 'integer'}
+                utils.validate(client_id, schema)
                 optional_args["client_id"] = client_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5073,6 +5174,8 @@ class SitesSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5100,6 +5203,8 @@ class SitesSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5127,6 +5232,8 @@ class SitesSiteId(View, CorsViewMixin):
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5220,32 +5327,35 @@ class Userdomainroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                utils.validate(user_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(user_id, schema)
                 optional_args["user_id"] = user_id
             # domain_id (optional): integer An optional query parameter to filter by domain_id
             domain_id = self.request.query.get("domain_id", None)
             if domain_id is not None:
                 domain_id = int(domain_id)
+                schema = {'type': 'integer'}
+                utils.validate(domain_id, schema)
                 optional_args["domain_id"] = domain_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5313,13 +5423,18 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5346,13 +5461,18 @@ class UserdomainrolesUserIdDomainIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # domain_id: integer A unique integer value identifying the domain.
             domain_id = self.request.match_info["domain_id"]
             domain_id = int(domain_id)
+            schema = {'type': 'integer'}
+            utils.validate(domain_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5494,129 +5614,142 @@ class Users(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # birth_date (optional): string An optional birth_date range filter
             birth_date = self.request.query.get("birth_date", None)
             if birth_date is not None:
-                utils.validate(birth_date, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(birth_date, schema)
                 optional_args["birth_date"] = birth_date
             # country (optional): string An optional country filter
             country = self.request.query.get("country", None)
             if country is not None:
-                utils.validate(country, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 2, 'maxLength': 2}
+                utils.validate(country, schema)
                 optional_args["country"] = country
             # date_joined (optional): string An optional date joined range filter
             date_joined = self.request.query.get("date_joined", None)
             if date_joined is not None:
-                utils.validate(date_joined, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(date_joined, schema)
                 optional_args["date_joined"] = date_joined
             # email (optional): string An optional case insensitive email inner match filter
             email = self.request.query.get("email", None)
             if email is not None:
-                utils.validate(email, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(email, schema)
                 optional_args["email"] = email
             # email_verified (optional): boolean An optional email verified filter
             email_verified = self.request.query.get("email_verified", None)
             if email_verified is not None:
                 email_verified = (email_verified.lower() == "true")
-                utils.validate(email_verified, {"type": "boolean"})
+                schema = {'type': 'boolean'}
+                utils.validate(email_verified, schema)
                 optional_args["email_verified"] = email_verified
             # first_name (optional): string An optional case insensitive first name inner match filter
             first_name = self.request.query.get("first_name", None)
             if first_name is not None:
-                utils.validate(first_name, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(first_name, schema)
                 optional_args["first_name"] = first_name
             # gender (optional): string An optional gender filter
             gender = self.request.query.get("gender", None)
             if gender is not None:
-                utils.validate(gender, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(gender, schema)
                 optional_args["gender"] = gender
             # is_active (optional): boolean An optional is_active filter
             is_active = self.request.query.get("is_active", None)
             if is_active is not None:
                 is_active = (is_active.lower() == "true")
-                utils.validate(is_active, {"type": "boolean"})
+                schema = {'type': 'boolean'}
+                utils.validate(is_active, schema)
                 optional_args["is_active"] = is_active
             # last_login (optional): string An optional last login range filter
             last_login = self.request.query.get("last_login", None)
             if last_login is not None:
-                utils.validate(last_login, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(last_login, schema)
                 optional_args["last_login"] = last_login
             # last_name (optional): string An optional case insensitive last name inner match filter
             last_name = self.request.query.get("last_name", None)
             if last_name is not None:
-                utils.validate(last_name, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(last_name, schema)
                 optional_args["last_name"] = last_name
             # msisdn (optional): string An optional case insensitive MSISDN inner match filter
             msisdn = self.request.query.get("msisdn", None)
             if msisdn is not None:
-                utils.validate(msisdn, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(msisdn, schema)
                 optional_args["msisdn"] = msisdn
             # msisdn_verified (optional): boolean An optional MSISDN verified filter
             msisdn_verified = self.request.query.get("msisdn_verified", None)
             if msisdn_verified is not None:
                 msisdn_verified = (msisdn_verified.lower() == "true")
-                utils.validate(msisdn_verified, {"type": "boolean"})
+                schema = {'type': 'boolean'}
+                utils.validate(msisdn_verified, schema)
                 optional_args["msisdn_verified"] = msisdn_verified
             # nickname (optional): string An optional case insensitive nickname inner match filter
             nickname = self.request.query.get("nickname", None)
             if nickname is not None:
-                utils.validate(nickname, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(nickname, schema)
                 optional_args["nickname"] = nickname
             # organisation_id (optional): integer An optional filter on the organisation id
             organisation_id = self.request.query.get("organisation_id", None)
             if organisation_id is not None:
                 organisation_id = int(organisation_id)
+                schema = {'type': 'integer'}
+                utils.validate(organisation_id, schema)
                 optional_args["organisation_id"] = organisation_id
             # updated_at (optional): string An optional updated_at range filter
             updated_at = self.request.query.get("updated_at", None)
             if updated_at is not None:
-                utils.validate(updated_at, {"type": "string"})
+                schema = {'type': 'string'}
+                utils.validate(updated_at, schema)
                 optional_args["updated_at"] = updated_at
             # username (optional): string An optional case insensitive username inner match filter
             username = self.request.query.get("username", None)
             if username is not None:
-                utils.validate(username, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(username, schema)
                 optional_args["username"] = username
             # q (optional): string An optional case insensitive inner match filter across all searchable text fields
             q = self.request.query.get("q", None)
             if q is not None:
-                utils.validate(q, {"type": "string"})
+                schema = {'type': 'string', 'minLength': 3}
+                utils.validate(q, schema)
                 optional_args["q"] = q
             # tfa_enabled (optional): boolean An optional filter based on whether a user has 2FA enabled or not
             tfa_enabled = self.request.query.get("tfa_enabled", None)
             if tfa_enabled is not None:
                 tfa_enabled = (tfa_enabled.lower() == "true")
-                utils.validate(tfa_enabled, {"type": "boolean"})
+                schema = {'type': 'boolean'}
+                utils.validate(tfa_enabled, schema)
                 optional_args["tfa_enabled"] = tfa_enabled
             # has_organisation (optional): boolean An optional filter based on whether a user belongs to an organisation or not
             has_organisation = self.request.query.get("has_organisation", None)
             if has_organisation is not None:
                 has_organisation = (has_organisation.lower() == "true")
-                utils.validate(has_organisation, {"type": "boolean"})
+                schema = {'type': 'boolean'}
+                utils.validate(has_organisation, schema)
                 optional_args["has_organisation"] = has_organisation
             # order_by (optional): array Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.
             order_by = self.request.query.get("order_by", None)
             if order_by is not None:
                 order_by = order_by.split(",")
             if order_by is not None:
-                schema = {'name': 'order_by', 'description': 'Fields and directions to order by, e.g. "-created_at,username". Add "-" in front of a field name to indicate descending order.', 'in': 'query', 'required': False, 'type': 'array', 'collectionFormat': 'csv', 'items': {'type': 'string'}, 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'string'}, 'uniqueItems': True}
                 utils.validate(order_by, schema)
                 optional_args["order_by"] = order_by
             # user_ids (optional): array An optional list of user ids
@@ -5624,12 +5757,7 @@ class Users(View, CorsViewMixin):
             if user_ids is not None:
                 user_ids = user_ids.split(",")
             if user_ids is not None:
-                schema = {'name': 'user_ids', 'description': 'An optional list of user ids', 'in': 'query', 'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'string', 'format': 'uuid'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(user_ids, schema)
                 optional_args["user_ids"] = user_ids
             # site_ids (optional): array An optional list of site ids
@@ -5639,12 +5767,7 @@ class Users(View, CorsViewMixin):
             if site_ids:
                 site_ids = [int(e) for e in site_ids]
             if site_ids is not None:
-                schema = {'name': 'site_ids', 'description': 'An optional list of site ids', 'in': 'query', 'type': 'array', 'items': {'type': 'integer'}, 'required': False, 'minItems': 1, 'collectionFormat': 'csv', 'uniqueItems': True, 'x-related-info': {'rest_resource_name': 'sites', 'label': 'name'}}
-                # Remove Swagger fields that clash with JSONSchema names at this level
-                for field in ["name", "in", "required", "collectionFormat"]:
-                    if field in schema:
-                        del schema[field]
-
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(site_ids, schema)
                 optional_args["site_ids"] = site_ids
         except ValidationError as ve:
@@ -5680,7 +5803,8 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5707,7 +5831,8 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5734,7 +5859,8 @@ class UsersUserId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5825,27 +5951,28 @@ class Usersitedata(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                utils.validate(user_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(user_id, schema)
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
             if site_id is not None:
                 site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
                 optional_args["site_id"] = site_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5915,10 +6042,13 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5945,10 +6075,13 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -5975,10 +6108,13 @@ class UsersitedataUserIdSiteId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -6072,32 +6208,35 @@ class Usersiteroles(View, CorsViewMixin):
             offset = self.request.query.get("offset", None)
             if offset is not None:
                 offset = int(offset)
-                if offset < 0:
-                    raise ValidationError("offset exceeds its minimum limit")
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
                 optional_args["offset"] = offset
             # limit (optional): integer An optional query parameter to limit the number of results returned.
             limit = self.request.query.get("limit", None)
             if limit is not None:
                 limit = int(limit)
-                if limit < 1:
-                    raise ValidationError("limit exceeds its minimum limit")
-                if 100 < limit:
-                    raise ValidationError("limit exceeds its maximum limit")
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # user_id (optional): string An optional query parameter to filter by user_id
             user_id = self.request.query.get("user_id", None)
             if user_id is not None:
-                utils.validate(user_id, {"type": "string"})
+                schema = {'type': 'string', 'format': 'uuid'}
+                utils.validate(user_id, schema)
                 optional_args["user_id"] = user_id
             # site_id (optional): integer An optional query parameter to filter by site_id
             site_id = self.request.query.get("site_id", None)
             if site_id is not None:
                 site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
                 optional_args["site_id"] = site_id
             # role_id (optional): integer An optional query parameter to filter by role_id
             role_id = self.request.query.get("role_id", None)
             if role_id is not None:
                 role_id = int(role_id)
+                schema = {'type': 'integer'}
+                utils.validate(role_id, schema)
                 optional_args["role_id"] = role_id
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -6165,13 +6304,18 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
@@ -6198,13 +6342,18 @@ class UsersiterolesUserIdSiteIdRoleId(View, CorsViewMixin):
         try:
             # user_id: string A UUID value identifying the user.
             user_id = self.request.match_info["user_id"]
-            utils.validate(user_id, {"type": "string"})
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
             # site_id: integer A unique integer value identifying the site.
             site_id = self.request.match_info["site_id"]
             site_id = int(site_id)
+            schema = {'type': 'integer'}
+            utils.validate(site_id, schema)
             # role_id: integer A unique integer value identifying the role.
             role_id = self.request.match_info["role_id"]
             role_id = int(role_id)
+            schema = {'type': 'integer'}
+            utils.validate(role_id, schema)
             optional_args = {}
         except ValidationError as ve:
             return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
