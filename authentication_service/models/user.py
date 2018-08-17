@@ -37,7 +37,7 @@ class User(object):
         'last_name': 'str',
         'email': 'str',
         'is_active': 'bool',
-        'date_joined': 'date',
+        'date_joined': 'datetime',
         'last_login': 'datetime',
         'email_verified': 'bool',
         'msisdn_verified': 'bool',
@@ -277,7 +277,7 @@ class User(object):
           # noqa: E501
 
         :return: The date_joined of this User.  # noqa: E501
-        :rtype: date
+        :rtype: datetime
         """
         return self._date_joined
 
@@ -288,7 +288,7 @@ class User(object):
           # noqa: E501
 
         :param date_joined: The date_joined of this User.  # noqa: E501
-        :type: date
+        :type: datetime
         """
         if date_joined is None:
             raise ValueError("Invalid value for `date_joined`, must not be `None`")  # noqa: E501
