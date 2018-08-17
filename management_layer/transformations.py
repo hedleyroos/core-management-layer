@@ -179,7 +179,9 @@ USER = Transformation(
     mappings=[
         Mapping("created_at", conversion=datetime_to_string),
         Mapping("updated_at", conversion=datetime_to_string),
-        Mapping("date_joined", conversion=date_to_string),
+        # The `date_joined` field has a datetime type, despite its name. It is a Django field and
+        # was left as is.
+        Mapping("date_joined", conversion=datetime_to_string),
         Mapping("last_login", conversion=datetime_to_string),
         Mapping("birth_date", conversion=date_to_string)
     ],

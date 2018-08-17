@@ -5522,7 +5522,7 @@ class Users(View, CorsViewMixin):
             },
             "date_joined": {
                 "description": "",
-                "format": "date",
+                "format": "date-time",
                 "readOnly": true,
                 "type": "string"
             },
@@ -7960,7 +7960,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "date_joined": {
                     "description": "",
-                    "format": "date",
+                    "format": "date-time",
                     "readOnly": true,
                     "type": "string"
                 },
@@ -13150,7 +13150,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "required": false,
                         "type": "string",
                         "x-aor-filter": {
-                            "format": "date",
+                            "format": "date-time",
                             "range": true
                         }
                     },

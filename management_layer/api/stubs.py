@@ -4196,7 +4196,7 @@ class MockedStubClass(AbstractStubClass):
             },
             "date_joined": {
                 "description": "",
-                "format": "date",
+                "format": "date-time",
                 "readOnly": true,
                 "type": "string"
             },
