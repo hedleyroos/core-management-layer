@@ -89,14 +89,14 @@ TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 WHITELIST_URLS = ["/healthcheck", "/metrics"]
 
 H = Histogram("management_layer_http_duration_seconds", "API duration",
-              ["path", "method", "status"])
+              ["path_prefix", "method", "status"])
 
 
 @middleware
 async def metrics_middleware(request, handler):
     start_time = time.time()
     response = await handler(request)
-    H.labels(path=request.path.split("/")[1],
+    H.labels(path_prefix=request.path.split("/")[1],
              method=request.method,
              status=response.status).observe(time.time()-start_time)
     return response

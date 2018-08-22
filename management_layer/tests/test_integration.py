@@ -26,7 +26,7 @@ from management_layer.api import schemas
 from management_layer.api.urls import add_routes
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
-from management_layer.middleware import auth_middleware
+from management_layer.middleware import auth_middleware, metrics_middleware
 from management_layer.utils import return_users_with_roles, return_users, \
     return_sites, TEST_SITE, return_clients, return_user
 from user_data_store import UserDataApi
@@ -340,7 +340,9 @@ class IntegrationTest(AioHTTPTestCase):
         Set up the application used by the tests
         :return:
         """
-        app = web.Application(loop=self.loop, middlewares=[auth_middleware])
+        app = web.Application(loop=self.loop, middlewares=[
+            metrics_middleware, auth_middleware
+        ])
 
         user_data_store_configuration = user_data_store.configuration.Configuration()
         user_data_store_configuration.host = f"http://localhost:{USER_DATA_STORE_PORT}/api/v1"
