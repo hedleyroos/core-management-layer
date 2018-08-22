@@ -8,7 +8,7 @@ from prometheus_client import Histogram, Counter
 
 logger = logging.getLogger(__name__)
 
-H = Histogram(f"management_layer_duration_seconds", "API call duration (s)",
+H = Histogram(f"management_layer_call_duration_seconds", "API call duration (s)",
               ["call"])
 
 
@@ -42,8 +42,6 @@ def _prometheus_class_metric_decorator(f: FunctionType):
     asynchronous ones when used as a decorator.
     :param f: The function for which to capture metrics
     """
-    # h = Histogram(f"management_layer_{f.__name__}_duration_seconds", "API call duration (s)")
-    # c = Counter(f"management_layer_{f.__name__}_error_total", "API error count")
 
     @functools.wraps(f)
     async def wrapper(*args, **kwargs):
