@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.6.0
+-----
+Prometheus instrumentation added
+
 1.5.0
 -----
 Replaced Memcache with Redis
