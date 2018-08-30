@@ -60,7 +60,7 @@ docs-build:  $(VENV)
 	rm backup.tar
 	# Actually make html from index.rst
 	@echo "$(CYAN)Running sphinx command...$(CLEAR)"
-	$(VENV)/bin/sphinx-apidoc -f management_layer -o docs/source/
+	$(VENV)/bin/sphinx-apidoc -f -e management_layer -o docs/source/
 	$(MAKE) -C docs/ clean html SPHINXBUILD=../$(VENV)/bin/sphinx-build
 	@echo "$(GREEN)DONE$(CLEAR)"
 	@echo "$(CYAN)Moving build files to docs/ root...$(CLEAR)"
