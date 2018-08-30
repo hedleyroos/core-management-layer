@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.metrics &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.metrics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.metrics</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">ModuleType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Type</span>
+
+<span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="k">import</span> <span class="n">Histogram</span><span class="p">,</span> <span class="n">Counter</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">H</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;management_layer_call_duration_seconds&quot;</span><span class="p">,</span> <span class="s2">&quot;API call duration (s)&quot;</span><span class="p">,</span>
+              <span class="p">[</span><span class="s2">&quot;call&quot;</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_prometheus_module_metric_decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Prometheus decorator adding timing metrics to a function.</span>
+<span class="sd">    This decorator will work on both asynchronous and synchronous functions.</span>
+<span class="sd">    Note, however, that this function will turn synchronous functions into</span>
+<span class="sd">    asynchronous ones when used as a decorator.</span>
+<span class="sd">    :param f: The function for which to capture metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">module_</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">call_key</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">module_</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">H</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">call</span><span class="o">=</span><span class="n">call_key</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+
+<span class="k">def</span> <span class="nf">_prometheus_class_metric_decorator</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Prometheus decorator adding timing metrics to a function in a class.</span>
+<span class="sd">    This decorator will work on both asynchronous and synchronous functions.</span>
+<span class="sd">    Note, however, that this function will turn synchronous functions into</span>
+<span class="sd">    asynchronous ones when used as a decorator.</span>
+<span class="sd">    :param f: The function for which to capture metrics</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">H</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">call</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span>
+
+
+<div class="viewcode-block" id="add_prometheus_metrics_for_module"><a class="viewcode-back" href="../../management_layer.html#management_layer.metrics.add_prometheus_metrics_for_module">[docs]</a><span class="k">def</span> <span class="nf">add_prometheus_metrics_for_module</span><span class="p">(</span><span class="n">module_</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function applying the Prometheus metrics decorator to the</span>
+<span class="sd">    specified module&#39;s functions.</span>
+<span class="sd">    :param module_: The module to which the instrumentation will be applied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">decorate_all_in_module</span><span class="p">(</span><span class="n">module_</span><span class="p">,</span> <span class="n">_prometheus_module_metric_decorator</span><span class="p">,</span> <span class="p">[])</span></div>
+
+
+<div class="viewcode-block" id="add_prometheus_metrics_for_class"><a class="viewcode-back" href="../../management_layer.html#management_layer.metrics.add_prometheus_metrics_for_class">[docs]</a><span class="k">def</span> <span class="nf">add_prometheus_metrics_for_class</span><span class="p">(</span><span class="n">klass</span><span class="p">:</span> <span class="n">Type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function applying the Prometheus metrics decorator to the</span>
+<span class="sd">    specified class functions.</span>
+<span class="sd">    :param klass: The class to which the instrumentation will be applied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">decorate_all_in_class</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">_prometheus_class_metric_decorator</span><span class="p">,</span> <span class="p">[])</span></div>
+
+
+<div class="viewcode-block" id="decorate_all_in_module"><a class="viewcode-back" href="../../management_layer.html#management_layer.metrics.decorate_all_in_module">[docs]</a><span class="k">def</span> <span class="nf">decorate_all_in_module</span><span class="p">(</span><span class="n">module_</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">,</span> <span class="n">decorator</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">whitelist</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorate all functions in a module with the specified decorator</span>
+<span class="sd">    :param module_: The module to interrogate</span>
+<span class="sd">    :param decorator: The decorator to apply</span>
+<span class="sd">    :param whitelist: Functions not to be decorated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">module_</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">whitelist</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module_</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="c1"># We only check functions that are defined in the module we</span>
+                <span class="c1"># specified. Some of the functions in the module may have been</span>
+                <span class="c1"># imported from other modules. These are ignored.</span>
+                <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">module_</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding metrics to </span><span class="si">{module_}</span><span class="s2">:</span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="n">module_</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">decorator</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No metrics on </span><span class="si">{module_}</span><span class="s2">:</span><span class="si">{name}</span><span class="s2"> because it belongs to another &quot;</span>
+                                 <span class="n">f</span><span class="s2">&quot;module&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No metrics on </span><span class="si">{module_}</span><span class="s2">:</span><span class="si">{name}</span><span class="s2"> because it is not a coroutine or &quot;</span>
+                             <span class="n">f</span><span class="s2">&quot;function&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="decorate_all_in_class"><a class="viewcode-back" href="../../management_layer.html#management_layer.metrics.decorate_all_in_class">[docs]</a><span class="k">def</span> <span class="nf">decorate_all_in_class</span><span class="p">(</span><span class="n">klass</span><span class="p">:</span> <span class="n">Type</span><span class="p">,</span> <span class="n">decorator</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">whitelist</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorate all functions in a class with the specified decorator</span>
+<span class="sd">    :param klass: The class to interrogate</span>
+<span class="sd">    :param decorator: The decorator to apply</span>
+<span class="sd">    :param whitelist: Functions not to be decorated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">klass</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">whitelist</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="ow">or</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Adding metrics to </span><span class="si">{klass}</span><span class="s2">:</span><span class="si">{name}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">klass</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">decorator</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;No metrics on </span><span class="si">{klass}</span><span class="s2">:</span><span class="si">{name}</span><span class="s2"> because it is not a coroutine or &quot;</span>
+                             <span class="n">f</span><span class="s2">&quot;function&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

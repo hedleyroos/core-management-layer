@@ -1,0 +1,1074 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.tests.test_integration &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../tests.html">management_layer.tests</a> &raquo;</li>
+        
+      <li>management_layer.tests.test_integration</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.tests.test_integration</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">aioredis</span>
+<span class="kn">import</span> <span class="nn">jsonschema</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+
+<span class="kn">import</span> <span class="nn">jwt</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span><span class="p">,</span> <span class="n">ClientSession</span>
+<span class="kn">from</span> <span class="nn">aiohttp.test_utils</span> <span class="k">import</span> <span class="n">AioHTTPTestCase</span><span class="p">,</span> <span class="n">unittest_run_loop</span><span class="p">,</span> \
+    <span class="n">TestClient</span> <span class="k">as</span> <span class="n">Client</span>  <span class="c1"># Rename TestClient so that it is not considered a test</span>
+<span class="kn">from</span> <span class="nn">apitools.datagenerator</span> <span class="k">import</span> <span class="n">DataGenerator</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="k">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
+
+<span class="kn">import</span> <span class="nn">access_control</span>
+<span class="kn">import</span> <span class="nn">authentication_service</span>
+<span class="kn">import</span> <span class="nn">user_data_store</span>
+<span class="kn">from</span> <span class="nn">management_layer</span> <span class="k">import</span> <span class="n">mappings</span><span class="p">,</span> <span class="n">transformations</span>
+<span class="kn">from</span> <span class="nn">management_layer.api</span> <span class="k">import</span> <span class="n">schemas</span>
+<span class="kn">from</span> <span class="nn">management_layer.api.urls</span> <span class="k">import</span> <span class="n">add_routes</span>
+<span class="kn">from</span> <span class="nn">management_layer.constants</span> <span class="k">import</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span>
+<span class="kn">from</span> <span class="nn">management_layer.mappings</span> <span class="k">import</span> <span class="n">return_tech_admin_role_for_testing</span>
+<span class="kn">from</span> <span class="nn">management_layer.middleware</span> <span class="k">import</span> <span class="n">auth_middleware</span><span class="p">,</span> <span class="n">metrics_middleware</span>
+<span class="kn">from</span> <span class="nn">management_layer.utils</span> <span class="k">import</span> <span class="n">return_users_with_roles</span><span class="p">,</span> <span class="n">return_users</span><span class="p">,</span> \
+    <span class="n">return_sites</span><span class="p">,</span> <span class="n">TEST_SITE</span><span class="p">,</span> <span class="n">return_clients</span><span class="p">,</span> <span class="n">return_user</span>
+<span class="kn">from</span> <span class="nn">user_data_store</span> <span class="k">import</span> <span class="n">UserDataApi</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">DATA_GENERATOR</span> <span class="o">=</span> <span class="n">DataGenerator</span><span class="p">()</span>
+<span class="c1"># The data generated drops object parameters even if they are required.</span>
+<span class="c1"># the workaround for now is to set the value below.</span>
+<span class="n">DATA_GENERATOR</span><span class="o">.</span><span class="n">not_required_probability</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c1"># Mocked service ports</span>
+<span class="n">ACCESS_CONTROL_PORT</span> <span class="o">=</span> <span class="mi">60000</span>
+<span class="n">AUTHENTICATION_SERVICE_PORT</span> <span class="o">=</span> <span class="mi">60001</span>
+<span class="n">USER_DATA_STORE_PORT</span> <span class="o">=</span> <span class="mi">60002</span>
+
+<span class="n">_MOCKED_ACCESS_CONTROL_API</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_MOCKED_AUTHENTICATION_SERVICE_API</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">_MOCKED_USER_DATA_STORE_API</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">_PRISM_COMMAND</span> <span class="o">=</span> <span class="s2">&quot;./prism run --validate --mockDynamic -s </span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2"> -p </span><span class="si">{}</span><span class="s2">&quot;</span>
+
+<span class="n">_TOTAL_COUNT_HEADER</span> <span class="o">=</span> <span class="s2">&quot;X-Total-Count&quot;</span>
+
+<span class="n">Resource</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;Resource&quot;</span><span class="p">,</span> <span class="p">[</span>
+    <span class="s2">&quot;resource_path&quot;</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">,</span> <span class="s2">&quot;create_schema&quot;</span><span class="p">,</span> <span class="s2">&quot;update_schema&quot;</span>
+<span class="p">])</span>
+<span class="c1"># A list of resources. Used to parameterise tests.</span>
+<span class="n">RESOURCES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;adminnotes&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">admin_note</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">admin_note_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">admin_note_update</span><span class="p">),</span>
+    <span class="s2">&quot;deletedusers&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+                             <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_update</span><span class="p">),</span>
+    <span class="s2">&quot;deletedusersites&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">),</span>
+                                 <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_site</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_site_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_site_update</span><span class="p">),</span>
+    <span class="s2">&quot;domains&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_update</span><span class="p">),</span>
+    <span class="s2">&quot;domainroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_role_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_role_update</span><span class="p">),</span>
+    <span class="s2">&quot;invitations&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span>
+                            <span class="n">schemas</span><span class="o">.</span><span class="n">invitation</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_update</span><span class="p">),</span>
+    <span class="s2">&quot;invitationdomainroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                      <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_domain_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_domain_role_create</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;invitationsiteroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                    <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_site_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">invitation_site_role_create</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">permission</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">permission_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">permission_update</span><span class="p">),</span>
+    <span class="s2">&quot;resources&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">resource_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">resource_update</span><span class="p">),</span>
+    <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">role_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">role_update</span><span class="p">),</span>
+    <span class="s2">&quot;roleresourcepermissions&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1/1/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">role_resource_permission</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">role_resource_permission_create</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;sites&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_update</span><span class="p">),</span>
+    <span class="s2">&quot;sitedataschemas&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_data_schema</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_data_schema_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_data_schema_update</span><span class="p">),</span>
+    <span class="s2">&quot;siteroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_role_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_role_update</span><span class="p">),</span>
+    <span class="s2">&quot;userdomainroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                                <span class="n">schemas</span><span class="o">.</span><span class="n">user_domain_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_domain_role_create</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;usersitedata&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">),</span>
+                             <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_data</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_data_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_data_update</span><span class="p">),</span>
+    <span class="s2">&quot;usersiteroles&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                              <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_role</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_role_create</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;clients&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">client</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;users&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()),</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_update</span><span class="p">),</span>
+    <span class="s2">&quot;countries&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/za&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">country</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="s2">&quot;organisations&quot;</span><span class="p">:</span> <span class="n">Resource</span><span class="p">(</span><span class="s2">&quot;/1&quot;</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">organisation</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">organisation_create</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">organisation_update</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">SKIP_DELETE_TESTS_FOR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="s2">&quot;countries&quot;</span><span class="p">,</span> <span class="s2">&quot;organisations&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="wait_for_server"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.wait_for_server">[docs]</a><span class="k">def</span> <span class="nf">wait_for_server</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Wait until a server is</span>
+<span class="sd">    :param ip: The IP address to connect to</span>
+<span class="sd">    :param port: The port to connect to</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># socket.create_connection() works on MacOS, while socket.socket() with socket.connect()</span>
+            <span class="c1"># did not.</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">((</span><span class="n">ip</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">)),</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">break</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="setUpModule"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.setUpModule">[docs]</a><span class="k">def</span> <span class="nf">setUpModule</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to launch mocked backend APIs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">workdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;TRAVIS_BUILD_DIR&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="k">global</span> <span class="n">_MOCKED_ACCESS_CONTROL_API</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">_PRISM_COMMAND</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;swagger/access_control.yml&quot;</span><span class="p">,</span> <span class="n">ACCESS_CONTROL_PORT</span>
+    <span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Starting mock server using: </span><span class="si">{cmd}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_MOCKED_ACCESS_CONTROL_API</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+        <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">global</span> <span class="n">_MOCKED_AUTHENTICATION_SERVICE_API</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">_PRISM_COMMAND</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;swagger/authentication_service.yml&quot;</span><span class="p">,</span> <span class="n">AUTHENTICATION_SERVICE_PORT</span>
+    <span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Starting mock server using: </span><span class="si">{cmd}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_MOCKED_AUTHENTICATION_SERVICE_API</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+        <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">global</span> <span class="n">_MOCKED_USER_DATA_STORE_API</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">_PRISM_COMMAND</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">workdir</span><span class="p">,</span> <span class="s2">&quot;swagger/user_data_store.yml&quot;</span><span class="p">,</span> <span class="n">USER_DATA_STORE_PORT</span>
+    <span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Starting mock server using: </span><span class="si">{cmd}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">_MOCKED_USER_DATA_STORE_API</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+        <span class="n">cmd</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+        <span class="n">close_fds</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="p">[</span><span class="n">ACCESS_CONTROL_PORT</span><span class="p">,</span> <span class="n">AUTHENTICATION_SERVICE_PORT</span><span class="p">,</span> <span class="n">USER_DATA_STORE_PORT</span><span class="p">]:</span>
+        <span class="n">wait_for_server</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="tearDownModule"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.tearDownModule">[docs]</a><span class="k">def</span> <span class="nf">tearDownModule</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stop the mocked APIs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_MOCKED_ACCESS_CONTROL_API</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">_MOCKED_AUTHENTICATION_SERVICE_API</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+    <span class="n">_MOCKED_USER_DATA_STORE_API</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_test_data"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.get_test_data">[docs]</a><span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The utility used to generate test data is not feature-complete.</span>
+<span class="sd">    This function is an attempt to fix the gotchas.</span>
+<span class="sd">    :param schema:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">DATA_GENERATOR</span><span class="o">.</span><span class="n">random_value</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+    <span class="c1"># Overwrite fields that expect a UUID</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;creator_id&quot;</span><span class="p">,</span> <span class="s2">&quot;invitation_id&quot;</span><span class="p">,</span> <span class="s2">&quot;invitor_id&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;deleted_user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deleter_id&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">schema</span> <span class="o">==</span> <span class="n">schemas</span><span class="o">.</span><span class="n">deleted_user_create</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+
+    <span class="c1"># Overwrite fields that expect a datetime</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;consented_at&quot;</span><span class="p">,</span> <span class="s2">&quot;last_login&quot;</span><span class="p">,</span> <span class="s2">&quot;expires_at&quot;</span><span class="p">,</span> <span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span>
+                  <span class="s2">&quot;deletion_requested_at&quot;</span><span class="p">,</span> <span class="s2">&quot;deletion_confirmed_at&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2000-01-01T00:00:00Z&quot;</span>
+
+    <span class="c1"># Overwrite fields that expect a datetime</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;birth_date&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2000-01-01&quot;</span>
+
+    <span class="k">if</span> <span class="s2">&quot;urn&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;urn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;urn:ge:test:resource&quot;</span>
+
+    <span class="k">if</span> <span class="s2">&quot;name&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">][:</span><span class="mi">30</span><span class="p">]</span>
+
+    <span class="c1"># URL fields</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;avatar&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;http://example.com/&quot;</span>
+
+    <span class="c1"># Email fields</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;me@example.com&quot;</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="validate_response_schema"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.validate_response_schema">[docs]</a><span class="k">def</span> <span class="nf">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="clean_response_data"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.clean_response_data">[docs]</a><span class="k">def</span> <span class="nf">clean_response_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">clean_response_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="s2">&quot;urn&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;urn&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;urn:ge:this:is:a:test&quot;</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Removing field </span><span class="si">{k}</span><span class="s2"> from response because it is None&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="ExampleTestCase"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase">[docs]</a><span class="k">class</span> <span class="nc">ExampleTestCase</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the example test case as provided in the aiohttp documentation:</span>
+<span class="sd">    https://docs.aiohttp.org/en/stable/testing.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="ExampleTestCase.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div>
+
+    <span class="c1"># the unittest_run_loop decorator can be used in tandem with</span>
+    <span class="c1"># the AioHTTPTestCase to simplify running</span>
+    <span class="c1"># tests that are asynchronous</span>
+<div class="viewcode-block" id="ExampleTestCase.test_example"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.test_example">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_example</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="ow">in</span> <span class="n">text</span></div>
+
+    <span class="c1"># a vanilla example</span>
+<div class="viewcode-block" id="ExampleTestCase.test_example_vanilla"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.test_example_vanilla">[docs]</a>    <span class="k">def</span> <span class="nf">test_example_vanilla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_route</span><span class="p">():</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="ow">in</span> <span class="n">text</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">test_get_route</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="IntegrationTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">]:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="n">_roles</span><span class="o">=</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">}},</span>
+                <span class="n">_sites</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">transformations</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">TEST_SITE</span><span class="p">)},</span>
+                <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="p">{</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">},</span>
+                <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                <span class="n">_resource_urn_to_id_map</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;urn:ge:test:resource&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                         <span class="s2">&quot;urn:ge:test:resource2&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">})</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_tech_admin_role_for_testing</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_tech_admin_role_for_testing</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.operational_api.OperationalApi.get_users_with_roles_for_domain&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_users_with_roles</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.operational_api.OperationalApi.get_users_with_roles_for_site&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_users_with_roles</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;authentication_service.api.authentication_api.AuthenticationApi.user_list&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_users</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api.AccessControlApi.site_list&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_sites</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;authentication_service.api.authentication_api.AuthenticationApi.client_list&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_clients</span><span class="p">))</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;authentication_service.api.authentication_api.AuthenticationApi.user_read&quot;</span><span class="p">,</span>
+       <span class="n">Mock</span><span class="p">(</span><span class="n">side_effect</span><span class="o">=</span><span class="n">return_user</span><span class="p">))</span>
+<span class="k">class</span> <span class="nc">IntegrationTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test functionality in integration.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="IntegrationTest.setUpClass"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="s2">&quot;bc36b436-1091-11e8-bc0f-0242ac120003&quot;</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.get_client"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.get_client">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a TestClient instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">id_token_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ISSUER&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">now</span> <span class="o">+</span> <span class="mi">600</span><span class="p">,</span>  <span class="c1"># Expire 5 minutes in the future</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+            <span class="s2">&quot;auth_time&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+            <span class="s2">&quot;nonce&quot;</span><span class="p">:</span> <span class="s2">&quot;self.code.nonce&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;at_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;QBW0o1FTo_zMzrMc7af94w&quot;</span>
+        <span class="p">}</span>
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">id_token_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">],</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ALGORITHM&quot;</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Client</span><span class="p">(</span>
+            <span class="n">server</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">id_token</span><span class="p">}</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.assertStatus"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.assertStatus">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">assertStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function that will dump the response body in the event</span>
+<span class="sd">        that an unexpected response code is received.</span>
+<span class="sd">        :param response: The response</span>
+<span class="sd">        :param status: The expected status</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="n">status</span><span class="p">:</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">,</span> <span class="n">middlewares</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">metrics_middleware</span><span class="p">,</span> <span class="n">auth_middleware</span>
+        <span class="p">])</span>
+
+        <span class="n">user_data_store_configuration</span> <span class="o">=</span> <span class="n">user_data_store</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">Configuration</span><span class="p">()</span>
+        <span class="n">user_data_store_configuration</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{USER_DATA_STORE_PORT}</span><span class="s2">/api/v1&quot;</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;user_data_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">UserDataApi</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="n">user_data_store</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">(</span>
+                <span class="n">configuration</span><span class="o">=</span><span class="n">user_data_store_configuration</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">access_control_configuration</span> <span class="o">=</span> <span class="n">access_control</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">Configuration</span><span class="p">()</span>
+        <span class="n">access_control_configuration</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{ACCESS_CONTROL_PORT}</span><span class="s2">/api/v1&quot;</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">access_control</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">AccessControlApi</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="n">access_control</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">(</span>
+                <span class="n">configuration</span><span class="o">=</span><span class="n">access_control_configuration</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Operational API is a part of access control. It was split out by the</span>
+        <span class="c1"># swagger generator due to its tag. Thus allowing it to use the same</span>
+        <span class="c1"># client and config as access_control.</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;operational_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">access_control</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">OperationalApi</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="n">access_control</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">(</span>
+                <span class="n">configuration</span><span class="o">=</span><span class="n">access_control_configuration</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">authentication_service_configuration</span> <span class="o">=</span> <span class="n">authentication_service</span><span class="o">.</span><span class="n">configuration</span><span class="o">.</span><span class="n">Configuration</span><span class="p">()</span>
+        <span class="n">authentication_service_configuration</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;http://localhost:</span><span class="si">{AUTHENTICATION_SERVICE_PORT}</span><span class="s2">/api/v1&quot;</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;authentication_service_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">authentication_service</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">AuthenticationApi</span><span class="p">(</span>
+            <span class="n">api_client</span><span class="o">=</span><span class="n">authentication_service</span><span class="o">.</span><span class="n">ApiClient</span><span class="p">(</span>
+                <span class="n">configuration</span><span class="o">=</span><span class="n">authentication_service_configuration</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioredis</span><span class="o">.</span><span class="n">create_redis_pool</span><span class="p">(</span><span class="s2">&quot;redis://localhost:6379&quot;</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">the_app</span><span class="p">):</span>
+            <span class="n">the_app</span><span class="p">[</span><span class="s2">&quot;client_session&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ClientSession</span><span class="p">()</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">on_shutdown</span><span class="p">(</span><span class="n">the_app</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">the_app</span><span class="p">[</span><span class="s2">&quot;client_session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s2">&quot;access_control_api&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;operational_api&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;authentication_service_api&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;user_data_api&quot;</span>
+            <span class="p">]:</span>
+                <span class="k">await</span> <span class="n">the_app</span><span class="p">[</span><span class="n">backend</span><span class="p">]</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">rest_client</span><span class="o">.</span><span class="n">pool_manager</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">app</span><span class="o">.</span><span class="n">on_startup</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_startup</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">on_shutdown</span><span class="p">)</span>
+
+        <span class="n">add_routes</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">with_ui</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">RESOURCES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="c1"># Default call</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">_TOTAL_COUNT_HEADER</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="c1"># With arguments</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">?offset=1&amp;limit=10&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">_TOTAL_COUNT_HEADER</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="c1"># With arguments</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">?foo=bar&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">_TOTAL_COUNT_HEADER</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+
+        <span class="c1"># With bad arguments</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">?offset=a&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">?offset=1&amp;limit=10&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;GET&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">?offset=1&amp;limit=10&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;DELETE&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">RESOURCES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">create_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Some resources cannot be created</span>
+            <span class="k">return</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">get_test_data</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">create_schema</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">201</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;/</span><span class="si">{resource}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;POST&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">RESOURCES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">resource</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SKIP_DELETE_TESTS_FOR</span>
+    <span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">204</span><span class="p">)</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;DELETE&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">RESOURCES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;GET&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span>
+        <span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span> <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">RESOURCES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">info</span><span class="o">.</span><span class="n">update_schema</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Some resources cannot be updated</span>
+            <span class="k">return</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">get_test_data</span><span class="p">(</span><span class="n">info</span><span class="o">.</span><span class="n">update_schema</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">),</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="s2">&quot;/</span><span class="si">{}{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">info</span><span class="o">.</span><span class="n">resource_path</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;PUT&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IntegrationTest.test_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_all_user_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/all_user_roles/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">all_user_roles</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_domain_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/domain_roles/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_roles</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_sites_under_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_sites_under_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_sites_under_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/get_sites_under_domain/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site</span><span class="p">})</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_site_and_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_and_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_site_and_domain_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/site_and_domain_roles/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_and_domain_roles</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_site_role_labels_aggregated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/site_role_labels_aggregated/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_role_labels_aggregated</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_user_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_user_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_site_role_labels_aggregated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/user_site_role_labels_aggregated/</span><span class="si">%s</span><span class="s2">/1&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_site_role_labels_aggregated</span><span class="p">)</span></div>
+
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_users_with_roles_for_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/users_with_roles_for_domain/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_with_roles</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IntegrationTest.test_get_users_with_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_users_with_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_users_with_roles_for_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/users_with_roles_for_site/1&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_with_roles</span><span class="p">)</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/sites&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/roles&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_resources</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/resources&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/permissions&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_domains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/domains&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/keys&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/clients&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_refresh_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/refresh/all&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_user_has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">resource_permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ge:test:resource&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;permission&quot;</span><span class="p">:</span> <span class="s2">&quot;read&quot;</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ge:test:resource2&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;permission&quot;</span><span class="p">:</span> <span class="s2">&quot;read&quot;</span>
+            <span class="p">},</span>
+        <span class="p">]</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;resource_permissions&quot;</span><span class="p">:</span> <span class="n">resource_permissions</span><span class="p">,</span>
+            <span class="s2">&quot;site_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+
+        <span class="c1"># When the check performed is for the user id that is also the requester (i.e. the</span>
+        <span class="c1"># holder of the token sent with the request), permission is always allowed to make the</span>
+        <span class="c1"># request.</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{self.user_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_permissions_check_response</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">response_body</span><span class="p">[</span><span class="s2">&quot;has_permissions&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Quick check that CORS is working</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;OPTIONS&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{self.user_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;http://foo.bar&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Access-Control-Request-Method&quot;</span><span class="p">:</span> <span class="s2">&quot;POST&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="c1"># Bad requests results in HTTP 400 responses</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;unsupported&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;resource_permissions&quot;</span><span class="p">:</span> <span class="n">resource_permissions</span><span class="p">,</span>
+            <span class="s2">&quot;site_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{self.user_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;resource_permissions&quot;</span><span class="p">:</span> <span class="n">resource_permissions</span><span class="p">,</span>
+            <span class="c1"># Missing site_id or domain_id</span>
+        <span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{self.user_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;any&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;resource_permissions&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;resource&quot;</span><span class="p">:</span> <span class="s2">&quot;urn:ge:test:doesnotexist&quot;</span><span class="p">,</span>  <span class="c1"># Bad data</span>
+                    <span class="s2">&quot;permission&quot;</span><span class="p">:</span> <span class="s2">&quot;read&quot;</span>
+                <span class="p">}</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;domain_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{self.user_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_management_portal_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_management_portal_permissions/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}})</span>
+        <span class="c1"># Check that all strings returned have the for &quot;&lt;something&gt;:&lt;somethingelse&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">response_body</span><span class="p">:</span>
+            <span class="n">resource_urn</span><span class="p">,</span> <span class="n">permission_name</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">resource_urn</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">permission_name</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span><span class="p">)</span>
+
+        <span class="c1"># Malformed user id</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_management_portal_permissions/foobar&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_domain_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_domain_permissions/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}})</span>
+        <span class="c1"># Check that all strings returned have the for &quot;&lt;something&gt;:&lt;somethingelse&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">response_body</span><span class="p">:</span>
+            <span class="n">resource_urn</span><span class="p">,</span> <span class="n">permission_name</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">resource_urn</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">permission_name</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span><span class="p">)</span>
+
+        <span class="c1"># Malformed user id</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_domain_permissions/foobar/1&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_site_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_site_permissions/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">}})</span>
+        <span class="c1"># Check that all strings returned have the for &quot;&lt;something&gt;:&lt;somethingelse&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">response_body</span><span class="p">:</span>
+            <span class="n">resource_urn</span><span class="p">,</span> <span class="n">permission_name</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">resource_urn</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertIn</span><span class="p">(</span><span class="n">permission_name</span><span class="p">,</span> <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span><span class="p">)</span>
+
+        <span class="c1"># Malformed user id</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/user_site_permissions/foobar/1&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">])</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_site_from_client_token_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nocache</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/get_site_from_client_token_id/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">]),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site</span><span class="p">)</span>
+
+        <span class="c1"># If the request is for a token id that differs from the</span>
+        <span class="c1"># one provided in the JWT token&#39;s audience, the call is forbidden.</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;/ops/get_site_from_client_token_id/some_other_id&quot;</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_async"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_async">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_purge_expired_invitations_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/invitations/purge/expired&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">purged_invitations</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">purged_invitations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_sync"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_sync">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_purge_expired_invitations_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/invitations/purge/expired?synchronous_mode=true&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">purged_invitations</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">purged_invitations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span> <span class="s2">&quot;synchronous&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_healthcheck"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_healthcheck">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_healthcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="c1"># Overwrite the proper auth header set on the client.</span>
+            <span class="s2">&quot;/healthcheck&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Unused&quot;</span><span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">health_info</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="IntegrationTest.test_invitation_send"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_invitation_send">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_invitation_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">invitation_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;/invitations/</span><span class="si">{invitation_id.hex}</span><span class="s2">/send&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+        <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

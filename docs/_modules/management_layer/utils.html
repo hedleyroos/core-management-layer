@@ -1,0 +1,455 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.utils &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">access_control.rest</span>
+<span class="kn">import</span> <span class="nn">authentication_service.rest</span>
+<span class="kn">import</span> <span class="nn">user_data_store.rest</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span> <span class="nn">aiohttp.client_exceptions</span> <span class="k">import</span> <span class="n">ClientResponseError</span><span class="p">,</span> <span class="n">ClientConnectorError</span><span class="p">,</span> <span class="n">ClientConnectionError</span>
+
+<span class="kn">from</span> <span class="nn">access_control</span> <span class="k">import</span> <span class="n">UserWithRoles</span><span class="p">,</span> <span class="n">Site</span>
+<span class="kn">from</span> <span class="nn">authentication_service</span> <span class="k">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">Client</span>
+
+<span class="kn">from</span> <span class="nn">management_layer</span> <span class="k">import</span> <span class="n">mappings</span><span class="p">,</span> <span class="n">transformations</span>
+<span class="kn">from</span> <span class="nn">management_layer.exceptions</span> <span class="k">import</span> <span class="n">JSONBadGateway</span>
+<span class="kn">from</span> <span class="nn">management_layer.sentry</span> <span class="k">import</span> <span class="n">sentry</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">TESTING_USER_ID</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="timeit"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.timeit">[docs]</a><span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="n">total_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{f.__module__}</span><span class="s2">.</span><span class="si">{f.__name__}</span><span class="s2"> took </span><span class="si">{total_time:.3f}</span><span class="s2"> ms&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">wrapped_f</span>
+
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="client_exception_handler"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.client_exception_handler">[docs]</a><span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">client_exception_handler</span><span class="p">():</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># All exceptions are logged to Sentry</span>
+            <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+            <span class="c1"># We re-raise the exception after logging it to Sentry so that the</span>
+            <span class="c1"># exception handlers below can do their job.</span>
+            <span class="k">raise</span>
+
+    <span class="k">except</span> <span class="p">(</span><span class="n">access_control</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span><span class="p">,</span>
+            <span class="n">authentication_service</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span><span class="p">,</span>
+            <span class="n">user_data_store</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span><span class="p">)</span> <span class="k">as</span> <span class="n">re</span><span class="p">:</span>
+        <span class="c1"># All API client-related exceptions are handled as &quot;Bad Gateway&quot; errors:</span>
+        <span class="c1"># The server, while acting as a gateway or proxy, received an invalid</span>
+        <span class="c1"># response from the upstream server it accessed in attempting to fulfill</span>
+        <span class="c1"># the request.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">body</span><span class="p">)[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="n">JSONBadGateway</span><span class="p">(</span>
+            <span class="n">json_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;exception_type&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">error</span>
+            <span class="p">})</span>
+    <span class="k">except</span> <span class="n">ClientConnectorError</span> <span class="k">as</span> <span class="n">cce</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">JSONBadGateway</span><span class="p">(</span>
+            <span class="n">json_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;exception_type&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cce</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">cce</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cce</span><span class="o">.</span><span class="n">os_error</span><span class="p">),</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cce</span><span class="p">)</span>
+            <span class="p">})</span>
+    <span class="k">except</span> <span class="n">ClientConnectionError</span> <span class="k">as</span> <span class="n">cce</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">JSONBadGateway</span><span class="p">(</span>
+            <span class="n">json_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;exception_type&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cce</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">cce</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;N/A&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cce</span><span class="p">),</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cce</span><span class="p">)</span>
+            <span class="p">})</span>
+    <span class="k">except</span> <span class="n">ClientResponseError</span> <span class="k">as</span> <span class="n">cre</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">JSONBadGateway</span><span class="p">(</span>
+            <span class="n">json_data</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;exception_type&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cre</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="n">cre</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">),</span>
+                <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">cre</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="n">cre</span><span class="o">.</span><span class="n">message</span><span class="p">,</span>
+                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">cre</span><span class="p">)</span>
+            <span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="transform_users_with_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.transform_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">transform_users_with_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transform a UserWithRole list from the access_control to have id, usernames,</span>
+<span class="sd">    and role labels for the management layer UserWithRoles schema.</span>
+<span class="sd">    :return: List of users with roles dicts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">users_with_roles</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">response</span><span class="p">]</span>
+
+    <span class="c1"># Get all user_ids to retrieve.</span>
+    <span class="n">user_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">users_with_roles</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="n">user_ids</span><span class="p">:</span>
+        <span class="c1"># Get all the user names of the user IDs found.</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_until_complete</span><span class="p">(</span>
+            <span class="n">request</span><span class="p">,</span> <span class="s2">&quot;authentication_service_api&quot;</span><span class="p">,</span> <span class="s2">&quot;user_list&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">users</span><span class="p">:</span>
+            <span class="n">transform</span> <span class="o">=</span> <span class="n">transformations</span><span class="o">.</span><span class="n">USER</span>
+            <span class="n">users</span> <span class="o">=</span> <span class="p">[</span><span class="n">transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">]</span>
+            <span class="n">user_mapping</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">user</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]:</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span>
+            <span class="p">}</span>
+            <span class="n">users_with_roles</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">user_with_roles</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="n">user_mapping</span><span class="p">[</span><span class="n">user_with_roles</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]],</span>
+                    <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="n">mappings</span><span class="o">.</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_label_for</span><span class="p">(</span><span class="n">role_id</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">role_id</span> <span class="ow">in</span> <span class="n">user_with_roles</span><span class="p">[</span><span class="s2">&quot;role_ids&quot;</span><span class="p">]</span>
+                    <span class="p">]</span>
+                <span class="p">}</span> <span class="k">for</span> <span class="n">user_with_roles</span> <span class="ow">in</span> <span class="n">users_with_roles</span>
+                <span class="k">if</span> <span class="n">user_with_roles</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">user_mapping</span>
+            <span class="p">]</span>
+    <span class="k">return</span> <span class="n">users_with_roles</span></div>
+
+
+<div class="viewcode-block" id="get_until_complete"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.get_until_complete">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_until_complete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform continuous get calls until all the requested data has been obtained.</span>
+<span class="sd">    :param request: The current request object.</span>
+<span class="sd">    :param api: The API to be queried.</span>
+<span class="sd">    :param operation: The operation to be performed on the given API (with http info).</span>
+<span class="sd">    :param offset: The current offset of the API call.</span>
+<span class="sd">    :param limit: The limit of returned results from each call.</span>
+<span class="sd">    :return: List of data returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">api_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="n">api</span><span class="p">],</span> <span class="n">operation</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">api_call</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">limit</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">api_call</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="return_users_with_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users_with_roles</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some test functions require a list of user_ids and their role_ids, this is what this</span>
+<span class="sd">    function will return.</span>
+<span class="sd">    :return: A list of UserWithRoles objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">UserWithRoles</span><span class="p">(</span>
+            <span class="n">user_id</span><span class="o">=</span><span class="n">TESTING_USER_ID</span><span class="p">,</span>
+            <span class="n">role_ids</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="return_users"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_users">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some test functions require to obtain a list of users with at least</span>
+<span class="sd">    an id and username that is what this will do.</span>
+<span class="sd">    :return: A list of uuid user_ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">User</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">TESTING_USER_ID</span><span class="p">,</span>
+            <span class="n">username</span><span class="o">=</span><span class="s2">&quot;Jake&quot;</span><span class="p">,</span>
+            <span class="n">is_active</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">date_joined</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+            <span class="n">created_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="n">updated_at</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]:]</span></div>
+
+
+<span class="n">TEST_SITE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Site Name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;domain_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;A test site&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+    <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="n">TEST_CLIENT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;test_client&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Client&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;contact_email&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;logo&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;require_consent&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;response_type&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reuse_consent&quot;</span><span class="p">:</span> <span class="kc">True</span>
+<span class="p">}</span>
+
+<span class="n">TEST_USER</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;b001e842-4994-4c74-8db1-bb2caa42298a&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;username&quot;</span><span class="p">:</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;first_name&quot;</span><span class="p">:</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;last_name&quot;</span><span class="p">:</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="s2">&quot;email@example.com&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_active&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="s2">&quot;date_joined&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;last_login&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;birth_date&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;country_code&quot;</span><span class="p">:</span> <span class="s2">&quot;za&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;organisation_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2018</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="return_sites"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_sites">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_sites</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some tests require a test site list to be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">Site</span><span class="p">(</span><span class="o">**</span><span class="n">TEST_SITE</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="return_clients"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_clients">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_clients</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some tests require a test client list to be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">TEST_CLIENT</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="return_user"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_user">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_user</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Some tests require a test user to be returned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="o">**</span><span class="n">TEST_USER</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

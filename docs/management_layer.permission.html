@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.permission package &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.permission package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-management_layer.permission.decorator">management_layer.permission.decorator module</a></li>
+<li><a class="reference internal" href="#module-management_layer.permission.utils">management_layer.permission.utils module</a></li>
+<li><a class="reference internal" href="#module-management_layer.permission">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.permission package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.permission.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="management-layer-permission-package">
+<h1>management_layer.permission package<a class="headerlink" href="#management-layer-permission-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-management_layer.permission.decorator">
+<span id="management-layer-permission-decorator-module"></span><h2>management_layer.permission.decorator module<a class="headerlink" href="#module-management_layer.permission.decorator" title="Permalink to this headline">¶</a></h2>
+<p>The permission module exposes a decorator that can be used to protect
+function calls by specifying the permissions required to execute the function.</p>
+<dl class="function">
+<dt id="management_layer.permission.decorator.requester_has_role">
+<code class="descclassname">management_layer.permission.decorator.</code><code class="descname">requester_has_role</code><span class="sig-paren">(</span><em>request_field: Union[int</em>, <em>str] = 0</em>, <em>body_field: Union[int</em>, <em>str] = None</em>, <em>target_user_id_field: Union[int</em>, <em>str] = None</em>, <em>target_invitation_id_field: Union[int</em>, <em>str] = None</em>, <em>role_id_field: Union[int</em>, <em>str] = None</em>, <em>domain_id_field: Union[int</em>, <em>str] = None</em>, <em>site_id_field: Union[int</em>, <em>str] = None</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Callable<a class="reference internal" href="_modules/management_layer/permission/decorator.html#requester_has_role"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.decorator.requester_has_role" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used as a decorator to protect functions that add and remove roles on
+domains and sites to users, e.g.
+<a href="#id1"><span class="problematic" id="id2">``</span></a>`
+&#64;requester_has_role()
+def usersiterole_create(request, body, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">The</span> <span class="pre">body</span> <span class="pre">must</span> <span class="pre">contain</span> <span class="pre">the</span> <span class="pre">user_id</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">recipient,</span> <span class="pre">the</span> <span class="pre">role_id</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">role</span> <span class="pre">that</span> <span class="pre">must</span> <span class="pre">be</span>
+<span class="pre">assigned</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">site_id</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">site</span> <span class="pre">for</span> <span class="pre">which</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">will</span> <span class="pre">must</span> <span class="pre">get</span> <span class="pre">the</span> <span class="pre">role.</span>
+<span class="pre">`</span></code>
+&#64;requester_has_role()
+def usersiterole_delete(request, user_id, site_id, role_id, <a href="#id5"><span class="problematic" id="id6">**</span></a>kwargs):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p><a href="#id7"><span class="problematic" id="id8">``</span></a>`
+The user making the request is inferred from the token passed with the request.</p>
+<p>IMPORTANT: This decorator can be applied to both coroutines and normal functions AND it
+always changes the decorated function into a coroutine, meaning it must be called using <cite>await</cite>:
+<a href="#id9"><span class="problematic" id="id10">``</span></a>`
+&#64;requester_has_role()
+def doSomething(request, body):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p># Call the function
+result = await doSomething(request, body)  # Decorator change function to coroutine
+<a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request_field</strong> – An integer or string identifying either the positional
+argument or the name of the keyword argument identifying the request parameter.</li>
+<li><strong>body_field</strong> – An integer or string identifying either the positional
+argument or the name of the keyword argument identifying the body parameter. The
+body parameter is a dictionary that can contain a user_id, role_id and either a
+site_id or domain_id, depending in the call.</li>
+<li><strong>target_user_id_field</strong> – An integer or string identifying either the positional argument
+or the name of the keyword argument identifying the user_id field of the target user,
+i.e. the user for which a role must be set or removed.</li>
+<li><strong>target_invitation_id_field</strong> – An integer or string identifying either the positional
+argument or the name of the keyword argument identifying the invitation_id field of the
+target invitation, i.e. the invitation for which a role must be set or removed.</li>
+<li><strong>role_id_field</strong> – An integer or string identifying either the positional argument
+or the name of the keyword argument identifying the role_id field.</li>
+<li><strong>domain_id_field</strong> – An integer or string identifying either the positional argument
+or the name of the keyword argument identifying the domain_id field.</li>
+<li><strong>site_id_field</strong> – An integer or string identifying either the positional argument
+or the name of the keyword argument identifying the site_id field.</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Forbidden if the user does not have the role that is being invoked or revoked.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.decorator.require_permissions">
+<code class="descclassname">management_layer.permission.decorator.</code><code class="descname">require_permissions</code><span class="sig-paren">(</span><em>operator: Callable[..., bool], resource_permissions: Sequence[Tuple[Union[str, int], Union[str, int]]], nocache: bool = False, request_field: Union[int, str] = 0, target_user_field: Union[int, str] = None, allow_for_management_portal=False</em><span class="sig-paren">)</span> &#x2192; Callable<a class="reference internal" href="_modules/management_layer/permission/decorator.html#require_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.decorator.require_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used as a decorator to restrict functions by specifying
+the permissions that a user requires to perform the action, e.g.
+<a href="#id15"><span class="problematic" id="id16">``</span></a>`
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:foo">urn:ge:test:foo</a>”, “write”)])
+&#64;require_permissions(any, [(“<a class="reference external" href="urn:ge:test:foo">urn:ge:test:foo</a>”, “read”),</p>
+<blockquote>
+<div>(“<a class="reference external" href="urn:ge:test:bar">urn:ge:test:bar</a>”, “read”])</div></blockquote>
+<dl class="docutils">
+<dt>def doSomething(request, arg1, arg2):</dt>
+<dd>pass</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">As</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">seen</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">example</span> <span class="pre">above,</span> <span class="pre">the</span> <span class="pre">decorator</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">stacked.</span>
+<span class="pre">Note,</span> <span class="pre">however,</span> <span class="pre">that</span> <span class="pre">for</span> <span class="pre">performance</span> <span class="pre">reasons</span> <span class="pre">the</span> <span class="pre">least</span> <span class="pre">amount</span> <span class="pre">of</span>
+<span class="pre">decorators</span> <span class="pre">is</span> <span class="pre">preferred.</span>
+<span class="pre">`</span></code>
+# Logically correct, but suboptimal performance
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:foo">urn:ge:test:foo</a>”, “write”)])
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:bar">urn:ge:test:bar</a>”, “write”)])
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:baz">urn:ge:test:baz</a>”, “write”)])
+def badExample(request, arg1, arg2):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p># Logically equivalent to the decorators of example above and more efficient
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:foo">urn:ge:test:foo</a>”, “write”),</p>
+<blockquote>
+<div>(“<a class="reference external" href="urn:ge:test:bar">urn:ge:test:bar</a>”, “write”),
+(“<a class="reference external" href="urn:ge:test:baz">urn:ge:test:baz</a>”, “write”)])</div></blockquote>
+<dl class="docutils">
+<dt>def goodExample(request, arg1, arg2):</dt>
+<dd>pass</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">This</span> <span class="pre">function</span> <span class="pre">requires</span> <span class="pre">the</span> <span class="pre">the</span> <span class="pre">user</span> <span class="pre">who</span> <span class="pre">made</span> <span class="pre">the</span> <span class="pre">request</span> <span class="pre">as</span> <span class="pre">well</span> <span class="pre">as</span> <span class="pre">the</span>
+<span class="pre">site</span> <span class="pre">from</span> <span class="pre">which</span> <span class="pre">the</span> <span class="pre">request</span> <span class="pre">originated</span> <span class="pre">(or</span> <span class="pre">is</span> <span class="pre">made</span> <span class="pre">on</span> <span class="pre">behalf</span> <span class="pre">of)</span> <span class="pre">in</span> <span class="pre">order</span> <span class="pre">to</span>
+<span class="pre">look</span> <span class="pre">up</span> <span class="pre">roles</span> <span class="pre">associated</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">user.</span> <span class="pre">The</span> <span class="pre">user</span> <span class="pre">and</span> <span class="pre">site</span> <span class="pre">UUID</span> <span class="pre">values</span> <span class="pre">are</span> <span class="pre">read</span> <span class="pre">from</span>
+<span class="pre">the</span> <span class="pre">token</span> <span class="pre">associated</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">request</span> <span class="pre">field</span> <span class="pre">passed</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">decorated</span> <span class="pre">function.</span>
+<span class="pre">By</span> <span class="pre">default</span> <span class="pre">we</span> <span class="pre">use</span>&#160; <span class="pre">the</span> <span class="pre">first</span> <span class="pre">argument</span> <span class="pre">as</span> <span class="pre">the</span> <span class="pre">request</span> <span class="pre">field.</span> <span class="pre">This</span> <span class="pre">can</span> <span class="pre">be</span> <span class="pre">changed</span> <span class="pre">in</span>
+<span class="pre">the</span> <span class="pre">decorator,</span> <span class="pre">e.g.</span>
+<span class="pre">`</span></code>
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:baz">urn:ge:test:baz</a>”, “write”)],</p>
+<blockquote>
+<div>request_field=2)</div></blockquote>
+<dl class="docutils">
+<dt>def example1(arg1, arg2, request):</dt>
+<dd>pass</dd>
+<dt>&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:baz">urn:ge:test:baz</a>”, “write”)],</dt>
+<dd>request_field=”request”)  # “request” in kwargs</dd>
+<dt>def example2(arg1, <a href="#id17"><span class="problematic" id="id18">**</span></a>kwargs):</dt>
+<dd>pass</dd>
+</dl>
+<p><a href="#id19"><span class="problematic" id="id20">``</span></a><a href="#id21"><span class="problematic" id="id22">`</span></a></p>
+<p>IMPORTANT: This decorator can be applied to both coroutines and normal functions AND it
+always changes the decorated function into a coroutine, meaning it must be called using <cite>await</cite>:
+<a href="#id23"><span class="problematic" id="id24">``</span></a>`
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:test:foo">urn:ge:test:foo</a>”, “write”)])
+def doSomething(request):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p># Call the function
+result = await doSomething(request)  # Decorator change function to coroutine
+<a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a></p>
+<p>IMPORTANT: When a function call relates to a particular user, the user does not explicitly
+require permissions on that resource for it to be allowed. A user implicitly has access to
+anything directly related to his profile.
+<a href="#id29"><span class="problematic" id="id30">``</span></a>`
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:user">urn:ge:user</a>”, “read”)], target_user_field=1)
+def read_user_data(request, user_id):</p>
+<blockquote>
+<div>pass</div></blockquote>
+<p><a href="#id31"><span class="problematic" id="id32">``</span></a>`
+In the example above, if the user specified by the token in the request is the same user
+as the one identified by the function argument “user_id”, then the call is allowed.</p>
+<p>IMPORTANT: The Management Portal may make requests on behalf of the other sites.
+To facilitate this, we look at the X-GE-Portal-Context header in the request:</p>
+<blockquote>
+<div><ul class="simple">
+<li>If the header is not present, the context to use is the “audience” of the requesting token.</li>
+<li>If the header is present and the “audience” of the requesting token is not the Management
+Portal, then return Forbidden.</li>
+<li>If the header is present and the “audience” of the the requesting token is the Management
+Portal, then use the context specified to look up the user’s permissions. (If the specified
+context does not exist, return BadRequest).</li>
+</ul>
+</div></blockquote>
+<p>IMPORTANT: The Management Portal needs to be able to perform certain calls (list sites and
+domains, for instance) even if the user does not have explicit permissions to do this.
+For API calls like these, use the <cite>allow_for_manangement_portal</cite> flag, e.g.
+<a href="#id33"><span class="problematic" id="id34">``</span></a>`
+&#64;require_permissions(all, [(“<a class="reference external" href="urn:ge:access_control:domain">urn:ge:access_control:domain</a>”, “list”)],</p>
+<blockquote>
+<div>allow_for_management_portal=True)</div></blockquote>
+<dl class="docutils">
+<dt>def domain_list(request, <a href="#id35"><span class="problematic" id="id36">**</span></a>kwargs):</dt>
+<dd>pass</dd>
+</dl>
+<p><a href="#id37"><span class="problematic" id="id38">``</span></a><a href="#id39"><span class="problematic" id="id40">`</span></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>operator</strong> – any or all</li>
+<li><strong>resource_permissions</strong> – The resource permissions required</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+<li><strong>request_field</strong> – An integer or string identifying either the positional
+argument or the name of the keyword argument identifying the request parameter.</li>
+<li><strong>target_user_field</strong> – An integer or string identifying either the positional
+argument or the name of the keyword argument identifying the target user parameter.</li>
+<li><strong>allow_for_management_portal</strong> – A boolean flag indicating whether access is implied when the
+request is made by the management portal</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">Forbidden if the user does not have the required permissions.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-management_layer.permission.utils">
+<span id="management-layer-permission-utils-module"></span><h2>management_layer.permission.utils module<a class="headerlink" href="#module-management_layer.permission.utils" title="Permalink to this headline">¶</a></h2>
+<p>This module contains functions that are used to check whether certain calls
+are permitted.</p>
+<p>Permissions are based on the roles assigned to the user making the request,
+which maps to permissions on resources.</p>
+<dl class="function">
+<dt id="management_layer.permission.utils.get_all_user_roles">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_all_user_roles</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Dict[str, List[int]]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_all_user_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_all_user_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns all the roles that a user has on all sites and
+domains in the system. The result looks like this:
+<a href="#id41"><span class="problematic" id="id42">``</span></a>`
+{</p>
+<blockquote>
+<div>“d:1”: [2, 4],
+“d:2”: [2, 4, 6],
+“d:9”: [2, 4],
+“d:11”: [2, 4],
+“d:10”: [2, 4],
+“d:3”: [2, 4, 6],
+“d:6”: [2, 4, 6],
+“d:4”: [2, 4, 6],
+“d:5”: [2, 3, 4, 6],
+“d:7”: [2, 4, 6],
+“d:8”: [2, 4, 6],
+“s:1”: [2, 4, 5, 6]</div></blockquote>
+<p>The dictionary keys consists of a type indicator (“d” for domains and “s”
+for sites) and an id separated by a “:”.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user for which to get roles
+:param nocache: Bypass the cache if True
+:return: A dictionary containing the roles assigned to the specified user on</p>
+<blockquote>
+<div>the domains and sites in the system.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_role_resource_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_role_resource_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, role: Union[str, int], resource: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_role_resource_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_role_resource_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the permission granted on a resource for a specified role.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – The request associated with this call</li>
+<li><strong>role</strong> – The role</li>
+<li><strong>resource</strong> – The resource</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of permission ids</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_domain">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_domain</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, user: type, domain: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles that a user has for a specified domain.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param domain: The site
+:param nocache: Bypass the cache if True
+:return: A set of role ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_site">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_site</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>site: int</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles that a user has for a specified site.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param site: The site
+:param nocache: Bypass the cache if True
+:return: A set of role ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_site_or_domain">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_site_or_domain</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>site: int = None</em>, <em>domain: Union[str</em>, <em>int] = None</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_site_or_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_site_or_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles assigned to the user for the specified site or domain.
+Either a site or a domain needs to be specified.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param site: The site
+:param domain: The domain
+:param nocache: Bypass the cache if True
+:return: A list of roles ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.role_has_permission">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">role_has_permission</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, role: Union[str, int], permission: Union[str, int], resource: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#role_has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.role_has_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a role has a specified resource permission.</p>
+<p>Bypassing the cache can have a significant performance impact and should
+only be used in exceptional circumstances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – The request associated with this call</li>
+<li><strong>role</strong> – The role to check</li>
+<li><strong>permission</strong> – The required permission</li>
+<li><strong>resource</strong> – The resource</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the role has the permission on the resource, else False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.roles_have_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">roles_have_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, roles: Set[Union[str, int]], operator: Callable[..., bool], resource_permissions: Sequence[Tuple[Union[str, int], Union[str, int]]], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#roles_have_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.roles_have_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the specified roles has any or all (as per the operator) of
+the specified resource permissions.
+It is typically used as part of the user_has_permissions() function as the
+following simplified pseudo-code shows:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>user_has_permissions(user, operator, resource_permissions):</dt>
+<dd>roles = get_user_roles()
+return roles_have_permissions(roles, operator, resource_permissions)</dd>
+</dl>
+</div></blockquote>
+<p>If any of the roles has the required permission, the requirement is
+satisfied.
+Bypassing the cache can have a significant performance impact and should
+only be used in exceptional circumstances.
+:param request: The request associated with this call
+:param roles: A set of role ids
+:param operator: any or all
+:param resource_permissions: The resource permissions required
+:param nocache: Bypass the cache if True
+:return: True if the user is has the required permissions on the resources</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.user_has_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">user_has_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, user: type, operator: Callable[..., bool], resource_permissions: Sequence[Tuple[Union[str, int], Union[str, int]]], site: int = None, domain: Union[str, int] = None, nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#user_has_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.user_has_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the specified user has any or all (as per the operator) of
+the specified resource permissions.
+To establish whether this is the case, we need to interrogate the roles
+associated with the user. If any of the roles has the required
+permission, the requirement is satisfied.
+:param request: The request associated with this call
+:param user: The UUID of the user performing the action
+:param operator: any or all
+:param resource_permissions: The resource permissions required
+:param site: The site from which the user is making the request
+:param domain: The domain for which the user is making the request
+:param nocache: Bypass the cache if True
+:return: True if the user is has the required permissions on the resources</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-management_layer.permission">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-management_layer.permission" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.permission.utils &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.permission.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.permission.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains functions that are used to check whether certain calls</span>
+<span class="sd">are permitted.</span>
+
+<span class="sd">Permissions are based on the roles assigned to the user making the request,</span>
+<span class="sd">which maps to permissions on resources.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">UUID</span>
+
+<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="k">import</span> <span class="n">Request</span>
+
+<span class="kn">from</span> <span class="nn">management_layer.constants</span> <span class="k">import</span> <span class="n">MKP_ROLE_RESOURCE_PERMISSION</span><span class="p">,</span> \
+    <span class="n">MKP_USER_ROLES</span><span class="p">,</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span>
+<span class="kn">from</span> <span class="nn">management_layer.mappings</span> <span class="k">import</span> <span class="n">Mappings</span>
+<span class="kn">from</span> <span class="nn">management_layer.settings</span> <span class="k">import</span> <span class="n">CACHE_TIME</span>
+
+<span class="c1"># Convenience types</span>
+<span class="kn">from</span> <span class="nn">management_layer.utils</span> <span class="k">import</span> <span class="n">client_exception_handler</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">UserId</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">UUID</span><span class="p">)</span>
+<span class="n">SiteId</span> <span class="o">=</span> <span class="nb">int</span>
+<span class="n">Operator</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+<span class="n">Resource</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="n">Permission</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="n">ResourcePermission</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Resource</span><span class="p">,</span> <span class="n">Permission</span><span class="p">]</span>
+<span class="n">ResourcePermissions</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Sequence</span><span class="p">[</span><span class="n">ResourcePermission</span><span class="p">]</span>
+<span class="n">Domain</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="n">Role</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="role_has_permission"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.role_has_permission">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">role_has_permission</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">Role</span><span class="p">,</span> <span class="n">permission</span><span class="p">:</span> <span class="n">Permission</span><span class="p">,</span> <span class="n">resource</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span>
+    <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a role has a specified resource permission.</span>
+
+<span class="sd">    Bypassing the cache can have a significant performance impact and should</span>
+<span class="sd">    only be used in exceptional circumstances.</span>
+
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param role: The role to check</span>
+<span class="sd">    :param permission: The required permission</span>
+<span class="sd">    :param resource: The resource</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: True if the role has the permission on the resource, else False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">permission_id</span> <span class="o">=</span> <span class="n">permission</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">permission</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> \
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">permission_id_for</span><span class="p">(</span><span class="n">permission</span><span class="p">)</span>
+
+    <span class="n">permission_ids</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_role_resource_permissions</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">permission_ids</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">permission_id</span> <span class="ow">in</span> <span class="n">permission_ids</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="roles_have_permissions"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.roles_have_permissions">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">roles_have_permissions</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+    <span class="n">roles</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="n">Role</span><span class="p">],</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span>
+    <span class="n">resource_permissions</span><span class="p">:</span> <span class="n">ResourcePermissions</span><span class="p">,</span>
+    <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the specified roles has any or all (as per the operator) of</span>
+<span class="sd">    the specified resource permissions.</span>
+<span class="sd">    It is typically used as part of the user_has_permissions() function as the</span>
+<span class="sd">    following simplified pseudo-code shows:</span>
+
+<span class="sd">        user_has_permissions(user, operator, resource_permissions):</span>
+<span class="sd">            roles = get_user_roles()</span>
+<span class="sd">            return roles_have_permissions(roles, operator, resource_permissions)</span>
+
+<span class="sd">    If any of the roles has the required permission, the requirement is</span>
+<span class="sd">    satisfied.</span>
+<span class="sd">    Bypassing the cache can have a significant performance impact and should</span>
+<span class="sd">    only be used in exceptional circumstances.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param roles: A set of role ids</span>
+<span class="sd">    :param operator: any or all</span>
+<span class="sd">    :param resource_permissions: The resource permissions required</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: True if the user is has the required permissions on the resources</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">operator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">all</span><span class="p">,</span> <span class="nb">any</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The operator must be all or any&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Normalise to ids</span>
+    <span class="n">roles</span> <span class="o">=</span> <span class="p">{</span><span class="n">role</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">role</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">role</span><span class="p">)</span> <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="c1"># This code snippet was originally used before the utility functions were changed</span>
+    <span class="c1"># into co-routines. It is elegant and efficient and left here for posterity and as</span>
+    <span class="c1"># an example of the logic that is performed in the code below, which unfortunately</span>
+    <span class="c1"># ended up being more verbose. - cobusc</span>
+    <span class="c1">#</span>
+    <span class="c1"># return operator(</span>
+    <span class="c1">#     # Any role can provide the permission.</span>
+    <span class="c1">#     any(role_has_permission(role, permission, resource, nocache) for role in roles)</span>
+    <span class="c1">#     for resource, permission in resource_permissions)</span>
+
+    <span class="k">for</span> <span class="n">resource</span><span class="p">,</span> <span class="n">permission</span> <span class="ow">in</span> <span class="n">resource_permissions</span><span class="p">:</span>
+        <span class="n">some_role_has_the_permission</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="n">role_has_permission</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">permission</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span><span class="p">):</span>
+                <span class="n">some_role_has_the_permission</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">break</span>  <span class="c1"># No need to look further</span>
+
+        <span class="c1"># Short-circuit conditions</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="nb">any</span> <span class="ow">and</span> <span class="n">some_role_has_the_permission</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="nb">all</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">some_role_has_the_permission</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># If none of the short-circuit conditions have been met, it means that</span>
+    <span class="c1"># all of the checks where True if the operator was all, or none of the checks</span>
+    <span class="c1"># were True if the operator is any.</span>
+    <span class="k">return</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="nb">all</span> <span class="k">else</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="user_has_permissions"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.user_has_permissions">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">user_has_permissions</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
+    <span class="n">user</span><span class="p">:</span> <span class="n">UserId</span><span class="p">,</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span>
+    <span class="n">resource_permissions</span><span class="p">:</span> <span class="n">ResourcePermissions</span><span class="p">,</span>
+    <span class="n">site</span><span class="p">:</span> <span class="n">SiteId</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">domain</span><span class="p">:</span> <span class="n">Domain</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether the specified user has any or all (as per the operator) of</span>
+<span class="sd">    the specified resource permissions.</span>
+<span class="sd">    To establish whether this is the case, we need to interrogate the roles</span>
+<span class="sd">    associated with the user. If any of the roles has the required</span>
+<span class="sd">    permission, the requirement is satisfied.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param user: The UUID of the user performing the action</span>
+<span class="sd">    :param operator: any or all</span>
+<span class="sd">    :param resource_permissions: The resource permissions required</span>
+<span class="sd">    :param site: The site from which the user is making the request</span>
+<span class="sd">    :param domain: The domain for which the user is making the request</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: True if the user is has the required permissions on the resources</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Either a site or domain needs to be provided, but not both.</span>
+    <span class="k">if</span> <span class="n">site</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">domain</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> \
+       <span class="n">site</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">domain</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Either a site or a domain needs to be provided&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">operator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">all</span><span class="p">,</span> <span class="nb">any</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The operator must be all or any&quot;</span><span class="p">)</span>
+
+    <span class="n">roles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_user_roles_for_site_or_domain</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">roles_have_permissions</span><span class="p">(</span>
+        <span class="n">request</span><span class="p">,</span> <span class="n">roles</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">resource_permissions</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_user_roles_for_site_or_domain"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.get_user_roles_for_site_or_domain">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_roles_for_site_or_domain</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserId</span><span class="p">,</span>
+    <span class="n">site</span><span class="p">:</span> <span class="n">SiteId</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="n">Domain</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the roles assigned to the user for the specified site or domain.</span>
+<span class="sd">    Either a site or a domain needs to be specified.</span>
+<span class="sd">    Bypassing the cache can have a significant performance and should only be</span>
+<span class="sd">    used in exceptional circumstances.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param user: The user</span>
+<span class="sd">    :param site: The site</span>
+<span class="sd">    :param domain: The domain</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: A list of roles ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Either a site or domain needs to be provided, but not both.</span>
+    <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">site</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">(</span><span class="n">domain</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Either a site or a domain needs to be provided&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">domain</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_user_roles_for_domain</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_user_roles_for_site</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="get_role_resource_permissions"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.get_role_resource_permissions">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_role_resource_permissions</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">Role</span><span class="p">,</span> <span class="n">resource</span><span class="p">:</span> <span class="n">Resource</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the permission granted on a resource for a specified role.</span>
+<span class="sd">    Bypassing the cache can have a significant performance and should only be</span>
+<span class="sd">    used in exceptional circumstances.</span>
+
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param role: The role</span>
+<span class="sd">    :param resource: The resource</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: A list of permission ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">role_id</span> <span class="o">=</span> <span class="n">role</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">role</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">role</span><span class="p">)</span>
+    <span class="n">resource_id</span> <span class="o">=</span> <span class="n">resource</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> \
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">resource_id_for</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{MKP_ROLE_RESOURCE_PERMISSION}</span><span class="s2">:</span><span class="si">{role_id}</span><span class="s2">:</span><span class="si">{resource_id}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+        <span class="n">role_resource_permissions</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">nocache</span> <span class="k">else</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">role_resource_permissions</span><span class="p">:</span>
+        <span class="c1"># The API call returns a List[RoleResourcePermission]</span>
+        <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+            <span class="n">role_resource_permissions</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span>
+                <span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">roleresourcepermission_list</span><span class="p">(</span>
+                <span class="n">role_id</span><span class="o">=</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="o">=</span><span class="n">resource_id</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Internally we use only the permission ids, i.e. List[int]</span>
+        <span class="n">role_resource_permissions</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">entry</span><span class="o">.</span><span class="n">permission_id</span> <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">role_resource_permissions</span>
+        <span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">role_resource_permissions</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="n">expire</span><span class="o">=</span><span class="n">CACHE_TIME</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">role_resource_permissions</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">role_resource_permissions</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">role_resource_permissions</span></div>
+
+
+<div class="viewcode-block" id="get_all_user_roles"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.get_all_user_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_all_user_roles</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserId</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns all the roles that a user has on all sites and</span>
+<span class="sd">    domains in the system. The result looks like this:</span>
+<span class="sd">    ```</span>
+<span class="sd">    {</span>
+<span class="sd">      &quot;d:1&quot;: [2, 4],</span>
+<span class="sd">      &quot;d:2&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;d:9&quot;: [2, 4],</span>
+<span class="sd">      &quot;d:11&quot;: [2, 4],</span>
+<span class="sd">      &quot;d:10&quot;: [2, 4],</span>
+<span class="sd">      &quot;d:3&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;d:6&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;d:4&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;d:5&quot;: [2, 3, 4, 6],</span>
+<span class="sd">      &quot;d:7&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;d:8&quot;: [2, 4, 6],</span>
+<span class="sd">      &quot;s:1&quot;: [2, 4, 5, 6]</span>
+<span class="sd">    }</span>
+<span class="sd">    ```</span>
+<span class="sd">    The dictionary keys consists of a type indicator (&quot;d&quot; for domains and &quot;s&quot;</span>
+<span class="sd">    for sites) and an id separated by a &quot;:&quot;.</span>
+<span class="sd">    Bypassing the cache can have a significant performance and should only be</span>
+<span class="sd">    used in exceptional circumstances.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param user: The user for which to get roles</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: A dictionary containing the roles assigned to the specified user on</span>
+<span class="sd">       the domains and sites in the system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{MKP_USER_ROLES}</span><span class="s2">:</span><span class="si">{user.hex}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+        <span class="n">user_roles</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">nocache</span> <span class="k">else</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">user_roles</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># The API returns an AllUserRoles object</span>
+        <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;operational_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get_all_user_roles</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">user_id</span> <span class="o">!=</span> <span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Invalid API response: </span><span class="si">{response.user_id}</span><span class="s2"> != </span><span class="si">{user.hex}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># We store the roles_map part of the response</span>
+        <span class="n">user_roles</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">roles_map</span>
+        <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
+            <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">user_roles</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="n">expire</span><span class="o">=</span><span class="n">CACHE_TIME</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">user_roles</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">user_roles</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;User: </span><span class="si">{user}</span><span class="s2"> Roles: </span><span class="si">{user_roles}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">user_roles</span></div>
+
+
+<div class="viewcode-block" id="get_user_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.get_user_roles_for_domain">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_roles_for_domain</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserId</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="n">Domain</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the roles that a user has for a specified domain.</span>
+<span class="sd">    Bypassing the cache can have a significant performance and should only be</span>
+<span class="sd">    used in exceptional circumstances.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param user: The user</span>
+<span class="sd">    :param domain: The site</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: A set of role ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">domain_id</span> <span class="o">=</span> <span class="n">domain</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">domain_id_for</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+
+    <span class="n">user_roles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_all_user_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="c1"># Look up the list of role ids associated with the domain key. Return an</span>
+    <span class="c1"># empty set of it does not exist.</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">user_roles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;d:</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[]))</span></div>
+
+
+<div class="viewcode-block" id="get_user_roles_for_site"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.utils.get_user_roles_for_site">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_roles_for_site</span><span class="p">(</span>
+    <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserId</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">SiteId</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Set</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the roles that a user has for a specified site.</span>
+<span class="sd">    Bypassing the cache can have a significant performance and should only be</span>
+<span class="sd">    used in exceptional circumstances.</span>
+<span class="sd">    :param request: The request associated with this call</span>
+<span class="sd">    :param user: The user</span>
+<span class="sd">    :param site: The site</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :return: A set of role ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">site_id</span> <span class="o">=</span> <span class="n">site</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">site</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">site_id_for</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+
+    <span class="n">user_roles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_all_user_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="c1"># Look up the list of role ids associated with the site key. Return an</span>
+    <span class="c1"># empty set of it does not exist.</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">user_roles</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;s:</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">[]))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

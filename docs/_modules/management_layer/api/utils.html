@@ -1,0 +1,294 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.api.utils &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.api.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.api.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Do not modify this file. It is generated from the Swagger specification.</span>
+
+<span class="sd">If you need to tweak the functionality in this file, you can replace it</span>
+<span class="sd">with your own.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">base64</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">jsonschema</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="k">import</span> <span class="n">HTTPBadRequest</span><span class="p">,</span> <span class="n">HTTPUnauthorized</span>
+
+
+<span class="n">_LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="body_to_dict"><a class="viewcode-back" href="../../../management_layer.api.html#management_layer.api.utils.body_to_dict">[docs]</a><span class="k">def</span> <span class="nf">body_to_dict</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="c1"># type: (str, Dict) -&gt; Dict</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    :param body: The body content</span>
+<span class="sd">    :param schema: The expected JSONSchema</span>
+<span class="sd">    :return: A dictionary containing the parsed body</span>
+<span class="sd">    :raises SuspiciousOperation: If the body is not in JSON format, or does not</span>
+<span class="sd">       conform to the specified schema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="c1"># The SuspiciousOperation exception will result in an</span>
+        <span class="c1"># HttpResponseBadRequest response.</span>
+        <span class="k">raise</span> <span class="n">HTTPBadRequest</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="login_required_no_redirect"><a class="viewcode-back" href="../../../management_layer.api.html#management_layer.api.utils.login_required_no_redirect">[docs]</a><span class="k">def</span> <span class="nf">login_required_no_redirect</span><span class="p">(</span><span class="n">view_func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function that returns an HTTP 401 response if the user making the</span>
+<span class="sd">    request is not logged in, or did not provide basic HTTP authentication in</span>
+<span class="sd">    the request.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">view_func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Hack for now</span>
+        <span class="k">return</span> <span class="n">view_func</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1">#if request.user.is_authenticated:</span>
+        <span class="c1">#    return view_func(request, *args, **kwargs)</span>
+
+        <span class="c1">#if &quot;HTTP_AUTHORIZATION&quot; in request.META:</span>
+        <span class="c1">#    auth = request.META[&quot;HTTP_AUTHORIZATION&quot;].split()</span>
+        <span class="c1">#    if len(auth) == 2:</span>
+        <span class="c1">#        # NOTE: We are only support basic authentication for now.</span>
+        <span class="c1">#        if auth[0].lower() == &quot;basic&quot;:</span>
+        <span class="c1">#            uname, passwd = base64.b64decode(auth[1]).split(&quot;:&quot;)</span>
+        <span class="c1">#            user = authenticate(username=uname, password=passwd)</span>
+        <span class="c1">#            if user and user.is_active:</span>
+        <span class="c1">#                login(request, user)</span>
+        <span class="c1">#                request.user = user</span>
+        <span class="c1">#                return view_func(request, *args, **kwargs)</span>
+
+        <span class="c1"># return HttpResponse(&quot;Unauthorized&quot;, status=401)</span>
+        <span class="c1">#raise HTTPUnauthorized</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+<div class="viewcode-block" id="check_uuid_format"><a class="viewcode-back" href="../../../management_layer.api.html#management_layer.api.utils.check_uuid_format">[docs]</a><span class="nd">@jsonschema</span><span class="o">.</span><span class="n">FormatChecker</span><span class="o">.</span><span class="n">cls_checks</span><span class="p">(</span><span class="s2">&quot;uuid&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">check_uuid_format</span><span class="p">(</span><span class="n">instance</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="c1"># The instance of the format checker must be created after</span>
+<span class="c1"># the UUID format checker was registered.</span>
+<span class="n">_FORMAT_CHECKER</span> <span class="o">=</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">FormatChecker</span><span class="p">()</span>
+
+<span class="c1"># Be explicit about which formats are supported. More information can be found here:</span>
+<span class="c1"># http://python-jsonschema.readthedocs.io/en/stable/validate/#jsonschema.FormatChecker</span>
+<span class="n">_LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;The following formats will be validated: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+             <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_FORMAT_CHECKER</span><span class="o">.</span><span class="n">checkers</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+
+<div class="viewcode-block" id="validate"><a class="viewcode-back" href="../../../management_layer.api.html#management_layer.api.utils.validate">[docs]</a><span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+    <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span>
+                        <span class="n">format_checker</span><span class="o">=</span><span class="n">_FORMAT_CHECKER</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

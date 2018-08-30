@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.tests.test_middleware &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../tests.html">management_layer.tests</a> &raquo;</li>
+        
+      <li>management_layer.tests.test_middleware</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.tests.test_middleware</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">jwt</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+<span class="kn">from</span> <span class="nn">aiohttp.test_utils</span> <span class="k">import</span> <span class="n">AioHTTPTestCase</span><span class="p">,</span> <span class="n">unittest_run_loop</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="k">import</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">management_layer</span> <span class="k">import</span> <span class="n">middleware</span>
+
+
+<div class="viewcode-block" id="AuthMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">AuthMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="AuthMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests. For the middleware</span>
+<span class="sd">        test we only need one end-point.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span>
+            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">,</span>
+            <span class="n">middlewares</span><span class="o">=</span><span class="p">[</span><span class="n">middleware</span><span class="o">.</span><span class="n">auth_middleware</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div>
+
+<div class="viewcode-block" id="AuthMiddlewareTest.setUp"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;iss&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ISSUER&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;bc36b436-1091-11e8-bc0f-0242ac120003&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;exp&quot;</span><span class="p">:</span> <span class="n">now</span> <span class="o">+</span> <span class="mi">600</span><span class="p">,</span>  <span class="c1"># Expire 5 minutes in the future</span>
+            <span class="s2">&quot;iat&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+            <span class="s2">&quot;auth_time&quot;</span><span class="p">:</span> <span class="n">now</span><span class="p">,</span>
+            <span class="s2">&quot;nonce&quot;</span><span class="p">:</span> <span class="s2">&quot;self.code.nonce&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;at_hash&quot;</span><span class="p">:</span> <span class="s2">&quot;QBW0o1FTo_zMzrMc7af94w&quot;</span>
+        <span class="p">}</span>
+        <span class="c1"># Public/private key pair for RS256 token generation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;&quot;-----BEGIN PUBLIC KEY-----</span>
+<span class="s2">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAymYAhxFTGy+hHkfkpYm3</span>
+<span class="s2">7A78JF9AvIebzpL5wF4T11h9lXJO09H1tiv+EYDj8xfj/UKZ1OjEQDi7AB7XHF9M</span>
+<span class="s2">cKaLl0Oms8DiGucbVzIt57Gi6C4000fDZ5nzL/XbxZtgm+eIoTKgTS7A7IjKYb35</span>
+<span class="s2">S7KKkn1HTLIz1Q/SrDGmlTG6+mJqTyhNjv01eWxKVbLf1J7glLgAnXrYjyz8w5Ga</span>
+<span class="s2">ALHo6r3kOY2TlqyvLg0ljAWPwObzRXj8xeLuIht7y4g8dKFAOeNSsxojzwEuvTao</span>
+<span class="s2">HaZTYFh3lvkK0HxqxzOlK1IvWiMcrnK+7uhmSHj+W23n2s92Aoqrx0nTa2zr/RUn</span>
+<span class="s2">GQIDAQAB</span>
+<span class="s2">-----END PUBLIC KEY-----</span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;&quot;-----BEGIN PRIVATE KEY-----</span>
+<span class="s2">MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDKZgCHEVMbL6Ee</span>
+<span class="s2">R+SlibfsDvwkX0C8h5vOkvnAXhPXWH2Vck7T0fW2K/4RgOPzF+P9QpnU6MRAOLsA</span>
+<span class="s2">HtccX0xwpouXQ6azwOIa5xtXMi3nsaLoLjTTR8NnmfMv9dvFm2Cb54ihMqBNLsDs</span>
+<span class="s2">iMphvflLsoqSfUdMsjPVD9KsMaaVMbr6YmpPKE2O/TV5bEpVst/UnuCUuACdetiP</span>
+<span class="s2">LPzDkZoAsejqveQ5jZOWrK8uDSWMBY/A5vNFePzF4u4iG3vLiDx0oUA541KzGiPP</span>
+<span class="s2">AS69NqgdplNgWHeW+QrQfGrHM6UrUi9aIxyucr7u6GZIeP5bbefaz3YCiqvHSdNr</span>
+<span class="s2">bOv9FScZAgMBAAECggEAA+NfwTiA+zW4B6fj6ZYytVM4Xs6BpN2KDbbfG2XzRaDK</span>
+<span class="s2">kNNoVkNjUAOaVuW9+06LL7NW1zM9iepNFVyCT2Y5RrS8W8SN8EgVT+T+rnclUJ0l</span>
+<span class="s2">/wXcN+7Z/ySC+nnjpfEtMvGIu2gIklMCm8io8qW+o0ijxtqnQv7tZftu1aYCiD0q</span>
+<span class="s2">ll13kQqodyH5Y4Yz+ZRDp09jPWOSaF7/9YtaaSoCN7TMBjp0nxecvLhKCQZsXy4t</span>
+<span class="s2">RbniYmBt41EBS+TQfbbHoGTCtENIXShsx21Uw7UqiIzOZPnd90EBWtlVc4yT6A5J</span>
+<span class="s2">3QFh394ZZceM+ISSqxDzZD9DxvSPEz0gUjTaDN1DsQKBgQDlwT7Zed2dwcdMVikq</span>
+<span class="s2">cdBhVsE6RhMRmRaKMnwp2kq6O6zYRbRZIDuYLgO2zVk0bBDevf2P6WtBuwBESdO6</span>
+<span class="s2">pBngmgOdp5oZnLuk9WyX7L6UKHJ+NQ7LBvAawxD/uplpvW6DvabpyAZN4EiU6Snb</span>
+<span class="s2">xa+EeFI3f++JCg9Ih5lIMcTQFQKBgQDhhMTTOHlZ1UExBHAp5d6VWhH/nfvMqjsq</span>
+<span class="s2">Qs206mldFSGWOzR6UGB0H3QnFMPsu2Vza5kMR1nthYTNCuNuff9Eo27ZD4suBIS8</span>
+<span class="s2">SZid7FcWqK3Yd3xRCW6va9SvZNgoL9UL7slJn3b2EELxsFRiTW7+fWZDJGSirbv0</span>
+<span class="s2">JnxbQs+39QKBgC2sMLZCx49oyhmetyg839O5z0eqTngdGqH2T0ByqJBE9KM5mBRv</span>
+<span class="s2">l+k0nIBmaelF4kSlOBa3rB6w8eihVHmxzYMcmsNoYfXddl/geenpoikJsVjtazdo</span>
+<span class="s2">9aocRPDRQ1YF1kZSGTA4Fyi8ATG4+B08Oxv2X0GxKQjw+wDME+iKHDnRAoGAFjVz</span>
+<span class="s2">BLINEVG1B9S+DwI6N08VcqzmPTOOfAz0IRrsoWQRWLAf7OO5e/YVBDxBRzD1Prab</span>
+<span class="s2">7d+g9YkumNq3pwv1dZb6tZmYRUHgqII+6154/RxDcovhzEE3i0L9QQCXYO3E91Xe</span>
+<span class="s2">sMdpebYEQbTxunSRt7I1ver5liOx3Mtld79OoXkCgYEAi1y4hhoJU19G1I62EgXs</span>
+<span class="s2">n8k0BpJQ0C6BlOPrVmVwC+zV/ZMdxX4Nzm9eYzkaunlQQn49LKxV+dU/PFHfkDMz</span>
+<span class="s2">Hbsuzyl6p7rni/t0E3MHkuu23rRTS5wpPsQdus0H3U8bZwBbFaA0RNjvxKChDt91</span>
+<span class="s2">hc58gaeUuJtya8YVGT/bSXU=</span>
+<span class="s2">-----END PRIVATE KEY-----</span>
+<span class="s2">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="AuthMiddlewareTest.test_missing_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_missing_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_missing_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">middleware</span><span class="o">.</span><span class="n">MISSING_TOKEN_STATUS</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AuthMiddlewareTest.test_invalid_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_invalid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_invalid_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;garbage&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">middleware</span><span class="o">.</span><span class="n">INVALID_TOKEN_STATUS</span><span class="p">)</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">garbage&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">middleware</span><span class="o">.</span><span class="n">TOKEN_PREFIX</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">middleware</span><span class="o">.</span><span class="n">INVALID_TOKEN_STATUS</span><span class="p">)</span>
+
+        <span class="c1"># Generate a valid token, but fiddle with the expected values</span>
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="s2">&quot;somekey&quot;</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ALGORITHM&quot;</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># IMPORTANT: Convert token to UTF-8 before embedding in header</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_token</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">401</span><span class="p">)</span>
+
+        <span class="c1"># Fiddle with the audience</span>
+        <span class="n">tweaked_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">tweaked_data</span><span class="p">[</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;someone_else&quot;</span>
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">tweaked_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">],</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ALGORITHM&quot;</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># IMPORTANT: Convert token to UTF-8 before embedding in header</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_token</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">401</span><span class="p">)</span>
+
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="n">tweaked_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kid&quot;</span><span class="p">:</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">}</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># IMPORTANT: Convert token to UTF-8 before embedding in header</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                            <span class="n">_keys</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a_test_key&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;public_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span><span class="p">}}):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_token</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">401</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AuthMiddlewareTest.test_valid_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_valid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_valid_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">],</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_ALGORITHM&quot;</span><span class="p">],</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># IMPORTANT: Convert token to UTF-8 before embedding in header</span>
+
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_token</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+
+        <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+            <span class="n">payload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="p">,</span>
+            <span class="n">algorithm</span><span class="o">=</span><span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kid&quot;</span><span class="p">:</span> <span class="s2">&quot;a_test_key&quot;</span><span class="p">}</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># IMPORTANT: Convert token to UTF-8 before embedding in header</span>
+
+        <span class="k">with</span> <span class="n">patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                            <span class="n">_keys</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;a_test_key&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;public_key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_key</span><span class="p">}}):</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+                <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;bearer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">id_token</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SentryMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.SentryMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">SentryMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="SentryMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.SentryMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests. For the middleware</span>
+<span class="sd">        test we only need one end-point.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="c1"># Always raise an exception</span>
+            <span class="k">raise</span> <span class="ne">Exception</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span>
+            <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">,</span>
+            <span class="n">middlewares</span><span class="o">=</span><span class="p">[</span><span class="n">middleware</span><span class="o">.</span><span class="n">sentry_middleware</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

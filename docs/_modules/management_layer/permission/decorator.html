@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.permission.decorator &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.permission.decorator</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.permission.decorator</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The permission module exposes a decorator that can be used to protect</span>
+<span class="sd">function calls by specifying the permissions required to execute the function.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">wraps</span>
+
+<span class="kn">from</span> <span class="nn">management_layer.constants</span> <span class="k">import</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">,</span> <span class="n">PORTAL_CONTEXT_HEADER</span>
+<span class="kn">from</span> <span class="nn">management_layer.exceptions</span> <span class="k">import</span> <span class="n">JSONForbidden</span><span class="p">,</span> <span class="n">JSONBadRequest</span>
+<span class="kn">from</span> <span class="nn">management_layer.permission.utils</span> <span class="k">import</span> <span class="n">Operator</span><span class="p">,</span> <span class="n">ResourcePermissions</span>
+<span class="kn">from</span> <span class="nn">management_layer.mappings</span> <span class="k">import</span> <span class="n">Mappings</span>
+<span class="kn">from</span> <span class="nn">management_layer.permission</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">management_layer.settings</span> <span class="k">import</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="require_permissions"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.decorator.require_permissions">[docs]</a><span class="k">def</span> <span class="nf">require_permissions</span><span class="p">(</span>
+    <span class="n">operator</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span>
+    <span class="n">resource_permissions</span><span class="p">:</span> <span class="n">ResourcePermissions</span><span class="p">,</span>
+    <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">request_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">target_user_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">allow_for_management_portal</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used as a decorator to restrict functions by specifying</span>
+<span class="sd">    the permissions that a user requires to perform the action, e.g.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:foo&quot;, &quot;write&quot;)])</span>
+<span class="sd">    @require_permissions(any, [(&quot;urn:ge:test:foo&quot;, &quot;read&quot;),</span>
+<span class="sd">                               (&quot;urn:ge:test:bar&quot;, &quot;read&quot;])</span>
+<span class="sd">    def doSomething(request, arg1, arg2):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+<span class="sd">    As can be seen from the example above, the decorator can be stacked.</span>
+<span class="sd">    Note, however, that for performance reasons the least amount of</span>
+<span class="sd">    decorators is preferred.</span>
+<span class="sd">    ```</span>
+<span class="sd">    # Logically correct, but suboptimal performance</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:foo&quot;, &quot;write&quot;)])</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:bar&quot;, &quot;write&quot;)])</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:baz&quot;, &quot;write&quot;)])</span>
+<span class="sd">    def badExample(request, arg1, arg2):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    # Logically equivalent to the decorators of example above and more efficient</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:foo&quot;, &quot;write&quot;),</span>
+<span class="sd">                               (&quot;urn:ge:test:bar&quot;, &quot;write&quot;),</span>
+<span class="sd">                               (&quot;urn:ge:test:baz&quot;, &quot;write&quot;)])</span>
+<span class="sd">    def goodExample(request, arg1, arg2):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+<span class="sd">    This function requires the the user who made the request as well as the</span>
+<span class="sd">    site from which the request originated (or is made on behalf of) in order to</span>
+<span class="sd">    look up roles associated with the user. The user and site UUID values are read from</span>
+<span class="sd">    the token associated with the request field passed to the decorated function.</span>
+<span class="sd">    By default we use  the first argument as the request field. This can be changed in</span>
+<span class="sd">    the decorator, e.g.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:baz&quot;, &quot;write&quot;)],</span>
+<span class="sd">                         request_field=2)</span>
+<span class="sd">    def example1(arg1, arg2, request):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:baz&quot;, &quot;write&quot;)],</span>
+<span class="sd">                         request_field=&quot;request&quot;)  # &quot;request&quot; in kwargs</span>
+<span class="sd">    def example2(arg1, **kwargs):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    IMPORTANT: This decorator can be applied to both coroutines and normal functions AND it</span>
+<span class="sd">    always changes the decorated function into a coroutine, meaning it must be called using `await`:</span>
+<span class="sd">    ```</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:test:foo&quot;, &quot;write&quot;)])</span>
+<span class="sd">    def doSomething(request):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    # Call the function</span>
+<span class="sd">    result = await doSomething(request)  # Decorator change function to coroutine</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    IMPORTANT: When a function call relates to a particular user, the user does not explicitly</span>
+<span class="sd">    require permissions on that resource for it to be allowed. A user implicitly has access to</span>
+<span class="sd">    anything directly related to his profile.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:user&quot;, &quot;read&quot;)], target_user_field=1)</span>
+<span class="sd">    def read_user_data(request, user_id):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+<span class="sd">    In the example above, if the user specified by the token in the request is the same user</span>
+<span class="sd">    as the one identified by the function argument &quot;user_id&quot;, then the call is allowed.</span>
+
+<span class="sd">    IMPORTANT: The Management Portal may make requests on behalf of the other sites.</span>
+<span class="sd">    To facilitate this, we look at the X-GE-Portal-Context header in the request:</span>
+<span class="sd">     * If the header is not present, the context to use is the &quot;audience&quot; of the requesting token.</span>
+<span class="sd">     * If the header is present and the &quot;audience&quot; of the requesting token is not the Management</span>
+<span class="sd">       Portal, then return Forbidden.</span>
+<span class="sd">     * If the header is present and the &quot;audience&quot; of the the requesting token is the Management</span>
+<span class="sd">       Portal, then use the context specified to look up the user&#39;s permissions. (If the specified</span>
+<span class="sd">       context does not exist, return BadRequest).</span>
+
+<span class="sd">    IMPORTANT: The Management Portal needs to be able to perform certain calls (list sites and</span>
+<span class="sd">    domains, for instance) even if the user does not have explicit permissions to do this.</span>
+<span class="sd">    For API calls like these, use the `allow_for_manangement_portal` flag, e.g.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @require_permissions(all, [(&quot;urn:ge:access_control:domain&quot;, &quot;list&quot;)],</span>
+<span class="sd">                         allow_for_management_portal=True)</span>
+<span class="sd">    def domain_list(request, **kwargs):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    :param operator: any or all</span>
+<span class="sd">    :param resource_permissions: The resource permissions required</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :param request_field: An integer or string identifying either the positional</span>
+<span class="sd">        argument or the name of the keyword argument identifying the request parameter.</span>
+<span class="sd">    :param target_user_field: An integer or string identifying either the positional</span>
+<span class="sd">        argument or the name of the keyword argument identifying the target user parameter.</span>
+<span class="sd">    :param allow_for_management_portal: A boolean flag indicating whether access is implied when the</span>
+<span class="sd">        request is made by the management portal</span>
+<span class="sd">    :raises: Forbidden if the user does not have the required permissions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">operator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">any</span><span class="p">,</span> <span class="nb">all</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The operator must be any or all&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :param args: A list of positional arguments</span>
+<span class="sd">            :param kwargs: A dictionary of keyword arguments</span>
+<span class="sd">            :return: Whatever the wrapped function</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Extract the request from the function arguments</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">request_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span> <span class="o">=</span> <span class="n">_get_user_and_site</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+            <span class="c1"># Start by checking if we should allow the call if it was made from the</span>
+            <span class="c1"># Management Portal and whether the call was in fact made by the Management Portal.</span>
+            <span class="n">allowed</span> <span class="o">=</span> <span class="n">allow_for_management_portal</span> <span class="ow">and</span> \
+                      <span class="n">request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+
+            <span class="c1"># If the target user field is specified and the target user is the user</span>
+            <span class="c1"># that is making the request, then we allow the function call.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed</span> <span class="ow">and</span> <span class="n">target_user_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># For some calls the specified field may be optional</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">target_user_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">target_user_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                    <span class="c1"># We cast the values to strings when comparing, to that both strings and UUIDs</span>
+                    <span class="c1"># can be used.</span>
+                    <span class="n">allowed</span> <span class="o">=</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">target_user_id</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+            <span class="c1"># Check if it is the Management Portal making the request on behalf of another site.</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="n">context</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">context</span><span class="p">:</span>
+                    <span class="c1"># Only the Management Portal is allowed to use this header.</span>
+                    <span class="k">if</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">JSONForbidden</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Forbidden&quot;</span><span class="p">)</span>
+
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">context_type</span><span class="p">,</span> <span class="n">context_id</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                        <span class="n">context_id</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">context_id</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">JSONBadRequest</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid context header value&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">context_type</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                        <span class="c1"># See if the user has the required permissions on the specified domain</span>
+                        <span class="n">allowed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+                            <span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">resource_permissions</span><span class="p">,</span>
+                            <span class="n">domain</span><span class="o">=</span><span class="n">context_id</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span>
+                        <span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">context_type</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                        <span class="c1"># See if the user has the required permissions on the specified site</span>
+                        <span class="n">allowed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+                            <span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">resource_permissions</span><span class="p">,</span>
+                            <span class="n">site</span><span class="o">=</span><span class="n">context_id</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">JSONBadRequest</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid context header value&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Permissions will only be checked if allowed is not already true.</span>
+            <span class="n">allowed</span> <span class="o">=</span> <span class="n">allowed</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+                <span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">resource_permissions</span><span class="p">,</span>
+                <span class="n">site</span><span class="o">=</span><span class="n">site_id</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="n">nocache</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">allowed</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">JSONForbidden</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s2">&quot;Forbidden&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapped_f</span>
+
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<div class="viewcode-block" id="requester_has_role"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.decorator.requester_has_role">[docs]</a><span class="k">def</span> <span class="nf">requester_has_role</span><span class="p">(</span>
+    <span class="n">request_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">body_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">target_user_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">target_invitation_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">role_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">domain_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">site_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used as a decorator to protect functions that add and remove roles on</span>
+<span class="sd">    domains and sites to users, e.g.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @requester_has_role()</span>
+<span class="sd">    def usersiterole_create(request, body, **kwargs):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+<span class="sd">    The body must contain the user_id of the recipient, the role_id of the role that must be</span>
+<span class="sd">    assigned and the site_id of the site for which the user will must get the role.</span>
+<span class="sd">    ```</span>
+<span class="sd">    @requester_has_role()</span>
+<span class="sd">    def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):</span>
+<span class="sd">        pass</span>
+<span class="sd">    ```</span>
+<span class="sd">    The user making the request is inferred from the token passed with the request.</span>
+
+<span class="sd">    IMPORTANT: This decorator can be applied to both coroutines and normal functions AND it</span>
+<span class="sd">    always changes the decorated function into a coroutine, meaning it must be called using `await`:</span>
+<span class="sd">    ```</span>
+<span class="sd">    @requester_has_role()</span>
+<span class="sd">    def doSomething(request, body):</span>
+<span class="sd">        pass</span>
+
+<span class="sd">    # Call the function</span>
+<span class="sd">    result = await doSomething(request, body)  # Decorator change function to coroutine</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    :param request_field: An integer or string identifying either the positional</span>
+<span class="sd">        argument or the name of the keyword argument identifying the request parameter.</span>
+<span class="sd">    :param body_field: An integer or string identifying either the positional</span>
+<span class="sd">        argument or the name of the keyword argument identifying the body parameter. The</span>
+<span class="sd">        body parameter is a dictionary that can contain a user_id, role_id and either a</span>
+<span class="sd">        site_id or domain_id, depending in the call.</span>
+<span class="sd">    :param target_user_id_field: An integer or string identifying either the positional argument</span>
+<span class="sd">        or the name of the keyword argument identifying the user_id field of the target user,</span>
+<span class="sd">        i.e. the user for which a role must be set or removed.</span>
+<span class="sd">    :param target_invitation_id_field: An integer or string identifying either the positional</span>
+<span class="sd">        argument or the name of the keyword argument identifying the invitation_id field of the</span>
+<span class="sd">        target invitation, i.e. the invitation for which a role must be set or removed.</span>
+<span class="sd">    :param role_id_field: An integer or string identifying either the positional argument</span>
+<span class="sd">        or the name of the keyword argument identifying the role_id field.</span>
+<span class="sd">    :param domain_id_field: An integer or string identifying either the positional argument</span>
+<span class="sd">        or the name of the keyword argument identifying the domain_id field.</span>
+<span class="sd">    :param site_id_field: An integer or string identifying either the positional argument</span>
+<span class="sd">        or the name of the keyword argument identifying the site_id field.</span>
+<span class="sd">    :param nocache: Bypass the cache if True</span>
+<span class="sd">    :raises: Forbidden if the user does not have the role that is being invoked or revoked.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            :param args: A list of positional arguments</span>
+<span class="sd">            :param kwargs: A dictionary of keyword arguments</span>
+<span class="sd">            :return: Whatever the wrapped function</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Extract the request from the function arguments</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">request_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="n">user_id</span><span class="p">,</span> <span class="n">token_site_id</span> <span class="o">=</span> <span class="n">_get_user_and_site</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+            <span class="c1"># The decorator need to get the values for the following variables from the</span>
+            <span class="c1"># decorated function.</span>
+            <span class="n">role_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">target_user_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">target_invitation_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">domain_id</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">site_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">body_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">body</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">body_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="c1"># When body_field is specified, the xxx_field arguments must be the names of the</span>
+                <span class="c1"># fields in the body dictionary or None, in which case the defaults will be used.</span>
+                <span class="n">role_id</span> <span class="o">=</span> <span class="n">body</span><span class="p">[</span><span class="n">role_id_field</span> <span class="ow">or</span> <span class="s2">&quot;role_id&quot;</span><span class="p">]</span>
+                <span class="n">target_user_id</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target_user_id_field</span> <span class="ow">or</span> <span class="s2">&quot;user_id&quot;</span><span class="p">)</span>
+                <span class="n">target_invitation_id</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target_invitation_id</span> <span class="ow">or</span> <span class="s2">&quot;invitation_id&quot;</span><span class="p">)</span>
+                <span class="c1"># We expect either a domain_id or a site_id to be provided</span>
+                <span class="n">domain_id</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">domain_id_field</span> <span class="ow">or</span> <span class="s2">&quot;domain_id&quot;</span><span class="p">)</span>
+                <span class="n">site_id</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">site_id_field</span> <span class="ow">or</span> <span class="s2">&quot;site_id&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">domain_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">site_id</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> \
+                        <span class="n">domain_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">site_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Either a domain_id or site_id needs to exist in the body&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># If the body_field is not specified, the rest of the arguments are considered to be</span>
+                <span class="c1"># positional arguments.</span>
+                <span class="n">role_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">role_id_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">domain_id_field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">site_id_field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> \
+                        <span class="n">domain_id_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">site_id_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Either a domain_id_field or site_id_field needs to defined&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">domain_id_field</span><span class="p">:</span>
+                    <span class="n">domain_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">domain_id_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">site_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span><span class="n">site_id_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+
+                <span class="c1"># Extract the user_id or invitation_id for which a role must be a assigned/revoked</span>
+                <span class="k">if</span> <span class="n">target_user_id_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">target_user_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span>
+                        <span class="n">target_user_id_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">target_invitation_id</span> <span class="o">=</span> <span class="n">_get_value_from_args_or_kwargs</span><span class="p">(</span>
+                        <span class="n">target_invitation_id_field</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>
+                    <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">domain_id</span><span class="p">:</span>
+                <span class="n">user_roles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_user_roles_for_domain</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span>
+                                                                   <span class="n">nocache</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Use site_id</span>
+                <span class="n">user_roles</span> <span class="o">=</span> <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_user_roles_for_site</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+
+            <span class="c1"># If the user roles contains the one we want to assign or Tech Admin, we allow</span>
+            <span class="c1"># the call to proceed.</span>
+            <span class="k">if</span> <span class="n">user_roles</span><span class="o">.</span><span class="n">intersection</span><span class="p">([</span><span class="n">role_id</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)]):</span>
+                <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="k">await</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">target_user_id_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">log_message</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;User </span><span class="si">{user_id}</span><span class="s2"> cannot assign role {Mappings.role_label_for(role_id)}&quot;</span> \
+                              <span class="n">f</span><span class="s2">&quot; to target user </span><span class="si">{target_user_id}</span><span class="s2"> on &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log_message</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;User </span><span class="si">{user_id}</span><span class="s2"> cannot assign role {Mappings.role_label_for(role_id)}&quot;</span> \
+                              <span class="n">f</span><span class="s2">&quot; to target invitation </span><span class="si">{target_invitation_id}</span><span class="s2"> on &quot;</span>
+
+            <span class="k">if</span> <span class="n">domain_id</span><span class="p">:</span>
+                <span class="n">log_message</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;domain {Mappings.domain_name_for(domain_id)} &quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log_message</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;site {Mappings.site_name_for(site_id)} &quot;</span>
+
+            <span class="n">log_message</span> <span class="o">+=</span> <span class="n">f</span><span class="s2">&quot;because it does not have the role or </span><span class="si">{TECH_ADMIN_ROLE_LABEL}</span><span class="s2"> itself.&quot;</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">log_message</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">JSONForbidden</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">log_message</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">wrapped_f</span>
+
+    <span class="k">return</span> <span class="n">wrap</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_value_from_args_or_kwargs</span><span class="p">(</span>
+    <span class="n">argument_identifier</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">args</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Any</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param argument_identifier: The index or name of a function argument</span>
+<span class="sd">    :param args: A list of positional arguments</span>
+<span class="sd">    :param kwargs: A dictionary of named arguments</span>
+<span class="sd">    :return: The value of the argument.</span>
+<span class="sd">    :raise KeyError: if the argument identified by argument_identifier does not exist.</span>
+<span class="sd">    :raise RuntimeError: if the argument_identifier argument contains an unexpected value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">argument_identifier_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">argument_identifier</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">argument_identifier_type</span> <span class="ow">is</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">args</span><span class="p">[</span><span class="n">argument_identifier</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">argument_identifier_type</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">argument_identifier</span><span class="p">]</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Invalid value for argument identifier&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_user_and_site</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A request contains the JWT token payload from which we get</span>
+<span class="sd">    * the user id from the &quot;sub&quot; (subscriber) field</span>
+<span class="sd">    * the client id from the &quot;aud&quot; (audience) field</span>
+<span class="sd">    :param request: An HttpRequest</span>
+<span class="sd">    :return: A (user_id, site_id) tuple.</span>
+<span class="sd">    :raises: HTTPForbidden if the token&#39;s client id does not map to a site id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extract the user&#39;s UUID from the request</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;sub&quot;</span><span class="p">])</span>
+    <span class="c1"># Extract the client id from the request</span>
+    <span class="n">client_id</span> <span class="o">=</span> <span class="n">request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">site_id</span> <span class="o">=</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">site_id_for</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">JSONForbidden</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">f</span><span class="s2">&quot;No site linked to the client &#39;</span><span class="si">{client_id}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

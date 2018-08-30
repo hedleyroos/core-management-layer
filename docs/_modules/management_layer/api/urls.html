@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.api.urls &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.api.urls</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.api.urls</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Do not modify this file. It is generated from the Swagger specification.</span>
+
+<span class="sd">Routing module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">management_layer.api.views</span> <span class="k">as</span> <span class="nn">views</span>
+<span class="kn">import</span> <span class="nn">aiohttp_cors</span>
+
+<div class="viewcode-block" id="add_routes"><a class="viewcode-back" href="../../../management_layer.api.html#management_layer.api.urls.add_routes">[docs]</a><span class="k">def</span> <span class="nf">add_routes</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">with_ui</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/usersiteroles/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UsersiterolesUserIdSiteIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/usersiteroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Usersiteroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/usersitedata/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UsersitedataUserIdSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/usersitedata&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Usersitedata</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/users/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UsersUserId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Users</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/userdomainroles/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{domain_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">UserdomainrolesUserIdDomainIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/userdomainroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Userdomainroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/sites/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SitesSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/sites&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Sites</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/siteroles/</span><span class="si">{site_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SiterolesSiteIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/siteroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Siteroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/sitedataschemas/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">SitedataschemasSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/sitedataschemas&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Sitedataschemas</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/roles/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RolesRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/roles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Roles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/roleresourcepermissions/</span><span class="si">{role_id}</span><span class="s2">/</span><span class="si">{resource_id}</span><span class="s2">/</span><span class="si">{permission_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RoleresourcepermissionsRoleIdResourceIdPermissionId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/roleresourcepermissions&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Roleresourcepermissions</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/resources/</span><span class="si">{resource_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">ResourcesResourceId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Resources</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/request_user_deletion&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RequestUserDeletion</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/sites&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshSites</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/roles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshRoles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/resources&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshResources</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/permissions&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshPermissions</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/keys&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshKeys</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/domains&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshDomains</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/clients&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshClients</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/refresh/all&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">RefreshAll</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/permissions/</span><span class="si">{permission_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">PermissionsPermissionId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/permissions&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Permissions</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/organisations/</span><span class="si">{organisation_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OrganisationsOrganisationId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/organisations&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Organisations</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/users_with_roles_for_site/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUsersWithRolesForSiteSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/users_with_roles_for_domain/</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUsersWithRolesForDomainDomainId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/user_site_role_labels_aggregated/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUserSiteRoleLabelsAggregatedUserIdSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/user_site_permissions/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUserSitePermissionsUserIdSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/user_management_portal_permissions/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUserManagementPortalPermissionsUserId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/user_has_permissions/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUserHasPermissionsUserId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/user_domain_permissions/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsUserDomainPermissionsUserIdDomainId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/site_role_labels_aggregated/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsSiteRoleLabelsAggregatedSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/site_and_domain_roles/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsSiteAndDomainRolesSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/get_sites_under_domain/</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsGetSitesUnderDomainDomainId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/get_site_from_client_token_id/</span><span class="si">{client_token_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsGetSiteFromClientTokenIdClientTokenId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/domain_roles/</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsDomainRolesDomainId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ops/all_user_roles/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">OpsAllUserRolesUserId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitationsiteroles/</span><span class="si">{invitation_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">InvitationsiterolesInvitationIdSiteIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitationsiteroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Invitationsiteroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitations/</span><span class="si">{invitation_id}</span><span class="s2">/send&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">InvitationsInvitationIdSend</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitations/</span><span class="si">{invitation_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">InvitationsInvitationId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitations/purge/expired&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">InvitationsPurgeExpired</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitations&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Invitations</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitationdomainroles/</span><span class="si">{invitation_id}</span><span class="s2">/</span><span class="si">{domain_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">InvitationdomainrolesInvitationIdDomainIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/invitationdomainroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Invitationdomainroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/healthcheck&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Healthcheck</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/domains/</span><span class="si">{domain_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DomainsDomainId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/domains&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Domains</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/domainroles/</span><span class="si">{domain_id}</span><span class="s2">/</span><span class="si">{role_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DomainrolesDomainIdRoleId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/domainroles&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Domainroles</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/deletedusersites/</span><span class="si">{user_id}</span><span class="s2">/</span><span class="si">{site_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DeletedusersitesUserIdSiteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/deletedusersites&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Deletedusersites</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/deletedusers/</span><span class="si">{user_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">DeletedusersUserId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/deletedusers&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Deletedusers</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/countries/</span><span class="si">{country_code}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">CountriesCountryCode</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/countries&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Countries</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/clients/</span><span class="si">{client_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">ClientsClientId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/clients&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Clients</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/adminnotes/</span><span class="si">{admin_note_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">AdminnotesAdminNoteId</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/adminnotes&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">Adminnotes</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">with_ui</span><span class="p">:</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/the_specification&quot;</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">__SWAGGER_SPEC__</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_static</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;/ui&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;ui&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Configure default CORS settings.</span>
+    <span class="n">cors</span> <span class="o">=</span> <span class="n">aiohttp_cors</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">defaults</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="n">aiohttp_cors</span><span class="o">.</span><span class="n">ResourceOptions</span><span class="p">(</span>
+            <span class="n">allow_credentials</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">expose_headers</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+            <span class="n">allow_headers</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Configure CORS on all routes.</span>
+    <span class="k">for</span> <span class="n">route</span> <span class="ow">in</span> <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">routes</span><span class="p">():</span>
+        <span class="n">cors</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">route</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
