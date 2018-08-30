@@ -184,7 +184,7 @@
 <span class="n">TEST_DOMAIN_NAME_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TEST_DOMAINS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
 
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
                 <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span><span class="p">,</span>
                 <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">,</span>
                 <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">,</span>
@@ -194,7 +194,7 @@
 <span class="sd">    These tests exercise the functionality provided by the @require_permissions</span>
 <span class="sd">    decorator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span> <span class="o">=</span> <span class="mi">1</span>
@@ -205,7 +205,7 @@
             <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests</span>
 <span class="sd">        :return:</span>
@@ -217,7 +217,7 @@
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">app</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_target_user_implied_permission"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_target_user_implied_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_target_user_implied_permission"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_target_user_implied_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_target_user_implied_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -240,7 +240,7 @@
         <span class="c1"># Allow the call when the caller is also the target user.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">example_call_with_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)))</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_management_portal_allowed_permission"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_management_portal_allowed_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_management_portal_allowed_permission"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_management_portal_allowed_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_management_portal_allowed_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -265,7 +265,7 @@
         <span class="c1"># Allow the call when the call is made from the Management Portal</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">example_call</span><span class="p">(</span><span class="n">mocked_request_from_management_portal</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_name_and_docstring"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_name_and_docstring">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_name_and_docstring"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_name_and_docstring">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_name_and_docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name attribute and docstring of a decorated function should stay</span>
@@ -279,7 +279,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">simple</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;simple&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">simple</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="s2">&quot;This docstring is checked.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_empty_resource_permissions_lists"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_empty_resource_permissions_lists">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_empty_resource_permissions_lists"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_empty_resource_permissions_lists">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_empty_resource_permissions_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -315,7 +315,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="k">await</span> <span class="n">empty_any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">),</span>
                          <span class="s2">&quot;You must be a tech admin&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_positional_args"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_positional_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_positional_args"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_positional_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_positional_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -335,7 +335,7 @@
         <span class="n">mocked_function</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">,</span>
                                            <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_keyword_args"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_keyword_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_keyword_args"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_keyword_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_keyword_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -355,7 +355,7 @@
         <span class="n">mocked_function</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">,</span>
                                            <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_stacked_decorators"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_stacked_decorators">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_stacked_decorators"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_stacked_decorators">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_stacked_decorators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -381,7 +381,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">reverse_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_all"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_all">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_all"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_all">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
@@ -439,7 +439,7 @@
         <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_any"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_any">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_any"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_any">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
@@ -504,7 +504,7 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
             <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_combo"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_combo">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_combo"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_combo">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
@@ -570,7 +570,7 @@
         <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_context_header"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_context_header">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_context_header"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_context_header">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_context_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_site_function</span><span class="p">,</span> <span class="n">mocked_domain_function</span><span class="p">):</span>
@@ -679,7 +679,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
                 <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span><span class="p">,</span>
                 <span class="n">_sites</span><span class="o">=</span><span class="n">TEST_SITES</span><span class="p">,</span>
                 <span class="n">_site_name_to_id_map</span><span class="o">=</span><span class="n">TEST_SITE_NAME_TO_ID_MAP</span><span class="p">,</span>
@@ -694,7 +694,7 @@
 <span class="sd">    These tests exercise the functionality provided by the @require_permissions</span>
 <span class="sd">    decorator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span> <span class="o">=</span> <span class="mi">1</span>
@@ -705,7 +705,7 @@
             <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span>
         <span class="p">}</span></div>
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests</span>
 <span class="sd">        :return:</span>
@@ -717,7 +717,7 @@
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">app</span></div>
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_domain_use_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_domain</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -752,7 +752,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_site_use_case"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_site_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_site_use_case"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_site_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_site_use_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -851,7 +851,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_custom_fields_names_and_domain</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_domain</span><span class="p">):</span>
@@ -888,7 +888,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_custom_fields_names_and_site</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">):</span>
@@ -926,27 +926,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div></div>
 
 
-<div class="viewcode-block" id="TestUtils"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="TestUtils"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
                 <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">,</span>
                 <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">,</span>
                 <span class="n">_resource_urn_to_id_map</span><span class="o">=</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
 
-<div class="viewcode-block" id="TestUtils.setUp"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUtils.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span>
             <span class="n">spec</span><span class="o">=</span><span class="n">Request</span><span class="p">,</span>
             <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.tearDownAsync"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.tearDownAsync">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tearDownAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUtils.tearDownAsync"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.tearDownAsync">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tearDownAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDownAsync</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">,</span> <span class="s2">&quot;operational_api&quot;</span><span class="p">]:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="n">backend</span><span class="p">]</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">rest_client</span><span class="o">.</span><span class="n">pool_manager</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="TestUtils.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestUtils.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests</span>
 <span class="sd">        :return:</span>
@@ -962,7 +962,7 @@
 
         <span class="k">return</span> <span class="n">app</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_role_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_role_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
+<div class="viewcode-block" id="TestUtils.test_role_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_role_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
            <span class="s2">&quot;.AccessControlApi.roleresourcepermission_list&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_role_has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_roleresourcepermission_list</span><span class="p">):</span>
@@ -1033,7 +1033,7 @@
                     <span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">],</span> <span class="n">nocache</span><span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_roles_have_permissions"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_roles_have_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
+<div class="viewcode-block" id="TestUtils.test_roles_have_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_roles_have_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
            <span class="s2">&quot;.AccessControlApi.roleresourcepermission_list&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_roles_have_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_roleresourcepermission_list</span><span class="p">):</span>
@@ -1205,7 +1205,7 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_user_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_user_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="TestUtils.test_user_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_user_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
     <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
     <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_user_has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
@@ -1248,7 +1248,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span>
         <span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site_or_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site_or_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site_or_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site_or_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_site_or_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># We just test the validation performed by this function.</span>
         <span class="c1"># Other tests cover the lookups.</span>
@@ -1266,22 +1266,22 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_get_role_resource_permissions"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_get_role_resource_permissions">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestUtils.test_get_role_resource_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_role_resource_permissions">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_role_resource_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_get_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_get_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestUtils.test_get_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_all_user_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_site</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># TODO</span>
         <span class="k">pass</span></div></div>

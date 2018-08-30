@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.middleware module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.middleware module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.middleware module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.middleware.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.middleware">
+<span id="management-layer-middleware-module"></span><h1>management_layer.middleware module<a class="headerlink" href="#module-management_layer.middleware" title="Permalink to this headline">¶</a></h1>
+<p>The middleware module contains functionality that is common to most (if not all) requests.
+This module contains functions that performs
+* authentication and
+* publishing of errors to Sentry.</p>
+<dl class="docutils">
+<dt>Performing Authentication:</dt>
+<dd><p class="first">Authentication is implemented using JSON Web Tokens (JWT). These tokens form part
+of the OpenID Connect specification. We validation of these tokens is performed using
+the PyJWT library. Care should be taken when interpreting JWTs as most of the information
+is in clear-text and can easily be faked.
+1. It is important to check that the token signature is legitimate. Only then can the rest of
+the information in the token be trusted.
+2. Even when the rest of the information can be trusted, we still need to check that the token
+was issues for the correct audience (this application) and by the current issuer (the
+Authentication Service).</p>
+<p>In OIDC there are trusted and untrusted clients:
+* Trusted clients are able to store a secret where it will not be exposed. An example would be
+our Wagtail demo application.
+* Untrusted clients are not able to store a secret. Javascript applications would be an
+example of these.</p>
+<p>Because trusted clients can share a secret with the Authentication Service, the Authentication
+Service can use an HMAC-based algorithm (HS256) to sign the token. For untrusted clients, the
+Authentication Service uses a public/private key pair (RS256). The token is signed using the
+private key and can then be verified by another party using the public key, which is exposed
+by the Authentication Service at a well-known URL for obtaining a JSON Web Token Keyset
+(JWKS):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">core</span><span class="o">-</span><span class="n">authentication</span><span class="o">-</span><span class="n">service</span><span class="p">:</span><span class="mi">8000</span><span class="o">/</span><span class="n">openid</span><span class="o">/</span><span class="n">jwks</span>
+
+<span class="p">{</span>
+    <span class="n">keys</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="n">kty</span><span class="p">:</span> <span class="s2">&quot;RSA&quot;</span><span class="p">,</span>
+            <span class="n">alg</span><span class="p">:</span> <span class="s2">&quot;RS256&quot;</span><span class="p">,</span>
+            <span class="n">use</span><span class="p">:</span> <span class="s2">&quot;sig&quot;</span><span class="p">,</span>
+            <span class="n">kid</span><span class="p">:</span> <span class="s2">&quot;1cc97496f77201c711529bd6d0159cd3&quot;</span><span class="p">,</span>
+            <span class="n">n</span><span class="p">:</span> <span class="s2">&quot;tQ02VatIRGX2ZC0bu31lxNldo57E3bW8sh...&quot;</span><span class="p">,</span>
+            <span class="n">e</span><span class="p">:</span> <span class="s2">&quot;AQAB&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The Management Layer is slightly different from other applications which typically only
+supports a single type of token. The Management Layer needs to support both trusted and
+untrusted clients. When a token is received, we can look at the headers to determine the
+algorithm used to sign the token:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Unverified</span> <span class="n">headers</span> <span class="n">included</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">token</span> <span class="k">for</span> <span class="n">an</span> <span class="n">untrusted</span> <span class="n">client</span><span class="o">.</span>
+
+<span class="p">{</span>
+    <span class="s1">&#39;alg&#39;</span><span class="p">:</span> <span class="s1">&#39;RS256&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;kid&#39;</span><span class="p">:</span> <span class="s1">&#39;1cc97496f77201c711529bd6d0159cd3&#39;</span>
+<span class="p">}</span>
+
+<span class="n">Unverified</span> <span class="n">headers</span> <span class="n">included</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">token</span> <span class="k">for</span> <span class="n">a</span> <span class="n">trusted</span> <span class="n">client</span><span class="o">.</span>
+
+<span class="p">{</span>
+    <span class="s1">&#39;alg&#39;</span><span class="p">:</span> <span class="s1">&#39;HS256&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last">When the algorithm is “RS256” there will be a corresponding key id (kid) field, which can
+be used to look up the related key parameters (see JWKS above). The public key can be
+constructed from these parameters.</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="management_layer.middleware.auth_middleware">
+<code class="descclassname">management_layer.middleware.</code><code class="descname">auth_middleware</code><span class="sig-paren">(</span><em>request</em>, <em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/middleware.html#auth_middleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.middleware.auth_middleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="management_layer.middleware.metrics_middleware">
+<code class="descclassname">management_layer.middleware.</code><code class="descname">metrics_middleware</code><span class="sig-paren">(</span><em>request</em>, <em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/middleware.html#metrics_middleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.middleware.metrics_middleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="management_layer.middleware.sentry_middleware">
+<code class="descclassname">management_layer.middleware.</code><code class="descname">sentry_middleware</code><span class="sig-paren">(</span><em>request</em>, <em>handler</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/middleware.html#sentry_middleware"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.middleware.sentry_middleware" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -153,16 +153,16 @@
 <span class="kn">import</span> <span class="nn">user_data_store.rest</span>
 
 
-<div class="viewcode-block" id="ConnectionKey"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_utils.ConnectionKey">[docs]</a><span class="k">class</span> <span class="nc">ConnectionKey</span><span class="p">():</span>
+<div class="viewcode-block" id="ConnectionKey"><a class="viewcode-back" href="../../../management_layer.tests.test_utils.html#management_layer.tests.test_utils.ConnectionKey">[docs]</a><span class="k">class</span> <span class="nc">ConnectionKey</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">ssl</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl</span> <span class="o">=</span> <span class="n">ssl</span></div>
 
 
-<div class="viewcode-block" id="TestClientExceptionHandler"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_utils.TestClientExceptionHandler">[docs]</a><span class="k">class</span> <span class="nc">TestClientExceptionHandler</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClientExceptionHandler"><a class="viewcode-back" href="../../../management_layer.tests.test_utils.html#management_layer.tests.test_utils.TestClientExceptionHandler">[docs]</a><span class="k">class</span> <span class="nc">TestClientExceptionHandler</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
 
-<div class="viewcode-block" id="TestClientExceptionHandler.test_catch_api_client_errors"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_utils.TestClientExceptionHandler.test_catch_api_client_errors">[docs]</a>    <span class="k">def</span> <span class="nf">test_catch_api_client_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClientExceptionHandler.test_catch_api_client_errors"><a class="viewcode-back" href="../../../management_layer.tests.test_utils.html#management_layer.tests.test_utils.TestClientExceptionHandler.test_catch_api_client_errors">[docs]</a>    <span class="k">def</span> <span class="nf">test_catch_api_client_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONBadGateway</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="n">access_control</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span>
@@ -175,7 +175,7 @@
             <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="n">user_data_store</span><span class="o">.</span><span class="n">rest</span><span class="o">.</span><span class="n">ApiException</span></div>
 
-<div class="viewcode-block" id="TestClientExceptionHandler.test_connection_errors"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_utils.TestClientExceptionHandler.test_connection_errors">[docs]</a>    <span class="k">def</span> <span class="nf">test_connection_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestClientExceptionHandler.test_connection_errors"><a class="viewcode-back" href="../../../management_layer.tests.test_utils.html#management_layer.tests.test_utils.TestClientExceptionHandler.test_connection_errors">[docs]</a>    <span class="k">def</span> <span class="nf">test_connection_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONBadGateway</span><span class="p">):</span>
             <span class="k">with</span> <span class="n">client_exception_handler</span><span class="p">():</span>
                 <span class="k">raise</span> <span class="n">ClientConnectionError</span><span class="p">()</span>

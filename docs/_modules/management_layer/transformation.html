@@ -169,7 +169,7 @@
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Mapping"><a class="viewcode-back" href="../../management_layer.html#management_layer.transformation.Mapping">[docs]</a><span class="k">class</span> <span class="nc">Mapping</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Mapping"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Mapping">[docs]</a><span class="k">class</span> <span class="nc">Mapping</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class representing a mapping definition</span>
 
@@ -188,7 +188,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">conversion</span> <span class="o">=</span> <span class="n">conversion</span></div>
 
 
-<div class="viewcode-block" id="Transformation"><a class="viewcode-back" href="../../management_layer.html#management_layer.transformation.Transformation">[docs]</a><span class="k">class</span> <span class="nc">Transformation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Transformation"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Transformation">[docs]</a><span class="k">class</span> <span class="nc">Transformation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A transformation is a list of Mappings that can be applied to a dictionary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -212,7 +212,7 @@
             <span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">output_field</span> <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">]</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="Transformation.apply"><a class="viewcode-back" href="../../management_layer.html#management_layer.transformation.Transformation.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="Transformation.apply"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Transformation.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply this transformation to the specified</span>
 <span class="sd">        :param dictionary: The dictionary to transform</span>

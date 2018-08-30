@@ -147,12 +147,12 @@
 <span class="kn">from</span> <span class="nn">management_layer.transformation</span> <span class="k">import</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Transformation</span>
 
 
-<div class="viewcode-block" id="tomorrow"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.tomorrow">[docs]</a><span class="k">def</span> <span class="nf">tomorrow</span><span class="p">(</span><span class="n">today</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">date</span><span class="p">:</span>
+<div class="viewcode-block" id="tomorrow"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.tomorrow">[docs]</a><span class="k">def</span> <span class="nf">tomorrow</span><span class="p">(</span><span class="n">today</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">date</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">today</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TestTransformation"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation">[docs]</a><span class="k">class</span> <span class="nc">TestTransformation</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-<div class="viewcode-block" id="TestTransformation.setUpClass"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TestTransformation"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation">[docs]</a><span class="k">class</span> <span class="nc">TestTransformation</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTransformation.setUpClass"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">transformation</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">([</span>
             <span class="c1"># Copy key and value</span>
@@ -168,7 +168,7 @@
             <span class="c1"># Fields without mappings are not included in the result</span>
         <span class="p">])</span></div>
 
-<div class="viewcode-block" id="TestTransformation.test_transformations"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation.test_transformations">[docs]</a>    <span class="k">def</span> <span class="nf">test_transformations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTransformation.test_transformations"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation.test_transformations">[docs]</a>    <span class="k">def</span> <span class="nf">test_transformations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbatim&quot;</span><span class="p">:</span> <span class="s2">&quot;the same&quot;</span><span class="p">,</span>
             <span class="s2">&quot;old_name&quot;</span><span class="p">:</span> <span class="s2">&quot;getting a new name&quot;</span><span class="p">,</span>
@@ -186,14 +186,14 @@
         <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTransformation.test_bad_data"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation.test_bad_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_bad_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTransformation.test_bad_data"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation.test_bad_data">[docs]</a>    <span class="k">def</span> <span class="nf">test_bad_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">bad_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Name should be a string</span>
         <span class="p">}</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">transformation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">bad_data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TestTransformation.test_copy_fields"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation.test_copy_fields">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTransformation.test_copy_fields"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation.test_copy_fields">[docs]</a>    <span class="k">def</span> <span class="nf">test_copy_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;verbatim&quot;</span><span class="p">:</span> <span class="s2">&quot;the same&quot;</span><span class="p">,</span>
             <span class="s2">&quot;old_name&quot;</span><span class="p">:</span> <span class="s2">&quot;getting a new name&quot;</span><span class="p">,</span>
@@ -208,7 +208,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">copy_transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">data</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TestTransformation.test_duplicate_input_fields"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_transformation.TestTransformation.test_duplicate_input_fields">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_input_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TestTransformation.test_duplicate_input_fields"><a class="viewcode-back" href="../../../management_layer.tests.test_transformation.html#management_layer.tests.test_transformation.TestTransformation.test_duplicate_input_fields">[docs]</a>    <span class="k">def</span> <span class="nf">test_duplicate_input_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
             <span class="n">Transformation</span><span class="p">([</span>
                 <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">),</span>

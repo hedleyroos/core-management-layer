@@ -161,7 +161,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="require_permissions"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.decorator.require_permissions">[docs]</a><span class="k">def</span> <span class="nf">require_permissions</span><span class="p">(</span>
+<div class="viewcode-block" id="require_permissions"><a class="viewcode-back" href="../../../management_layer.permission.decorator.html#management_layer.permission.decorator.require_permissions">[docs]</a><span class="k">def</span> <span class="nf">require_permissions</span><span class="p">(</span>
     <span class="n">operator</span><span class="p">:</span> <span class="n">Operator</span><span class="p">,</span>
     <span class="n">resource_permissions</span><span class="p">:</span> <span class="n">ResourcePermissions</span><span class="p">,</span>
     <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -348,7 +348,7 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="requester_has_role"><a class="viewcode-back" href="../../../management_layer.permission.html#management_layer.permission.decorator.requester_has_role">[docs]</a><span class="k">def</span> <span class="nf">requester_has_role</span><span class="p">(</span>
+<div class="viewcode-block" id="requester_has_role"><a class="viewcode-back" href="../../../management_layer.permission.decorator.html#management_layer.permission.decorator.requester_has_role">[docs]</a><span class="k">def</span> <span class="nf">requester_has_role</span><span class="p">(</span>
     <span class="n">request_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">body_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">target_user_id_field</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

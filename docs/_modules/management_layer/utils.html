@@ -167,7 +167,7 @@
 <span class="n">TESTING_USER_ID</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="timeit"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.timeit">[docs]</a><span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+<div class="viewcode-block" id="timeit"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.timeit">[docs]</a><span class="k">def</span> <span class="nf">timeit</span><span class="p">(</span><span class="n">log_level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">wrapped_f</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -187,7 +187,7 @@
     <span class="k">return</span> <span class="n">wrap</span></div>
 
 
-<div class="viewcode-block" id="client_exception_handler"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.client_exception_handler">[docs]</a><span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="client_exception_handler"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.client_exception_handler">[docs]</a><span class="nd">@contextmanager</span>
 <span class="k">def</span> <span class="nf">client_exception_handler</span><span class="p">():</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -243,7 +243,7 @@
             <span class="p">})</span></div>
 
 
-<div class="viewcode-block" id="transform_users_with_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.transform_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">transform_users_with_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="transform_users_with_roles"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.transform_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">transform_users_with_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transform a UserWithRole list from the access_control to have id, usernames,</span>
 <span class="sd">    and role labels for the management layer UserWithRoles schema.</span>
@@ -280,7 +280,7 @@
     <span class="k">return</span> <span class="n">users_with_roles</span></div>
 
 
-<div class="viewcode-block" id="get_until_complete"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.get_until_complete">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_until_complete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="get_until_complete"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.get_until_complete">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">get_until_complete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">api</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform continuous get calls until all the requested data has been obtained.</span>
 <span class="sd">    :param request: The current request object.</span>
@@ -301,7 +301,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 
-<div class="viewcode-block" id="return_users_with_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users_with_roles</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_users_with_roles"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.return_users_with_roles">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users_with_roles</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some test functions require a list of user_ids and their role_ids, this is what this</span>
 <span class="sd">    function will return.</span>
@@ -315,7 +315,7 @@
     <span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="return_users"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_users">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_users"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.return_users">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_users</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some test functions require to obtain a list of users with at least</span>
 <span class="sd">    an id and username that is what this will do.</span>
@@ -373,21 +373,21 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="return_sites"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_sites">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_sites</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_sites"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.return_sites">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_sites</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some tests require a test site list to be returned</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">Site</span><span class="p">(</span><span class="o">**</span><span class="n">TEST_SITE</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="return_clients"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_clients">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_clients</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_clients"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.return_clients">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_clients</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some tests require a test client list to be returned</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">Client</span><span class="p">(</span><span class="o">**</span><span class="n">TEST_CLIENT</span><span class="p">)]</span></div>
 
 
-<div class="viewcode-block" id="return_user"><a class="viewcode-back" href="../../management_layer.html#management_layer.utils.return_user">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_user</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_user"><a class="viewcode-back" href="../../management_layer.utils.html#management_layer.utils.return_user">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_user</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Some tests require a test user to be returned</span>
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -234,7 +234,7 @@
               <span class="p">[</span><span class="s2">&quot;path_prefix&quot;</span><span class="p">,</span> <span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="metrics_middleware"><a class="viewcode-back" href="../../management_layer.html#management_layer.middleware.metrics_middleware">[docs]</a><span class="nd">@middleware</span>
+<div class="viewcode-block" id="metrics_middleware"><a class="viewcode-back" href="../../management_layer.middleware.html#management_layer.middleware.metrics_middleware">[docs]</a><span class="nd">@middleware</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">metrics_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
@@ -244,7 +244,7 @@
     <span class="k">return</span> <span class="n">response</span></div>
 
 
-<div class="viewcode-block" id="auth_middleware"><a class="viewcode-back" href="../../management_layer.html#management_layer.middleware.auth_middleware">[docs]</a><span class="nd">@middleware</span>
+<div class="viewcode-block" id="auth_middleware"><a class="viewcode-back" href="../../management_layer.middleware.html#management_layer.middleware.auth_middleware">[docs]</a><span class="nd">@middleware</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">auth_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
     <span class="n">authorization_header</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;authorization&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -317,7 +317,7 @@
 
 
 <span class="c1"># Based on https://github.com/underyx/aiohttp-sentry/blob/master/aiohttp_sentry</span>
-<div class="viewcode-block" id="sentry_middleware"><a class="viewcode-back" href="../../management_layer.html#management_layer.middleware.sentry_middleware">[docs]</a><span class="nd">@middleware</span>
+<div class="viewcode-block" id="sentry_middleware"><a class="viewcode-back" href="../../management_layer.middleware.html#management_layer.middleware.sentry_middleware">[docs]</a><span class="nd">@middleware</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">sentry_middleware</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">handler</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>

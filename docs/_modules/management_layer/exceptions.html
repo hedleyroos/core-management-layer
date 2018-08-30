@@ -145,7 +145,7 @@
 <span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
 
 
-<div class="viewcode-block" id="JSONException"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONException">[docs]</a><span class="k">class</span> <span class="nc">JSONException</span><span class="p">(</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONException"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONException">[docs]</a><span class="k">class</span> <span class="nc">JSONException</span><span class="p">(</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -157,23 +157,23 @@
                          <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/json&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="JSONBadRequest"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONBadRequest">[docs]</a><span class="k">class</span> <span class="nc">JSONBadRequest</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONBadRequest"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONBadRequest">[docs]</a><span class="k">class</span> <span class="nc">JSONBadRequest</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span></div>
 
 
-<div class="viewcode-block" id="JSONUnauthorized"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONUnauthorized">[docs]</a><span class="k">class</span> <span class="nc">JSONUnauthorized</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONUnauthorized"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONUnauthorized">[docs]</a><span class="k">class</span> <span class="nc">JSONUnauthorized</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">401</span></div>
 
 
-<div class="viewcode-block" id="JSONForbidden"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONForbidden">[docs]</a><span class="k">class</span> <span class="nc">JSONForbidden</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONForbidden"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONForbidden">[docs]</a><span class="k">class</span> <span class="nc">JSONForbidden</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">403</span></div>
 
 
-<div class="viewcode-block" id="JSONNotFound"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONNotFound">[docs]</a><span class="k">class</span> <span class="nc">JSONNotFound</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONNotFound"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONNotFound">[docs]</a><span class="k">class</span> <span class="nc">JSONNotFound</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">404</span></div>
 
 
-<div class="viewcode-block" id="JSONBadGateway"><a class="viewcode-back" href="../../management_layer.html#management_layer.exceptions.JSONBadGateway">[docs]</a><span class="k">class</span> <span class="nc">JSONBadGateway</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+<div class="viewcode-block" id="JSONBadGateway"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONBadGateway">[docs]</a><span class="k">class</span> <span class="nc">JSONBadGateway</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="mi">502</span></div>
 </pre></div>
 

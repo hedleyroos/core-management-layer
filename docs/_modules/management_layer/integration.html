@@ -160,14 +160,14 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Implementation"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation">[docs]</a><span class="k">class</span> <span class="nc">Implementation</span><span class="p">(</span><span class="n">AbstractStubClass</span><span class="p">):</span>
+<div class="viewcode-block" id="Implementation"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation">[docs]</a><span class="k">class</span> <span class="nc">Implementation</span><span class="p">(</span><span class="n">AbstractStubClass</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The implementation linking calls made the Management Layer</span>
 <span class="sd">    to the Authentication-, Access Control- and User Data Store services.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># adminnote_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.adminnote_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.adminnote_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.adminnote_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.adminnote_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:adminnote&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">target_user_field</span><span class="o">=</span><span class="s2">&quot;creator_id&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">adminnote_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -192,7 +192,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># adminnote_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.adminnote_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.adminnote_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.adminnote_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.adminnote_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:adminnote&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">adminnote_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -213,7 +213,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># adminnote_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.adminnote_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.adminnote_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.adminnote_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.adminnote_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:adminnote&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">adminnote_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">admin_note_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -227,7 +227,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># adminnote_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.adminnote_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.adminnote_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.adminnote_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.adminnote_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:adminnote&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">adminnote_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">admin_note_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -245,7 +245,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># adminnote_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.adminnote_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.adminnote_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.adminnote_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.adminnote_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:adminnote&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">adminnote_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">admin_note_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -265,7 +265,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># client_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.client_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.client_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.client_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.client_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:oidc_provider:client&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">client_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -289,7 +289,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># client_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.client_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.client_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.client_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.client_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:oidc_provider:client&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">client_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -308,7 +308,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># country_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.country_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.country_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.country_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.country_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="c1"># No permissions are required for this</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">country_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -331,7 +331,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># country_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.country_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.country_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.country_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.country_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="c1"># No permissions are required for this</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">country_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">country_code</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -350,7 +350,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deleteduser_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deleteduser_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deleteduser_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deleteduser_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deleteduser_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deleteduser&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deleteduser_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -374,7 +374,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># deleteduser_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deleteduser_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deleteduser_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deleteduser_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deleteduser_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deleteduser&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deleteduser_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -396,7 +396,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deleteduser_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deleteduser_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deleteduser_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deleteduser_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deleteduser_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deleteduser&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deleteduser_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -410,7 +410,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># deleteduser_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deleteduser_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deleteduser_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deleteduser_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deleteduser_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deleteduser&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deleteduser_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -429,7 +429,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deleteduser_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deleteduser_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deleteduser_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deleteduser_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deleteduser_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deleteduser&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deleteduser_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -449,7 +449,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deletedusersite_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deletedusersite_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deletedusersite_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deletedusersite_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deletedusersite_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deletedusersite&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deletedusersite_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -473,7 +473,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># deletedusersite_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deletedusersite_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deletedusersite_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deletedusersite_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deletedusersite_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deletedusersite&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deletedusersite_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -492,7 +492,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deletedusersite_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deletedusersite_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deletedusersite_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deletedusersite_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deletedusersite_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deletedusersite&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deletedusersite_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -507,7 +507,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># deletedusersite_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deletedusersite_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deletedusersite_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deletedusersite_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deletedusersite_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deletedusersite&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deletedusersite_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -528,7 +528,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># deletedusersite_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.deletedusersite_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.deletedusersite_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.deletedusersite_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.deletedusersite_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:deletedusersite&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deletedusersite_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -549,7 +549,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domainrole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domainrole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domainrole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domainrole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -573,7 +573,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># domainrole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domainrole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domainrole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domainrole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -593,7 +593,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domainrole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domainrole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domainrole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domainrole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -608,7 +608,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># domainrole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domainrole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domainrole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domainrole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -628,7 +628,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domainrole_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domainrole_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domainrole_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domainrole_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domainrole_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domainrole_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -650,7 +650,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domain_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domain_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domain_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domain_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domain_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domain_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -675,7 +675,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># domain_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domain_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domain_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domain_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domain_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domain_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -694,7 +694,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domain_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domain_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domain_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domain_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domain_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domain_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -708,7 +708,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># domain_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domain_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domain_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domain_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domain_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domain_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -728,7 +728,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># domain_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.domain_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.domain_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.domain_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.domain_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">domain_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -749,7 +749,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># healthcheck -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.healthcheck"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.healthcheck">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.healthcheck"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.healthcheck">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">healthcheck</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The healthcheck for the Management Layer simply returns a structure</span>
@@ -794,7 +794,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># invitationdomainrole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationdomainrole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationdomainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationdomainrole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationdomainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationdomainrole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -820,7 +820,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># invitationdomainrole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationdomainrole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationdomainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationdomainrole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationdomainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationdomainrole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -842,7 +842,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitationdomainrole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationdomainrole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationdomainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationdomainrole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationdomainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">target_invitation_id_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">domain_id_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationdomainrole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -860,7 +860,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># invitationdomainrole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationdomainrole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationdomainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationdomainrole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationdomainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationdomainrole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -883,7 +883,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitation_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -907,7 +907,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># invitation_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -930,7 +930,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitation_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -944,7 +944,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># invitation_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -963,7 +963,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitation_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -984,7 +984,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitation_send -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitation_send"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitation_send">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitation_send"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitation_send">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitation&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitation_send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1003,7 +1003,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># purge_expired_invitations -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.purge_expired_invitations"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.purge_expired_invitations">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.purge_expired_invitations"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.purge_expired_invitations">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">purge_expired_invitations</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1025,7 +1025,7 @@
             <span class="k">return</span> <span class="n">purged_invitations</span></div>
 
     <span class="c1"># invitationsiterole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationsiterole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationsiterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationsiterole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationsiterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationsiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationsiterole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1051,7 +1051,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># invitationsiterole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationsiterole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationsiterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationsiterole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationsiterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationsiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationsiterole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1072,7 +1072,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># invitationsiterole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationsiterole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationsiterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationsiterole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationsiterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationsiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">target_invitation_id_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">site_id_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationsiterole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1090,7 +1090,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># invitationsiterole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.invitationsiterole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.invitationsiterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.invitationsiterole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.invitationsiterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:invitationsiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">invitationsiterole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">invitation_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1112,7 +1112,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># get_all_user_roles -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_all_user_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_all_user_roles">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_all_user_roles"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_all_user_roles">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1131,7 +1131,7 @@
             <span class="k">return</span> <span class="n">user_roles</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
     <span class="c1"># get_domain_roles -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_domain_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_domain_roles">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_domain_roles"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_domain_roles">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_domain_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -1145,7 +1145,7 @@
             <span class="k">return</span> <span class="n">domain_roles</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
     <span class="c1"># get_site_from_client_token_id -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_site_from_client_token_id"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_site_from_client_token_id">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_site_from_client_token_id"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_site_from_client_token_id">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="c1"># The permission is checked in the function and not via a decorator.</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_site_from_client_token_id</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">client_token_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1181,7 +1181,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># get_sites_under_domain -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_sites_under_domain"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_sites_under_domain">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_sites_under_domain"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_sites_under_domain">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1197,7 +1197,7 @@
             <span class="k">return</span> <span class="p">[</span><span class="n">transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">sites</span><span class="p">]</span></div>
 
     <span class="c1"># get_site_and_domain_roles -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_site_and_domain_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_site_and_domain_roles">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_site_and_domain_roles"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_site_and_domain_roles">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1213,7 +1213,7 @@
             <span class="k">return</span> <span class="n">site_and_domain_roles</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
     <span class="c1"># get_site_role_labels_aggregated -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_site_role_labels_aggregated"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_site_role_labels_aggregated">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_site_role_labels_aggregated"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_site_role_labels_aggregated">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1229,7 +1229,7 @@
             <span class="k">return</span> <span class="n">site_role_labels_aggregated</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
     <span class="c1"># get_user_domain_permissions -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_user_domain_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_user_domain_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_user_domain_permissions"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_user_domain_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1277,7 +1277,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># user_has_permissions -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.user_has_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.user_has_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.user_has_permissions"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.user_has_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1327,7 +1327,7 @@
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;has_permissions&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span></div>
 
     <span class="c1"># get_user_management_portal_permissions -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_user_management_portal_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_user_management_portal_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_user_management_portal_permissions"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_user_management_portal_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1383,7 +1383,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># get_user_site_permissions -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_user_site_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_user_site_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_user_site_permissions"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_user_site_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1431,7 +1431,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># get_user_site_role_labels_aggregated -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_user_site_role_labels_aggregated"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_user_site_role_labels_aggregated">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_user_site_role_labels_aggregated"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_user_site_role_labels_aggregated">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1451,7 +1451,7 @@
             <span class="k">return</span> <span class="n">user_site_role_labels_aggregated</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
     <span class="c1"># get_users_with_roles_for_domain -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_users_with_roles_for_domain"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_users_with_roles_for_domain">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_users_with_roles_for_domain"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_users_with_roles_for_domain">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
@@ -1467,7 +1467,7 @@
         <span class="k">return</span> <span class="k">await</span> <span class="n">transform_users_with_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="c1"># get_users_with_roles_for_site -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.get_users_with_roles_for_site"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.get_users_with_roles_for_site">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.get_users_with_roles_for_site"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.get_users_with_roles_for_site">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:domain&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:domainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
                                <span class="p">(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">),</span>
@@ -1486,7 +1486,7 @@
         <span class="k">return</span> <span class="k">await</span> <span class="n">transform_users_with_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="c1"># organisation_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.organisation_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.organisation_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.organisation_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.organisation_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="c1"># No permissions are required for this</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">organisation_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1510,7 +1510,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># organisation_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.organisation_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.organisation_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.organisation_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.organisation_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">organisation_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request: An HttpRequest</span>
@@ -1529,7 +1529,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># organisation_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.organisation_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.organisation_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.organisation_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.organisation_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">organisation_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">organisation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request: An HttpRequest</span>
@@ -1543,7 +1543,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># organisation_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.organisation_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.organisation_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.organisation_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.organisation_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="c1"># No permissions are required for this</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">organisation_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">organisation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1563,7 +1563,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># organisation_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.organisation_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.organisation_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.organisation_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.organisation_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">organisation_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">organisation_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request: An HttpRequest</span>
@@ -1585,7 +1585,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># permission_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.permission_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.permission_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.permission_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.permission_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">permission_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1608,7 +1608,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># permission_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.permission_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.permission_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.permission_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.permission_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">permission_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1628,7 +1628,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># permission_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.permission_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.permission_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.permission_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.permission_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">permission_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1642,7 +1642,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># permission_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.permission_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.permission_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.permission_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.permission_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">permission_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1661,7 +1661,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># permission_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.permission_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.permission_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.permission_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.permission_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:permission&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">permission_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1682,7 +1682,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># refresh_all -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_all"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_all">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_all"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_all">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_all</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1694,7 +1694,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_clients -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_clients"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_clients">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_clients"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_clients">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_clients</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request: An HttpRequest</span>
@@ -1705,7 +1705,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_domains -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_domains"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_domains">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_domains"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_domains">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_domains</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1717,7 +1717,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_keys -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_keys"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_keys">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_keys"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_keys">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_keys</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param request: An HttpRequest</span>
@@ -1728,7 +1728,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_permissions -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_permissions"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_permissions">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_permissions</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1740,7 +1740,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_resources -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_resources"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_resources">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_resources"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_resources">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_resources</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1752,7 +1752,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_roles -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_roles">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_roles"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_roles">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_roles</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1764,7 +1764,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># refresh_sites -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.refresh_sites"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.refresh_sites">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.refresh_sites"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.refresh_sites">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_sites</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1776,7 +1776,7 @@
         <span class="k">return</span> <span class="p">{}</span></div>
 
     <span class="c1"># request_user_deletion -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.request_user_deletion"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.request_user_deletion">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.request_user_deletion"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.request_user_deletion">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># Tech admin only</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">request_user_deletion</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1794,7 +1794,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># resource_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.resource_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.resource_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.resource_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.resource_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">resource_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1818,7 +1818,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># resource_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.resource_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.resource_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.resource_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.resource_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">resource_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1837,7 +1837,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># resource_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.resource_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.resource_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.resource_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.resource_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">resource_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1851,7 +1851,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># resource_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.resource_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.resource_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.resource_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.resource_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">resource_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1870,7 +1870,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># resource_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.resource_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.resource_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.resource_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.resource_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:resource&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">resource_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1891,7 +1891,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># roleresourcepermission_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.roleresourcepermission_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.roleresourcepermission_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.roleresourcepermission_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.roleresourcepermission_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">roleresourcepermission_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1916,7 +1916,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># roleresourcepermission_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.roleresourcepermission_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.roleresourcepermission_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.roleresourcepermission_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.roleresourcepermission_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">roleresourcepermission_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1936,7 +1936,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># roleresourcepermission_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.roleresourcepermission_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.roleresourcepermission_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.roleresourcepermission_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.roleresourcepermission_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">roleresourcepermission_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1953,7 +1953,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># roleresourcepermission_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.roleresourcepermission_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.roleresourcepermission_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.roleresourcepermission_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.roleresourcepermission_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:roleresourcepermission&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">roleresourcepermission_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1974,7 +1974,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># role_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.role_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.role_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.role_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.role_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:role&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">role_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1997,7 +1997,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># role_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.role_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.role_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.role_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.role_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:role&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">role_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2016,7 +2016,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># role_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.role_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.role_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.role_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.role_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:role&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">role_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2030,7 +2030,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># role_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.role_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.role_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.role_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.role_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:role&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">role_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2049,7 +2049,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># role_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.role_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.role_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.role_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.role_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:role&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">role_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2069,7 +2069,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># sitedataschema_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.sitedataschema_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.sitedataschema_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.sitedataschema_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.sitedataschema_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:sitedataschema&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">sitedataschema_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2092,7 +2092,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># sitedataschema_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.sitedataschema_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.sitedataschema_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.sitedataschema_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.sitedataschema_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:sitedataschema&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">sitedataschema_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2112,7 +2112,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># sitedataschema_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.sitedataschema_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.sitedataschema_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.sitedataschema_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.sitedataschema_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:sitedataschema&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">sitedataschema_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2126,7 +2126,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># sitedataschema_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.sitedataschema_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.sitedataschema_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.sitedataschema_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.sitedataschema_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:sitedataschema&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">sitedataschema_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2145,7 +2145,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># sitedataschema_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.sitedataschema_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.sitedataschema_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.sitedataschema_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.sitedataschema_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:sitedataschema&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">sitedataschema_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2166,7 +2166,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># siterole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.siterole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.siterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.siterole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.siterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:siterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">siterole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2190,7 +2190,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># siterole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.siterole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.siterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.siterole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.siterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:siterole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">siterole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2210,7 +2210,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># siterole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.siterole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.siterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.siterole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.siterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:siterole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">siterole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2225,7 +2225,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># siterole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.siterole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.siterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.siterole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.siterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:siterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">siterole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2245,7 +2245,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># siterole_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.siterole_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.siterole_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.siterole_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.siterole_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:siterole&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">siterole_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2267,7 +2267,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># site_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.site_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.site_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.site_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.site_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">site_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2292,7 +2292,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># site_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.site_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.site_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.site_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.site_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">site_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2311,7 +2311,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># site_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.site_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.site_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.site_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.site_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">site_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2325,7 +2325,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># site_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.site_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.site_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.site_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.site_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">site_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2345,7 +2345,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># site_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.site_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.site_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.site_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.site_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:site&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">site_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2365,7 +2365,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># userdomainrole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.userdomainrole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.userdomainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.userdomainrole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.userdomainrole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">target_user_field</span><span class="o">=</span><span class="s2">&quot;user_id&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">userdomainrole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2391,7 +2391,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># userdomainrole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.userdomainrole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.userdomainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.userdomainrole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.userdomainrole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">userdomainrole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2421,7 +2421,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># userdomainrole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.userdomainrole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.userdomainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.userdomainrole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.userdomainrole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">target_user_id_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">domain_id_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">userdomainrole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2438,7 +2438,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># userdomainrole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.userdomainrole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.userdomainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.userdomainrole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.userdomainrole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:userdomainrole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">target_user_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">userdomainrole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2460,7 +2460,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># user_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.user_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.user_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.user_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.user_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:user&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">user_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2504,7 +2504,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># user_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.user_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.user_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.user_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.user_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:user&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">user_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2518,7 +2518,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># user_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.user_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.user_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.user_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.user_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:user&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span> <span class="n">target_user_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">user_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2537,7 +2537,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># user_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.user_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.user_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.user_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.user_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:identity_provider:user&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)],</span> <span class="n">target_user_field</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">user_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2558,7 +2558,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># usersitedata_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersitedata_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersitedata_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersitedata_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersitedata_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:usersitedata&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">target_user_field</span><span class="o">=</span><span class="s2">&quot;user_id&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersitedata_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2583,7 +2583,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># usersitedata_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersitedata_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersitedata_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersitedata_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersitedata_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:usersitedata&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="c1"># The targeted user should not be allowed to make this call. This is admin only.</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersitedata_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2603,7 +2603,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># usersitedata_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersitedata_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersitedata_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersitedata_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersitedata_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:usersitedata&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="c1"># The targeted user should not be allowed to make this call. This is admin only.</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersitedata_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2619,7 +2619,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># usersitedata_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersitedata_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersitedata_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersitedata_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersitedata_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:usersitedata&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span> <span class="n">target_user_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersitedata_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2639,7 +2639,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># usersitedata_update -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersitedata_update"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersitedata_update">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersitedata_update"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersitedata_update">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:user_data:usersitedata&quot;</span><span class="p">,</span> <span class="s2">&quot;update&quot;</span><span class="p">)])</span>
     <span class="c1"># The targeted user should not be allowed to make this call. This is admin only.</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersitedata_update</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2660,7 +2660,7 @@
             <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># usersiterole_list -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersiterole_list"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersiterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersiterole_list"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersiterole_list">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:usersiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span>
                          <span class="n">target_user_field</span><span class="o">=</span><span class="s2">&quot;user_id&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersiterole_list</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2686,7 +2686,7 @@
         <span class="p">}</span></div>
 
     <span class="c1"># usersiterole_create -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersiterole_create"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersiterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersiterole_create"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersiterole_create">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:usersiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;create&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersiterole_create</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2716,7 +2716,7 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     <span class="c1"># usersiterole_delete -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersiterole_delete"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersiterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersiterole_delete"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersiterole_delete">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:usersiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;delete&quot;</span><span class="p">)])</span>
     <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">target_user_id_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">site_id_field</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersiterole_delete</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2733,7 +2733,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
     <span class="c1"># usersiterole_read -- Synchronisation point for meld</span>
-<div class="viewcode-block" id="Implementation.usersiterole_read"><a class="viewcode-back" href="../../management_layer.html#management_layer.integration.Implementation.usersiterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Implementation.usersiterole_read"><a class="viewcode-back" href="../../management_layer.integration.html#management_layer.integration.Implementation.usersiterole_read">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:access_control:usersiterole&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span> <span class="n">target_user_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">usersiterole_read</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">site_id</span><span class="p">,</span> <span class="n">role_id</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

@@ -153,9 +153,9 @@
 <span class="kn">from</span> <span class="nn">management_layer</span> <span class="k">import</span> <span class="n">middleware</span>
 
 
-<div class="viewcode-block" id="AuthMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">AuthMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="AuthMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">AuthMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
 
-<div class="viewcode-block" id="AuthMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AuthMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests. For the middleware</span>
 <span class="sd">        test we only need one end-point.</span>
@@ -171,7 +171,7 @@
         <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">app</span></div>
 
-<div class="viewcode-block" id="AuthMiddlewareTest.setUp"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AuthMiddlewareTest.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
         <span class="n">now</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span> <span class="o">=</span> <span class="p">{</span>
@@ -225,12 +225,12 @@
 <span class="s2">-----END PRIVATE KEY-----</span>
 <span class="s2">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="AuthMiddlewareTest.test_missing_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_missing_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="AuthMiddlewareTest.test_missing_token"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_missing_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_missing_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">middleware</span><span class="o">.</span><span class="n">MISSING_TOKEN_STATUS</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AuthMiddlewareTest.test_invalid_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_invalid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="AuthMiddlewareTest.test_invalid_token"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_invalid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_invalid_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
@@ -297,7 +297,7 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">401</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AuthMiddlewareTest.test_valid_token"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_valid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="AuthMiddlewareTest.test_valid_token"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.AuthMiddlewareTest.test_valid_token">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_valid_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">id_token</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
             <span class="n">payload</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id_token_data</span><span class="p">,</span>
@@ -331,9 +331,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SentryMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.SentryMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">SentryMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="SentryMiddlewareTest"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.SentryMiddlewareTest">[docs]</a><span class="k">class</span> <span class="nc">SentryMiddlewareTest</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
 
-<div class="viewcode-block" id="SentryMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_middleware.SentryMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SentryMiddlewareTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_middleware.html#management_layer.tests.test_middleware.SentryMiddlewareTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests. For the middleware</span>
 <span class="sd">        test we only need one end-point.</span>

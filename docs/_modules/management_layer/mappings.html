@@ -184,7 +184,7 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Mappings"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings">[docs]</a><span class="k">class</span> <span class="nc">Mappings</span><span class="p">:</span>
+<div class="viewcode-block" id="Mappings"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings">[docs]</a><span class="k">class</span> <span class="nc">Mappings</span><span class="p">:</span>
     <span class="c1"># Internal copies of definitions. These are mappings of ids to dictionaries.</span>
     <span class="n">_domains</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.DOMAIN for more detail)</span>
     <span class="n">_permissions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.PERMISSION for more</span>
@@ -205,7 +205,7 @@
     <span class="n">_token_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
     <span class="n">_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, int]</span>
 
-<div class="viewcode-block" id="Mappings.site_by_id"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.site_by_id">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.site_by_id"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_by_id">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">site_by_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sites</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span>
@@ -213,7 +213,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Site id </span><span class="si">{id_}</span><span class="s2"> not in </span><span class="si">{cls._sites}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.domain_id_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.domain_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.domain_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.domain_id_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">domain_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_domain_name_to_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -221,7 +221,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{name}</span><span class="s2">&#39; not in </span><span class="si">{cls._domain_name_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.domain_name_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.domain_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.domain_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.domain_name_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">domain_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_domains</span><span class="p">[</span><span class="n">domain_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
@@ -229,7 +229,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{domain_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._domains}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.permission_id_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.permission_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.permission_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.permission_id_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">permission_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -237,7 +237,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{name}</span><span class="s2">&#39; not in </span><span class="si">{cls._permission_name_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.permission_name_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.permission_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.permission_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.permission_name_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">permission_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_permissions</span><span class="p">[</span><span class="n">permission_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
@@ -245,7 +245,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{permission_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._permissions}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.resource_id_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.resource_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.resource_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.resource_id_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">resource_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">urn</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span><span class="p">[</span><span class="n">urn</span><span class="p">]</span>
@@ -253,7 +253,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{urn}</span><span class="s2">&#39; not in </span><span class="si">{cls._resource_urn_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.resource_urn_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.resource_urn_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.resource_urn_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.resource_urn_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">resource_urn_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resources</span><span class="p">[</span><span class="n">resource_id</span><span class="p">][</span><span class="s2">&quot;urn&quot;</span><span class="p">]</span>
@@ -261,7 +261,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{resource_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._resources}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.role_id_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.role_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.role_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.role_id_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">role_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_role_label_to_id_map</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
@@ -269,7 +269,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{label}</span><span class="s2">&#39; not in </span><span class="si">{cls._role_label_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.role_label_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.role_label_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.role_label_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.role_label_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">role_label_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">role_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_roles</span><span class="p">[</span><span class="n">role_id</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
@@ -277,7 +277,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{role_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._roles}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.site_id_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.site_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.site_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_id_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">site_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token_client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the site linked to a client.</span>
@@ -295,7 +295,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{token_client_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._token_client_id_to_site_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.site_name_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.site_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.site_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_name_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">site_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">site_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sites</span><span class="p">[</span><span class="n">site_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
@@ -303,7 +303,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{site_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._sites}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.public_key_for"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.public_key_for">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.public_key_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.public_key_for">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">public_key_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">kid</span><span class="p">][</span><span class="s2">&quot;public_key&quot;</span><span class="p">]</span>
@@ -311,7 +311,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{kid}</span><span class="s2">&#39; not in </span><span class="si">{cls._keys}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="Mappings.all_resource_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.Mappings.all_resource_permissions">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Mappings.all_resource_permissions"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.all_resource_permissions">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">all_resource_permissions</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function returns a list of Management Portal permissions, which are concatenations</span>
@@ -389,7 +389,7 @@
     <span class="k">return</span> <span class="n">items_by_id</span><span class="p">,</span> <span class="n">name_to_id_map</span>
 
 
-<div class="viewcode-block" id="refresh_domains"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_domains">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_domains"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_domains">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_domains</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the domain information&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing domains&quot;</span><span class="p">)</span>
@@ -403,7 +403,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_permissions"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_permissions">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_permissions"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_permissions">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_permissions</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the permission information&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing permissions&quot;</span><span class="p">)</span>
@@ -417,7 +417,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_resources"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_resources">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_resources"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_resources">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_resources</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the resources information&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing resources&quot;</span><span class="p">)</span>
@@ -431,7 +431,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_roles"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_roles">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_roles"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_roles">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_roles</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the roles information&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing roles&quot;</span><span class="p">)</span>
@@ -445,7 +445,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_sites"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_sites">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_sites"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_sites">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_sites</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the sites information&quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing sites&quot;</span><span class="p">)</span>
@@ -464,7 +464,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_clients"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_clients">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_clients"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_clients">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_clients</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Refresh the client information</span>
 <span class="sd">    Because this information is linked to site information, the site information needs to be</span>
@@ -487,7 +487,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_keys"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_keys">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_keys"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_keys">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_keys</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The call for retrieving the JSON Web Token Key Set (JWKS) is not exposed by the Authentication</span>
@@ -526,7 +526,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="refresh_all"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.refresh_all">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<div class="viewcode-block" id="refresh_all"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_all">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_all</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Refresh all data mappings</span>
@@ -542,7 +542,7 @@
     <span class="k">await</span> <span class="n">refresh_clients</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="return_tech_admin_role_for_testing"><a class="viewcode-back" href="../../management_layer.html#management_layer.mappings.return_tech_admin_role_for_testing">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_tech_admin_role_for_testing</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="return_tech_admin_role_for_testing"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.return_tech_admin_role_for_testing">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_tech_admin_role_for_testing</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Many of the test functions require the availability of a function that will return a set</span>
 <span class="sd">    of roles containing the TECH_ADMIN role. This function does exactly that.</span>

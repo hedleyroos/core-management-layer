@@ -233,7 +233,7 @@
 <span class="n">SKIP_DELETE_TESTS_FOR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="s2">&quot;countries&quot;</span><span class="p">,</span> <span class="s2">&quot;organisations&quot;</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="wait_for_server"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.wait_for_server">[docs]</a><span class="k">def</span> <span class="nf">wait_for_server</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+<div class="viewcode-block" id="wait_for_server"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.wait_for_server">[docs]</a><span class="k">def</span> <span class="nf">wait_for_server</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wait until a server is</span>
 <span class="sd">    :param ip: The IP address to connect to</span>
@@ -252,7 +252,7 @@
             <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="setUpModule"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.setUpModule">[docs]</a><span class="k">def</span> <span class="nf">setUpModule</span><span class="p">():</span>
+<div class="viewcode-block" id="setUpModule"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.setUpModule">[docs]</a><span class="k">def</span> <span class="nf">setUpModule</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is used to launch mocked backend APIs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -291,7 +291,7 @@
         <span class="n">wait_for_server</span><span class="p">(</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="tearDownModule"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.tearDownModule">[docs]</a><span class="k">def</span> <span class="nf">tearDownModule</span><span class="p">():</span>
+<div class="viewcode-block" id="tearDownModule"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.tearDownModule">[docs]</a><span class="k">def</span> <span class="nf">tearDownModule</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stop the mocked APIs</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -300,7 +300,7 @@
     <span class="n">_MOCKED_USER_DATA_STORE_API</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_test_data"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.get_test_data">[docs]</a><span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
+<div class="viewcode-block" id="get_test_data"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.get_test_data">[docs]</a><span class="k">def</span> <span class="nf">get_test_data</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The utility used to generate test data is not feature-complete.</span>
 <span class="sd">    This function is an attempt to fix the gotchas.</span>
@@ -347,7 +347,7 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="validate_response_schema"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.validate_response_schema">[docs]</a><span class="k">def</span> <span class="nf">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
+<div class="viewcode-block" id="validate_response_schema"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.validate_response_schema">[docs]</a><span class="k">def</span> <span class="nf">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schema</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">jsonschema</span><span class="o">.</span><span class="n">ValidationError</span><span class="p">:</span>
@@ -355,7 +355,7 @@
         <span class="k">raise</span></div>
 
 
-<div class="viewcode-block" id="clean_response_data"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.clean_response_data">[docs]</a><span class="k">def</span> <span class="nf">clean_response_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_response_data"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.clean_response_data">[docs]</a><span class="k">def</span> <span class="nf">clean_response_data</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">clean_response_data</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
 
@@ -369,12 +369,12 @@
     <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="ExampleTestCase"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase">[docs]</a><span class="k">class</span> <span class="nc">ExampleTestCase</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleTestCase"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.ExampleTestCase">[docs]</a><span class="k">class</span> <span class="nc">ExampleTestCase</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the example test case as provided in the aiohttp documentation:</span>
 <span class="sd">    https://docs.aiohttp.org/en/stable/testing.html</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="ExampleTestCase.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleTestCase.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.ExampleTestCase.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests</span>
 <span class="sd">        :return:</span>
@@ -389,7 +389,7 @@
     <span class="c1"># the unittest_run_loop decorator can be used in tandem with</span>
     <span class="c1"># the AioHTTPTestCase to simplify running</span>
     <span class="c1"># tests that are asynchronous</span>
-<div class="viewcode-block" id="ExampleTestCase.test_example"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.test_example">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="ExampleTestCase.test_example"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.ExampleTestCase.test_example">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_example</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">request</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="n">request</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
@@ -397,7 +397,7 @@
         <span class="k">assert</span> <span class="s2">&quot;Hello, world&quot;</span> <span class="ow">in</span> <span class="n">text</span></div>
 
     <span class="c1"># a vanilla example</span>
-<div class="viewcode-block" id="ExampleTestCase.test_example_vanilla"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.ExampleTestCase.test_example_vanilla">[docs]</a>    <span class="k">def</span> <span class="nf">test_example_vanilla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ExampleTestCase.test_example_vanilla"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.ExampleTestCase.test_example_vanilla">[docs]</a>    <span class="k">def</span> <span class="nf">test_example_vanilla</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_route</span><span class="p">():</span>
             <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span>
             <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
@@ -408,7 +408,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">test_get_route</span><span class="p">())</span></div></div>
 
 
-<div class="viewcode-block" id="IntegrationTest"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+<div class="viewcode-block" id="IntegrationTest"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
                 <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="p">{</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">]:</span> <span class="mi">1</span><span class="p">},</span>
                 <span class="n">_roles</span><span class="o">=</span><span class="p">{</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">}},</span>
                 <span class="n">_sites</span><span class="o">=</span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="n">transformations</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">TEST_SITE</span><span class="p">)},</span>
@@ -436,12 +436,12 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test functionality in integration.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="IntegrationTest.setUpClass"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="IntegrationTest.setUpClass"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.setUpClass">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUpClass</span><span class="p">()</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">user_id</span> <span class="o">=</span> <span class="s2">&quot;bc36b436-1091-11e8-bc0f-0242ac120003&quot;</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.get_client"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.get_client">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
+<div class="viewcode-block" id="IntegrationTest.get_client"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.get_client">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">server</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a TestClient instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -466,7 +466,7 @@
             <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;Bearer </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">id_token</span><span class="p">}</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.assertStatus"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.assertStatus">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">assertStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+<div class="viewcode-block" id="IntegrationTest.assertStatus"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.assertStatus">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">assertStatus</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function that will dump the response body in the event</span>
 <span class="sd">        that an unexpected response code is received.</span>
@@ -479,7 +479,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="IntegrationTest.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set up the application used by the tests</span>
 <span class="sd">        :return:</span>
@@ -691,7 +691,7 @@
         <span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IntegrationTest.test_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_all_user_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/all_user_roles/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -699,7 +699,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">all_user_roles</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_domain_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/domain_roles/1&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -707,7 +707,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">domain_roles</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_sites_under_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_sites_under_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_sites_under_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_sites_under_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_sites_under_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/get_sites_under_domain/1&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -715,7 +715,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;array&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">:</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_site_and_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_and_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_site_and_domain_roles"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_and_domain_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_site_and_domain_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/site_and_domain_roles/1&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -723,7 +723,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_and_domain_roles</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_site_role_labels_aggregated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/site_role_labels_aggregated/1&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -731,7 +731,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">site_role_labels_aggregated</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_user_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_user_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_user_site_role_labels_aggregated"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_user_site_role_labels_aggregated">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_site_role_labels_aggregated</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/user_site_role_labels_aggregated/</span><span class="si">%s</span><span class="s2">/1&quot;</span> <span class="o">%</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -747,7 +747,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="n">clean_response_data</span><span class="p">(</span><span class="n">response_body</span><span class="p">)</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">schemas</span><span class="o">.</span><span class="n">user_with_roles</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IntegrationTest.test_get_users_with_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_get_users_with_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_get_users_with_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_get_users_with_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_users_with_roles_for_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/ops/users_with_roles_for_site/1&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -976,7 +976,7 @@
             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nocache&quot;</span><span class="p">:</span> <span class="n">nocache</span><span class="p">})</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">403</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_async"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_async">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_async"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_async">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_purge_expired_invitations_async</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/invitations/purge/expired&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -984,7 +984,7 @@
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">purged_invitations</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_sync"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_sync">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_purge_expired_invitations_sync"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_purge_expired_invitations_sync">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_purge_expired_invitations_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/invitations/purge/expired?synchronous_mode=true&quot;</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertStatus</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
@@ -992,7 +992,7 @@
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">purged_invitations</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">purged_invitations</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">],</span> <span class="s2">&quot;synchronous&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_healthcheck"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_healthcheck">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_healthcheck"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_healthcheck">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_healthcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="c1"># Overwrite the proper auth header set on the client.</span>
@@ -1002,7 +1002,7 @@
         <span class="n">response_body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="n">validate_response_schema</span><span class="p">(</span><span class="n">response_body</span><span class="p">,</span> <span class="n">schemas</span><span class="o">.</span><span class="n">health_info</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="IntegrationTest.test_invitation_send"><a class="viewcode-back" href="../../../management_layer.tests.html#management_layer.tests.test_integration.IntegrationTest.test_invitation_send">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+<div class="viewcode-block" id="IntegrationTest.test_invitation_send"><a class="viewcode-back" href="../../../management_layer.tests.test_integration.html#management_layer.tests.test_integration.IntegrationTest.test_invitation_send">[docs]</a>    <span class="nd">@unittest_run_loop</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">test_invitation_send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">invitation_id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>

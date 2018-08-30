@@ -4,22 +4,10 @@ management\_layer.permission package
 Submodules
 ----------
 
-management\_layer.permission.decorator module
----------------------------------------------
+.. toctree::
 
-.. automodule:: management_layer.permission.decorator
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-management\_layer.permission.utils module
------------------------------------------
-
-.. automodule:: management_layer.permission.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   management_layer.permission.decorator
+   management_layer.permission.utils
 
 Module contents
 ---------------
