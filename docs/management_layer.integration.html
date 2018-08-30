@@ -1,0 +1,2812 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.integration module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.integration module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.integration module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.integration.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.integration">
+<span id="management-layer-integration-module"></span><h1>management_layer.integration module<a class="headerlink" href="#module-management_layer.integration" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="management_layer.integration.Implementation">
+<em class="property">class </em><code class="descclassname">management_layer.integration.</code><code class="descname">Implementation</code><a class="reference internal" href="_modules/management_layer/integration.html#Implementation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="management_layer.api.stubs.html#management_layer.api.stubs.AbstractStubClass" title="management_layer.api.stubs.AbstractStubClass"><code class="xref py py-class docutils literal notranslate"><span class="pre">management_layer.api.stubs.AbstractStubClass</span></code></a></p>
+<p>The implementation linking calls made the Management Layer
+to the Authentication-, Access Control- and User Data Store services.</p>
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.adminnote_create">
+<em class="property">static </em><code class="descname">adminnote_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.adminnote_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.adminnote_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.adminnote_delete">
+<em class="property">static </em><code class="descname">adminnote_delete</code><span class="sig-paren">(</span><em>request</em>, <em>admin_note_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.adminnote_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.adminnote_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>admin_note_id</strong> – integer A unique integer value identifying the admin note.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.adminnote_list">
+<em class="property">static </em><code class="descname">adminnote_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.adminnote_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.adminnote_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>admin_note_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by user_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by creator (a user_id)</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of adminnote ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.adminnote_read">
+<em class="property">static </em><code class="descname">adminnote_read</code><span class="sig-paren">(</span><em>request</em>, <em>admin_note_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.adminnote_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.adminnote_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>admin_note_id</strong> – integer A unique integer value identifying the admin note.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.adminnote_update">
+<em class="property">static </em><code class="descname">adminnote_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>admin_note_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.adminnote_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.adminnote_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>admin_note_id</strong> – integer A unique integer value identifying the admin note.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.client_list">
+<em class="property">static </em><code class="descname">client_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.client_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.client_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>client_token_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of client ids</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional client id to filter on. This is not the primary key.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.client_read">
+<em class="property">static </em><code class="descname">client_read</code><span class="sig-paren">(</span><em>request</em>, <em>client_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.client_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.client_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>client_id</strong> – integer A integer identifying the client</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.country_list">
+<em class="property">static </em><code class="descname">country_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.country_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.country_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>country_codes</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of country codes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.country_read">
+<em class="property">static </em><code class="descname">country_read</code><span class="sig-paren">(</span><em>request</em>, <em>country_code</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.country_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.country_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>country_code</strong> – string A unique two-character value identifying the country.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deleteduser_create">
+<em class="property">static </em><code class="descname">deleteduser_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deleteduser_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deleteduser_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deleteduser_delete">
+<em class="property">static </em><code class="descname">deleteduser_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deleteduser_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deleteduser_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deleteduser_list">
+<em class="property">static </em><code class="descname">deleteduser_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deleteduser_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deleteduser_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>deleter_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by deleter_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deleteduser_read">
+<em class="property">static </em><code class="descname">deleteduser_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deleteduser_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deleteduser_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deleteduser_update">
+<em class="property">static </em><code class="descname">deleteduser_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deleteduser_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deleteduser_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deletedusersite_create">
+<em class="property">static </em><code class="descname">deletedusersite_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deletedusersite_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deletedusersite_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deletedusersite_delete">
+<em class="property">static </em><code class="descname">deletedusersite_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deletedusersite_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deletedusersite_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deletedusersite_list">
+<em class="property">static </em><code class="descname">deletedusersite_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deletedusersite_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deletedusersite_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>user_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by user_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deletedusersite_read">
+<em class="property">static </em><code class="descname">deletedusersite_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deletedusersite_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deletedusersite_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.deletedusersite_update">
+<em class="property">static </em><code class="descname">deletedusersite_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.deletedusersite_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.deletedusersite_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domain_create">
+<em class="property">static </em><code class="descname">domain_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domain_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domain_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domain_delete">
+<em class="property">static </em><code class="descname">domain_delete</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domain_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domain_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domain_list">
+<em class="property">static </em><code class="descname">domain_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domain_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domain_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>domain_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by parent_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of domain ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domain_read">
+<em class="property">static </em><code class="descname">domain_read</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domain_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domain_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domain_update">
+<em class="property">static </em><code class="descname">domain_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domain_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domain_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domainrole_create">
+<em class="property">static </em><code class="descname">domainrole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domainrole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domainrole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domainrole_delete">
+<em class="property">static </em><code class="descname">domainrole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domainrole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domainrole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domainrole_list">
+<em class="property">static </em><code class="descname">domainrole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domainrole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domainrole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by domain_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domainrole_read">
+<em class="property">static </em><code class="descname">domainrole_read</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domainrole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domainrole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.domainrole_update">
+<em class="property">static </em><code class="descname">domainrole_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.domainrole_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.domainrole_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_all_user_roles">
+<em class="property">static </em><code class="descname">get_all_user_roles</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_all_user_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_all_user_roles" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_domain_roles">
+<em class="property">static </em><code class="descname">get_domain_roles</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_domain_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_domain_roles" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_site_and_domain_roles">
+<em class="property">static </em><code class="descname">get_site_and_domain_roles</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_site_and_domain_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_site_and_domain_roles" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_site_from_client_token_id">
+<em class="property">static </em><code class="descname">get_site_from_client_token_id</code><span class="sig-paren">(</span><em>request</em>, <em>client_token_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_site_from_client_token_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_site_from_client_token_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>client_token_id</strong> – string A client token id. This is not the primary key of the client table, but rather the client id that is typically configured along with the client secret.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_site_role_labels_aggregated">
+<em class="property">static </em><code class="descname">get_site_role_labels_aggregated</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_site_role_labels_aggregated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_site_role_labels_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_sites_under_domain">
+<em class="property">static </em><code class="descname">get_sites_under_domain</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_sites_under_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_sites_under_domain" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_user_domain_permissions">
+<em class="property">static </em><code class="descname">get_user_domain_permissions</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_user_domain_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_user_domain_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_user_management_portal_permissions">
+<em class="property">static </em><code class="descname">get_user_management_portal_permissions</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_user_management_portal_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_user_management_portal_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_user_site_permissions">
+<em class="property">static </em><code class="descname">get_user_site_permissions</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_user_site_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_user_site_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_user_site_role_labels_aggregated">
+<em class="property">static </em><code class="descname">get_user_site_role_labels_aggregated</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_user_site_role_labels_aggregated"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_user_site_role_labels_aggregated" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_users_with_roles_for_domain">
+<em class="property">static </em><code class="descname">get_users_with_roles_for_domain</code><span class="sig-paren">(</span><em>request</em>, <em>domain_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_users_with_roles_for_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_users_with_roles_for_domain" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.get_users_with_roles_for_site">
+<em class="property">static </em><code class="descname">get_users_with_roles_for_site</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.get_users_with_roles_for_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.get_users_with_roles_for_site" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.healthcheck">
+<em class="property">static </em><code class="descname">healthcheck</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.healthcheck"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.healthcheck" title="Permalink to this definition">¶</a></dt>
+<dd><p>The healthcheck for the Management Layer simply returns a structure
+with the version, timestamp and host name.
+The health statuses of the backends have been included as well, although
+they have no effect on whether the management layer is considered healthy
+or not on its own.
+:param request: An HttpRequest
+:returns: result or (result, headers) tuple</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_create">
+<em class="property">static </em><code class="descname">invitation_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_delete">
+<em class="property">static </em><code class="descname">invitation_delete</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_list">
+<em class="property">static </em><code class="descname">invitation_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>invitation_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string Optional filter based on the invitor (the user who created the invitation)</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of invitation ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_read">
+<em class="property">static </em><code class="descname">invitation_read</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_send">
+<em class="property">static </em><code class="descname">invitation_send</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_send" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>language</em>) – string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitation_update">
+<em class="property">static </em><code class="descname">invitation_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>invitation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitation_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitation_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationdomainrole_create">
+<em class="property">static </em><code class="descname">invitationdomainrole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationdomainrole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationdomainrole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationdomainrole_delete">
+<em class="property">static </em><code class="descname">invitationdomainrole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationdomainrole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationdomainrole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationdomainrole_list">
+<em class="property">static </em><code class="descname">invitationdomainrole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationdomainrole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationdomainrole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by invitation_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by domain_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationdomainrole_read">
+<em class="property">static </em><code class="descname">invitationdomainrole_read</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationdomainrole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationdomainrole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationsiterole_create">
+<em class="property">static </em><code class="descname">invitationsiterole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationsiterole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationsiterole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationsiterole_delete">
+<em class="property">static </em><code class="descname">invitationsiterole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationsiterole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationsiterole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationsiterole_list">
+<em class="property">static </em><code class="descname">invitationsiterole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationsiterole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationsiterole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by invitation_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by site_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.invitationsiterole_read">
+<em class="property">static </em><code class="descname">invitationsiterole_read</code><span class="sig-paren">(</span><em>request</em>, <em>invitation_id</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.invitationsiterole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.invitationsiterole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>invitation_id</strong> – string A UUID value identifying the invitation.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.organisation_create">
+<em class="property">static </em><code class="descname">organisation_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.organisation_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.organisation_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.organisation_delete">
+<em class="property">static </em><code class="descname">organisation_delete</code><span class="sig-paren">(</span><em>request</em>, <em>organisation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.organisation_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.organisation_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>organisation_id</strong> – integer An integer identifying an organisation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.organisation_list">
+<em class="property">static </em><code class="descname">organisation_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.organisation_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.organisation_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>organisation_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of organisation ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.organisation_read">
+<em class="property">static </em><code class="descname">organisation_read</code><span class="sig-paren">(</span><em>request</em>, <em>organisation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.organisation_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.organisation_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>organisation_id</strong> – integer An integer identifying an organisation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.organisation_update">
+<em class="property">static </em><code class="descname">organisation_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>organisation_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.organisation_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.organisation_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>organisation_id</strong> – integer An integer identifying an organisation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.permission_create">
+<em class="property">static </em><code class="descname">permission_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.permission_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.permission_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.permission_delete">
+<em class="property">static </em><code class="descname">permission_delete</code><span class="sig-paren">(</span><em>request</em>, <em>permission_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.permission_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.permission_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>permission_id</strong> – integer A unique integer value identifying the permission.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.permission_list">
+<em class="property">static </em><code class="descname">permission_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.permission_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.permission_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>permission_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of permission ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.permission_read">
+<em class="property">static </em><code class="descname">permission_read</code><span class="sig-paren">(</span><em>request</em>, <em>permission_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.permission_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.permission_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>permission_id</strong> – integer A unique integer value identifying the permission.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.permission_update">
+<em class="property">static </em><code class="descname">permission_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>permission_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.permission_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.permission_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>permission_id</strong> – integer A unique integer value identifying the permission.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.purge_expired_invitations">
+<em class="property">static </em><code class="descname">purge_expired_invitations</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.purge_expired_invitations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.purge_expired_invitations" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>cutoff_date</em>) – boolean Change the mode of the call to synchronous.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional cutoff date to purge invites before this date</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_all">
+<em class="property">static </em><code class="descname">refresh_all</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_all" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_clients">
+<em class="property">static </em><code class="descname">refresh_clients</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_clients" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_domains">
+<em class="property">static </em><code class="descname">refresh_domains</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_domains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_domains" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_keys">
+<em class="property">static </em><code class="descname">refresh_keys</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_keys" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_permissions">
+<em class="property">static </em><code class="descname">refresh_permissions</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_resources">
+<em class="property">static </em><code class="descname">refresh_resources</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_resources" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_roles">
+<em class="property">static </em><code class="descname">refresh_roles</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_roles" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.refresh_sites">
+<em class="property">static </em><code class="descname">refresh_sites</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.refresh_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.refresh_sites" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>nocache</em>) – boolean An optional query parameter to instructing an API call to by pass caches when reading data.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.request_user_deletion">
+<em class="property">static </em><code class="descname">request_user_deletion</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.request_user_deletion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.request_user_deletion" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.resource_create">
+<em class="property">static </em><code class="descname">resource_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.resource_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.resource_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.resource_delete">
+<em class="property">static </em><code class="descname">resource_delete</code><span class="sig-paren">(</span><em>request</em>, <em>resource_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.resource_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.resource_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>resource_id</strong> – integer A unique integer value identifying the resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.resource_list">
+<em class="property">static </em><code class="descname">resource_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.resource_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.resource_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>resource_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional URN prefix filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of resource ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.resource_read">
+<em class="property">static </em><code class="descname">resource_read</code><span class="sig-paren">(</span><em>request</em>, <em>resource_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.resource_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.resource_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>resource_id</strong> – integer A unique integer value identifying the resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.resource_update">
+<em class="property">static </em><code class="descname">resource_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>resource_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.resource_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.resource_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>resource_id</strong> – integer A unique integer value identifying the resource.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.role_create">
+<em class="property">static </em><code class="descname">role_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.role_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.role_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.role_delete">
+<em class="property">static </em><code class="descname">role_delete</code><span class="sig-paren">(</span><em>request</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.role_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.role_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.role_list">
+<em class="property">static </em><code class="descname">role_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.role_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.role_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of role ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.role_read">
+<em class="property">static </em><code class="descname">role_read</code><span class="sig-paren">(</span><em>request</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.role_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.role_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.role_update">
+<em class="property">static </em><code class="descname">role_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.role_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.role_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.roleresourcepermission_create">
+<em class="property">static </em><code class="descname">roleresourcepermission_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.roleresourcepermission_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.roleresourcepermission_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.roleresourcepermission_delete">
+<em class="property">static </em><code class="descname">roleresourcepermission_delete</code><span class="sig-paren">(</span><em>request</em>, <em>role_id</em>, <em>resource_id</em>, <em>permission_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.roleresourcepermission_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.roleresourcepermission_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+<li><strong>resource_id</strong> – integer A unique integer value identifying the resource.</li>
+<li><strong>permission_id</strong> – integer A unique integer value identifying the permission.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.roleresourcepermission_list">
+<em class="property">static </em><code class="descname">roleresourcepermission_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.roleresourcepermission_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.roleresourcepermission_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>permission_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional resource filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional permission filter</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.roleresourcepermission_read">
+<em class="property">static </em><code class="descname">roleresourcepermission_read</code><span class="sig-paren">(</span><em>request</em>, <em>role_id</em>, <em>resource_id</em>, <em>permission_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.roleresourcepermission_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.roleresourcepermission_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+<li><strong>resource_id</strong> – integer A unique integer value identifying the resource.</li>
+<li><strong>permission_id</strong> – integer A unique integer value identifying the permission.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.site_create">
+<em class="property">static </em><code class="descname">site_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.site_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.site_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.site_delete">
+<em class="property">static </em><code class="descname">site_delete</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.site_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.site_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.site_list">
+<em class="property">static </em><code class="descname">site_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.site_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.site_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>client_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of site ids</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional client id to filter on</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.site_read">
+<em class="property">static </em><code class="descname">site_read</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.site_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.site_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.site_update">
+<em class="property">static </em><code class="descname">site_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.site_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.site_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.sitedataschema_create">
+<em class="property">static </em><code class="descname">sitedataschema_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.sitedataschema_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.sitedataschema_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.sitedataschema_delete">
+<em class="property">static </em><code class="descname">sitedataschema_delete</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.sitedataschema_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.sitedataschema_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.sitedataschema_list">
+<em class="property">static </em><code class="descname">sitedataschema_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.sitedataschema_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.sitedataschema_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>site_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of site ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.sitedataschema_read">
+<em class="property">static </em><code class="descname">sitedataschema_read</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.sitedataschema_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.sitedataschema_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.sitedataschema_update">
+<em class="property">static </em><code class="descname">sitedataschema_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.sitedataschema_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.sitedataschema_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.siterole_create">
+<em class="property">static </em><code class="descname">siterole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.siterole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.siterole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.siterole_delete">
+<em class="property">static </em><code class="descname">siterole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.siterole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.siterole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.siterole_list">
+<em class="property">static </em><code class="descname">siterole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.siterole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.siterole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by site_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.siterole_read">
+<em class="property">static </em><code class="descname">siterole_read</code><span class="sig-paren">(</span><em>request</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.siterole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.siterole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.siterole_update">
+<em class="property">static </em><code class="descname">siterole_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.siterole_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.siterole_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.user_delete">
+<em class="property">static </em><code class="descname">user_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.user_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.user_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.user_has_permissions">
+<em class="property">static </em><code class="descname">user_has_permissions</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.user_has_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.user_has_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.user_list">
+<em class="property">static </em><code class="descname">user_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.user_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.user_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>site_ids</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional birth_date range filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional country filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional date joined range filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive email inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – boolean An optional email verified filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive first name inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional gender filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – boolean An optional is_active filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional last login range filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive last name inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive MSISDN inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – boolean An optional MSISDN verified filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive nickname inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional filter on the organisation id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional updated_at range filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive username inner match filter</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional case insensitive inner match filter across all searchable text fields</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – boolean An optional filter based on whether a user has 2FA enabled or not</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – boolean An optional filter based on whether a user belongs to an organisation or not</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array Fields and directions to order by, e.g. “-created_at,username”. Add “-” in front of a field name to indicate descending order.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of user ids</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – array An optional list of site ids</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.user_read">
+<em class="property">static </em><code class="descname">user_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.user_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.user_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.user_update">
+<em class="property">static </em><code class="descname">user_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>user_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.user_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.user_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.userdomainrole_create">
+<em class="property">static </em><code class="descname">userdomainrole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.userdomainrole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.userdomainrole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.userdomainrole_delete">
+<em class="property">static </em><code class="descname">userdomainrole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.userdomainrole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.userdomainrole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.userdomainrole_list">
+<em class="property">static </em><code class="descname">userdomainrole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.userdomainrole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.userdomainrole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by user_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by domain_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.userdomainrole_read">
+<em class="property">static </em><code class="descname">userdomainrole_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>domain_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.userdomainrole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.userdomainrole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>domain_id</strong> – integer A unique integer value identifying the domain.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersitedata_create">
+<em class="property">static </em><code class="descname">usersitedata_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersitedata_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersitedata_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersitedata_delete">
+<em class="property">static </em><code class="descname">usersitedata_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersitedata_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersitedata_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersitedata_list">
+<em class="property">static </em><code class="descname">usersitedata_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersitedata_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersitedata_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>site_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by user_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by site_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersitedata_read">
+<em class="property">static </em><code class="descname">usersitedata_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersitedata_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersitedata_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersitedata_update">
+<em class="property">static </em><code class="descname">usersitedata_update</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>user_id</em>, <em>site_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersitedata_update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersitedata_update" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersiterole_create">
+<em class="property">static </em><code class="descname">usersiterole_create</code><span class="sig-paren">(</span><em>request</em>, <em>body</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersiterole_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersiterole_create" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>body</strong> – dict A dictionary containing the parsed and validated body</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersiterole_delete">
+<em class="property">static </em><code class="descname">usersiterole_delete</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersiterole_delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersiterole_delete" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersiterole_list">
+<em class="property">static </em><code class="descname">usersiterole_list</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersiterole_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersiterole_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> (<em>role_id</em>) – integer An optional query parameter specifying the offset in the result set to start from.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to limit the number of results returned.</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – string An optional query parameter to filter by user_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by site_id</li>
+<li><strong>(</strong><strong>optional</strong><strong>)</strong> – integer An optional query parameter to filter by role_id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="management_layer.integration.Implementation.usersiterole_read">
+<em class="property">static </em><code class="descname">usersiterole_read</code><span class="sig-paren">(</span><em>request</em>, <em>user_id</em>, <em>site_id</em>, <em>role_id</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/integration.html#Implementation.usersiterole_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.integration.Implementation.usersiterole_read" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – An HttpRequest</li>
+<li><strong>user_id</strong> – string A UUID value identifying the user.</li>
+<li><strong>site_id</strong> – integer A unique integer value identifying the site.</li>
+<li><strong>role_id</strong> – integer A unique integer value identifying the role.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">result or (result, headers) tuple</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

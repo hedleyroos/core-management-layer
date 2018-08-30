@@ -1,5 +1,7 @@
 # Import our customised logging module first in order for the settings to
 # be applied to all the modules imported below.
+import prometheus_client
+
 from management_layer.logging import logging
 
 import asyncio
@@ -11,11 +13,12 @@ from aiojobs.aiohttp import setup
 import access_control
 import authentication_service
 import user_data_store
-from management_layer import settings, views
+from management_layer import settings, views, integration
 from management_layer.api.urls import add_routes
 from management_layer.mappings import refresh_all
-from management_layer.middleware import auth_middleware, sentry_middleware
+from management_layer.middleware import auth_middleware, sentry_middleware, metrics_middleware
 from management_layer.settings import REDIS, MAPPING_REFRESH_SLEEP_SECONDS
+from management_layer.metrics import add_prometheus_metrics_for_class
 
 logger = logging.getLogger()
 logger.setLevel(settings.LOG_LEVEL)
@@ -58,10 +61,20 @@ async def on_shutdown(app):
     logger.info("Done.")
 
 
+async def metrics(request):
+    resp = web.Response(body=prometheus_client.generate_latest())
+    resp.content_type = prometheus_client.CONTENT_TYPE_LATEST
+    return resp
+
+
 if __name__ == "__main__":
+    # Add metric decorators to API functions
+    add_prometheus_metrics_for_class(integration.Implementation)
+
     app = web.Application(middlewares=[
-        auth_middleware, sentry_middleware
+        metrics_middleware, auth_middleware, sentry_middleware
     ])
+
     logger.info("Using the following APIs:")
     user_data_store_configuration = user_data_store.configuration.Configuration()
     override_host = settings.USER_DATA_STORE_API
@@ -124,6 +137,9 @@ if __name__ == "__main__":
             if not hasattr(resource, "_path") or resource._path != "/the_specification"
         ]
         app.router.add_view(r"/the_specification", views.SwaggerSpec)
+
+    # Add Prometheus metrics end-point
+    app.router.add_get("/metrics", metrics)
 
     logger.info("Listening on port {}".format(settings.PORT))
     web.run_app(app, port=settings.PORT)

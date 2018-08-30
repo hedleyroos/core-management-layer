@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.transformations &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.transformations</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.transformations</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">management_layer.transformation</span> <span class="k">import</span> <span class="n">Transformation</span><span class="p">,</span> <span class="n">Mapping</span>
+
+
+<div class="viewcode-block" id="datetime_to_string"><a class="viewcode-back" href="../../management_layer.transformations.html#management_layer.transformations.datetime_to_string">[docs]</a><span class="k">def</span> <span class="nf">datetime_to_string</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%SZ&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="date_to_string"><a class="viewcode-back" href="../../management_layer.transformations.html#management_layer.transformations.date_to_string">[docs]</a><span class="k">def</span> <span class="nf">date_to_string</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="n">ADMIN_NOTE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;creator_id&quot;</span><span class="p">,</span> <span class="s2">&quot;note&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">COUNTRY</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">DOMAIN</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;parent_id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">DOMAIN_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;domain_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">,</span> <span class="s2">&quot;grant_implicitly&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">INVITATION</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;expires_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;invitor_id&quot;</span><span class="p">,</span> <span class="s2">&quot;organisation_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">INVITATION_DOMAIN_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invitation_id&quot;</span><span class="p">,</span> <span class="s2">&quot;domain_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">INVITATION_SITE_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invitation_id&quot;</span><span class="p">,</span> <span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">ORGANISATION</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">PERMISSION</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">RESOURCE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;urn&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;requires_2fa&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">ROLE_RESOURCE_PERMISSION</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;role_id&quot;</span><span class="p">,</span> <span class="s2">&quot;resource_id&quot;</span><span class="p">,</span> <span class="s2">&quot;permission_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">SITE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;domain_id&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;client_id&quot;</span><span class="p">,</span> <span class="s2">&quot;is_active&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">SITE_DATA_SCHEMA</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;schema&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">SITE_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">,</span> <span class="s2">&quot;grant_implicitly&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">USER_DOMAIN_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;domain_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">USER_SITE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;consented_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;site_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">USER_SITE_ROLE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;role_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">USER_SITE_DATA</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;consented_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;blocked&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">CLIENT</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;_post_logout_redirect_uris&quot;</span><span class="p">,</span> <span class="s2">&quot;_redirect_uris&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;client_id&quot;</span><span class="p">,</span> <span class="s2">&quot;contact_email&quot;</span><span class="p">,</span> <span class="s2">&quot;logo&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;require_consent&quot;</span><span class="p">,</span> <span class="s2">&quot;response_type&quot;</span><span class="p">,</span> <span class="s2">&quot;reuse_consent&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;terms_url&quot;</span><span class="p">,</span> <span class="s2">&quot;website_url&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">USER</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="c1"># The `date_joined` field has a datetime type, despite its name. It is a Django field and</span>
+        <span class="c1"># was left as is.</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;date_joined&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;last_login&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;birth_date&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">date_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;first_name&quot;</span><span class="p">,</span> <span class="s2">&quot;last_name&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;is_active&quot;</span><span class="p">,</span> <span class="s2">&quot;email_verified&quot;</span><span class="p">,</span> <span class="s2">&quot;msisdn_verified&quot;</span><span class="p">,</span> <span class="s2">&quot;msisdn&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;gender&quot;</span><span class="p">,</span> <span class="s2">&quot;avatar&quot;</span><span class="p">,</span> <span class="s2">&quot;country_code&quot;</span><span class="p">,</span> <span class="s2">&quot;organisation_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">DELETED_USER</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;deleted_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;username&quot;</span><span class="p">,</span> <span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;msisdn&quot;</span><span class="p">,</span> <span class="s2">&quot;reason&quot;</span><span class="p">,</span> <span class="s2">&quot;deleter_id&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">DELETED_USER_SITE</span> <span class="o">=</span> <span class="n">Transformation</span><span class="p">(</span>
+    <span class="n">mappings</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;updated_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;deletion_requested_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">),</span>
+        <span class="n">Mapping</span><span class="p">(</span><span class="s2">&quot;deletion_confirmed_at&quot;</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="n">datetime_to_string</span><span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">copy_fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;deleted_user_id&quot;</span><span class="p">,</span> <span class="s2">&quot;site_id&quot;</span><span class="p">,</span> <span class="s2">&quot;deletion_requested_via&quot;</span><span class="p">,</span> <span class="s2">&quot;deletion_confirmed_via&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

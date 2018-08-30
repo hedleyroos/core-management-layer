@@ -65,10 +65,13 @@ Performing Authentication:
     be used to look up the related key parameters (see JWKS above). The public key can be
     constructed from these parameters.
 """
+import time
+
 import jwt
 import logging
 from aiohttp.web import middleware
 from aiohttp.web_response import json_response
+from prometheus_client import Histogram
 
 from management_layer import settings
 from management_layer.mappings import Mappings
@@ -83,7 +86,20 @@ TOKEN_PREFIX = "bearer "
 TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
 # URLs that do not require authorisation.
-WHITELIST_URLS = ["/healthcheck"]
+WHITELIST_URLS = ["/healthcheck", "/metrics"]
+
+H = Histogram("management_layer_http_duration_seconds", "API duration",
+              ["path_prefix", "method", "status"])
+
+
+@middleware
+async def metrics_middleware(request, handler):
+    start_time = time.time()
+    response = await handler(request)
+    H.labels(path_prefix=request.path.split("/")[1],
+             method=request.method,
+             status=response.status).observe(time.time()-start_time)
+    return response
 
 
 @middleware

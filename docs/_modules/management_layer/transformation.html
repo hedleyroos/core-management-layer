@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.transformation &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.transformation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.transformation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module defines classes that helps to transform dictionaries.</span>
+<span class="sd">Their purpose is to simply mapping server to client classes and vice versa.</span>
+
+<span class="sd">At a high level the following happens:</span>
+
+<span class="sd">```</span>
+<span class="sd">1. body_dict = request.get_json()  # Read the request body as JSON, returning a dict</span>
+<span class="sd">2. server_model = CreatePolicyServerModel.from_dict(body_dict)  # The server</span>
+<span class="sd">model needs to be created, since it does the validation</span>
+<span class="sd">3. server_model_as_dict = server_model.to_dict()</span>
+<span class="sd">4. client_model_dict = TheTransform.apply(server_model_as_dict)</span>
+<span class="sd">5. client_model = CreatePolicyClientModel.from_dict(client_model_dict)</span>
+<span class="sd">```</span>
+
+<span class="sd">Note: Step 5 can also be written as</span>
+<span class="sd">```</span>
+<span class="sd">client_model = CreatePolicyClientModel(**client_model_dict)</span>
+<span class="sd">```</span>
+<span class="sd">The process for the response from the client is similar. The class returned</span>
+<span class="sd">needs to be converted to a dictionary, transformed and used to construct the</span>
+<span class="sd">server response class.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Mapping"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Mapping">[docs]</a><span class="k">class</span> <span class="nc">Mapping</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class representing a mapping definition</span>
+
+<span class="sd">    The mapping will be applied to a dictionary field</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_field</span><span class="p">,</span> <span class="n">output_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conversion</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param input_field: The name of the field to transform</span>
+<span class="sd">        :param output_field: The name of the new field name that should be</span>
+<span class="sd">          used. If omitted, the name of the input field is used</span>
+<span class="sd">        :param conversion: A callable used to map the value. If None,</span>
+<span class="sd">          the value of the input field is copied verbatim.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_field</span> <span class="o">=</span> <span class="n">input_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_field</span> <span class="o">=</span> <span class="n">output_field</span> <span class="ow">or</span> <span class="n">input_field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conversion</span> <span class="o">=</span> <span class="n">conversion</span></div>
+
+
+<div class="viewcode-block" id="Transformation"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Transformation">[docs]</a><span class="k">class</span> <span class="nc">Transformation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A transformation is a list of Mappings that can be applied to a dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mappings</span><span class="p">:</span> <span class="p">[</span><span class="n">Mapping</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">copy_fields</span><span class="p">:</span> <span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param mappings: Mappings for fields</span>
+<span class="sd">        :param copy_fields: Convenience mechanism for fields that should</span>
+<span class="sd">        only be copied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copy_fields</span> <span class="o">=</span> <span class="n">copy_fields</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span> <span class="o">=</span> <span class="n">mappings</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Mapping</span><span class="p">(</span><span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">copy_fields</span><span class="p">])</span>
+
+        <span class="c1"># Verify that there are no duplicate input field names specified</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_duplicates</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">input_field</span> <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1"># Verify that there are no duplicate output field names specified</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_duplicates</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">output_field</span> <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">]</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Transformation.apply"><a class="viewcode-back" href="../../management_layer.transformation.html#management_layer.transformation.Transformation.apply">[docs]</a>    <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Apply this transformation to the specified</span>
+<span class="sd">        :param dictionary: The dictionary to transform</span>
+<span class="sd">        :return: The transformed dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">mapping</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mappings</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mapping</span><span class="o">.</span><span class="n">input_field</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">dictionary</span><span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">input_field</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">mapping</span><span class="o">.</span><span class="n">conversion</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">mapping</span><span class="o">.</span><span class="n">conversion</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Field mapping failed with &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                              <span class="s2">&quot;Field: &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                              <span class="s2">&quot;Value: &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                              <span class="s2">&quot;Conversion: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">input_field</span><span class="p">,</span>
+                                                      <span class="n">value</span><span class="p">,</span> <span class="n">mapping</span><span class="o">.</span><span class="n">conversion</span><span class="p">)</span>
+                        <span class="n">LOGGER</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+                <span class="n">result</span><span class="p">[</span><span class="n">mapping</span><span class="o">.</span><span class="n">output_field</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="k">def</span> <span class="nf">_check_duplicates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+        <span class="c1"># Verify that there are no duplicate field names specified</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Field &#39;</span><span class="si">{}</span><span class="s2">&#39; specified more than &quot;</span>
+                                   <span class="s2">&quot;once&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+            <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

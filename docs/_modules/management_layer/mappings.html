@@ -1,0 +1,613 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.mappings &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.mappings</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.mappings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module manages the common permission-related information in convenient</span>
+<span class="sd">formats.</span>
+
+<span class="sd">In order to prevent repeated API lookups, data can be loaded when the</span>
+<span class="sd">application is started and refreshed as necessary. We typically store</span>
+<span class="sd">dictionaries where the key is the id of the entity, and the value is the entity</span>
+<span class="sd">itself, as well as a dictionary which maps the text identifier of the entity</span>
+<span class="sd">to its id.</span>
+
+<span class="sd">While the use of shared variables to store these values can be problematic in the case</span>
+<span class="sd">where an application is multi-threaded, the same is not true when the application</span>
+<span class="sd">uses an event loop, since it is single-threaded in nature.</span>
+
+<span class="sd">The values stored in the mapping class are refreshed when a scheduled</span>
+<span class="sd">job calls one of the refresh_* functions. Typically a refresh will use a cached</span>
+<span class="sd">value from redis, but, if the value is not in redis or it expired, the</span>
+<span class="sd">API will be queried and the cache updated.</span>
+
+<span class="sd">If multiple instances of the management-layer is running, typically only one</span>
+<span class="sd">will have to refresh redis, after which the rest will use the cached values.</span>
+
+<span class="sd">IMPORTANT: Dictionaries with integer keys that are serialised to JSON will have those keys</span>
+<span class="sd">converted to strings when cached and those keys need to be transformed back to integers</span>
+<span class="sd">after reading from the cache.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Awaitable</span>
+
+<span class="kn">import</span> <span class="nn">aioredis</span>
+<span class="kn">import</span> <span class="nn">jwt</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+<span class="kn">from</span> <span class="nn">management_layer</span> <span class="k">import</span> <span class="n">transformations</span>
+<span class="kn">from</span> <span class="nn">management_layer.constants</span> <span class="k">import</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span>
+<span class="kn">from</span> <span class="nn">management_layer.settings</span> <span class="k">import</span> <span class="n">CACHE_TIME</span><span class="p">,</span> <span class="n">AUTHENTICATION_SERVICE_JWKS</span>
+<span class="kn">from</span> <span class="nn">management_layer.sentry</span> <span class="k">import</span> <span class="n">sentry</span>
+<span class="kn">from</span> <span class="nn">management_layer.utils</span> <span class="k">import</span> <span class="n">timeit</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Mappings"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings">[docs]</a><span class="k">class</span> <span class="nc">Mappings</span><span class="p">:</span>
+    <span class="c1"># Internal copies of definitions. These are mappings of ids to dictionaries.</span>
+    <span class="n">_domains</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.DOMAIN for more detail)</span>
+    <span class="n">_permissions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.PERMISSION for more</span>
+    <span class="c1"># detail)</span>
+    <span class="n">_resources</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.RESOURCE for more detail)</span>
+    <span class="n">_roles</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.ROLE for more detail)</span>
+    <span class="n">_sites</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.SITE for more detail)</span>
+    <span class="n">_clients</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, Dict] # (refer to transformations.CLIENT for more detail)</span>
+    <span class="n">_keys</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, Dict] # (refer to JWKS documentation)</span>
+
+    <span class="c1"># Name/label to id mappings.</span>
+    <span class="n">_domain_name_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_permission_name_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_resource_urn_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_role_label_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_site_name_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_client_name_to_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_token_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[str, int]</span>
+    <span class="n">_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, int]</span>
+
+<div class="viewcode-block" id="Mappings.site_by_id"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_by_id">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">site_by_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">id_</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sites</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Site id </span><span class="si">{id_}</span><span class="s2"> not in </span><span class="si">{cls._sites}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.domain_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.domain_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">domain_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_domain_name_to_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{name}</span><span class="s2">&#39; not in </span><span class="si">{cls._domain_name_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.domain_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.domain_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">domain_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">domain_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_domains</span><span class="p">[</span><span class="n">domain_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{domain_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._domains}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.permission_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.permission_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">permission_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{name}</span><span class="s2">&#39; not in </span><span class="si">{cls._permission_name_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.permission_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.permission_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">permission_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">permission_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_permissions</span><span class="p">[</span><span class="n">permission_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{permission_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._permissions}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.resource_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.resource_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">resource_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">urn</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span><span class="p">[</span><span class="n">urn</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{urn}</span><span class="s2">&#39; not in </span><span class="si">{cls._resource_urn_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.resource_urn_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.resource_urn_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">resource_urn_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resources</span><span class="p">[</span><span class="n">resource_id</span><span class="p">][</span><span class="s2">&quot;urn&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{resource_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._resources}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.role_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.role_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">role_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_role_label_to_id_map</span><span class="p">[</span><span class="n">label</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{label}</span><span class="s2">&#39; not in </span><span class="si">{cls._role_label_to_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.role_label_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.role_label_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">role_label_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">role_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_roles</span><span class="p">[</span><span class="n">role_id</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{role_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._roles}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.site_id_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_id_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">site_id_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">token_client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the site linked to a client.</span>
+<span class="sd">        A token has a &quot;client_id&quot; string, which maps to a client with an integer id.</span>
+<span class="sd">        This integer id is used in the &quot;client_id&quot; field of a site definition. So::</span>
+
+<span class="sd">          token_client_id -&gt; client.id -&gt; site.client_id</span>
+
+<span class="sd">        :param token_client_id:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_token_client_id_to_site_id_map</span><span class="p">[</span><span class="n">token_client_id</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{token_client_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._token_client_id_to_site_id_map}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.site_name_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.site_name_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">site_name_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">site_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_sites</span><span class="p">[</span><span class="n">site_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{site_id}</span><span class="s2">&#39; not in </span><span class="si">{cls._sites}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.public_key_for"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.public_key_for">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">public_key_for</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_keys</span><span class="p">[</span><span class="n">kid</span><span class="p">][</span><span class="s2">&quot;public_key&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;&#39;</span><span class="si">{kid}</span><span class="s2">&#39; not in </span><span class="si">{cls._keys}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="Mappings.all_resource_permissions"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.Mappings.all_resource_permissions">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">all_resource_permissions</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns a list of Management Portal permissions, which are concatenations</span>
+<span class="sd">        of the resource URNs and permission names.</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">resource</span><span class="p">,</span> <span class="n">permission</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">resource</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span>
+            <span class="k">for</span> <span class="n">permission</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span>
+        <span class="p">]</span></div></div>
+
+
+<span class="c1"># Custom convenience type</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="n">TIMING_LOG_LEVEL</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+
+<span class="n">MAPPING_DATA_LIMIT</span> <span class="o">=</span> <span class="mi">100</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span>
+    <span class="n">api_call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]]],</span>
+    <span class="n">redis</span><span class="p">:</span> <span class="n">aioredis</span><span class="o">.</span><span class="n">ConnectionsPool</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">transformations</span><span class="o">.</span><span class="n">Transformation</span><span class="p">,</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">name_field</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic function to load permission-related information from the cache</span>
+<span class="sd">    or Access Control component.</span>
+
+<span class="sd">    :param api_call: The API call that returns the needed information</span>
+<span class="sd">    :param redis: The redis pool to use</span>
+<span class="sd">    :param transform: The transformation to apply to results</span>
+<span class="sd">    :param key: The cache key to use</span>
+<span class="sd">    :param name_field: The name of the field in which the text name can be found</span>
+<span class="sd">    :param nocache: Optional flag to bypass the cache for reading values</span>
+<span class="sd">    :return: A tuple containing the an id-&gt;entity map, as well as a str-&gt;id</span>
+<span class="sd">        mapping.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">items_by_id</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, T]</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">nocache</span> <span class="k">else</span> <span class="k">await</span> <span class="n">redis</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+        <span class="n">items_by_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+        <span class="c1"># When items_by_id is JSON-encoded to cache, the integer ids are (implicitly) converted to</span>
+        <span class="c1"># string, because JSON does not support integer keys. We need to convert them back after</span>
+        <span class="c1"># reading from the cache.</span>
+        <span class="n">items_by_id</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">id_</span><span class="p">):</span> <span class="n">value</span> <span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">items_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Loaded {len(items_by_id)} definitions from cache&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="k">await</span> <span class="n">api_call</span><span class="p">(</span><span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="n">MAPPING_DATA_LIMIT</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">items</span><span class="p">:</span>
+                <span class="c1"># We got no results back, so we can break.</span>
+                <span class="k">break</span>
+
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="n">items_by_id</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MAPPING_DATA_LIMIT</span><span class="p">:</span>
+                <span class="c1"># We got less results than we asked for which implies there are no more,</span>
+                <span class="c1"># so we can break.</span>
+                <span class="k">break</span>
+
+            <span class="c1"># Call API again with new offset</span>
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">MAPPING_DATA_LIMIT</span>
+
+        <span class="k">await</span> <span class="n">redis</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items_by_id</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="n">expire</span><span class="o">=</span><span class="n">CACHE_TIME</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Loaded {len(items_by_id)} definitions from the API&quot;</span><span class="p">)</span>
+
+    <span class="n">name_to_id_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">item</span><span class="p">[</span><span class="n">name_field</span><span class="p">]:</span> <span class="n">id_</span> <span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>  <span class="c1"># type: Dict[str, int]</span>
+
+    <span class="k">return</span> <span class="n">items_by_id</span><span class="p">,</span> <span class="n">name_to_id_map</span>
+
+
+<div class="viewcode-block" id="refresh_domains"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_domains">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_domains</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the domain information&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing domains&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_domains</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_domain_name_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">domain_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">DOMAIN</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:domains&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_permissions"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_permissions">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_permissions</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the permission information&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing permissions&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_permissions</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_permission_name_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">permission_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">PERMISSION</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:permissions&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_resources"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_resources">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_resources</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the resources information&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing resources&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_resources</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_resource_urn_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">resource_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">RESOURCE</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:resources&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;urn&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_roles"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_roles">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_roles</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the roles information&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing roles&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_roles</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_role_label_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">role_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">ROLE</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:roles&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_sites"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_sites">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_sites</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the sites information&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing sites&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_sites</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_site_name_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">site_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">SITE</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:sites&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">detail</span><span class="p">[</span><span class="s2">&quot;client_id&quot;</span><span class="p">]:</span> <span class="n">_id</span> <span class="k">for</span> <span class="n">_id</span><span class="p">,</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_sites</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="s2">&quot;client_id&quot;</span> <span class="ow">in</span> <span class="n">detail</span>  <span class="c1"># Some sites may not have a client linked yet.</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_clients"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_clients">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_clients</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Refresh the client information</span>
+<span class="sd">    Because this information is linked to site information, the site information needs to be</span>
+<span class="sd">    loaded before this.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing clients&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_clients</span><span class="p">,</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_client_name_to_id_map</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_load</span><span class="p">(</span>
+            <span class="n">app</span><span class="p">[</span><span class="s2">&quot;authentication_service_api&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">client_list</span><span class="p">,</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">],</span> <span class="n">transformations</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span>
+            <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:clients&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">nocache</span>
+        <span class="p">)</span>
+
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_token_client_id_to_site_id_map</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">detail</span><span class="p">[</span><span class="s2">&quot;client_id&quot;</span><span class="p">]:</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_client_id_to_site_id_map</span><span class="p">[</span><span class="n">id_</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">id_</span><span class="p">,</span> <span class="n">detail</span> <span class="ow">in</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_clients</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">Mappings</span><span class="o">.</span><span class="n">_client_id_to_site_id_map</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_keys"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_keys">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_keys</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The call for retrieving the JSON Web Token Key Set (JWKS) is not exposed by the Authentication</span>
+<span class="sd">    Service API since it is part of the OIDC Provider Django application. A simple HTTP request</span>
+<span class="sd">    (as opposed to using a client library) suffices in this case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing keys&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">items_by_id</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict[int, T]</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{__name__}</span><span class="s2">:jwks&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">nocache</span> <span class="k">else</span> <span class="k">await</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">items_by_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Loaded {len(items_by_id)} definitions from cache&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">with</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;client_session&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">AUTHENTICATION_SERVICE_JWKS</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">jwks</span> <span class="o">=</span> <span class="k">await</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">jwks</span><span class="p">[</span><span class="s2">&quot;keys&quot;</span><span class="p">]:</span>
+                <span class="n">items_by_id</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="s2">&quot;kid&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">entry</span>
+
+            <span class="k">await</span> <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">items_by_id</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf8&quot;</span><span class="p">),</span> <span class="n">expire</span><span class="o">=</span><span class="n">CACHE_TIME</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Loaded {len(items_by_id)} definitions from the JWKS end-point&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">parameters</span> <span class="ow">in</span> <span class="n">items_by_id</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># We compute the public key based on the parameters provided. The public key is not</span>
+            <span class="c1"># cached in redis. Only its parameters are.</span>
+            <span class="n">public_key</span> <span class="o">=</span> <span class="n">jwt</span><span class="o">.</span><span class="n">algorithms</span><span class="o">.</span><span class="n">RSAAlgorithm</span><span class="o">.</span><span class="n">from_jwk</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">parameters</span><span class="p">))</span>
+            <span class="c1"># We store the computed public key along with the parameters</span>
+            <span class="n">items_by_id</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s2">&quot;public_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">public_key</span>
+
+        <span class="n">Mappings</span><span class="o">.</span><span class="n">_keys</span> <span class="o">=</span> <span class="n">items_by_id</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">sentry</span><span class="o">.</span><span class="n">captureException</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="refresh_all"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.refresh_all">[docs]</a><span class="nd">@timeit</span><span class="p">(</span><span class="n">TIMING_LOG_LEVEL</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">refresh_all</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">,</span> <span class="n">nocache</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Refresh all data mappings</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Refreshing all mappings&quot;</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_keys</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_domains</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_permissions</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_resources</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_roles</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">refresh_sites</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+    <span class="c1"># Refresh clients after sites, since it references some site-based data.</span>
+    <span class="k">await</span> <span class="n">refresh_clients</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="return_tech_admin_role_for_testing"><a class="viewcode-back" href="../../management_layer.mappings.html#management_layer.mappings.return_tech_admin_role_for_testing">[docs]</a><span class="k">async</span> <span class="k">def</span> <span class="nf">return_tech_admin_role_for_testing</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Many of the test functions require the availability of a function that will return a set</span>
+<span class="sd">    of roles containing the TECH_ADMIN role. This function does exactly that.</span>
+<span class="sd">    :return: A set containing the TECH_ADMIN role id</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)}</span></div>
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

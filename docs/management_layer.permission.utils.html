@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.permission.utils module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.permission.utils module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.permission.utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.permission.utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.permission.utils">
+<span id="management-layer-permission-utils-module"></span><h1>management_layer.permission.utils module<a class="headerlink" href="#module-management_layer.permission.utils" title="Permalink to this headline">¶</a></h1>
+<p>This module contains functions that are used to check whether certain calls
+are permitted.</p>
+<p>Permissions are based on the roles assigned to the user making the request,
+which maps to permissions on resources.</p>
+<dl class="function">
+<dt id="management_layer.permission.utils.get_all_user_roles">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_all_user_roles</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Dict[str, List[int]]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_all_user_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_all_user_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns all the roles that a user has on all sites and
+domains in the system. The result looks like this:
+<a href="#id1"><span class="problematic" id="id2">``</span></a>`
+{</p>
+<blockquote>
+<div>“d:1”: [2, 4],
+“d:2”: [2, 4, 6],
+“d:9”: [2, 4],
+“d:11”: [2, 4],
+“d:10”: [2, 4],
+“d:3”: [2, 4, 6],
+“d:6”: [2, 4, 6],
+“d:4”: [2, 4, 6],
+“d:5”: [2, 3, 4, 6],
+“d:7”: [2, 4, 6],
+“d:8”: [2, 4, 6],
+“s:1”: [2, 4, 5, 6]</div></blockquote>
+<p>The dictionary keys consists of a type indicator (“d” for domains and “s”
+for sites) and an id separated by a “:”.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user for which to get roles
+:param nocache: Bypass the cache if True
+:return: A dictionary containing the roles assigned to the specified user on</p>
+<blockquote>
+<div>the domains and sites in the system.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_role_resource_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_role_resource_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, role: Union[str, int], resource: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_role_resource_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_role_resource_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the permission granted on a resource for a specified role.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – The request associated with this call</li>
+<li><strong>role</strong> – The role</li>
+<li><strong>resource</strong> – The resource</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of permission ids</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_domain">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_domain</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, user: type, domain: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles that a user has for a specified domain.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param domain: The site
+:param nocache: Bypass the cache if True
+:return: A set of role ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_site">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_site</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>site: int</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles that a user has for a specified site.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param site: The site
+:param nocache: Bypass the cache if True
+:return: A set of role ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.get_user_roles_for_site_or_domain">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">get_user_roles_for_site_or_domain</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request</em>, <em>user: type</em>, <em>site: int = None</em>, <em>domain: Union[str</em>, <em>int] = None</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; Set[int]<a class="reference internal" href="_modules/management_layer/permission/utils.html#get_user_roles_for_site_or_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.get_user_roles_for_site_or_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles assigned to the user for the specified site or domain.
+Either a site or a domain needs to be specified.
+Bypassing the cache can have a significant performance and should only be
+used in exceptional circumstances.
+:param request: The request associated with this call
+:param user: The user
+:param site: The site
+:param domain: The domain
+:param nocache: Bypass the cache if True
+:return: A list of roles ids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.role_has_permission">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">role_has_permission</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, role: Union[str, int], permission: Union[str, int], resource: Union[str, int], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#role_has_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.role_has_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if a role has a specified resource permission.</p>
+<p>Bypassing the cache can have a significant performance impact and should
+only be used in exceptional circumstances.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>request</strong> – The request associated with this call</li>
+<li><strong>role</strong> – The role to check</li>
+<li><strong>permission</strong> – The required permission</li>
+<li><strong>resource</strong> – The resource</li>
+<li><strong>nocache</strong> – Bypass the cache if True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the role has the permission on the resource, else False</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.roles_have_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">roles_have_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, roles: Set[Union[str, int]], operator: Callable[..., bool], resource_permissions: Sequence[Tuple[Union[str, int], Union[str, int]]], nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#roles_have_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.roles_have_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the specified roles has any or all (as per the operator) of
+the specified resource permissions.
+It is typically used as part of the user_has_permissions() function as the
+following simplified pseudo-code shows:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>user_has_permissions(user, operator, resource_permissions):</dt>
+<dd>roles = get_user_roles()
+return roles_have_permissions(roles, operator, resource_permissions)</dd>
+</dl>
+</div></blockquote>
+<p>If any of the roles has the required permission, the requirement is
+satisfied.
+Bypassing the cache can have a significant performance impact and should
+only be used in exceptional circumstances.
+:param request: The request associated with this call
+:param roles: A set of role ids
+:param operator: any or all
+:param resource_permissions: The resource permissions required
+:param nocache: Bypass the cache if True
+:return: True if the user is has the required permissions on the resources</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.permission.utils.user_has_permissions">
+<code class="descclassname">management_layer.permission.utils.</code><code class="descname">user_has_permissions</code><span class="sig-paren">(</span><em>request: aiohttp.web_request.Request, user: type, operator: Callable[..., bool], resource_permissions: Sequence[Tuple[Union[str, int], Union[str, int]]], site: int = None, domain: Union[str, int] = None, nocache: bool = False</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/management_layer/permission/utils.html#user_has_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.permission.utils.user_has_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether the specified user has any or all (as per the operator) of
+the specified resource permissions.
+To establish whether this is the case, we need to interrogate the roles
+associated with the user. If any of the roles has the required
+permission, the requirement is satisfied.
+:param request: The request associated with this call
+:param user: The UUID of the user performing the action
+:param operator: any or all
+:param resource_permissions: The resource permissions required
+:param site: The site from which the user is making the request
+:param domain: The domain for which the user is making the request
+:param nocache: Bypass the cache if True
+:return: True if the user is has the required permissions on the resources</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

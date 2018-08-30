@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.tests &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.tests</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.tests</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="c1"># Ensure only tests get altered env vars.</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="k">import</span> <span class="n">Mock</span>
+
+
+<div class="viewcode-block" id="make_coroutine_returning"><a class="viewcode-back" href="../../management_layer.tests.html#management_layer.tests.make_coroutine_returning">[docs]</a><span class="k">def</span> <span class="nf">make_coroutine_returning</span><span class="p">(</span><span class="n">return_value</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A utility function used to create coroutines that return a specific value.</span>
+<span class="sd">    :param return_value: The value that the coroutine should return when awaited.</span>
+<span class="sd">    :return: A mock coroutine</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">mock_coroutine</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">return_value</span>
+
+    <span class="k">return</span> <span class="n">Mock</span><span class="p">(</span><span class="n">wraps</span><span class="o">=</span><span class="n">mock_coroutine</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Test __init__ fired:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;*&quot;</span><span class="o">*</span><span class="mi">20</span><span class="p">)</span>
+
+    <span class="n">ACCESS_CONTROL_PORT</span> <span class="o">=</span> <span class="mi">60000</span>
+    <span class="n">AUTHENTICATION_SERVICE_PORT</span> <span class="o">=</span> <span class="mi">60001</span>
+    <span class="n">USER_DATA_STORE_PORT</span> <span class="o">=</span> <span class="mi">60002</span>
+    <span class="n">orig_environ</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+
+    <span class="c1"># No secrets get updated here. That is still left to each test to sort out.</span>
+    <span class="n">orig_environ</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;STUBS_CLASS&quot;</span><span class="p">:</span> <span class="s2">&quot;management_layer.integration.Implementation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;ACCESS_CONTROL_API&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:</span><span class="si">{}</span><span class="s2">/api/v1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ACCESS_CONTROL_PORT</span><span class="p">),</span>
+        <span class="s2">&quot;AUTHENTICATION_SERVICE_API&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:</span><span class="si">{}</span><span class="s2">/api/v1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">AUTHENTICATION_SERVICE_PORT</span><span class="p">),</span>
+        <span class="s2">&quot;USER_DATA_STORE_API&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:</span><span class="si">{}</span><span class="s2">/api/v1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">USER_DATA_STORE_PORT</span><span class="p">),</span>
+        <span class="s2">&quot;ACCESS_CONTROL_API_KEY&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AUTHENTICATION_SERVICE_API_KEY&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;USER_DATA_STORE_API_KEY&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;AUTHENTICATION_SERVICE_JWKS&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:</span><span class="si">{}</span><span class="s2">/openid/jwks&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">AUTHENTICATION_SERVICE_PORT</span><span class="p">),</span>
+        <span class="s2">&quot;JWT_AUDIENCE&quot;</span><span class="p">:</span> <span class="s2">&quot;test_audience&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">:</span> <span class="s2">&quot;test_secret&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;JWT_ISSUER&quot;</span><span class="p">:</span> <span class="s2">&quot;http://localhost:8000/openid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;JWT_ALGORITHM&quot;</span><span class="p">:</span> <span class="s2">&quot;HS256&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MANAGEMENT_PORTAL_CLIENT_ID&quot;</span><span class="p">:</span> <span class="s2">&quot;test_audience&quot;</span><span class="p">,</span>
+    <span class="p">})</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">orig_environ</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

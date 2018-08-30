@@ -1554,7 +1554,7 @@ definitions:
       date_joined:
         description: ''
         type: string
-        format: date
+        format: 'date-time'
         readOnly: true
       last_login:
         description: ''
@@ -4206,7 +4206,7 @@ paths:
           required: false
           type: string
           x-aor-filter:
-            format: date
+            format: date-time
             range: true
         - name: email
           description: An optional case insensitive email inner match filter
