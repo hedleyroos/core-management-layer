@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.tests.test_permission_utils module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.tests.test_permission_utils module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.tests.test_permission_utils module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.tests.test_permission_utils.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.tests.test_permission_utils">
+<span id="management-layer-tests-test-permission-utils-module"></span><h1>management_layer.tests.test_permission_utils module<a class="headerlink" href="#module-management_layer.tests.test_permission_utils" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator">
+<em class="property">class </em><code class="descclassname">management_layer.tests.test_permission_utils.</code><code class="descname">TestRequesterHasRoleDecorator</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.test_utils.AioHTTPTestCase</span></code></p>
+<p>These tests exercise the functionality provided by the &#64;require_permissions
+decorator.</p>
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.get_application">
+<code class="descname">get_application</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.get_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.get_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the application used by the tests
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain">
+<code class="descname">test_body_field_with_custom_fields_names_and_domain</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a body field is present, it must be a dictionary containing:
+* the target user id (user_id)
+* the role to be assigned (role_id)
+* either the site or domain to which it must be assigned (site_id or role_id)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site">
+<code class="descname">test_body_field_with_custom_fields_names_and_site</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a body field is present, it must be a dictionary containing:
+* the target user id (user_id)
+* the role to be assigned (role_id)
+* either the site or domain to which it must be assigned (site_id or role_id)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case">
+<code class="descname">test_body_field_with_domain_use_case</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_domain</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a body field is present, it must be a dictionary containing:
+* the target user id (user_id)
+* the role to be assigned (role_id)
+* either the site or domain to which it must be assigned (site_id or role_id)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_site_use_case">
+<code class="descname">test_body_field_with_site_use_case</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequesterHasRoleDecorator.test_body_field_with_site_use_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_site_use_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>If a body field is present, it must be a dictionary containing:
+* the target user id (user_id)
+* the role to be assigned (role_id)
+* either the site or domain to which it must be assigned (site_id or role_id)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case">
+<code class="descname">test_no_body_field_with_domain_use_case</code><em class="property"> = None</em><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case_0_target_user_id_field">
+<code class="descname">test_no_body_field_with_domain_use_case_0_target_user_id_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case_0_target_user_id_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case_1_target_invitation_id_field">
+<code class="descname">test_no_body_field_with_domain_use_case_1_target_invitation_id_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_domain_use_case_1_target_invitation_id_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case">
+<code class="descname">test_no_body_field_with_site_use_case</code><em class="property"> = None</em><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case_0_target_user_id_field">
+<code class="descname">test_no_body_field_with_site_use_case_0_target_user_id_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case_0_target_user_id_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case_1_target_invitation_id_field">
+<code class="descname">test_no_body_field_with_site_use_case_1_target_invitation_id_field</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_no_body_field_with_site_use_case_1_target_invitation_id_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator">
+<em class="property">class </em><code class="descclassname">management_layer.tests.test_permission_utils.</code><code class="descname">TestRequirePermissionsDecorator</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.test_utils.AioHTTPTestCase</span></code></p>
+<p>These tests exercise the functionality provided by the &#64;require_permissions
+decorator.</p>
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.get_application">
+<code class="descname">get_application</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.get_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.get_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the application used by the tests
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_all">
+<code class="descname">test_all</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em>, <em>mocked_get_role_resource_permissions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>A test of the ‘all’ operator by mocking roles, resources and
+permissions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_any">
+<code class="descname">test_any</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em>, <em>mocked_get_role_resource_permissions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_any"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_any" title="Permalink to this definition">¶</a></dt>
+<dd><p>A test of the ‘any’ operator by mocking roles, resources and
+permissions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_combo">
+<code class="descname">test_combo</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em>, <em>mocked_get_role_resource_permissions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_combo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_combo" title="Permalink to this definition">¶</a></dt>
+<dd><p>A test of the ‘any’ operator by mocking roles, resources and
+permissions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>mocked_get_user_roles_for_site</strong> – Function mocked by &#64;patch
+decorator</li>
+<li><strong>mocked_get_role_resource_permissions</strong> – Function mocked by &#64;patch
+decorator</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_context_header">
+<code class="descname">test_context_header</code><span class="sig-paren">(</span><em>mocked_site_function</em>, <em>mocked_domain_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_context_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_context_header" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_empty_resource_permissions_lists">
+<code class="descname">test_empty_resource_permissions_lists</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_empty_resource_permissions_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_empty_resource_permissions_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the expected behaviour when an empty resource permission list
+is used with the any or all operation.
+We mock a response for the get_user_roles_for_site() function in
+order to test the case where the specified required resource
+permission list is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_keyword_args">
+<code class="descname">test_keyword_args</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_keyword_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_keyword_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that keyword-based lookups of the user and site information works.
+We mock a response for the get_user_roles_for_site() function in
+order to check that it was called with the appropriate values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_management_portal_allowed_permission">
+<code class="descname">test_management_portal_allowed_permission</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_management_portal_allowed_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_management_portal_allowed_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a permission decorator specifies that the Management Portal should be
+allowed to make the request, even if the user does not have the permission, the
+permission is granted.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_name_and_docstring">
+<code class="descname">test_name_and_docstring</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_name_and_docstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_name_and_docstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name attribute and docstring of a decorated function should stay
+the same when the decorator is implemented properly.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_positional_args">
+<code class="descname">test_positional_args</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_positional_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_positional_args" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that positional argument lookups of the request works.
+We mock a response for the get_user_roles_for_site() function in
+order to check that it was called with the appropriate values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_stacked_decorators">
+<code class="descname">test_stacked_decorators</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_stacked_decorators"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_stacked_decorators" title="Permalink to this definition">¶</a></dt>
+<dd><p>We mock a response for the get_user_roles_for_site() function in
+order to test the case where the specified required resource
+permission list is empty.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_target_user_implied_permission">
+<code class="descname">test_target_user_implied_permission</code><span class="sig-paren">(</span><em>mocked_function</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestRequirePermissionsDecorator.test_target_user_implied_permission"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_target_user_implied_permission" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a permission decorator specifies a target user field and that field
+contains the user id of the user making the request, then implicit permission
+is granted.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="management_layer.tests.test_permission_utils.TestUtils">
+<em class="property">class </em><code class="descclassname">management_layer.tests.test_permission_utils.</code><code class="descname">TestUtils</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">aiohttp.test_utils.AioHTTPTestCase</span></code></p>
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.get_application">
+<code class="descname">get_application</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.get_application"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.get_application" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up the application used by the tests
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.tearDownAsync">
+<code class="descname">tearDownAsync</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.tearDownAsync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.tearDownAsync" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_get_all_user_roles">
+<code class="descname">test_get_all_user_roles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_get_all_user_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_get_all_user_roles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_get_role_resource_permissions">
+<code class="descname">test_get_role_resource_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_get_role_resource_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_get_role_resource_permissions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_domain">
+<code class="descname">test_get_user_roles_for_domain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_get_user_roles_for_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_domain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site">
+<code class="descname">test_get_user_roles_for_site</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_get_user_roles_for_site"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site_or_domain">
+<code class="descname">test_get_user_roles_for_site_or_domain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_get_user_roles_for_site_or_domain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site_or_domain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_role_has_permissions">
+<code class="descname">test_role_has_permissions</code><span class="sig-paren">(</span><em>mocked_roleresourcepermission_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_role_has_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_role_has_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the “role_has_permissions” function work as intended.
+:param mocked_roleresourcepermission_list: Function mocked by &#64;patch</p>
+<blockquote>
+<div>decorator</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_roles_have_permissions">
+<code class="descname">test_roles_have_permissions</code><span class="sig-paren">(</span><em>mocked_roleresourcepermission_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_roles_have_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_roles_have_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test that the “roles_have_permissions” function work as intended.
+:param mocked_roleresourcepermission_list: Function mocked by &#64;patch</p>
+<blockquote>
+<div>decorator</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="management_layer.tests.test_permission_utils.TestUtils.test_user_has_permissions">
+<code class="descname">test_user_has_permissions</code><span class="sig-paren">(</span><em>mocked_get_user_roles_for_site</em>, <em>mocked_get_role_resource_permissions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/tests/test_permission_utils.html#TestUtils.test_user_has_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.tests.test_permission_utils.TestUtils.test_user_has_permissions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

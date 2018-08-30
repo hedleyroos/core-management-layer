@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.metrics module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.metrics module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.metrics module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.metrics.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.metrics">
+<span id="management-layer-metrics-module"></span><h1>management_layer.metrics module<a class="headerlink" href="#module-management_layer.metrics" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="management_layer.metrics.add_prometheus_metrics_for_class">
+<code class="descclassname">management_layer.metrics.</code><code class="descname">add_prometheus_metrics_for_class</code><span class="sig-paren">(</span><em>klass: Type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/metrics.html#add_prometheus_metrics_for_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.metrics.add_prometheus_metrics_for_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function applying the Prometheus metrics decorator to the
+specified class functions.
+:param klass: The class to which the instrumentation will be applied</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.metrics.add_prometheus_metrics_for_module">
+<code class="descclassname">management_layer.metrics.</code><code class="descname">add_prometheus_metrics_for_module</code><span class="sig-paren">(</span><em>module_: module</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/metrics.html#add_prometheus_metrics_for_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.metrics.add_prometheus_metrics_for_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function applying the Prometheus metrics decorator to the
+specified module’s functions.
+:param <a href="#id1"><span class="problematic" id="id2">module_</span></a>: The module to which the instrumentation will be applied</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.metrics.decorate_all_in_class">
+<code class="descclassname">management_layer.metrics.</code><code class="descname">decorate_all_in_class</code><span class="sig-paren">(</span><em>klass: Type</em>, <em>decorator: function</em>, <em>whitelist: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/metrics.html#decorate_all_in_class"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.metrics.decorate_all_in_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate all functions in a class with the specified decorator
+:param klass: The class to interrogate
+:param decorator: The decorator to apply
+:param whitelist: Functions not to be decorated.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.metrics.decorate_all_in_module">
+<code class="descclassname">management_layer.metrics.</code><code class="descname">decorate_all_in_module</code><span class="sig-paren">(</span><em>module_: module</em>, <em>decorator: function</em>, <em>whitelist: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/metrics.html#decorate_all_in_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.metrics.decorate_all_in_module" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorate all functions in a module with the specified decorator
+:param <a href="#id3"><span class="problematic" id="id4">module_</span></a>: The module to interrogate
+:param decorator: The decorator to apply
+:param whitelist: Functions not to be decorated.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

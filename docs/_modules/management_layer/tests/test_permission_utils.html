@@ -1,0 +1,1348 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.tests.test_permission_utils &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../tests.html">management_layer.tests</a> &raquo;</li>
+        
+      <li>management_layer.tests.test_permission_utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.tests.test_permission_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="k">import</span> <span class="n">patch</span><span class="p">,</span> <span class="n">Mock</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="k">import</span> <span class="n">uuid1</span>
+
+<span class="kn">import</span> <span class="nn">aioredis</span>
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+<span class="kn">from</span> <span class="nn">aiohttp.test_utils</span> <span class="k">import</span> <span class="n">AioHTTPTestCase</span><span class="p">,</span> <span class="n">unittest_run_loop</span><span class="p">,</span> <span class="n">make_mocked_request</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+
+<span class="kn">from</span> <span class="nn">aiohttp.web</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">parameterized</span> <span class="k">import</span> <span class="n">parameterized</span>
+
+<span class="kn">from</span> <span class="nn">access_control</span> <span class="k">import</span> <span class="n">RoleResourcePermission</span><span class="p">,</span> <span class="n">AccessControlApi</span><span class="p">,</span> <span class="n">OperationalApi</span>
+<span class="kn">from</span> <span class="nn">management_layer.constants</span> <span class="k">import</span> <span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">,</span> <span class="n">PORTAL_CONTEXT_HEADER</span>
+<span class="kn">from</span> <span class="nn">management_layer.exceptions</span> <span class="k">import</span> <span class="n">JSONBadRequest</span><span class="p">,</span> <span class="n">JSONForbidden</span>
+<span class="kn">from</span> <span class="nn">management_layer.mappings</span> <span class="k">import</span> <span class="n">Mappings</span><span class="p">,</span> <span class="n">return_tech_admin_role_for_testing</span>
+<span class="kn">from</span> <span class="nn">management_layer.permission</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">management_layer.permission.decorator</span> <span class="k">import</span> <span class="n">require_permissions</span><span class="p">,</span> <span class="n">requester_has_role</span>
+<span class="kn">from</span> <span class="nn">management_layer.settings</span> <span class="k">import</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+
+<span class="kn">from</span> <span class="nn">management_layer.tests</span> <span class="k">import</span> <span class="n">make_coroutine_returning</span>
+
+<span class="n">TEST_TECH_ADMIN_ROLE_ID</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="c1"># Test dictionaries commonly used by tests</span>
+<span class="n">TEST_ROLES</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">f</span><span class="s2">&quot;role</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">}</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)}</span>
+<span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;label&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TEST_ROLES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEST_TECH_ADMIN_ROLE_ID</span>
+
+<span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="s2">&quot;permission</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)}</span>
+
+<span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="s2">&quot;urn:resource</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)}</span>
+
+<span class="n">TEST_SITES</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Site&quot;</span><span class="p">,</span> <span class="s2">&quot;client_id&quot;</span><span class="p">:</span> <span class="s2">&quot;test_client&quot;</span><span class="p">}}</span>
+<span class="n">TEST_SITE_NAME_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TEST_SITES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;client_id&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TEST_SITES</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span><span class="p">[</span><span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span><span class="p">]</span> <span class="o">=</span> <span class="mi">11</span>
+
+<span class="n">TEST_DOMAINS</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Test Domain&quot;</span><span class="p">}}</span>
+<span class="n">TEST_DOMAIN_NAME_TO_ID_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">TEST_DOMAINS</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span><span class="p">,</span>
+                <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_resource_urn_to_id_map</span><span class="o">=</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestRequirePermissionsDecorator</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    These tests exercise the functionality provided by the @require_permissions</span>
+<span class="sd">    decorator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span> <span class="o">=</span> <span class="n">TEST_SITES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">][</span><span class="s2">&quot;client_id&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_target_user_implied_permission"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_target_user_implied_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_target_user_implied_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When a permission decorator specifies a target user field and that field</span>
+<span class="sd">        contains the user id of the user making the request, then implicit permission</span>
+<span class="sd">        is granted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">target_user_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">example_call_with_user</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="n">the_user_id</span><span class="p">):</span>
+            <span class="c1"># The caller is also the target user</span>
+            <span class="k">return</span> <span class="n">_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">the_user_id</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>  <span class="c1"># No roles</span>
+
+        <span class="c1"># Never gets allowed if the user id in the request token does not match</span>
+        <span class="c1"># the value in the target user field.</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">example_call_with_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="s2">&quot;fake_user_id&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Allow the call when the caller is also the target user.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">example_call_with_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">)))</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_management_portal_allowed_permission"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_management_portal_allowed_permission">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_management_portal_allowed_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When a permission decorator specifies that the Management Portal should be</span>
+<span class="sd">        allowed to make the request, even if the user does not have the permission, the</span>
+<span class="sd">        permission is granted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">allow_for_management_portal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">example_call</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="c1"># The caller is also the target user</span>
+            <span class="k">return</span> <span class="n">_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>  <span class="c1"># No roles</span>
+
+        <span class="c1"># This call is not allowed because the request is not made from the Management Portal</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">example_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="n">mocked_request_from_management_portal</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+        <span class="n">mocked_request_from_management_portal</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">][</span><span class="s2">&quot;aud&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+
+        <span class="c1"># Allow the call when the call is made from the Management Portal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">example_call</span><span class="p">(</span><span class="n">mocked_request_from_management_portal</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_name_and_docstring"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_name_and_docstring">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_name_and_docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The name attribute and docstring of a decorated function should stay</span>
+<span class="sd">        the same when the decorator is implemented properly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:ge:test:foo&quot;</span><span class="p">,</span> <span class="s2">&quot;read&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">simple</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;This docstring is checked.&quot;&quot;&quot;</span>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">simple</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;simple&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">simple</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span> <span class="s2">&quot;This docstring is checked.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_empty_resource_permissions_lists"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_empty_resource_permissions_lists">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_empty_resource_permissions_lists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the expected behaviour when an empty resource permission list</span>
+<span class="sd">        is used with the any or all operation.</span>
+<span class="sd">        We mock a response for the get_user_roles_for_site() function in</span>
+<span class="sd">        order to test the case where the specified required resource</span>
+<span class="sd">        permission list is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># require_permissions(all, []) always succeeds, regardless of which</span>
+        <span class="c1"># roles the user has.</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">empty_all</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># require_permissions(any, []) always fails, regardless of which roles</span>
+        <span class="c1"># the user has.</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">empty_any</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s2">&quot;You must be a tech admin&quot;</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">0</span><span class="p">})</span>  <span class="c1"># An arbitrary id</span>
+
+        <span class="c1"># Always gets allowed, regardless of the user&#39;s roles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">empty_all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="c1"># Never gets allowed unless the user has the TECH_ADMIN role</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">empty_any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="k">await</span> <span class="n">empty_any</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">),</span>
+                         <span class="s2">&quot;You must be a tech admin&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_positional_args"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_positional_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_positional_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that positional argument lookups of the request works.</span>
+<span class="sd">        We mock a response for the get_user_roles_for_site() function in</span>
+<span class="sd">        order to check that it was called with the appropriate values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[],</span> <span class="n">request_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">positional_args</span><span class="p">(</span><span class="n">_arg1</span><span class="p">,</span> <span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+        <span class="c1"># Call the test function...</span>
+        <span class="k">await</span> <span class="n">positional_args</span><span class="p">(</span><span class="s2">&quot;some_value&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+        <span class="c1"># ...and verify that the mocked function was called with the right</span>
+        <span class="c1"># arguments.</span>
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">,</span>
+                                           <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_keyword_args"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_keyword_args">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_keyword_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check that keyword-based lookups of the user and site information works.</span>
+<span class="sd">        We mock a response for the get_user_roles_for_site() function in</span>
+<span class="sd">        order to check that it was called with the appropriate values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[],</span> <span class="n">request_field</span><span class="o">=</span><span class="s2">&quot;i_am_a_request&quot;</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">keyword_args</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+        <span class="c1"># Call the test function...</span>
+        <span class="k">await</span> <span class="n">keyword_args</span><span class="p">(</span><span class="n">arg</span><span class="o">=</span><span class="mi">123</span><span class="p">,</span> <span class="n">i_am_a_request</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+        <span class="c1"># ...and verify that the mocked function was called with the right</span>
+        <span class="c1"># arguments.</span>
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">assert_called_with</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">,</span>
+                                           <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_stacked_decorators"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_stacked_decorators">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_stacked_decorators</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        We mock a response for the get_user_roles_for_site() function in</span>
+<span class="sd">        order to test the case where the specified required resource</span>
+<span class="sd">        permission list is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This should never get executed&quot;</span><span class="p">)</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">reverse_stack</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;This should never get executed&quot;</span><span class="p">)</span>
+
+        <span class="n">mocked_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1000</span><span class="p">})</span>  <span class="c1"># An arbitrary id</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">reverse_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_all"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_all">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
+                       <span class="n">mocked_get_role_resource_permissions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A test of the &#39;all&#39; operator by mocking roles, resources and</span>
+<span class="sd">        permissions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_get_role_resource_permissions</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Return hand-crafted responses for this test.</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;urn:resource1&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;urn:resource2&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_get_role_resource_permissions</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_get_role_resource_permissions</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">single_requirement</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># The values for the user and site is not important since this test</span>
+        <span class="c1"># mocks the roles returned.</span>
+
+        <span class="c1"># If the user has no roles, then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has a role without the necessary permission,</span>
+        <span class="c1"># then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">2</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has a role with the necessary permission,</span>
+        <span class="c1"># then access is allowed.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">multiple_requirements</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># If the user has only one of the permissions, then access is</span>
+        <span class="c1"># denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has all the permissions, then access is allowed.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_any"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_any">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
+                       <span class="n">mocked_get_role_resource_permissions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A test of the &#39;any&#39; operator by mocking roles, resources and</span>
+<span class="sd">        permissions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_get_role_resource_permissions</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Return hand-crafted responses for this test.</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;urn:resource1&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;urn:resource2&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_get_role_resource_permissions</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_get_role_resource_permissions</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">single_requirement</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># The values for the user and site is not important since this test</span>
+        <span class="c1"># mocks the roles returned.</span>
+
+        <span class="c1"># If the user has no roles, then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has a role without the necessary permission,</span>
+        <span class="c1"># then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">2</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has a role with the necessary permission,</span>
+        <span class="c1"># then access is allowed.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">multiple_requirements</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># If the user has any one of the permissions, then access is</span>
+        <span class="c1"># allowed.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">([</span><span class="s2">&quot;role1&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">([</span><span class="s2">&quot;role2&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">([</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">multiple_requirements</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="c1"># If the user has a role without the necessary permission,</span>
+        <span class="c1"># then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">([</span><span class="s2">&quot;role3&quot;</span><span class="p">])</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">single_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_combo"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_combo">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_combo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
+                         <span class="n">mocked_get_role_resource_permissions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A test of the &#39;any&#39; operator by mocking roles, resources and</span>
+<span class="sd">        permissions.</span>
+
+<span class="sd">        :param mocked_get_user_roles_for_site: Function mocked by @patch</span>
+<span class="sd">            decorator</span>
+<span class="sd">        :param mocked_get_role_resource_permissions: Function mocked by @patch</span>
+<span class="sd">            decorator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_get_role_resource_permissions</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Return hand-crafted responses for this test.</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;urn:resource1&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;urn:resource2&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;urn:resource3&quot;</span><span class="p">):</span> <span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_get_role_resource_permissions</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_get_role_resource_permissions</span>
+
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">),</span>
+                                   <span class="p">(</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">,</span> <span class="s2">&quot;permission3&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">combo_requirement</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># The values for the user and site is not important since this test</span>
+        <span class="c1"># mocks the roles returned.</span>
+
+        <span class="c1"># If the user has no roles, then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has roles partially fulfilling the required permissions,</span>
+        <span class="c1"># then access is denied.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">2</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">3</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">})</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># If the user has roles with the necessary permissions,</span>
+        <span class="c1"># then access is allowed.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">combo_requirement</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestRequirePermissionsDecorator.test_context_header"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequirePermissionsDecorator.test_context_header">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_context_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_site_function</span><span class="p">,</span> <span class="n">mocked_domain_function</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@require_permissions</span><span class="p">(</span><span class="nb">all</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">somecall</span><span class="p">(</span><span class="n">_request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">mocked_site_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>  <span class="c1"># No roles</span>
+        <span class="n">mocked_domain_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>  <span class="c1"># No roles</span>
+
+        <span class="c1"># Invalid value</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;foo&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONBadRequest</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Invalid value</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;foo:bar&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONBadRequest</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Invalid value</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;foo:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONBadRequest</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Valid header, but Management Portal is not the caller</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;d:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span> <span class="o">+</span> <span class="s2">&quot;foo&quot;</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Valid site but not roles</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;s:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Valid domain, but no roles</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;d:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Roles will be returned</span>
+        <span class="n">mocked_site_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)}</span>
+        <span class="p">)</span>
+        <span class="n">mocked_domain_function</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)}</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Valid site</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;s:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="c1"># Valid domain, but no roles</span>
+        <span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+            <span class="n">PORTAL_CONTEXT_HEADER</span><span class="p">:</span> <span class="s2">&quot;d:123&quot;</span>
+        <span class="p">})</span>
+        <span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="n">MANAGEMENT_PORTAL_CLIENT_ID</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">somecall</span><span class="p">(</span><span class="n">mocked_request</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                <span class="n">_token_client_id_to_site_id_map</span><span class="o">=</span><span class="n">TEST_TOKEN_CLIENT_ID_TO_SITE_ID_MAP</span><span class="p">,</span>
+                <span class="n">_sites</span><span class="o">=</span><span class="n">TEST_SITES</span><span class="p">,</span>
+                <span class="n">_site_name_to_id_map</span><span class="o">=</span><span class="n">TEST_SITE_NAME_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_domains</span><span class="o">=</span><span class="n">TEST_DOMAINS</span><span class="p">,</span>
+                <span class="n">_domain_name_to_id_map</span><span class="o">=</span><span class="n">TEST_DOMAIN_NAME_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_roles</span><span class="o">=</span><span class="n">TEST_ROLES</span><span class="p">,</span>
+                <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_resource_urn_to_id_map</span><span class="o">=</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestRequesterHasRoleDecorator</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    These tests exercise the functionality provided by the @require_permissions</span>
+<span class="sd">    decorator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">site_id</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span> <span class="o">=</span> <span class="n">TEST_SITES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">site_id</span><span class="p">][</span><span class="s2">&quot;client_id&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span> <span class="o">=</span> <span class="n">make_mocked_request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">),</span>
+            <span class="s2">&quot;aud&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">client_id</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app</span></div>
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_domain_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_domain_use_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_domain</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a body field is present, it must be a dictionary containing:</span>
+<span class="sd">        * the target user id (user_id)</span>
+<span class="sd">        * the role to be assigned (role_id)</span>
+<span class="sd">        * either the site or domain to which it must be assigned (site_id or role_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Correct</span>
+        <span class="k">def</span> <span class="nf">call_with_body</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span>
+            <span class="s2">&quot;role_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;domain_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_site_use_case"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_site_use_case">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_site_use_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a body field is present, it must be a dictionary containing:</span>
+<span class="sd">        * the target user id (user_id)</span>
+<span class="sd">        * the role to be assigned (role_id)</span>
+<span class="sd">        * either the site or domain to which it must be assigned (site_id or role_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">body_field</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Correct</span>
+        <span class="k">def</span> <span class="nf">call_with_body</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span>
+            <span class="s2">&quot;role_id&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;site_id&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span></div>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;target_user_id_field&quot;</span><span class="p">,</span> <span class="s2">&quot;target_invitation_id_field&quot;</span><span class="p">])</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_no_body_field_with_domain_use_case</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_domain</span>
+    <span class="p">):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">field</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;domain_id_field&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;role_id_field&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">}</span>
+
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">call_without_body</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_or_invitation</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="nd">@parameterized</span><span class="o">.</span><span class="n">expand</span><span class="p">([</span><span class="s2">&quot;target_user_id_field&quot;</span><span class="p">,</span> <span class="s2">&quot;target_invitation_id_field&quot;</span><span class="p">])</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_no_body_field_with_site_use_case</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span>
+    <span class="p">):</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">field</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;site_id_field&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="s2">&quot;role_id_field&quot;</span><span class="p">:</span> <span class="mi">3</span>
+        <span class="p">}</span>
+
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">call_without_body</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user_or_invitation</span><span class="p">,</span> <span class="n">site</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_without_body</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_domain">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_domain&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_custom_fields_names_and_domain</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_domain</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a body field is present, it must be a dictionary containing:</span>
+<span class="sd">        * the target user id (user_id)</span>
+<span class="sd">        * the role to be assigned (role_id)</span>
+<span class="sd">        * either the site or domain to which it must be assigned (site_id or role_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">request_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">body_field</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">target_user_id_field</span><span class="o">=</span><span class="s2">&quot;some_user&quot;</span><span class="p">,</span>
+                            <span class="n">domain_id_field</span><span class="o">=</span><span class="s2">&quot;some_domain&quot;</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="s2">&quot;some_role&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># Note that request is not first</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_user&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span>
+            <span class="s2">&quot;some_role&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;some_domain&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_domain</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestRequesterHasRoleDecorator.test_body_field_with_custom_fields_names_and_site">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_body_field_with_custom_fields_names_and_site</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a body field is present, it must be a dictionary containing:</span>
+<span class="sd">        * the target user id (user_id)</span>
+<span class="sd">        * the role to be assigned (role_id)</span>
+<span class="sd">        * either the site or domain to which it must be assigned (site_id or role_id)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nd">@requester_has_role</span><span class="p">(</span><span class="n">request_field</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">body_field</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">target_user_id_field</span><span class="o">=</span><span class="s2">&quot;some_user&quot;</span><span class="p">,</span>
+                            <span class="n">site_id_field</span><span class="o">=</span><span class="s2">&quot;some_site&quot;</span><span class="p">,</span> <span class="n">role_id_field</span><span class="o">=</span><span class="s2">&quot;some_role&quot;</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>  <span class="c1"># Note that request is not first</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;some_user&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">hex</span><span class="p">,</span>
+            <span class="s2">&quot;some_role&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="s2">&quot;some_site&quot;</span><span class="p">:</span> <span class="mi">1</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Test the case where the requester has no roles for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">(</span><span class="nb">set</span><span class="p">())</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">JSONForbidden</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">)</span>
+
+        <span class="c1"># Test the case where the requester has the role for the specified domain.</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span><span class="mi">1</span><span class="p">})</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span>
+
+        <span class="c1"># Test the case where the requester has the TECH_ADMIN role</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">return_tech_admin_role_for_testing</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">call_with_body</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mocked_request</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="TestUtils"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils">[docs]</a><span class="nd">@patch</span><span class="o">.</span><span class="n">multiple</span><span class="p">(</span><span class="s2">&quot;management_layer.mappings.Mappings&quot;</span><span class="p">,</span>
+                <span class="n">_role_label_to_id_map</span><span class="o">=</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_permission_name_to_id_map</span><span class="o">=</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">,</span>
+                <span class="n">_resource_urn_to_id_map</span><span class="o">=</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TestUtils</span><span class="p">(</span><span class="n">AioHTTPTestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestUtils.setUp"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">(</span>
+            <span class="n">spec</span><span class="o">=</span><span class="n">Request</span><span class="p">,</span>
+            <span class="n">app</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUtils.tearDownAsync"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.tearDownAsync">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">tearDownAsync</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDownAsync</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">backend</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">,</span> <span class="s2">&quot;operational_api&quot;</span><span class="p">]:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">[</span><span class="n">backend</span><span class="p">]</span><span class="o">.</span><span class="n">api_client</span><span class="o">.</span><span class="n">rest_client</span><span class="o">.</span><span class="n">pool_manager</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestUtils.get_application"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.get_application">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up the application used by the tests</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">web</span><span class="o">.</span><span class="n">Response</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;Hello, world&#39;</span><span class="p">)</span>
+
+        <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">Application</span><span class="p">(</span><span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;access_control_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">AccessControlApi</span><span class="p">()</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;operational_api&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">OperationalApi</span><span class="p">()</span>
+        <span class="n">app</span><span class="p">[</span><span class="s2">&quot;redis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aioredis</span><span class="o">.</span><span class="n">create_redis_pool</span><span class="p">(</span><span class="s2">&quot;redis://localhost:6379&quot;</span><span class="p">,</span> <span class="n">loop</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">loop</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">router</span><span class="o">.</span><span class="n">add_get</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">hello</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">app</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_role_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_role_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
+           <span class="s2">&quot;.AccessControlApi.roleresourcepermission_list&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_role_has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_roleresourcepermission_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test that the &quot;role_has_permissions&quot; function work as intended.</span>
+<span class="sd">        :param mocked_roleresourcepermission_list: Function mocked by @patch</span>
+<span class="sd">            decorator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_roleresourcepermission_list</span><span class="p">(</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">):</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span>
+                    <span class="n">RoleResourcePermission</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+                        <span class="s2">&quot;role_id&quot;</span><span class="p">:</span> <span class="n">role_id</span><span class="p">,</span>
+                        <span class="s2">&quot;resource_id&quot;</span><span class="p">:</span> <span class="n">resource_id</span><span class="p">,</span>
+                        <span class="s2">&quot;permission_id&quot;</span><span class="p">:</span> <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                        <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="p">})</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_roleresourcepermission_list</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_roleresourcepermission_list</span>
+
+        <span class="c1"># We test both the cached and non-cached use-cases. It is important</span>
+        <span class="c1"># that we test with nocache=True first, since this will not read from</span>
+        <span class="c1"># the cache, but populate it for the next iteration where nocache=False.</span>
+        <span class="k">for</span> <span class="n">nocache</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="c1"># Call function using labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                                                <span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                                                <span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                                                <span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">,</span>
+                                                <span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Call function using ids</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">],</span>
+                    <span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission2&quot;</span><span class="p">],</span>
+                    <span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">role_has_permission</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">],</span>
+                    <span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">],</span> <span class="n">nocache</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_roles_have_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_roles_have_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;access_control.api.access_control_api&quot;</span>
+           <span class="s2">&quot;.AccessControlApi.roleresourcepermission_list&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_roles_have_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_roleresourcepermission_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test that the &quot;roles_have_permissions&quot; function work as intended.</span>
+<span class="sd">        :param mocked_roleresourcepermission_list: Function mocked by @patch</span>
+<span class="sd">            decorator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_roleresourcepermission_list</span><span class="p">(</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">):</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">[</span>
+                    <span class="n">RoleResourcePermission</span><span class="p">(</span><span class="o">**</span><span class="p">{</span>
+                        <span class="s2">&quot;role_id&quot;</span><span class="p">:</span> <span class="n">role_id</span><span class="p">,</span>
+                        <span class="s2">&quot;resource_id&quot;</span><span class="p">:</span> <span class="n">resource_id</span><span class="p">,</span>
+                        <span class="s2">&quot;permission_id&quot;</span><span class="p">:</span> <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                        <span class="s2">&quot;updated_at&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+                    <span class="p">})</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_roleresourcepermission_list</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_roleresourcepermission_list</span>
+
+        <span class="c1"># We test both the cached and non-cached use-cases. It is important</span>
+        <span class="c1"># that we test with nocache=True first, since this will not read from</span>
+        <span class="c1"># the cache, but populate it for the next iteration where nocache=False.</span>
+        <span class="c1"># Test using the &#39;all&#39; operator</span>
+        <span class="k">for</span> <span class="n">nocache</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="c1"># Call function using labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Call function using ids</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission2&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Test using the &#39;any&#39; operator</span>
+        <span class="k">for</span> <span class="n">nocache</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="c1"># Call function using labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">any</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">,</span> <span class="s2">&quot;permission3&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">any</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">,</span> <span class="s2">&quot;permission3&quot;</span><span class="p">),</span>
+                     <span class="p">(</span><span class="s2">&quot;urn:resource4&quot;</span><span class="p">,</span> <span class="s2">&quot;permission4&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="s2">&quot;role1&quot;</span><span class="p">,</span> <span class="s2">&quot;role2&quot;</span><span class="p">},</span> <span class="nb">any</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Call function using ids</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span> <span class="nb">any</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">]),</span>
+                     <span class="p">(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission3&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span> <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission3&quot;</span><span class="p">]),</span>
+                     <span class="p">(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource4&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission4&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">],</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role2&quot;</span><span class="p">]},</span>
+                    <span class="nb">all</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">]),</span>
+                     <span class="p">(</span><span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;urn:resource3&quot;</span><span class="p">],</span>
+                      <span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission3&quot;</span><span class="p">])],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Check that the TECH_ADMIN role grants permission to everything</span>
+        <span class="c1"># for &#39;all&#39; and &#39;any&#39; operator.</span>
+        <span class="k">for</span> <span class="n">operator</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">all</span><span class="p">,</span> <span class="nb">any</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">roles_have_permissions</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span>
+                    <span class="p">{</span><span class="n">Mappings</span><span class="o">.</span><span class="n">role_id_for</span><span class="p">(</span><span class="n">TECH_ADMIN_ROLE_LABEL</span><span class="p">)},</span> <span class="n">operator</span><span class="p">,</span>
+                    <span class="p">[(</span><span class="n">f</span><span class="s2">&quot;urn:resource</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;permission</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)],</span>
+                    <span class="n">nocache</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_user_has_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_user_has_permissions">[docs]</a>    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_role_resource_permissions&quot;</span><span class="p">)</span>
+    <span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;management_layer.permission.utils.get_user_roles_for_site&quot;</span><span class="p">)</span>
+    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_user_has_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mocked_get_user_roles_for_site</span><span class="p">,</span>
+                                        <span class="n">mocked_get_role_resource_permissions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># All users will have only &#39;role1&#39; on any site</span>
+        <span class="n">mocked_get_user_roles_for_site</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="n">make_coroutine_returning</span><span class="p">({</span>
+            <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;role1&quot;</span><span class="p">]</span>
+        <span class="p">})</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">dummy_get_role_resource_permissions</span><span class="p">(</span><span class="n">_request</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">nocache</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="c1"># Return hand-crafted responses for this test.</span>
+            <span class="n">role_id</span> <span class="o">=</span> <span class="n">role</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">role</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> <span class="n">TEST_ROLE_LABEL_TO_ID_MAP</span><span class="p">[</span><span class="n">role</span><span class="p">]</span>
+            <span class="n">resource_id</span> <span class="o">=</span> <span class="n">resource</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">resource</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">int</span> <span class="k">else</span> \
+                <span class="n">TEST_RESOURCE_URN_TO_ID_MAP</span><span class="p">[</span><span class="n">resource</span><span class="p">]</span>
+            <span class="n">responses</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span> <span class="p">{</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission1&quot;</span><span class="p">]},</span>
+                <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span> <span class="p">{</span><span class="n">TEST_PERMISSION_NAME_TO_ID_MAP</span><span class="p">[</span><span class="s2">&quot;permission2&quot;</span><span class="p">]}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">responses</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">role_id</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">),</span> <span class="p">[])</span>
+
+        <span class="n">mocked_get_role_resource_permissions</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> \
+            <span class="n">dummy_get_role_resource_permissions</span>
+
+        <span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
+        <span class="n">site</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Because the user has only role1 assigned and role1 implies only</span>
+        <span class="c1"># permission1 on resource1, only this one permission check will succeed.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission1&quot;</span><span class="p">)],</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span>
+        <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource1&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span>
+        <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">user_has_permissions</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="nb">any</span><span class="p">,</span> <span class="p">[(</span><span class="s2">&quot;urn:resource2&quot;</span><span class="p">,</span> <span class="s2">&quot;permission2&quot;</span><span class="p">)],</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span>
+        <span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site_or_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site_or_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_site_or_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We just test the validation performed by this function.</span>
+        <span class="c1"># Other tests cover the lookups.</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">uuid1</span><span class="p">()</span>
+        <span class="n">site</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">domain</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Either a site or domain must be specified</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_user_roles_for_site_or_domain</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+
+        <span class="c1"># Both a site and domain cannot be specified</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_user_roles_for_site_or_domain</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dummy_request</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">site</span><span class="o">=</span><span class="n">site</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="n">domain</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_get_role_resource_permissions"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_role_resource_permissions">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_role_resource_permissions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_get_all_user_roles"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_all_user_roles">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_all_user_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_domain"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_domain">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_domain</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TestUtils.test_get_user_roles_for_site"><a class="viewcode-back" href="../../../management_layer.tests.test_permission_utils.html#management_layer.tests.test_permission_utils.TestUtils.test_get_user_roles_for_site">[docs]</a>    <span class="nd">@unittest_run_loop</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_user_roles_for_site</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># TODO</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

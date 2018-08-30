@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.mappings module &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">management_layer.mappings module</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>management_layer.mappings module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/management_layer.mappings.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-management_layer.mappings">
+<span id="management-layer-mappings-module"></span><h1>management_layer.mappings module<a class="headerlink" href="#module-management_layer.mappings" title="Permalink to this headline">¶</a></h1>
+<p>This module manages the common permission-related information in convenient
+formats.</p>
+<p>In order to prevent repeated API lookups, data can be loaded when the
+application is started and refreshed as necessary. We typically store
+dictionaries where the key is the id of the entity, and the value is the entity
+itself, as well as a dictionary which maps the text identifier of the entity
+to its id.</p>
+<p>While the use of shared variables to store these values can be problematic in the case
+where an application is multi-threaded, the same is not true when the application
+uses an event loop, since it is single-threaded in nature.</p>
+<p>The values stored in the mapping class are refreshed when a scheduled
+job calls one of the refresh_* functions. Typically a refresh will use a cached
+value from redis, but, if the value is not in redis or it expired, the
+API will be queried and the cache updated.</p>
+<p>If multiple instances of the management-layer is running, typically only one
+will have to refresh redis, after which the rest will use the cached values.</p>
+<p>IMPORTANT: Dictionaries with integer keys that are serialised to JSON will have those keys
+converted to strings when cached and those keys need to be transformed back to integers
+after reading from the cache.</p>
+<dl class="class">
+<dt id="management_layer.mappings.Mappings">
+<em class="property">class </em><code class="descclassname">management_layer.mappings.</code><code class="descname">Mappings</code><a class="reference internal" href="_modules/management_layer/mappings.html#Mappings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.all_resource_permissions">
+<em class="property">classmethod </em><code class="descname">all_resource_permissions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.all_resource_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.all_resource_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a list of Management Portal permissions, which are concatenations
+of the resource URNs and permission names.
+:return:</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.domain_id_for">
+<em class="property">classmethod </em><code class="descname">domain_id_for</code><span class="sig-paren">(</span><em>name: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.domain_id_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.domain_id_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.domain_name_for">
+<em class="property">classmethod </em><code class="descname">domain_name_for</code><span class="sig-paren">(</span><em>domain_id: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.domain_name_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.domain_name_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.permission_id_for">
+<em class="property">classmethod </em><code class="descname">permission_id_for</code><span class="sig-paren">(</span><em>name: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.permission_id_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.permission_id_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.permission_name_for">
+<em class="property">classmethod </em><code class="descname">permission_name_for</code><span class="sig-paren">(</span><em>permission_id: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.permission_name_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.permission_name_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.public_key_for">
+<em class="property">classmethod </em><code class="descname">public_key_for</code><span class="sig-paren">(</span><em>kid: str</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.public_key_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.public_key_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.resource_id_for">
+<em class="property">classmethod </em><code class="descname">resource_id_for</code><span class="sig-paren">(</span><em>urn: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.resource_id_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.resource_id_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.resource_urn_for">
+<em class="property">classmethod </em><code class="descname">resource_urn_for</code><span class="sig-paren">(</span><em>resource_id: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.resource_urn_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.resource_urn_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.role_id_for">
+<em class="property">classmethod </em><code class="descname">role_id_for</code><span class="sig-paren">(</span><em>label: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.role_id_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.role_id_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.role_label_for">
+<em class="property">classmethod </em><code class="descname">role_label_for</code><span class="sig-paren">(</span><em>role_id: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.role_label_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.role_label_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.site_by_id">
+<em class="property">classmethod </em><code class="descname">site_by_id</code><span class="sig-paren">(</span><em>id_: int</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.site_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.site_by_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.site_id_for">
+<em class="property">classmethod </em><code class="descname">site_id_for</code><span class="sig-paren">(</span><em>token_client_id: str</em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.site_id_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.site_id_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the site linked to a client.
+A token has a “client_id” string, which maps to a client with an integer id.
+This integer id is used in the “client_id” field of a site definition. So:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">token_client_id</span> <span class="o">-&gt;</span> <span class="n">client</span><span class="o">.</span><span class="n">id</span> <span class="o">-&gt;</span> <span class="n">site</span><span class="o">.</span><span class="n">client_id</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token_client_id</strong> – </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="management_layer.mappings.Mappings.site_name_for">
+<em class="property">classmethod </em><code class="descname">site_name_for</code><span class="sig-paren">(</span><em>site_id: int</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/management_layer/mappings.html#Mappings.site_name_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.Mappings.site_name_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_all">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_all</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh all data mappings</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_clients">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_clients</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_clients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the client information
+Because this information is linked to site information, the site information needs to be
+loaded before this.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_domains">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_domains</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_domains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_domains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the domain information</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_keys">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_keys</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>The call for retrieving the JSON Web Token Key Set (JWKS) is not exposed by the Authentication
+Service API since it is part of the OIDC Provider Django application. A simple HTTP request
+(as opposed to using a client library) suffices in this case.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_permissions">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_permissions</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_permissions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_permissions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the permission information</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_resources">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_resources</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the resources information</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_roles">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_roles</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_roles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the roles information</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.refresh_sites">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">refresh_sites</code><span class="sig-paren">(</span><em>app: aiohttp.web_app.Application</em>, <em>nocache: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#refresh_sites"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.refresh_sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refresh the sites information</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="management_layer.mappings.return_tech_admin_role_for_testing">
+<code class="descclassname">management_layer.mappings.</code><code class="descname">return_tech_admin_role_for_testing</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/management_layer/mappings.html#return_tech_admin_role_for_testing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#management_layer.mappings.return_tech_admin_role_for_testing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Many of the test functions require the availability of a function that will return a set
+of roles containing the TECH_ADMIN role. This function does exactly that.
+:return: A set containing the TECH_ADMIN role id</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

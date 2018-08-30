@@ -1,0 +1,238 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>management_layer.exceptions &mdash; Girl Effect: Core management layer  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Girl Effect: Core management layer
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Girl Effect: Core management layer</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>management_layer.exceptions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for management_layer.exceptions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">from</span> <span class="nn">aiohttp</span> <span class="k">import</span> <span class="n">web</span>
+
+
+<div class="viewcode-block" id="JSONException"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONException">[docs]</a><span class="k">class</span> <span class="nc">JSONException</span><span class="p">(</span><span class="n">web</span><span class="o">.</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">json_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Use the json object given or create a message object using the string in message.</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">json_data</span> <span class="k">else</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span><span class="p">})</span>
+        <span class="c1"># Super the web HTTPException, however force the content_type to application/json.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                         <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s2">&quot;application/json&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="JSONBadRequest"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONBadRequest">[docs]</a><span class="k">class</span> <span class="nc">JSONBadRequest</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">400</span></div>
+
+
+<div class="viewcode-block" id="JSONUnauthorized"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONUnauthorized">[docs]</a><span class="k">class</span> <span class="nc">JSONUnauthorized</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">401</span></div>
+
+
+<div class="viewcode-block" id="JSONForbidden"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONForbidden">[docs]</a><span class="k">class</span> <span class="nc">JSONForbidden</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">403</span></div>
+
+
+<div class="viewcode-block" id="JSONNotFound"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONNotFound">[docs]</a><span class="k">class</span> <span class="nc">JSONNotFound</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">404</span></div>
+
+
+<div class="viewcode-block" id="JSONBadGateway"><a class="viewcode-back" href="../../management_layer.exceptions.html#management_layer.exceptions.JSONBadGateway">[docs]</a><span class="k">class</span> <span class="nc">JSONBadGateway</span><span class="p">(</span><span class="n">JSONException</span><span class="p">):</span>
+    <span class="n">status_code</span> <span class="o">=</span> <span class="mi">502</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Girl Effect.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
