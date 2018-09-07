@@ -4459,7 +4459,10 @@ x-detail-page-definitions:
 #      - invitation_id
 #      - site_id
 #      - role_id
-#  permission:
+  permission:
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
   resource:
