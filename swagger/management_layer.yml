@@ -4417,6 +4417,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
 #  domainrole:
@@ -4441,6 +4444,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: first_name
+      secondary: email
 #    sortable_fields:
 #      - id
 #  invitationdomainrole:
@@ -4456,7 +4462,10 @@ x-detail-page-definitions:
 #  permission:
 #    sortable_fields:
 #      - id
-#  resource:
+  resource:
+    responsive_fields:
+      primary: urn
+      secondary: description
 #    sortable_fields:
 #      - id
   role:
@@ -4469,6 +4478,8 @@ x-detail-page-definitions:
         - permission_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: label
 #    sortable_fields:
 #      - id
 #  roleresourcepermission:
@@ -4483,6 +4494,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
 #  siteroles:
@@ -4503,7 +4517,9 @@ x-detail-page-definitions:
 #    sortable_fields:
 #      - user_id
 #      - site_id
-#  adminnote:
+  adminnote:
+    responsive_fields:
+      primary: note
 #    sortable_fields:
 #      - id
 #  sitedataschema:
@@ -4513,10 +4529,16 @@ x-detail-page-definitions:
 #    sortable_fields:
 #      - id
 #      - client_id
-#  country:
+  country:
+    responsive_fields:
+      primary: code
+      secondary: name
 #    sortable_fields:
 #      - code
-#  organisation:
+  organisation:
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
   user:
@@ -4546,6 +4568,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: username
+      secondary: email
     sortable_fields:
       - id
   deleteduser:
@@ -4561,4 +4586,7 @@ x-detail-page-definitions:
       - deletion_confirmed_via
       - created_at
       - updated_at
+    responsive_fields:
+      primary: username
+      secondary: email
 
