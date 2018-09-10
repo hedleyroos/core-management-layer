@@ -2168,6 +2168,39 @@ paths:
       tags:
         - operational
 
+  /ops/usersitedata:
+    parameters:
+    - $ref: '#/parameters/optional_portal_context_header'
+    get:
+      operationId: implicit_usersitedata_read
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+      - user_data
+    put:
+      operationId: implicit_usersitedata_update
+      parameters:
+      - in: body
+        name: data
+        schema:
+          $ref: '#/definitions/user_site_data_update'
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+      - user_data
+
   /domains:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
