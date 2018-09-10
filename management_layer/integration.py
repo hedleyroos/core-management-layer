@@ -1392,7 +1392,6 @@ class Implementation(AbstractStubClass):
             transform = transformations.USER_SITE_DATA
             result = transform.apply(usd.to_dict())
             return result
-        raise NotImplementedError()
 
     # organisation_list -- Synchronisation point for meld
     @staticmethod
