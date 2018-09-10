@@ -11136,6 +11136,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
         },
         "/ops/usersitedata": {
             "get": {
+                "description": "Read user site specific data. The user and site are inferred from the token.",
                 "operationId": "implicit_usersitedata_read",
                 "produces": [
                     "application/json"
@@ -11167,6 +11168,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "consumes": [
                     "application/json"
                 ],
+                "description": "Update user site specific data. The user and site are inferred from the token.",
                 "operationId": "implicit_usersitedata_update",
                 "parameters": [
                     {

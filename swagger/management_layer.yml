@@ -2172,6 +2172,7 @@ paths:
     parameters:
     - $ref: '#/parameters/optional_portal_context_header'
     get:
+      description: Read user site specific data. The user and site are inferred from the token.
       operationId: implicit_usersitedata_read
       produces:
       - application/json
@@ -2183,6 +2184,7 @@ paths:
       tags:
       - user_data
     put:
+      description: Update user site specific data. The user and site are inferred from the token.
       operationId: implicit_usersitedata_update
       parameters:
       - in: body
