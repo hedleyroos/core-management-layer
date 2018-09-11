@@ -660,6 +660,16 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # implicit_usersitedata_create -- Synchronisation point for meld
+    @staticmethod
+    async def implicit_usersitedata_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # implicit_usersitedata_update -- Synchronisation point for meld
     @staticmethod
     async def implicit_usersitedata_update(request, body, **kwargs):
@@ -2962,6 +2972,21 @@ class MockedStubClass(AbstractStubClass):
     async def implicit_usersitedata_read(request, **kwargs):
         """
         :param request: An HttpRequest
+        """
+        response_schema = schemas.user_site_data
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def implicit_usersitedata_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
         """
         response_schema = schemas.user_site_data
         if "type" not in response_schema:
