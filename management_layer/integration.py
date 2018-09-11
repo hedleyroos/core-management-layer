@@ -1374,7 +1374,7 @@ class Implementation(AbstractStubClass):
     # This request can be made by any user from any site
     async def implicit_usersitedata_create(request, body, **kwargs):
         """
-        This function is used by 3rd party sites to update user data.
+        This function is used by 3rd party sites to create user data.
         The user id and site id are inferred from the token used to make
         the request.
         :param request: An HttpRequest
