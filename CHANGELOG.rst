@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.8.0
+-----
+* Added `POST /ops/usersitedata` API call in case a site needs to create a UserSiteData entry.
+* The `DELETE /users/{user_id}` and `GET /request_user_deletion` API calls not return an HTTP 400
+  if the user making the request is also the user to be deleted.
+
 1.7.0
 -----
 Added `GET /ops/usersitedata` and `PUT /ops/usersitedata` API calls.
