@@ -897,3 +897,20 @@ class IntegrationTest(AioHTTPTestCase):
         await self.assertStatus(response, 200)
         response_body = await response.json()
         validate_response_schema(response_body, schemas.user_site_data)
+
+    @unittest_run_loop
+    async def test_user_cannot_delete_himself(self):
+        # User deletion
+        response = await self.client.delete("/users/{}".format(
+            self.user_id  # self.user_id is used in the token as well
+        ))
+        await self.assertStatus(response, 400)
+
+        # Request user deletion
+        data = {
+            "user_id": self.user_id,  # self.user_id is used in the token as well
+            "reason": "Test"
+        }
+        response = await self.client.post("/request_user_deletion", data=data)
+        await self.assertStatus(response, 400)
+

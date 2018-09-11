@@ -1720,6 +1720,11 @@ class Implementation(AbstractStubClass):
         # The caller of this function is considered the deleter.
         body["deleter_id"] = request["token"]["sub"]
 
+        # The person requesting the deletion cannot also be the one to be deleted.
+        if body["deleter_id"] == body["user_id"]:
+            raise JSONBadRequest(message="The user making the request cannot be the user to "
+                                         "delete as well.")
+
         with client_exception_handler():
             result = await request.app["authentication_service_api"].request_user_deletion(
                 request_user_deletion=body)
@@ -2445,6 +2450,10 @@ class Implementation(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         :returns: result or (result, headers) tuple
         """
+        if request["token"]["sub"] == user_id:
+            raise JSONBadRequest(message="The user making the request cannot be the user to "
+                                         "delete as well.")
+
         with client_exception_handler():
             result = await request.app["authentication_service_api"].user_delete(user_id)
 
