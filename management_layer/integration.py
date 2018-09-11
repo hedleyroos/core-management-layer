@@ -1343,6 +1343,56 @@ class Implementation(AbstractStubClass):
             response = await request.app["operational_api"].get_users_with_roles_for_site(site_id)
         return await transform_users_with_roles(request, response, **kwargs)
 
+    # implicit_usersitedata_read -- Synchronisation point for meld
+    @staticmethod
+    # This request can be made by any user from any site
+    async def implicit_usersitedata_read(request, **kwargs):
+        """
+        This function is used by 3rd party sites to read user data.
+        The user id and site id are inferred from the token used to make
+        the request.
+        :param request: An HttpRequest
+        :returns: result or (result, headers) tuple
+        """
+        # The user_id and site_id is inferred from the token.
+        user_id = request["token"]["sub"]
+        client_id = request["token"]["aud"]
+        site_id = mappings.Mappings.site_id_for(client_id)
+
+        with client_exception_handler():
+            usd = await request.app["user_data_api"].usersitedata_read(user_id, site_id)
+
+        if usd:
+            transform = transformations.USER_SITE_DATA
+            result = transform.apply(usd.to_dict())
+            return result
+
+        return None
+
+    # implicit_usersitedata_update -- Synchronisation point for meld
+    @staticmethod
+    # This request can be made by any user from any site
+    async def implicit_usersitedata_update(request, body, **kwargs):
+        """
+        This function is used by 3rd party sites to update user data.
+        The user id and site id are inferred from the token used to make
+        the request.
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        # The user_id and site_id is inferred from the token.
+        user_id = request["token"]["sub"]
+        client_id = request["token"]["aud"]
+        site_id = mappings.Mappings.site_id_for(client_id)
+        with client_exception_handler():
+            usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id,
+                                                                         user_site_data_update=body)
+        if usd:
+            transform = transformations.USER_SITE_DATA
+            result = transform.apply(usd.to_dict())
+            return result
+
     # organisation_list -- Synchronisation point for meld
     @staticmethod
     # No permissions are required for this

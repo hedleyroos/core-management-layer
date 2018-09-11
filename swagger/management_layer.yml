@@ -2168,6 +2168,41 @@ paths:
       tags:
         - operational
 
+  /ops/usersitedata:
+    parameters:
+    - $ref: '#/parameters/optional_portal_context_header'
+    get:
+      description: Read user site specific data. The user and site are inferred from the token.
+      operationId: implicit_usersitedata_read
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+      - user_data
+    put:
+      description: Update user site specific data. The user and site are inferred from the token.
+      operationId: implicit_usersitedata_update
+      parameters:
+      - in: body
+        name: data
+        schema:
+          $ref: '#/definitions/user_site_data_update'
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/user_site_data'
+      tags:
+      - user_data
+
   /domains:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
@@ -4417,6 +4452,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
 #  domainrole:
@@ -4441,6 +4479,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: first_name
+      secondary: email
 #    sortable_fields:
 #      - id
 #  invitationdomainrole:
@@ -4453,10 +4494,16 @@ x-detail-page-definitions:
 #      - invitation_id
 #      - site_id
 #      - role_id
-#  permission:
+  permission:
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
-#  resource:
+  resource:
+    responsive_fields:
+      primary: urn
+      secondary: description
 #    sortable_fields:
 #      - id
   role:
@@ -4469,6 +4516,8 @@ x-detail-page-definitions:
         - permission_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: label
 #    sortable_fields:
 #      - id
 #  roleresourcepermission:
@@ -4483,6 +4532,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
 #  siteroles:
@@ -4503,7 +4555,9 @@ x-detail-page-definitions:
 #    sortable_fields:
 #      - user_id
 #      - site_id
-#  adminnote:
+  adminnote:
+    responsive_fields:
+      primary: note
 #    sortable_fields:
 #      - id
 #  sitedataschema:
@@ -4513,10 +4567,16 @@ x-detail-page-definitions:
 #    sortable_fields:
 #      - id
 #      - client_id
-#  country:
+  country:
+    responsive_fields:
+      primary: code
+      secondary: name
 #    sortable_fields:
 #      - code
-#  organisation:
+  organisation:
+    responsive_fields:
+      primary: name
+      secondary: description
 #    sortable_fields:
 #      - id
   user:
@@ -4546,6 +4606,9 @@ x-detail-page-definitions:
         - role_id
         - created_at
         - updated_at
+    responsive_fields:
+      primary: username
+      secondary: email
     sortable_fields:
       - id
   deleteduser:
@@ -4561,4 +4624,7 @@ x-detail-page-definitions:
       - deletion_confirmed_via
       - created_at
       - updated_at
+    responsive_fields:
+      primary: username
+      secondary: email
 

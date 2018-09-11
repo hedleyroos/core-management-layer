@@ -867,3 +867,27 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertEqual(response.status, 200)
         response_body = await response.json()
         self.assertEqual(response_body, None)
+
+    @unittest_run_loop
+    async def test_usersitedata_implicit_variants(self):
+        response = await self.client.get(
+            "/ops/usersitedata"
+        )
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.user_site_data)
+
+        response_body.pop("user_id")
+        response_body.pop("site_id")
+        response_body.pop("created_at")
+        response_body.pop("updated_at")
+
+        response = await self.client.put(
+            "/ops/usersitedata",
+            data=json.dumps(response_body)
+        )
+        await self.assertStatus(response, 200)
+
+        response_body = await response.json()
+        validate_response_schema(response_body, schemas.user_site_data)

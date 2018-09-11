@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.7.0
+-----
+Added `GET /ops/usersitedata` and `PUT /ops/usersitedata` API calls.
+
 1.6.0
 -----
 Prometheus instrumentation added
