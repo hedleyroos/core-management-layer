@@ -1369,6 +1369,31 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # implicit_usersitedata_create -- Synchronisation point for meld
+    @staticmethod
+    # This request can be made by any user from any site
+    async def implicit_usersitedata_create(request, body, **kwargs):
+        """
+        This function is used by 3rd party sites to create user data.
+        The user id and site id are inferred from the token used to make
+        the request.
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        # The user_id and site_id is inferred from the token.
+        body["user_id"] = request["token"]["sub"]
+        client_id = request["token"]["aud"]
+        body["site_id"] = mappings.Mappings.site_id_for(client_id)
+
+        with client_exception_handler():
+            usd = await request.app["user_data_api"].usersitedata_create(user_site_data_create=body)
+
+        if usd:
+            transform = transformations.USER_SITE_DATA
+            result = transform.apply(usd.to_dict())
+            return result
+
     # implicit_usersitedata_update -- Synchronisation point for meld
     @staticmethod
     # This request can be made by any user from any site
@@ -1694,6 +1719,11 @@ class Implementation(AbstractStubClass):
         """
         # The caller of this function is considered the deleter.
         body["deleter_id"] = request["token"]["sub"]
+
+        # The person requesting the deletion cannot also be the one to be deleted.
+        if body["deleter_id"] == body["user_id"]:
+            raise JSONBadRequest(message="The user making the request cannot be the user to "
+                                         "delete as well.")
 
         with client_exception_handler():
             result = await request.app["authentication_service_api"].request_user_deletion(
@@ -2420,6 +2450,10 @@ class Implementation(AbstractStubClass):
         :param user_id: string A UUID value identifying the user.
         :returns: result or (result, headers) tuple
         """
+        if request["token"]["sub"] == user_id:
+            raise JSONBadRequest(message="The user making the request cannot be the user to "
+                                         "delete as well.")
+
         with client_exception_handler():
             result = await request.app["authentication_service_api"].user_delete(user_id)
 

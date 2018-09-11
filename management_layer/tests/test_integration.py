@@ -870,6 +870,14 @@ class IntegrationTest(AioHTTPTestCase):
 
     @unittest_run_loop
     async def test_usersitedata_implicit_variants(self):
+        # Create usersitedata
+        response = await self.client.post(
+            "/ops/usersitedata",
+            data=json.dumps({"data": {"msg": "test"}})
+        )
+        await self.assertStatus(response, 201)
+
+        # Read usersitedata
         response = await self.client.get(
             "/ops/usersitedata"
         )
@@ -882,12 +890,27 @@ class IntegrationTest(AioHTTPTestCase):
         response_body.pop("site_id")
         response_body.pop("created_at")
         response_body.pop("updated_at")
-
         response = await self.client.put(
             "/ops/usersitedata",
             data=json.dumps(response_body)
         )
         await self.assertStatus(response, 200)
-
         response_body = await response.json()
         validate_response_schema(response_body, schemas.user_site_data)
+
+    @unittest_run_loop
+    async def test_user_cannot_delete_himself(self):
+        # User deletion
+        response = await self.client.delete("/users/{}".format(
+            self.user_id  # self.user_id is used in the token as well
+        ))
+        await self.assertStatus(response, 400)
+
+        # Request user deletion
+        data = {
+            "user_id": self.user_id,  # self.user_id is used in the token as well
+            "reason": "Test"
+        }
+        response = await self.client.post("/request_user_deletion", data=data)
+        await self.assertStatus(response, 400)
+

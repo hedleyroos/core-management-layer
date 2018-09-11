@@ -3018,7 +3018,19 @@ class OpsUsersWithRolesForSiteSiteId(View, CorsViewMixin):
 class OpsUsersitedata(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.user_site_data
+    POST_RESPONSE_SCHEMA = schemas.user_site_data
     PUT_RESPONSE_SCHEMA = schemas.user_site_data
+    POST_BODY_SCHEMA = json.loads("""{
+    "properties": {
+        "data": {
+            "type": "object"
+        }
+    },
+    "required": [
+        "data"
+    ],
+    "type": "object"
+}""")
     PUT_BODY_SCHEMA = schemas.user_site_data_update
 
     async def get(self):
@@ -3044,6 +3056,41 @@ class OpsUsersitedata(View, CorsViewMixin):
         maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
 
         return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsUsersitedata instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.implicit_usersitedata_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
 
     async def put(self):
         """
@@ -11164,6 +11211,47 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "description": "Create user site specific data. The user and site are inferred from the token.",
+                "operationId": "implicit_usersitedata_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "properties": {
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "required": [
+                                "data"
+                            ],
+                            "type": "object"
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/user_site_data",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ]
+            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -14006,6 +14094,17 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
     },
     "swagger": "2.0",
     "x-detail-page-definitions": {
+        "adminnote": {
+            "responsive_fields": {
+                "primary": "note"
+            }
+        },
+        "country": {
+            "responsive_fields": {
+                "primary": "code",
+                "secondary": "name"
+            }
+        },
         "deleteduser": {
             "inlines": [
                 {
@@ -14022,7 +14121,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Sites which the user visited",
                     "model": "deleted_user_site"
                 }
-            ]
+            ],
+            "responsive_fields": {
+                "primary": "username",
+                "secondary": "email"
+            }
         },
         "domain": {
             "inlines": [
@@ -14047,7 +14150,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Roles",
                     "model": "domain_role"
                 }
-            ]
+            ],
+            "responsive_fields": {
+                "primary": "name",
+                "secondary": "description"
+            }
         },
         "invitation": {
             "inlines": [
@@ -14073,7 +14180,29 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Site Roles",
                     "model": "invitation_site_role"
                 }
-            ]
+            ],
+            "responsive_fields": {
+                "primary": "first_name",
+                "secondary": "email"
+            }
+        },
+        "organisation": {
+            "responsive_fields": {
+                "primary": "name",
+                "secondary": "description"
+            }
+        },
+        "permission": {
+            "responsive_fields": {
+                "primary": "name",
+                "secondary": "description"
+            }
+        },
+        "resource": {
+            "responsive_fields": {
+                "primary": "urn",
+                "secondary": "description"
+            }
         },
         "role": {
             "inlines": [
@@ -14088,7 +14217,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Resource Permissions",
                     "model": "role_resource_permission"
                 }
-            ]
+            ],
+            "responsive_fields": {
+                "primary": "label"
+            }
         },
         "site": {
             "inlines": [
@@ -14102,7 +14234,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "label": "Roles",
                     "model": "site_role"
                 }
-            ]
+            ],
+            "responsive_fields": {
+                "primary": "name",
+                "secondary": "description"
+            }
         },
         "user": {
             "inlines": [
@@ -14141,6 +14277,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "model": "user_site_role"
                 }
             ],
+            "responsive_fields": {
+                "primary": "username",
+                "secondary": "email"
+            },
             "sortable_fields": [
                 "id"
             ]
