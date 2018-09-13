@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.8.1
+-----
+When validating JWTs, the issuer field was not explicitly checked. A new environment variable (JWT_ISSUER) was added and is used in the verifation step now.
+
 1.8.0
 -----
 * Added `POST /ops/usersitedata` API call in case a site needs to create a UserSiteData entry.
