@@ -1,5 +1,3 @@
-import logging
-
 from environs import Env
 
 env = Env()
@@ -11,6 +9,7 @@ CACHE_TIME = env.int("CACHE_TIME", 5 * 60)
 JWT_SECRET = env.str("JWT_SECRET", None)
 JWT_ALGORITHM = env.str("JWT_ALGORITHM", "HS256")
 JWT_AUDIENCE = env.str("JWT_AUDIENCE", None)
+JWT_ISSUER = env.str("JWT_ISSUER", None)
 
 # The port to listen on
 PORT = env.int("SERVER_PORT", 8000)
