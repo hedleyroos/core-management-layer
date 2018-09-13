@@ -12,7 +12,7 @@ Performing Authentication:
     1. It is important to check that the token signature is legitimate. Only then can the rest of
     the information in the token be trusted.
     2. Even when the rest of the information can be trusted, we still need to check that the token
-    was issues for the correct audience (this application) and by the current issuer (the
+    was issued for the correct audience (this application) and by the current issuer (the
     Authentication Service).
 
     In OIDC there are trusted and untrusted clients:
@@ -88,6 +88,18 @@ TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 # URLs that do not require authorisation.
 WHITELIST_URLS = ["/healthcheck", "/metrics"]
 
+VERIFICATION_OPTIONS = {
+    "verify_signature": True,
+    "verify_exp": True,
+    "verify_nbf": True,
+    "verify_iat": True,
+    "verify_aud": True,
+    "verify_iss": True,
+    "require_exp": True,
+    "require_iat": True,
+    "require_nbf": False
+}
+
 H = Histogram("management_layer_http_duration_seconds", "API duration",
               ["path_prefix", "method", "status"])
 
@@ -128,9 +140,8 @@ async def auth_middleware(request, handler):
                     key=settings.JWT_SECRET,
                     algorithms=[settings.JWT_ALGORITHM],
                     audience=settings.JWT_AUDIENCE,
-                    options={
-                        "verify_aud": True
-                    }
+                    issuer=settings.JWT_ISSUER,
+                    options=VERIFICATION_OPTIONS,
                 )
             elif algorithm == "RS256":
                 key_id = unverified_headers["kid"]
@@ -140,9 +151,8 @@ async def auth_middleware(request, handler):
                     key=key,
                     algorithms=[algorithm],
                     audience=settings.JWT_AUDIENCE,
-                    options={
-                        "verify_aud": True
-                    }
+                    issuer=settings.JWT_ISSUER,
+                    options=VERIFICATION_OPTIONS,
                 )
             else:
                 return json_response({"message": "Unsupported token algorithm: {}".format(algorithm)},

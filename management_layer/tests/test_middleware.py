@@ -153,6 +153,40 @@ hc58gaeUuJtya8YVGT/bSXU=
             )
             self.assertEqual(response.status, 401)
 
+        # Fiddle with the issuer
+        tweaked_data = self.id_token_data.copy()
+        tweaked_data["iss"] = "other_issuer"
+        id_token = jwt.encode(
+            payload=tweaked_data,
+            key=os.environ["JWT_SECRET"],
+            algorithm=os.environ["JWT_ALGORITHM"],
+        ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
+
+        response = await self.client.request(
+            "GET", "/",
+            headers={
+                "Authorization": "bearer {}".format(id_token)
+            }
+        )
+        self.assertEqual(response.status, 401)
+
+        id_token = jwt.encode(
+            payload=tweaked_data,
+            key=self.private_key,
+            algorithm="RS256",
+            headers={"kid": "a_test_key"}
+        ).decode("utf-8")  # IMPORTANT: Convert token to UTF-8 before embedding in header
+
+        with patch.multiple("management_layer.mappings.Mappings",
+                            _keys={"a_test_key": {"public_key": self.public_key}}):
+            response = await self.client.request(
+                "GET", "/",
+                headers={
+                    "Authorization": "bearer {}".format(id_token)
+                }
+            )
+            self.assertEqual(response.status, 401)
+
     @unittest_run_loop
     async def test_valid_token(self):
         id_token = jwt.encode(
