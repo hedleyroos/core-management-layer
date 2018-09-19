@@ -716,6 +716,13 @@ invitation = json.loads("""
             "readOnly": true,
             "type": "string"
         },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitation_redirect_url"
+            }
+        },
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
@@ -772,6 +779,13 @@ invitation_create = json.loads("""
         "first_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitation_redirect_url"
+            }
         },
         "last_name": {
             "maxLength": 100,
@@ -871,6 +885,76 @@ invitation_domain_role_create = json.loads("""
 }
 """)
 
+invitation_redirect_url = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "url",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+invitation_redirect_url_create = json.loads("""
+{
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "required": [
+        "url",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+invitation_redirect_url_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+
 invitation_site_role = json.loads("""
 {
     "properties": {
@@ -962,6 +1046,13 @@ invitation_update = json.loads("""
         "first_name": {
             "maxLength": 100,
             "type": "string"
+        },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitation_redirect_url"
+            }
         },
         "last_name": {
             "maxLength": 100,
