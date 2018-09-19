@@ -740,6 +740,108 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # invitationredirecturl_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "read")])
+    async def invitationredirecturl_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param invitationredirecturl_ids (optional): array An optional list of invitationredirecturl ids
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            invitation_redirect_urls, _status, headers = await request.app[
+                "access_control_api"].invitationredirecturl_list_with_http_info(**kwargs)
+
+        if invitation_redirect_urls:
+            transform = transformations.INVITATION_REDIRECT_URL
+            invitation_redirect_urls = [transform.apply(invitation_redirect_url.to_dict())
+                                        for invitation_redirect_url in invitation_redirect_urls]
+
+        return invitation_redirect_urls, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # invitationredirecturl_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "create")])
+    async def invitationredirecturl_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            invitation_redirect_url = await request.app[
+                "access_control_api"].invitationredirecturl_create(
+                invitationredirecturl_create=body)
+
+        if invitation_redirect_url:
+            transform = transformations.INVITATION_REDIRECT_URL
+            result = transform.apply(invitation_redirect_url.to_dict())
+            return result
+
+        return None
+
+    # invitationredirecturl_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "delete")])
+    async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["access_control_api"].invitationredirecturl_delete(
+                invitationredirecturl_id)
+
+        return result
+
+    # invitationredirecturl_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "read")])
+    async def invitationredirecturl_read(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            invitation_redirect_url = await request.app[
+                "access_control_api"].invitationredirecturl_read(invitationredirecturl_id)
+
+        if invitation_redirect_url:
+            transform = transformations.INVITATION_REDIRECT_URL
+            result = transform.apply(invitation_redirect_url.to_dict())
+            return result
+
+        return None
+
+    # invitationredirecturl_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "update")])
+    async def invitationredirecturl_update(request, body, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            invitation_redirect_url = await request.app[
+                "access_control_api"].invitationredirecturl_update(
+                invitationredirecturl_id, invitationredirecturl_update=body)
+
+        if invitation_redirect_url:
+            transform = transformations.INVITATION_REDIRECT_URL
+            result = transform.apply(invitation_redirect_url.to_dict())
+            return result
+
+        return None
+
     # invitation_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitation", "read")])

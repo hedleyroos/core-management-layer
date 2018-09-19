@@ -1830,6 +1830,239 @@ class InvitationdomainrolesInvitationIdDomainIdRoleId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Invitationredirecturls(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "url": {
+                "format": "uri",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "url",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.invitationredirecturl
+    POST_BODY_SCHEMA = schemas.invitationredirecturl_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Invitationredirecturls instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
+                optional_args["limit"] = limit
+            # invitationredirecturl_ids (optional): array An optional list of invitationredirecturl ids
+            invitationredirecturl_ids = self.request.query.get("invitationredirecturl_ids", None)
+            if invitationredirecturl_ids is not None:
+                invitationredirecturl_ids = invitationredirecturl_ids.split(",")
+            if invitationredirecturl_ids:
+                invitationredirecturl_ids = [int(e) for e in invitationredirecturl_ids]
+            if invitationredirecturl_ids is not None:
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
+                utils.validate(invitationredirecturl_ids, schema)
+                optional_args["invitationredirecturl_ids"] = invitationredirecturl_ids
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.invitationredirecturl_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Invitationredirecturls instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.invitationredirecturl_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class InvitationredirecturlsInvitationredirecturlId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.invitationredirecturl
+    PUT_RESPONSE_SCHEMA = schemas.invitationredirecturl
+    PUT_BODY_SCHEMA = schemas.invitationredirecturl_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationredirecturlsInvitationredirecturlId instance
+        """
+        try:
+            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
+            invitationredirecturl_id = int(invitationredirecturl_id)
+            schema = {'type': 'integer'}
+            utils.validate(invitationredirecturl_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.invitationredirecturl_delete(
+            self.request, invitationredirecturl_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationredirecturlsInvitationredirecturlId instance
+        """
+        try:
+            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
+            invitationredirecturl_id = int(invitationredirecturl_id)
+            schema = {'type': 'integer'}
+            utils.validate(invitationredirecturl_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.invitationredirecturl_read(
+            self.request, invitationredirecturl_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A InvitationredirecturlsInvitationredirecturlId instance
+        """
+        try:
+            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
+            invitationredirecturl_id = int(invitationredirecturl_id)
+            schema = {'type': 'integer'}
+            utils.validate(invitationredirecturl_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.invitationredirecturl_update(
+            self.request, body, invitationredirecturl_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Invitations(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -7187,6 +7420,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string"
                 },
+                "invitation_redirect_url_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "url",
+                        "model": "invitationredirecturl"
+                    }
+                },
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
@@ -7362,6 +7602,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string"
                 },
+                "invitation_redirect_url_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "url",
+                        "model": "invitationredirecturl"
+                    }
+                },
                 "last_name": {
                     "maxLength": 100,
                     "type": "string"
@@ -7372,6 +7619,67 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name",
                         "model": "organisation"
                     }
+                }
+            },
+            "type": "object"
+        },
+        "invitationredirecturl": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "url",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "invitationredirecturl_create": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "url",
+                "description"
+            ],
+            "type": "object"
+        },
+        "invitationredirecturl_update": {
+            "minProperties": 1,
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -8549,6 +8857,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "invitation_id",
             "required": true,
             "type": "string"
+        },
+        "invitationredirecturl_id": {
+            "description": "A unique unteger value identifying the redirect URL.",
+            "in": "path",
+            "name": "invitationredirecturl_id",
+            "required": true,
+            "type": "integer"
         },
         "optional_cutoff_date": {
             "description": "An optional cutoff date to purge invites before this date",
@@ -10127,6 +10442,175 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/invitationredirecturls": {
+            "get": {
+                "operationId": "invitationredirecturl_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of invitationredirecturl ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1,
+                        "name": "invitationredirecturl_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/invitationredirecturl",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "invitationredirecturl_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/invitationredirecturl_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/invitationredirecturl",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            }
+        },
+        "/invitationredirecturls/{invitationredirecturl_id}": {
+            "delete": {
+                "operationId": "invitationredirecturl_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            },
+            "get": {
+                "operationId": "invitationredirecturl_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/invitationredirecturl",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/invitationredirecturl_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "invitationredirecturl_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/invitationredirecturl_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/invitationredirecturl",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ]
+            }
         },
         "/invitations": {
             "get": {

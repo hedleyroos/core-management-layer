@@ -60,6 +60,8 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/invitations/{invitation_id}", views.InvitationsInvitationId)
     app.router.add_view(r"/invitations/purge/expired", views.InvitationsPurgeExpired)
     app.router.add_view(r"/invitations", views.Invitations)
+    app.router.add_view(r"/invitationredirecturls/{invitationredirecturl_id}", views.InvitationredirecturlsInvitationredirecturlId)
+    app.router.add_view(r"/invitationredirecturls", views.Invitationredirecturls)
     app.router.add_view(r"/invitationdomainroles/{invitation_id}/{domain_id}/{role_id}", views.InvitationdomainrolesInvitationIdDomainIdRoleId)
     app.router.add_view(r"/invitationdomainroles", views.Invitationdomainroles)
     app.router.add_view(r"/healthcheck", views.Healthcheck)

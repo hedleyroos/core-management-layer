@@ -773,6 +773,13 @@ invitation_create = json.loads("""
             "maxLength": 100,
             "type": "string"
         },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitationredirecturl"
+            }
+        },
         "last_name": {
             "maxLength": 100,
             "type": "string"
@@ -963,6 +970,13 @@ invitation_update = json.loads("""
             "maxLength": 100,
             "type": "string"
         },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitationredirecturl"
+            }
+        },
         "last_name": {
             "maxLength": 100,
             "type": "string"
@@ -973,6 +987,76 @@ invitation_update = json.loads("""
                 "label": "name",
                 "model": "organisation"
             }
+        }
+    },
+    "type": "object"
+}
+""")
+
+invitationredirecturl = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "url",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+invitationredirecturl_create = json.loads("""
+{
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
+        }
+    },
+    "required": [
+        "url",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+invitationredirecturl_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "description": {
+            "type": "string"
+        },
+        "url": {
+            "format": "uri",
+            "type": "string"
         }
     },
     "type": "object"

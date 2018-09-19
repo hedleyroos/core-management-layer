@@ -46,7 +46,16 @@ INVITATION = Transformation(
         Mapping("expires_at", conversion=datetime_to_string)
     ],
     copy_fields=["id", "first_name", "last_name", "email",
-                 "invitor_id", "organisation_id"]
+                 "invitor_id", "organisation_id",
+                 "invitation_redirect_url_id"]
+)
+
+INVITATION_REDIRECT_URL = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string),
+    ],
+    copy_fields=["id", "url", "description"]
 )
 
 INVITATION_DOMAIN_ROLE = Transformation(

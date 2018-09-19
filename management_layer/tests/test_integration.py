@@ -64,6 +64,9 @@ RESOURCES = {
     "domainroles": Resource("/1/1", schemas.domain_role, schemas.domain_role_create, schemas.domain_role_update),
     "invitations": Resource("/{}".format(uuid.uuid4()),
                             schemas.invitation, schemas.invitation_create, schemas.invitation_update),
+    "invitationredirecturls": Resource("/1", schemas.invitationredirecturl,
+                                       schemas.invitationredirecturl_create,
+                                       schemas.invitationredirecturl_update),
     "invitationdomainroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
                                       schemas.invitation_domain_role, schemas.invitation_domain_role_create, None),
     "invitationsiteroles": Resource("/{}/{}/{}".format(uuid.uuid4(), 1, 1),
@@ -186,6 +189,9 @@ def get_test_data(schema):
 
     if "urn" in data:
         data["urn"] = "urn:ge:test:resource"
+
+    if "url" in data:
+        data["url"] = "https://example.com/redirect?foo=bar"
 
     if "name" in data:
         data["name"] = data["name"][:30]

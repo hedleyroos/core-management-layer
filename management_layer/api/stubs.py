@@ -389,6 +389,59 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # invitationredirecturl_list -- Synchronisation point for meld
+    @staticmethod
+    async def invitationredirecturl_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param invitationredirecturl_ids (optional): array An optional list of invitationredirecturl ids
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # invitationredirecturl_create -- Synchronisation point for meld
+    @staticmethod
+    async def invitationredirecturl_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # invitationredirecturl_delete -- Synchronisation point for meld
+    @staticmethod
+    async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # invitationredirecturl_read -- Synchronisation point for meld
+    @staticmethod
+    async def invitationredirecturl_read(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # invitationredirecturl_update -- Synchronisation point for meld
+    @staticmethod
+    async def invitationredirecturl_update(request, body, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # invitation_list -- Synchronisation point for meld
     @staticmethod
     async def invitation_list(request, **kwargs):
@@ -2343,6 +2396,121 @@ class MockedStubClass(AbstractStubClass):
         :param role_id: integer A unique integer value identifying the role.
         """
         response_schema = schemas.invitation_domain_role
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitationredirecturl_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param invitationredirecturl_ids (optional): array An optional list of invitationredirecturl ids
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "url": {
+                "format": "uri",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "url",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitationredirecturl_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.invitationredirecturl
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitationredirecturl_read(request, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        """
+        response_schema = schemas.invitationredirecturl
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def invitationredirecturl_update(request, body, invitationredirecturl_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        """
+        response_schema = schemas.invitationredirecturl
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
