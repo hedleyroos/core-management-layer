@@ -848,6 +848,11 @@ definitions:
         type: string
         format: 'date-time'
         readOnly: true
+      invitation_redirect_url_id:
+        type: integer
+        x-related-info:
+          model: invitation_redirect_url
+          label: url
       updated_at:
         type: string
         format: 'date-time'

@@ -716,6 +716,13 @@ invitation = json.loads("""
             "readOnly": true,
             "type": "string"
         },
+        "invitation_redirect_url_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "url",
+                "model": "invitation_redirect_url"
+            }
+        },
         "invitor_id": {
             "description": "The user that created the invitation",
             "format": "uuid",
