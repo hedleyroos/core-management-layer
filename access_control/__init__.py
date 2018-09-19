@@ -38,6 +38,9 @@ from access_control.models.invitation_domain_role_create import InvitationDomain
 from access_control.models.invitation_site_role import InvitationSiteRole
 from access_control.models.invitation_site_role_create import InvitationSiteRoleCreate
 from access_control.models.invitation_update import InvitationUpdate
+from access_control.models.invitationredirecturl import Invitationredirecturl
+from access_control.models.invitationredirecturl_create import InvitationredirecturlCreate
+from access_control.models.invitationredirecturl_update import InvitationredirecturlUpdate
 from access_control.models.permission import Permission
 from access_control.models.permission_create import PermissionCreate
 from access_control.models.permission_update import PermissionUpdate
@@ -59,6 +62,7 @@ from access_control.models.site_role_create import SiteRoleCreate
 from access_control.models.site_role_labels_aggregated import SiteRoleLabelsAggregated
 from access_control.models.site_role_update import SiteRoleUpdate
 from access_control.models.site_update import SiteUpdate
+from access_control.models.user_deletion_data import UserDeletionData
 from access_control.models.user_domain_role import UserDomainRole
 from access_control.models.user_domain_role_create import UserDomainRoleCreate
 from access_control.models.user_site_role import UserSiteRole
