@@ -48,15 +48,7 @@ def timeit(log_level=logging.DEBUG):
 @contextmanager
 def client_exception_handler():
     try:
-        try:
-            yield
-        except Exception:
-            # All exceptions are logged to Sentry
-            sentry.captureException()
-            # We re-raise the exception after logging it to Sentry so that the
-            # exception handlers below can do their job.
-            raise
-
+        yield
     except (access_control.rest.ApiException,
             authentication_service.rest.ApiException,
             user_data_store.rest.ApiException) as re:
