@@ -416,7 +416,7 @@ class AbstractStubClass(object):
     async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -426,7 +426,7 @@ class AbstractStubClass(object):
     async def invitationredirecturl_read(request, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -437,7 +437,7 @@ class AbstractStubClass(object):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         :returns: result or (result, headers) tuple
         """
         raise NotImplementedError()
@@ -2464,7 +2464,7 @@ class MockedStubClass(AbstractStubClass):
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
         """
-        response_schema = schemas.invitationredirecturl
+        response_schema = schemas.invitation_redirect_url
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -2477,7 +2477,7 @@ class MockedStubClass(AbstractStubClass):
     async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         """
         response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
@@ -2492,9 +2492,9 @@ class MockedStubClass(AbstractStubClass):
     async def invitationredirecturl_read(request, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         """
-        response_schema = schemas.invitationredirecturl
+        response_schema = schemas.invitation_redirect_url
         if "type" not in response_schema:
             response_schema["type"] = "object"
 
@@ -2508,9 +2508,9 @@ class MockedStubClass(AbstractStubClass):
         """
         :param request: An HttpRequest
         :param body: dict A dictionary containing the parsed and validated body
-        :param invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+        :param invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
         """
-        response_schema = schemas.invitationredirecturl
+        response_schema = schemas.invitation_redirect_url
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

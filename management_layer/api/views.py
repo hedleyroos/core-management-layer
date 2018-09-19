@@ -1870,8 +1870,8 @@ class Invitationredirecturls(View, CorsViewMixin):
     },
     "type": "array"
 }""")
-    POST_RESPONSE_SCHEMA = schemas.invitationredirecturl
-    POST_BODY_SCHEMA = schemas.invitationredirecturl_create
+    POST_RESPONSE_SCHEMA = schemas.invitation_redirect_url
+    POST_BODY_SCHEMA = schemas.invitation_redirect_url_create
 
     async def get(self):
         """
@@ -1960,9 +1960,9 @@ class Invitationredirecturls(View, CorsViewMixin):
 class InvitationredirecturlsInvitationredirecturlId(View, CorsViewMixin):
 
     DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
-    GET_RESPONSE_SCHEMA = schemas.invitationredirecturl
-    PUT_RESPONSE_SCHEMA = schemas.invitationredirecturl
-    PUT_BODY_SCHEMA = schemas.invitationredirecturl_update
+    GET_RESPONSE_SCHEMA = schemas.invitation_redirect_url
+    PUT_RESPONSE_SCHEMA = schemas.invitation_redirect_url
+    PUT_BODY_SCHEMA = schemas.invitation_redirect_url_update
 
     async def delete(self):
         """
@@ -1970,7 +1970,7 @@ class InvitationredirecturlsInvitationredirecturlId(View, CorsViewMixin):
         :param self: A InvitationredirecturlsInvitationredirecturlId instance
         """
         try:
-            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            # invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
             invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
             invitationredirecturl_id = int(invitationredirecturl_id)
             schema = {'type': 'integer'}
@@ -1999,7 +1999,7 @@ class InvitationredirecturlsInvitationredirecturlId(View, CorsViewMixin):
         :param self: A InvitationredirecturlsInvitationredirecturlId instance
         """
         try:
-            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            # invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
             invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
             invitationredirecturl_id = int(invitationredirecturl_id)
             schema = {'type': 'integer'}
@@ -2028,7 +2028,7 @@ class InvitationredirecturlsInvitationredirecturlId(View, CorsViewMixin):
         :param self: A InvitationredirecturlsInvitationredirecturlId instance
         """
         try:
-            # invitationredirecturl_id: integer A unique unteger value identifying the redirect URL.
+            # invitationredirecturl_id: integer A unique integer value identifying the redirect URL.
             invitationredirecturl_id = self.request.match_info["invitationredirecturl_id"]
             invitationredirecturl_id = int(invitationredirecturl_id)
             schema = {'type': 'integer'}
@@ -7424,7 +7424,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "integer",
                     "x-related-info": {
                         "label": "url",
-                        "model": "invitationredirecturl"
+                        "model": "invitation_redirect_url"
                     }
                 },
                 "last_name": {
@@ -7517,6 +7517,67 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "invitation_redirect_url": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "url",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "invitation_redirect_url_create": {
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "url",
+                "description"
+            ],
+            "type": "object"
+        },
+        "invitation_redirect_url_update": {
+            "minProperties": 1,
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "url": {
+                    "format": "uri",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "invitation_site_role": {
             "properties": {
                 "created_at": {
@@ -7606,7 +7667,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "integer",
                     "x-related-info": {
                         "label": "url",
-                        "model": "invitationredirecturl"
+                        "model": "invitation_redirect_url"
                     }
                 },
                 "last_name": {
@@ -7619,67 +7680,6 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name",
                         "model": "organisation"
                     }
-                }
-            },
-            "type": "object"
-        },
-        "invitationredirecturl": {
-            "properties": {
-                "created_at": {
-                    "format": "date-time",
-                    "readOnly": true,
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "format": "date-time",
-                    "readOnly": true,
-                    "type": "string"
-                },
-                "url": {
-                    "format": "uri",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "id",
-                "url",
-                "description",
-                "created_at",
-                "updated_at"
-            ],
-            "type": "object"
-        },
-        "invitationredirecturl_create": {
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "url": {
-                    "format": "uri",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "url",
-                "description"
-            ],
-            "type": "object"
-        },
-        "invitationredirecturl_update": {
-            "minProperties": 1,
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "url": {
-                    "format": "uri",
-                    "type": "string"
                 }
             },
             "type": "object"
@@ -8859,7 +8859,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "type": "string"
         },
         "invitationredirecturl_id": {
-            "description": "A unique unteger value identifying the redirect URL.",
+            "description": "A unique integer value identifying the redirect URL.",
             "in": "path",
             "name": "invitationredirecturl_id",
             "required": true,
@@ -10487,7 +10487,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         },
                         "schema": {
                             "items": {
-                                "$ref": "#/definitions/invitationredirecturl",
+                                "$ref": "#/definitions/invitation_redirect_url",
                                 "x-scope": [
                                     ""
                                 ]
@@ -10498,6 +10498,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
             "post": {
@@ -10510,7 +10513,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "body",
                         "name": "data",
                         "schema": {
-                            "$ref": "#/definitions/invitationredirecturl_create",
+                            "$ref": "#/definitions/invitation_redirect_url_create",
                             "x-scope": [
                                 ""
                             ]
@@ -10524,7 +10527,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "201": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/invitationredirecturl",
+                            "$ref": "#/definitions/invitation_redirect_url",
                             "x-scope": [
                                 ""
                             ]
@@ -10533,6 +10536,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationredirecturl:create"
                 ]
             }
         },
@@ -10546,6 +10552,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationredirecturl:delete"
                 ]
             },
             "get": {
@@ -10557,7 +10566,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/invitationredirecturl",
+                            "$ref": "#/definitions/invitation_redirect_url",
                             "x-scope": [
                                 ""
                             ]
@@ -10566,6 +10575,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
             "parameters": [
@@ -10586,7 +10598,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "in": "body",
                         "name": "data",
                         "schema": {
-                            "$ref": "#/definitions/invitationredirecturl_update",
+                            "$ref": "#/definitions/invitation_redirect_url_update",
                             "x-scope": [
                                 ""
                             ]
@@ -10600,7 +10612,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "200": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/invitationredirecturl",
+                            "$ref": "#/definitions/invitation_redirect_url",
                             "x-scope": [
                                 ""
                             ]
@@ -10609,6 +10621,9 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:invitationredirecturl:update"
                 ]
             }
         },

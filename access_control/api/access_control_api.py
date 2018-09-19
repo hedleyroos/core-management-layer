@@ -2148,8 +2148,8 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param InvitationredirecturlCreate invitationredirecturl_create:
-        :return: Invitationredirecturl
+        :param InvitationRedirectUrlCreate invitation_redirect_url_create:
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2169,13 +2169,13 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param InvitationredirecturlCreate invitationredirecturl_create:
-        :return: Invitationredirecturl
+        :param InvitationRedirectUrlCreate invitation_redirect_url_create:
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['invitationredirecturl_create']  # noqa: E501
+        all_params = ['invitation_redirect_url_create']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2203,8 +2203,8 @@ class AccessControlApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'invitationredirecturl_create' in params:
-            body_params = params['invitationredirecturl_create']
+        if 'invitation_redirect_url_create' in params:
+            body_params = params['invitation_redirect_url_create']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -2224,7 +2224,7 @@ class AccessControlApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Invitationredirecturl',  # noqa: E501
+            response_type='InvitationRedirectUrl',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2241,7 +2241,7 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
         :return: None
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2262,7 +2262,7 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
         :return: None
                  If the method is called asynchronously,
                  returns the request thread.
@@ -2333,7 +2333,7 @@ class AccessControlApi(object):
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
         :param list[int] invitationredirecturl_ids: An optional list of invitationredirecturl ids
-        :return: list[Invitationredirecturl]
+        :return: list[InvitationRedirectUrl]
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2356,7 +2356,7 @@ class AccessControlApi(object):
         :param int offset: An optional query parameter specifying the offset in the result set to start from.
         :param int limit: An optional query parameter to limit the number of results returned.
         :param list[int] invitationredirecturl_ids: An optional list of invitationredirecturl ids
-        :return: list[Invitationredirecturl]
+        :return: list[InvitationRedirectUrl]
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2420,7 +2420,7 @@ class AccessControlApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='list[Invitationredirecturl]',  # noqa: E501
+            response_type='list[InvitationRedirectUrl]',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2437,8 +2437,8 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
-        :return: Invitationredirecturl
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2458,8 +2458,8 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
-        :return: Invitationredirecturl
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2513,7 +2513,7 @@ class AccessControlApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Invitationredirecturl',  # noqa: E501
+            response_type='InvitationRedirectUrl',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),
@@ -2530,9 +2530,9 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
-        :param InvitationredirecturlUpdate invitationredirecturl_update:
-        :return: Invitationredirecturl
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
+        :param InvitationRedirectUrlUpdate invitation_redirect_url_update:
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
@@ -2552,14 +2552,14 @@ class AccessControlApi(object):
         >>> result = thread.get()
 
         :param async bool
-        :param int invitationredirecturl_id: A unique unteger value identifying the redirect URL. (required)
-        :param InvitationredirecturlUpdate invitationredirecturl_update:
-        :return: Invitationredirecturl
+        :param int invitationredirecturl_id: A unique integer value identifying the redirect URL. (required)
+        :param InvitationRedirectUrlUpdate invitation_redirect_url_update:
+        :return: InvitationRedirectUrl
                  If the method is called asynchronously,
                  returns the request thread.
         """
 
-        all_params = ['invitationredirecturl_id', 'invitationredirecturl_update']  # noqa: E501
+        all_params = ['invitationredirecturl_id', 'invitation_redirect_url_update']  # noqa: E501
         all_params.append('async')
         all_params.append('_return_http_data_only')
         all_params.append('_preload_content')
@@ -2593,8 +2593,8 @@ class AccessControlApi(object):
         local_var_files = {}
 
         body_params = None
-        if 'invitationredirecturl_update' in params:
-            body_params = params['invitationredirecturl_update']
+        if 'invitation_redirect_url_update' in params:
+            body_params = params['invitation_redirect_url_update']
         # HTTP header `Accept`
         header_params['Accept'] = self.api_client.select_header_accept(
             ['application/json'])  # noqa: E501
@@ -2614,7 +2614,7 @@ class AccessControlApi(object):
             body=body_params,
             post_params=form_params,
             files=local_var_files,
-            response_type='Invitationredirecturl',  # noqa: E501
+            response_type='InvitationRedirectUrl',  # noqa: E501
             auth_settings=auth_settings,
             async=params.get('async'),
             _return_http_data_only=params.get('_return_http_data_only'),

@@ -776,7 +776,7 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             invitation_redirect_url = await request.app[
                 "access_control_api"].invitationredirecturl_create(
-                invitationredirecturl_create=body)
+                invitation_redirect_url_create=body)
 
         if invitation_redirect_url:
             transform = transformations.INVITATION_REDIRECT_URL
@@ -833,7 +833,7 @@ class Implementation(AbstractStubClass):
         with client_exception_handler():
             invitation_redirect_url = await request.app[
                 "access_control_api"].invitationredirecturl_update(
-                invitationredirecturl_id, invitationredirecturl_update=body)
+                invitationredirecturl_id, invitation_redirect_url_update=body)
 
         if invitation_redirect_url:
             transform = transformations.INVITATION_REDIRECT_URL

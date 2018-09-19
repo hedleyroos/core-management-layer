@@ -161,7 +161,7 @@ parameters:
     format: uuid
 
   invitationredirecturl_id:
-    description: A unique unteger value identifying the redirect URL.
+    description: A unique integer value identifying the redirect URL.
     in: path
     name: invitationredirecturl_id
     required: true
@@ -886,7 +886,7 @@ definitions:
       invitation_redirect_url_id:
         type: integer
         x-related-info:
-          model: invitationredirecturl
+          model: invitation_redirect_url
           label: url
     required:
       - first_name
@@ -917,12 +917,12 @@ definitions:
       invitation_redirect_url_id:
         type: integer
         x-related-info:
-          model: invitationredirecturl
+          model: invitation_redirect_url
           label: url
 
     minProperties: 1
 
-  invitationredirecturl:
+  invitation_redirect_url:
     type: object
     properties:
       id:
@@ -947,7 +947,7 @@ definitions:
     - created_at
     - updated_at
 
-  invitationredirecturl_create:
+  invitation_redirect_url_create:
     type: object
     properties:
       url:
@@ -959,7 +959,7 @@ definitions:
     - url
     - description
 
-  invitationredirecturl_update:
+  invitation_redirect_url_update:
     type: object
     properties:
       url:
@@ -2605,6 +2605,8 @@ paths:
   /invitationredirecturls:
     get:
       operationId: invitationredirecturl_list
+      x-aor-permissions:
+      - 'urn:ge:access_control:invitationredirecturl:read'
       parameters:
       - $ref: '#/parameters/optional_offset'
       - $ref: '#/parameters/optional_limit'
@@ -2630,25 +2632,27 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/invitationredirecturl'
+              $ref: '#/definitions/invitation_redirect_url'
       tags:
       - access_control
     post:
       consumes:
       - application/json
       operationId: invitationredirecturl_create
+      x-aor-permissions:
+      - 'urn:ge:access_control:invitationredirecturl:create'
       parameters:
       - in: body
         name: data
         schema:
-          $ref: '#/definitions/invitationredirecturl_create'
+          $ref: '#/definitions/invitation_redirect_url_create'
       produces:
       - application/json
       responses:
         '201':
           description: ''
           schema:
-            $ref: '#/definitions/invitationredirecturl'
+            $ref: '#/definitions/invitation_redirect_url'
       tags:
       - access_control
 
@@ -2657,6 +2661,8 @@ paths:
     - $ref: '#/parameters/invitationredirecturl_id'
     delete:
       operationId: invitationredirecturl_delete
+      x-aor-permissions:
+      - 'urn:ge:access_control:invitationredirecturl:delete'
       responses:
         '204':
           description: ''
@@ -2664,31 +2670,35 @@ paths:
       - access_control
     get:
       operationId: invitationredirecturl_read
+      x-aor-permissions:
+      - 'urn:ge:access_control:invitationredirecturl:read'
       produces:
       - application/json
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/invitationredirecturl'
+            $ref: '#/definitions/invitation_redirect_url'
       tags:
       - access_control
     put:
       consumes:
       - application/json
       operationId: invitationredirecturl_update
+      x-aor-permissions:
+      - 'urn:ge:access_control:invitationredirecturl:update'
       parameters:
       - in: body
         name: data
         schema:
-          $ref: '#/definitions/invitationredirecturl_update'
+          $ref: '#/definitions/invitation_redirect_url_update'
       produces:
       - application/json
       responses:
         '200':
           description: ''
           schema:
-            $ref: '#/definitions/invitationredirecturl'
+            $ref: '#/definitions/invitation_redirect_url'
       tags:
       - access_control
 
