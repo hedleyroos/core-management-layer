@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+1.9.0
+-----
 - Removed Sentry errors that were generated for upstream non-200 responses
 - Added API calls for invitation redirect URLs
 
