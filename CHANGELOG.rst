@@ -1,6 +1,11 @@
 Changelog
 =========
 
+next
+----
+- Removed Sentry errors that were generated for upstream non-200 responses
+- Added API calls for invitation redirect URLs
+
 1.8.1
 -----
 When validating JWTs, the issuer field was not explicitly checked. A new environment variable (JWT_ISSUER) was added and is used in the verifation step now.
