@@ -84,7 +84,7 @@ hc58gaeUuJtya8YVGT/bSXU=
     @unittest_run_loop
     async def test_missing_token(self):
         response = await self.client.request("GET", "/")
-        self.assertEqual(response.status, middleware.MISSING_TOKEN_STATUS)
+        self.assertEqual(response.status, middleware.INVALID_TOKEN_STATUS)
 
     @unittest_run_loop
     async def test_invalid_token(self):

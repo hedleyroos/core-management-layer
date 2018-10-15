@@ -72,7 +72,7 @@ if __name__ == "__main__":
     add_prometheus_metrics_for_class(integration.Implementation)
 
     app = web.Application(middlewares=[
-        metrics_middleware, auth_middleware, sentry_middleware
+        metrics_middleware, sentry_middleware, auth_middleware
     ])
 
     logger.info("Using the following APIs:")
