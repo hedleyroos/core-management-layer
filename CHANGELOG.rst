@@ -1,6 +1,10 @@
 Changelog
 =========
 
+next
+----
+- Change middleware order and return 401 on missing token
+
 1.9.0
 -----
 - Removed Sentry errors that were generated for upstream non-200 responses
