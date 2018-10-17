@@ -80,7 +80,6 @@ from management_layer.sentry import sentry
 LOGGER = logging.getLogger(__name__)
 
 INVALID_TOKEN_STATUS = 401
-MISSING_TOKEN_STATUS = 400
 
 TOKEN_PREFIX = "bearer "
 TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
@@ -108,7 +107,8 @@ H = Histogram("management_layer_http_duration_seconds", "API duration",
 async def metrics_middleware(request, handler):
     start_time = time.time()
     response = await handler(request)
-    H.labels(path_prefix=request.path.split("/")[1],
+    path_prefix = "not_found" if response.status == 404 else request.path.split("/")[1]
+    H.labels(path_prefix=path_prefix,
              method=request.method,
              status=response.status).observe(time.time()-start_time)
     return response
@@ -179,7 +179,7 @@ async def auth_middleware(request, handler):
         request["token"] = payload
     else:
         return json_response({"message": "An authentication token is required"},
-                             status=MISSING_TOKEN_STATUS)
+                             status=INVALID_TOKEN_STATUS)
 
     return await handler(request)
 
