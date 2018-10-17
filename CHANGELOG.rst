@@ -1,8 +1,8 @@
 Changelog
 =========
 
-next
-----
+1.9.1
+-----
 - Change middleware order and return 401 on missing token
 
 1.9.0
