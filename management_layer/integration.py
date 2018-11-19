@@ -207,6 +207,106 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # credentials_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "read")])
+    async def credentials_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param credentials_ids (optional): array An optional list of credentials ids
+        :param site_id (optional): integer An optional query parameter to filter by site_id
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials, _status, headers = await request.app[
+                "access_control_api"].credentials_list_with_http_info(**kwargs)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            credentials = [transform.apply(site_credentials.to_dict()) for site_credentials in
+                           credentials]
+
+        return credentials, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # credentials_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "create")])
+    async def credentials_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app["access_control_api"].credentials_create(
+                credentials_create=body)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
+    # credentials_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "delete")])
+    async def credentials_delete(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["access_control_api"].credentials_delete(
+                credentials_id)
+
+        return result
+
+    # credentials_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "read")])
+    async def credentials_read(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app["access_control_api"].credentials_read(credentials_id)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
+    # credentials_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "update")])
+    async def credentials_update(request, body, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app[
+                "access_control_api"].credentials_update(credentials_id, credentials_update=body)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
     # deleteduser_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deleteduser", "read")])

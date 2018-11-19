@@ -568,6 +568,255 @@ class CountriesCountryCode(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Credentials(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "description": "An object containing account credentials",
+        "properties": {
+            "account_id": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "account_secret": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "created_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "site_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "updated_at": {
+                "format": "date-time",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "site_id",
+            "account_id",
+            "account_secret",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.credentials
+    POST_BODY_SCHEMA = schemas.credentials_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Credentials instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
+                optional_args["limit"] = limit
+            # credentials_ids (optional): array An optional list of credentials ids
+            credentials_ids = self.request.query.getall("credentials_ids", None)
+            if credentials_ids is not None:
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 0, 'uniqueItems': True}
+                utils.validate(credentials_ids, schema)
+                optional_args["credentials_ids"] = credentials_ids
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
+                optional_args["site_id"] = site_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Credentials instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.credentials_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class CredentialsCredentialsId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.credentials
+    PUT_RESPONSE_SCHEMA = schemas.credentials
+    PUT_BODY_SCHEMA = schemas.credentials_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_delete(
+            self.request, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_read(
+            self.request, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.credentials_update(
+            self.request, body, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Deletedusers(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -6925,6 +7174,106 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "credentials": {
+            "description": "An object containing account credentials",
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "created_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "site_id",
+                "account_id",
+                "account_secret",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "credentials_create": {
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                }
+            },
+            "required": [
+                "site_id",
+                "account_id",
+                "account_secret",
+                "description"
+            ],
+            "type": "object"
+        },
+        "credentials_update": {
+            "minProperties": 1,
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "deleted_user": {
             "properties": {
                 "created_at": {
@@ -8857,6 +9206,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": true,
             "type": "string"
         },
+        "credentials_id": {
+            "description": "A unique integer value identifying the credentials.",
+            "in": "path",
+            "name": "credentials_id",
+            "required": true,
+            "type": "integer"
+        },
         "domain_id": {
             "description": "A unique integer value identifying the domain.",
             "in": "path",
@@ -9488,6 +9844,210 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     ]
                 }
             ]
+        },
+        "/credentials": {
+            "get": {
+                "operationId": "credentials_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "collectionFormat": "multi",
+                        "description": "An optional list of credentials ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 0,
+                        "name": "credentials_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    {
+                        "$ref": "#/parameters/optional_site_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/credentials",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:credentials:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "credentials_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/credentials_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:credentials:create"
+                ]
+            }
+        },
+        "/credentials/{credentials_id}": {
+            "delete": {
+                "operationId": "credentials_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:credentials:delete"
+                ]
+            },
+            "get": {
+                "operationId": "credentials_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:credentials:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/credentials_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "credentials_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/credentials_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:credentials:update"
+                ]
+            }
         },
         "/deletedusers": {
             "get": {

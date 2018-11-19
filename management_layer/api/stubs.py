@@ -112,6 +112,60 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # credentials_list -- Synchronisation point for meld
+    @staticmethod
+    async def credentials_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param credentials_ids (optional): array An optional list of credentials ids
+        :param site_id (optional): integer An optional query parameter to filter by site_id
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # credentials_create -- Synchronisation point for meld
+    @staticmethod
+    async def credentials_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # credentials_delete -- Synchronisation point for meld
+    @staticmethod
+    async def credentials_delete(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # credentials_read -- Synchronisation point for meld
+    @staticmethod
+    async def credentials_read(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # credentials_update -- Synchronisation point for meld
+    @staticmethod
+    async def credentials_update(request, body, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # deleteduser_list -- Synchronisation point for meld
     @staticmethod
     async def deleteduser_list(request, **kwargs):
@@ -1754,6 +1808,135 @@ class MockedStubClass(AbstractStubClass):
         :param country_code: string A unique two-character value identifying the country.
         """
         response_schema = schemas.country
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def credentials_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param credentials_ids (optional): array An optional list of credentials ids
+        :param site_id (optional): integer An optional query parameter to filter by site_id
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "description": "An object containing account credentials",
+        "properties": {
+            "account_id": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "account_secret": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "created_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "site_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "updated_at": {
+                "format": "date-time",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "site_id",
+            "account_id",
+            "account_secret",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def credentials_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.credentials
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def credentials_delete(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def credentials_read(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.credentials
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def credentials_update(request, body, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.credentials
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

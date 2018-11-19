@@ -15,6 +15,9 @@ from __future__ import absolute_import
 
 # import models into model package
 from access_control.models.all_user_roles import AllUserRoles
+from access_control.models.credentials import Credentials
+from access_control.models.credentials_create import CredentialsCreate
+from access_control.models.credentials_update import CredentialsUpdate
 from access_control.models.domain import Domain
 from access_control.models.domain_create import DomainCreate
 from access_control.models.domain_role import DomainRole
