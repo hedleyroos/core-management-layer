@@ -4611,7 +4611,7 @@ paths:
           in: query
           required: false
           type: string
-          x-aor-filter:
+          x-filter:
             format: date
             range: true
         - name: country
@@ -4629,7 +4629,7 @@ paths:
           in: query
           required: false
           type: string
-          x-aor-filter:
+          x-filter:
             format: date-time
             range: true
         - name: email
@@ -4664,7 +4664,7 @@ paths:
           in: query
           required: false
           type: string
-          x-aor-filter:
+          x-filter:
             format: date
             range: true
         - name: last_name
@@ -4700,7 +4700,7 @@ paths:
           in: query
           required: false
           type: string
-          x-aor-filter:
+          x-filter:
             format: date-time
             range: true
         - name: username
