@@ -225,6 +225,115 @@ country = json.loads("""
 }
 """)
 
+credentials = json.loads("""
+{
+    "description": "An object containing account credentials",
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "created_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        },
+        "updated_at": {
+            "format": "date-time",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "site_id",
+        "account_id",
+        "account_secret",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+credentials_create = json.loads("""
+{
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        }
+    },
+    "required": [
+        "site_id",
+        "account_id",
+        "account_secret",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+credentials_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        }
+    },
+    "type": "object"
+}
+""")
+
 deleted_user = json.loads("""
 {
     "properties": {
@@ -239,7 +348,11 @@ deleted_user = json.loads("""
         },
         "deleter_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "email": {
             "format": "email",
