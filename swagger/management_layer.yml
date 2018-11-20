@@ -3732,8 +3732,8 @@ paths:
         items:
           type: integer
         required: false
-        minItems: 0
-        collectionFormat: multi
+        minItems: 1
+        collectionFormat: csv
         uniqueItems: true
       - $ref: '#/parameters/optional_site_filter'
       produces:

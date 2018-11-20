@@ -1967,7 +1967,11 @@ class MockedStubClass(AbstractStubClass):
             },
             "deleter_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "email": {
                 "format": "email",

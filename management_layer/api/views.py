@@ -646,9 +646,13 @@ class Credentials(View, CorsViewMixin):
                 utils.validate(limit, schema)
                 optional_args["limit"] = limit
             # credentials_ids (optional): array An optional list of credentials ids
-            credentials_ids = self.request.query.getall("credentials_ids", None)
+            credentials_ids = self.request.query.get("credentials_ids", None)
             if credentials_ids is not None:
-                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 0, 'uniqueItems': True}
+                credentials_ids = credentials_ids.split(",")
+            if credentials_ids:
+                credentials_ids = [int(e) for e in credentials_ids]
+            if credentials_ids is not None:
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
                 utils.validate(credentials_ids, schema)
                 optional_args["credentials_ids"] = credentials_ids
             # site_id (optional): integer An optional query parameter to filter by site_id
@@ -833,7 +837,11 @@ class Deletedusers(View, CorsViewMixin):
             },
             "deleter_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "email": {
                 "format": "email",
@@ -7287,7 +7295,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "deleter_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "email": {
                     "format": "email",
@@ -9279,7 +9291,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "limit",
             "required": false,
             "type": "integer",
-            "x-admin-on-rest-exclude": true
+            "x-admin-exclude": true
         },
         "optional_nocache": {
             "default": false,
@@ -9297,7 +9309,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "offset",
             "required": false,
             "type": "integer",
-            "x-admin-on-rest-exclude": true
+            "x-admin-exclude": true
         },
         "optional_parent_filter": {
             "description": "An optional query parameter to filter by parent_id",
@@ -9472,7 +9484,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
@@ -9521,7 +9533,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:create"
                 ]
             }
@@ -9540,7 +9552,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:delete"
                 ]
             },
@@ -9566,7 +9578,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
@@ -9621,7 +9633,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:update"
                 ]
             }
@@ -9689,7 +9701,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
@@ -9722,7 +9734,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
@@ -9862,13 +9874,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         ]
                     },
                     {
-                        "collectionFormat": "multi",
+                        "collectionFormat": "csv",
                         "description": "An optional list of credentials ids",
                         "in": "query",
                         "items": {
                             "type": "integer"
                         },
-                        "minItems": 0,
+                        "minItems": 1,
                         "name": "credentials_ids",
                         "required": false,
                         "type": "array",
@@ -9907,7 +9919,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:credentials:read"
                 ]
             },
@@ -9953,7 +9965,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:credentials:create"
                 ]
             }
@@ -9969,7 +9981,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:credentials:delete"
                 ]
             },
@@ -9992,7 +10004,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:credentials:read"
                 ]
             },
@@ -10044,7 +10056,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:credentials:update"
                 ]
             }
@@ -10098,7 +10110,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:read"
                 ]
             },
@@ -10136,7 +10148,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:create"
                 ]
             }
@@ -10152,7 +10164,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:delete"
                 ]
             },
@@ -10175,7 +10187,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:read"
                 ]
             },
@@ -10221,7 +10233,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:update"
                 ]
             }
@@ -10275,7 +10287,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:read"
                 ]
             },
@@ -10313,7 +10325,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:create"
                 ]
             }
@@ -10329,7 +10341,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:delete"
                 ]
             },
@@ -10352,7 +10364,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:read"
                 ]
             },
@@ -10404,7 +10416,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:update"
                 ]
             }
@@ -10464,7 +10476,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
@@ -10510,7 +10522,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:create"
                 ]
             }
@@ -10526,7 +10538,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:delete"
                 ]
             },
@@ -10549,7 +10561,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
@@ -10607,7 +10619,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:update"
                 ]
             }
@@ -10674,7 +10686,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:read"
                 ]
             },
@@ -10720,7 +10732,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:create"
                 ]
             }
@@ -10736,7 +10748,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:delete"
                 ]
             },
@@ -10759,7 +10771,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:read"
                 ]
             },
@@ -10811,7 +10823,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:update"
                 ]
             }
@@ -10898,7 +10910,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
@@ -10944,7 +10956,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:create"
                 ]
             }
@@ -10963,7 +10975,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:delete"
                 ]
             },
@@ -10986,7 +10998,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
@@ -11073,7 +11085,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
@@ -11111,7 +11123,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:create"
                 ]
             }
@@ -11127,7 +11139,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:delete"
                 ]
             },
@@ -11150,7 +11162,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
@@ -11196,7 +11208,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:update"
                 ]
             }
@@ -11266,7 +11278,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:read"
                 ]
             },
@@ -11312,7 +11324,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:create"
                 ]
             }
@@ -11367,7 +11379,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:delete"
                 ]
             },
@@ -11390,7 +11402,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:read"
                 ]
             },
@@ -11442,7 +11454,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:update"
                 ]
             }
@@ -11540,7 +11552,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
@@ -11586,7 +11598,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:create"
                 ]
             }
@@ -11602,7 +11614,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:delete"
                 ]
             },
@@ -11625,7 +11637,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
@@ -12274,7 +12286,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             },
             "parameters": [
                 {
@@ -12323,7 +12336,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             },
             "put": {
                 "consumes": [
@@ -12359,7 +12373,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             }
         },
         "/organisations": {
@@ -12418,7 +12433,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:read"
                 ]
             },
@@ -12464,7 +12479,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:create"
                 ]
             }
@@ -12480,7 +12495,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:delete"
                 ]
             },
@@ -12503,7 +12518,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:read"
                 ]
             },
@@ -12555,7 +12570,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:update"
                 ]
             }
@@ -12616,7 +12631,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:read"
                 ]
             },
@@ -12662,7 +12677,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:create"
                 ]
             }
@@ -12678,7 +12693,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:delete"
                 ]
             },
@@ -12701,7 +12716,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:read"
                 ]
             },
@@ -12753,7 +12768,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:update"
                 ]
             }
@@ -13101,7 +13116,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:read"
                 ]
             },
@@ -13147,7 +13162,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:create"
                 ]
             }
@@ -13163,7 +13178,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:delete"
                 ]
             },
@@ -13186,7 +13201,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:read"
                 ]
             },
@@ -13238,7 +13253,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:update"
                 ]
             }
@@ -13306,7 +13321,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:read"
                 ]
             },
@@ -13352,7 +13367,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:create"
                 ]
             }
@@ -13368,7 +13383,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:delete"
                 ]
             },
@@ -13391,7 +13406,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:update"
                 ]
             },
@@ -13478,7 +13493,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:read"
                 ]
             },
@@ -13524,7 +13539,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:create"
                 ]
             }
@@ -13540,7 +13555,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:delete"
                 ]
             },
@@ -13563,7 +13578,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:read"
                 ]
             },
@@ -13609,7 +13624,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:update"
                 ]
             }
@@ -13670,7 +13685,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
@@ -13716,7 +13731,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:create"
                 ]
             }
@@ -13732,7 +13747,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:delete"
                 ]
             },
@@ -13755,7 +13770,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
@@ -13807,7 +13822,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:update"
                 ]
             }
@@ -13867,7 +13882,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:read"
                 ]
             },
@@ -13913,7 +13928,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:create"
                 ]
             }
@@ -13929,7 +13944,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:delete"
                 ]
             },
@@ -13952,7 +13967,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:read"
                 ]
             },
@@ -14010,7 +14025,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:update"
                 ]
             }
@@ -14078,7 +14093,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:read"
                 ]
             },
@@ -14124,7 +14139,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:create"
                 ]
             }
@@ -14140,7 +14155,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:delete"
                 ]
             },
@@ -14163,7 +14178,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:read"
                 ]
             },
@@ -14215,7 +14230,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:update"
                 ]
             }
@@ -14281,7 +14296,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
@@ -14327,7 +14342,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:create"
                 ]
             }
@@ -14343,7 +14358,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:delete"
                 ]
             },
@@ -14366,7 +14381,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
@@ -14419,7 +14434,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "birth_date",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date",
                             "range": true
                         }
@@ -14443,7 +14458,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "date_joined",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date-time",
                             "range": true
                         }
@@ -14491,7 +14506,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "last_login",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date",
                             "range": true
                         }
@@ -14540,7 +14555,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "updated_at",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date-time",
                             "range": true
                         }
@@ -14645,7 +14660,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
             },
@@ -14669,7 +14684,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:delete"
                 ]
             },
@@ -14692,7 +14707,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
             },
@@ -14744,7 +14759,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:update"
                 ]
             }
@@ -14804,7 +14819,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
@@ -14850,7 +14865,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:create"
                 ]
             }
@@ -14866,7 +14881,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:delete"
                 ]
             },
@@ -14889,7 +14904,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
@@ -14947,7 +14962,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:update"
                 ]
             }
@@ -15013,7 +15028,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
@@ -15059,7 +15074,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:create"
                 ]
             }
@@ -15075,7 +15090,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:delete"
                 ]
             },
@@ -15098,7 +15113,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
