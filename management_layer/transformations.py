@@ -128,7 +128,7 @@ SITE = Transformation(
         Mapping("updated_at", conversion=datetime_to_string)
     ],
     copy_fields=["id", "name", "domain_id", "description",
-                 "client_id", "is_active"]
+                 "client_id", "is_active", "deletion_method_id", "deletion_method_data"]
 )
 
 SITE_DATA_SCHEMA = Transformation(
@@ -226,3 +226,12 @@ DELETED_USER_SITE = Transformation(
     copy_fields=["deleted_user_id", "site_id", "deletion_requested_via", "deletion_confirmed_via"]
 )
 
+DELETION_METHOD = Transformation(
+    mappings=[
+        Mapping(input_field="created_at", conversion=datetime_to_string),
+        Mapping(input_field="updated_at", conversion=datetime_to_string)
+    ],
+    copy_fields=[
+        "id", "label", "data_schema", "description"
+    ]
+)

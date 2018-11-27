@@ -562,6 +562,88 @@ deleted_user_update = json.loads("""
 }
 """)
 
+deletion_method = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "readOnly": true,
+            "type": "integer"
+        },
+        "label": {
+            "maxLength": 100,
+            "type": "string"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "label",
+        "data_schema",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+deletion_method_create = json.loads("""
+{
+    "properties": {
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "label": {
+            "maxLength": 100,
+            "type": "string"
+        }
+    },
+    "required": [
+        "label",
+        "data_schema",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+deletion_method_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "label": {
+            "maxLength": 100,
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+
 domain = json.loads("""
 {
     "properties": {
@@ -1465,8 +1547,7 @@ role = json.loads("""
             "maxLength": 100,
             "type": "string",
             "x-scope": [
-                "",
-                "#/definitions/role"
+                ""
             ]
         },
         "requires_2fa": {
@@ -1499,8 +1580,7 @@ role_create = json.loads("""
             "maxLength": 100,
             "type": "string",
             "x-scope": [
-                "",
-                "#/definitions/role_create"
+                ""
             ]
         },
         "requires_2fa": {
@@ -1629,6 +1709,12 @@ site = json.loads("""
             "readOnly": true,
             "type": "string"
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer"
+        },
         "description": {
             "type": "string"
         },
@@ -1646,7 +1732,7 @@ site = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         },
         "updated_at": {
@@ -1660,6 +1746,8 @@ site = json.loads("""
         "domain_id",
         "name",
         "is_active",
+        "deletion_method_id",
+        "deletion_method_data",
         "created_at",
         "updated_at"
     ],
@@ -1718,6 +1806,12 @@ site_create = json.loads("""
                 "label": "name"
             }
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer"
+        },
         "description": {
             "type": "string"
         },
@@ -1731,13 +1825,15 @@ site_create = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         }
     },
     "required": [
         "domain_id",
-        "name"
+        "name",
+        "deletion_method_id",
+        "deletion_method_data"
     ],
     "type": "object"
 }
@@ -1885,8 +1981,7 @@ site_role_labels_aggregated = json.loads("""
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    "",
-                    "#/definitions/site_role_labels_aggregated"
+                    ""
                 ]
             },
             "type": "array"
@@ -1921,6 +2016,12 @@ site_update = json.loads("""
                 "label": "name"
             }
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer"
+        },
         "description": {
             "type": "string"
         },
@@ -1934,7 +2035,7 @@ site_update = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         }
     },
@@ -2157,8 +2258,7 @@ user_permissions_check = json.loads("""
                 ],
                 "type": "object",
                 "x-scope": [
-                    "",
-                    "#/definitions/user_permissions_check"
+                    ""
                 ]
             },
             "type": "array"
@@ -2356,8 +2456,7 @@ user_site_role_labels_aggregated = json.loads("""
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    "",
-                    "#/definitions/user_site_role_labels_aggregated"
+                    ""
                 ]
             },
             "type": "array"

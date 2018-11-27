@@ -258,6 +258,13 @@ parameters:
     required: true
     type: integer
 
+  deletionmethod_id:
+    description: A unique integer value identifying the credentials.
+    in: path
+    name: deletionmethod_id
+    required: true
+    type: integer
+
 definitions:
   country:
     type: object
@@ -344,6 +351,9 @@ definitions:
       id:
         type: integer
         readOnly: true
+      name:
+        type: string
+        maxLength: 30
       client_id:
         type: integer
         x-related-info:
@@ -352,13 +362,14 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      name:
-        type: string
-        maxLength: 100
       description:
         type: string
       is_active:
         type: boolean
+      deletion_method_id:
+        type: integer
+      deletion_method_data:
+        type: object
       created_at:
         type: string
         format: 'date-time'
@@ -372,12 +383,17 @@ definitions:
       - domain_id
       - name
       - is_active
+      - deletion_method_id
+      - deletion_method_data
       - created_at
       - updated_at
 
   site_create:
     type: object
     properties:
+      name:
+        type: string
+        maxLength: 30
       client_id:
         type: integer
         x-related-info:
@@ -386,16 +402,19 @@ definitions:
         type: integer
         x-related-info:
           label: name
-      name:
-        type: string
-        maxLength: 100
-      is_active:
-        type: boolean
       description:
         type: string
+      is_active:
+        type: boolean
+      deletion_method_id:
+        type: integer
+      deletion_method_data:
+        type: object
     required:
       - domain_id
       - name
+      - deletion_method_id
+      - deletion_method_data
 
   site_update:
     type: object
@@ -410,11 +429,15 @@ definitions:
           label: name
       name:
         type: string
-        maxLength: 100
+        maxLength: 30
       description:
         type: string
       is_active:
         type: boolean
+      deletion_method_id:
+        type: integer
+      deletion_method_data:
+        type: object
     minProperties: 1
 
   role:
@@ -1900,6 +1923,62 @@ definitions:
         type: integer
     required:
       - mode
+
+  deletion_method:
+    type: object
+    properties:
+      id:
+        type: integer
+        readOnly: true
+      label:
+        type: string
+        maxLength: 100
+      data_schema:
+        type: object
+      description:
+        type: string
+      created_at:
+        type: string
+        format: 'date-time'
+        readOnly: true
+      updated_at:
+        type: string
+        format: 'date-time'
+        readOnly: true
+    required:
+      - id
+      - label
+      - data_schema
+      - description
+      - created_at
+      - updated_at
+
+  deletion_method_create:
+    type: object
+    properties:
+      label:
+        type: string
+        maxLength: 100
+      data_schema:
+        type: object
+      description:
+        type: string
+    required:
+      - label
+      - data_schema
+      - description
+
+  deletion_method_update:
+    type: object
+    properties:
+      label:
+        type: string
+        maxLength: 100
+      data_schema:
+        type: object
+      description:
+        type: string
+    minProperties: 1
 
 paths:
   /healthcheck:
@@ -4822,6 +4901,96 @@ paths:
             $ref: '#/definitions/user'
       tags:
         - authentication
+
+  /deletionmethods:
+    get:
+      operationId: deletionmethod_list
+      x-aor-permissions:
+        - 'urn:ge:access_control:deletionmethod:read'
+      parameters:
+        - $ref: '#/parameters/optional_offset'
+        - $ref: '#/parameters/optional_limit'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          headers:
+            X-Total-Count:
+                type: integer
+                description: The total number of results matching the query
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/deletion_method'
+      tags:
+        - access_control
+    post:
+      consumes:
+        - application/json
+      operationId: deletionmethod_create
+      x-aor-permissions:
+        - 'urn:ge:access_control:deletionmethod:create'
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/deletion_method_create'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/deletion_method'
+      tags:
+        - access_control
+
+  '/deletionmethods/{deletionmethod_id}':
+    parameters:
+      - $ref: '#/parameters/deletionmethod_id'
+    delete:
+      operationId: deletionmethod_delete
+      x-aor-permissions:
+        - 'urn:ge:access_control:deletionmethod:delete'
+      responses:
+        '204':
+          description: ''
+      tags:
+        - access_control
+    get:
+      operationId: deletionmethod_read
+      x-aor-permissions:
+        - 'urn:ge:access_control:deletionmethod:read'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/deletion_method'
+      tags:
+        - access_control
+    put:
+      consumes:
+      - application/json
+      operationId: deletionmethod_update
+      x-aor-permissions:
+        - 'urn:ge:access_control:deletionmethod:update'
+      parameters:
+      - in: body
+        name: data
+        schema:
+          $ref: '#/definitions/deletion_method_update'
+      produces:
+      - application/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/deletion_method'
+      tags:
+      - access_control
 
 x-detail-page-definitions:
   domain:

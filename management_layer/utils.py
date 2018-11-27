@@ -192,7 +192,9 @@ TEST_SITE = {
     "client_id": 1,
     "is_active": True,
     "created_at": datetime.datetime.now(),
-    "updated_at": datetime.datetime.now()
+    "updated_at": datetime.datetime.now(),
+    "deletion_method_id": 1,
+    "deletion_method_data": {}
 }
 
 TEST_CLIENT = {

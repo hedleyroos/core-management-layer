@@ -90,6 +90,7 @@ RESOURCES = {
     "users": Resource("/{}".format(uuid.uuid4()), schemas.user, None, schemas.user_update),
     "countries": Resource("/za", schemas.country, None, None),
     "organisations": Resource("/1", schemas.organisation, schemas.organisation_create, schemas.organisation_update),
+    "deletionmethods": Resource("/1", schemas.deletion_method, schemas.deletion_method_create, schemas.deletion_method_update),
 }
 SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 

@@ -506,6 +506,101 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # deletionmethod_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "read")])
+    async def deletionmethod_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_methods, _status, headers = await request.app[
+                "access_control_api"].deletionmethod_list_with_http_info(**kwargs)
+
+        if deletion_methods:
+            transform = transformations.DELETION_METHOD
+            deletion_methods = [transform.apply(deletion_method.to_dict())
+                for deletion_method in deletion_methods]
+
+        return deletion_methods, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # deletionmethod_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "create")])
+    async def deletionmethod_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_create(
+                deletion_method_create=body)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            return transform.apply(deletion_method.to_dict())
+
+        return None
+
+    # deletionmethod_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "delete")])
+    async def deletionmethod_delete(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["access_control_api"].deletionmethod_delete(deletionmethod_id)
+
+        return result
+
+    # deletionmethod_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "read")])
+    async def deletionmethod_read(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_read(deletionmethod_id)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            result = transform.apply(deletion_method.to_dict())
+            return result
+
+        return None
+
+    # deletionmethod_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "update")])
+    async def deletionmethod_update(request, body, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_update(
+                deletionmethod_id, deletion_method_update=body)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            return transform.apply(deletion_method.to_dict())
+
+        return None
+
     # domainrole_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "read")])

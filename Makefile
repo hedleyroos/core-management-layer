@@ -125,4 +125,4 @@ $(PYTEST): $(VENV)
 	$(PIP) install pytest pytest-cov
 
 test: $(PYTEST)
-	$(PYTEST) --verbose --cov=management_layer management_layer/ --log-level=DEBUG
+	$(PYTEST) --disable-pytest-warnings --tb=native --cov=management_layer management_layer/ --log-level=DEBUG
