@@ -221,6 +221,58 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # deletionmethod_list -- Synchronisation point for meld
+    @staticmethod
+    async def deletionmethod_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletionmethod_create -- Synchronisation point for meld
+    @staticmethod
+    async def deletionmethod_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletionmethod_delete -- Synchronisation point for meld
+    @staticmethod
+    async def deletionmethod_delete(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletionmethod_read -- Synchronisation point for meld
+    @staticmethod
+    async def deletionmethod_read(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # deletionmethod_update -- Synchronisation point for meld
+    @staticmethod
+    async def deletionmethod_update(request, body, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # domainrole_list -- Synchronisation point for meld
     @staticmethod
     async def domainrole_list(request, **kwargs):
@@ -2030,6 +2082,125 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def deletionmethod_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        """
+        response_schema = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "data_schema": {
+                "type": "object"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "label": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "label",
+            "data_schema",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletionmethod_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        """
+        response_schema = schemas.deletion_method
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletionmethod_delete(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletionmethod_read(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.deletion_method
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def deletionmethod_update(request, body, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        """
+        response_schema = schemas.deletion_method
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def domainrole_list(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -2886,6 +3057,12 @@ class MockedStubClass(AbstractStubClass):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer"
+            },
             "description": {
                 "type": "string"
             },
@@ -2903,7 +3080,7 @@ class MockedStubClass(AbstractStubClass):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -2917,6 +3094,8 @@ class MockedStubClass(AbstractStubClass):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],
@@ -3807,8 +3986,7 @@ class MockedStubClass(AbstractStubClass):
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    "",
-                    "#/definitions/role"
+                    ""
                 ]
             },
             "requires_2fa": {
@@ -4163,6 +4341,12 @@ class MockedStubClass(AbstractStubClass):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer"
+            },
             "description": {
                 "type": "string"
             },
@@ -4180,7 +4364,7 @@ class MockedStubClass(AbstractStubClass):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -4194,6 +4378,8 @@ class MockedStubClass(AbstractStubClass):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],

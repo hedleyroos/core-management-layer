@@ -1069,6 +1069,234 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Deletionmethods(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "data_schema": {
+                "type": "object"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "label": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "label",
+            "data_schema",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deletion_method
+    POST_BODY_SCHEMA = schemas.deletion_method_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletionmethods instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
+                optional_args["limit"] = limit
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletionmethods instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletionmethod_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeletionmethodsDeletionmethodId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deletion_method
+    PUT_RESPONSE_SCHEMA = schemas.deletion_method
+    PUT_BODY_SCHEMA = schemas.deletion_method_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_delete(
+            self.request, deletionmethod_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_read(
+            self.request, deletionmethod_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletionmethod_update(
+            self.request, body, deletionmethod_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Domainroles(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -2768,6 +2996,12 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer"
+            },
             "description": {
                 "type": "string"
             },
@@ -2785,7 +3019,7 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -2799,6 +3033,8 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],
@@ -4652,8 +4888,7 @@ class Roles(View, CorsViewMixin):
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    "",
-                    "#/definitions/role"
+                    ""
                 ]
             },
             "requires_2fa": {
@@ -5376,6 +5611,12 @@ class Sites(View, CorsViewMixin):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer"
+            },
             "description": {
                 "type": "string"
             },
@@ -5393,7 +5634,7 @@ class Sites(View, CorsViewMixin):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -5407,6 +5648,8 @@ class Sites(View, CorsViewMixin):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],
@@ -7131,6 +7374,79 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
+        "deletion_method": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "readOnly": true,
+                    "type": "integer"
+                },
+                "label": {
+                    "maxLength": 100,
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "label",
+                "data_schema",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "deletion_method_create": {
+            "properties": {
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "label": {
+                    "maxLength": 100,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "label",
+                "data_schema",
+                "description"
+            ],
+            "type": "object"
+        },
+        "deletion_method_update": {
+            "minProperties": 1,
+            "properties": {
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "label": {
+                    "maxLength": 100,
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "domain": {
             "properties": {
                 "created_at": {
@@ -7943,8 +8259,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string",
                     "x-scope": [
-                        "",
-                        "#/definitions/role"
+                        ""
                     ]
                 },
                 "requires_2fa": {
@@ -7973,8 +8288,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "label": {
                     "$ref": "#/definitions/role_label",
                     "x-scope": [
-                        "",
-                        "#/definitions/role_create"
+                        ""
                     ]
                 },
                 "requires_2fa": {
@@ -8088,6 +8402,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "readOnly": true,
                     "type": "string"
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8105,7 +8425,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 },
                 "updated_at": {
@@ -8119,6 +8439,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "domain_id",
                 "name",
                 "is_active",
+                "deletion_method_id",
+                "deletion_method_data",
                 "created_at",
                 "updated_at"
             ],
@@ -8171,6 +8493,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name"
                     }
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8184,13 +8512,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 }
             },
             "required": [
                 "domain_id",
-                "name"
+                "name",
+                "deletion_method_id",
+                "deletion_method_data"
             ],
             "type": "object"
         },
@@ -8319,8 +8649,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/role_label",
                         "x-scope": [
-                            "",
-                            "#/definitions/site_role_labels_aggregated"
+                            ""
                         ]
                     },
                     "type": "array"
@@ -8349,6 +8678,12 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name"
                     }
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8362,7 +8697,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 }
             },
@@ -8560,8 +8895,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/resource_permission",
                         "x-scope": [
-                            "",
-                            "#/definitions/user_permissions_check"
+                            ""
                         ]
                     },
                     "type": "array"
@@ -8737,8 +9071,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/role_label",
                         "x-scope": [
-                            "",
-                            "#/definitions/user_site_role_labels_aggregated"
+                            ""
                         ]
                     },
                     "type": "array"
@@ -8856,6 +9189,13 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "country_code",
             "required": true,
             "type": "string"
+        },
+        "deletionmethod_id": {
+            "description": "A unique integer value identifying the credentials.",
+            "in": "path",
+            "name": "deletionmethod_id",
+            "required": true,
+            "type": "integer"
         },
         "domain_id": {
             "description": "A unique integer value identifying the domain.",
@@ -9846,6 +10186,177 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 ],
                 "x-aor-permissions": [
                     "urn:ge:user_data:deletedusersite:update"
+                ]
+            }
+        },
+        "/deletionmethods": {
+            "get": {
+                "operationId": "deletionmethod_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deletion_method",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:deletionmethod:read"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletionmethod_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:deletionmethod:create"
+                ]
+            }
+        },
+        "/deletionmethods/{deletionmethod_id}": {
+            "delete": {
+                "operationId": "deletionmethod_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:deletionmethod:delete"
+                ]
+            },
+            "get": {
+                "operationId": "deletionmethod_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:deletionmethod:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/deletionmethod_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletionmethod_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-aor-permissions": [
+                    "urn:ge:access_control:deletionmethod:update"
                 ]
             }
         },
