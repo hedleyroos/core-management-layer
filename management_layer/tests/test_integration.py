@@ -56,6 +56,8 @@ Resource = namedtuple("Resource", [
 # A list of resources. Used to parameterise tests.
 RESOURCES = {
     "adminnotes": Resource("/1", schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
+    "credentials": Resource("/1", schemas.credentials, schemas.credentials_create,
+                            schemas.credentials_update),
     "deletedusers": Resource("/{}".format(uuid.uuid4()),
                              schemas.deleted_user, schemas.deleted_user_create, schemas.deleted_user_update),
     "deletedusersites": Resource("/{}/{}".format(uuid.uuid4(), 1),

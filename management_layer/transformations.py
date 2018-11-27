@@ -23,6 +23,14 @@ COUNTRY = Transformation(
     copy_fields=["code", "name"]
 )
 
+CREDENTIALS = Transformation(
+    mappings=[
+        Mapping("created_at", conversion=datetime_to_string),
+        Mapping("updated_at", conversion=datetime_to_string)
+    ],
+    copy_fields=["id", "site_id", "account_id", "account_secret", "description"]
+)
+
 DOMAIN = Transformation(
     mappings=[
         Mapping("created_at", conversion=datetime_to_string),

@@ -75,6 +75,8 @@ def add_routes(app, with_ui=False):
     app.router.add_view(r"/deletedusersites", views.Deletedusersites)
     app.router.add_view(r"/deletedusers/{user_id}", views.DeletedusersUserId)
     app.router.add_view(r"/deletedusers", views.Deletedusers)
+    app.router.add_view(r"/credentials/{credentials_id}", views.CredentialsCredentialsId)
+    app.router.add_view(r"/credentials", views.Credentials)
     app.router.add_view(r"/countries/{country_code}", views.CountriesCountryCode)
     app.router.add_view(r"/countries", views.Countries)
     app.router.add_view(r"/clients/{client_id}", views.ClientsClientId)
