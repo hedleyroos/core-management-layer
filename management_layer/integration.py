@@ -523,7 +523,7 @@ class Implementation(AbstractStubClass):
         if deletion_methods:
             transform = transformations.DELETION_METHOD
             deletion_methods = [transform.apply(deletion_method.to_dict())
-                             for deletion_method in deletion_methods]
+                for deletion_method in deletion_methods]
 
         return deletion_methods, {
             TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
