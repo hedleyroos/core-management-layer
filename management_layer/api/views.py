@@ -9551,14 +9551,17 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": true,
             "type": "string"
         },
-        "deletionmethod_id": {
-            "description": "A unique integer value identifying the credentials.",
-            "in": "path",
-            "name": "deletionmethod_id",
         "credentials_id": {
             "description": "A unique integer value identifying the credentials.",
             "in": "path",
             "name": "credentials_id",
+            "required": true,
+            "type": "integer"
+        },
+        "deletionmethod_id": {
+            "description": "A unique integer value identifying the credentials.",
+            "in": "path",
+            "name": "deletionmethod_id",
             "required": true,
             "type": "integer"
         },
