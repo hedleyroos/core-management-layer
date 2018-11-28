@@ -368,6 +368,9 @@ definitions:
         type: boolean
       deletion_method_id:
         type: integer
+        x-related-info:
+          model: deletion_method
+          label: label
       deletion_method_data:
         type: object
       created_at:
@@ -408,6 +411,9 @@ definitions:
         type: boolean
       deletion_method_id:
         type: integer
+        x-related-info:
+          model: deletion_method
+          label: label
       deletion_method_data:
         type: object
     required:
@@ -436,6 +442,9 @@ definitions:
         type: boolean
       deletion_method_id:
         type: integer
+        x-related-info:
+          model: deletion_method
+          label: label
       deletion_method_data:
         type: object
     minProperties: 1
