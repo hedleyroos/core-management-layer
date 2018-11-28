@@ -4911,7 +4911,7 @@ paths:
   /deletionmethods:
     get:
       operationId: deletionmethod_list
-      x-aor-permissions:
+      x-permissions:
         - 'urn:ge:access_control:deletionmethod:read'
       parameters:
         - $ref: '#/parameters/optional_offset'
@@ -4935,7 +4935,7 @@ paths:
       consumes:
         - application/json
       operationId: deletionmethod_create
-      x-aor-permissions:
+      x-permissions:
         - 'urn:ge:access_control:deletionmethod:create'
       parameters:
         - in: body
@@ -4957,7 +4957,7 @@ paths:
       - $ref: '#/parameters/deletionmethod_id'
     delete:
       operationId: deletionmethod_delete
-      x-aor-permissions:
+      x-permissions:
         - 'urn:ge:access_control:deletionmethod:delete'
       responses:
         '204':
@@ -4966,7 +4966,7 @@ paths:
         - access_control
     get:
       operationId: deletionmethod_read
-      x-aor-permissions:
+      x-permissions:
         - 'urn:ge:access_control:deletionmethod:read'
       produces:
         - application/json
@@ -4981,7 +4981,7 @@ paths:
       consumes:
       - application/json
       operationId: deletionmethod_update
-      x-aor-permissions:
+      x-permissions:
         - 'urn:ge:access_control:deletionmethod:update'
       parameters:
       - in: body
