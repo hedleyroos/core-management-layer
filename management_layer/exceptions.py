@@ -11,8 +11,8 @@ class JSONException(web.HTTPException):
         # Use the json object given or create a message object using the string in message.
         text = json.dumps(json_data) if json_data else json.dumps({"message": message})
         # Super the web HTTPException, however force the content_type to application/json.
-        super().__init__(headers=headers, reason=reason, body=body,
-                         text=text, content_type="application/json")
+        super().__init__(headers=headers, reason=reason, body=body, text=text,
+                         content_type="application/json")
 
 
 class JSONBadRequest(JSONException):
