@@ -69,6 +69,8 @@ import time
 
 import jwt
 import logging
+
+from aiohttp import web
 from aiohttp.web import middleware
 from aiohttp.web_response import json_response
 from prometheus_client import Histogram
@@ -189,6 +191,10 @@ async def auth_middleware(request, handler):
 async def sentry_middleware(request, handler):
     try:
         return await handler(request)
+    except web.HTTPException:
+        # Do not generate Sentry alerts for HTTPExceptions, which are
+        # used to generate specific responses.
+        raise
     except Exception:
         sentry.captureException(data={
             "request": {
