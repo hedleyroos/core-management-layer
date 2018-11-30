@@ -10,7 +10,8 @@ from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
 from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
-from management_layer.utils import client_exception_handler, transform_users_with_roles
+from management_layer.utils import client_exception_handler, transform_users_with_roles, \
+    user_with_email_exists
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
@@ -1073,6 +1074,10 @@ class Implementation(AbstractStubClass):
         # The caller of this function is considered the invitor.
         body["invitor_id"] = request["token"]["sub"]
 
+        # Check if a user with the specified email already exists.
+        if await user_with_email_exists(request, body["email"]):
+            raise JSONBadRequest(message="A user with the specified email address already exists.")
+
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_create(
                 invitation_create=body)
@@ -1127,6 +1132,12 @@ class Implementation(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
+        if "email" in body:
+            # Check if a user with the specified email already exists.
+            if await user_with_email_exists(request, body["email"]):
+                raise JSONBadRequest(message="A user with the specified email address already "
+                                             "exists.")
+
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_update(
                 invitation_id, invitation_update=body)

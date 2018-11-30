@@ -18,7 +18,6 @@ from authentication_service import User, Client
 
 from management_layer import mappings, transformations
 from management_layer.exceptions import JSONBadGateway
-from management_layer.sentry import sentry
 
 logger = logging.getLogger(__name__)
 
@@ -91,6 +90,29 @@ def client_exception_handler():
                 "reason": cre.message,
                 "error": str(cre)
             })
+
+
+async def user_with_email_exists(request, email) -> bool:
+    """
+    A helper function to check if a user with the specified email
+    already exists.
+
+    The email filter can match partial email addresses that are similar,
+    but not equal, e.g. filtering on "email=foo@example.com" will match
+    also match "bar.foo@example.com". For this reason we have to
+    do a pass through all the results to see if we find an exact
+    case-insensitive match.
+
+    :param request: A request
+    :param email: The email to check
+    :return: True if a user with the specified email address exists, else False
+    """
+    with client_exception_handler():
+        users = await request.app[
+            "authentication_service_api"].user_list(email=email)
+
+    email_lower = email.lower()
+    return any(user.email.lower() == email_lower for user in users if user.email)
 
 
 async def transform_users_with_roles(request, response, **kwargs):
@@ -167,9 +189,9 @@ async def return_users_with_roles(*args, **kwargs):
 
 async def return_users(*args, **kwargs):
     """
-    Some test functions require to obtain a list of users with at least
-    an id and username that is what this will do.
-    :return: A list of uuid user_ids
+    Some test functions require a list of users with at least
+    an id and username. This function returns such a list.
+    :return: A list of users
     """
     data = [
         User(
@@ -179,9 +201,18 @@ async def return_users(*args, **kwargs):
             date_joined=datetime.date.today(),
             created_at=datetime.datetime.now(),
             updated_at=datetime.datetime.now()
+        ),
+        User(
+            id=uuid.uuid4(),
+            username="Jane",
+            is_active=True,
+            email="jane@example.com",
+            date_joined=datetime.date.today(),
+            created_at=datetime.datetime.now(),
+            updated_at=datetime.datetime.now()
         )
     ]
-    return data[kwargs["offset"]:]
+    return data[kwargs.get("offset", 0):]
 
 
 TEST_SITE = {

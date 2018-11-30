@@ -923,3 +923,28 @@ class IntegrationTest(AioHTTPTestCase):
         response = await self.client.post("/request_user_deletion", data=data)
         await self.assertStatus(response, 400)
 
+    @unittest_run_loop
+    async def test_cannot_create_or_update_invitation_for_existing_email(self):
+        # Invitation creation with existing email
+        invitation_create = {
+            "email": "jane@example.com",
+            "invitor_id": self.user_id,
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "organisation_id": 1
+        }
+        expected_response = {"message": "A user with the specified email address already exists."}
+        response = await self.client.post("/invitations", json=invitation_create)
+        await self.assertStatus(response, 400)
+        self.assertEqual(expected_response, await response.json())
+
+        # Invitation update with existing email
+        invitation_update = {
+            "email": "jane@example.com",
+        }
+        response = await self.client.put("/invitations/{}".format(uuid.uuid4().hex),
+                                         json=invitation_update
+                                        )
+        await self.assertStatus(response, 400)
+        self.assertEqual(expected_response, await response.json())
+
