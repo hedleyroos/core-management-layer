@@ -1,8 +1,11 @@
 import base64
 import hashlib
+import logging
 from typing import Dict
 
 from management_layer import mappings
+
+LOGGER = logging.getLogger(__name__)
 
 
 def compute_signature(account_id: str, account_secret: str, **kwargs: Dict[str, str]) -> str:
