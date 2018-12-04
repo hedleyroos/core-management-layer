@@ -35,7 +35,7 @@ class TestSignature(TestCase):
             "argument": "1",
             "typically_obtained": "from_a_request",
             "nonce": "thisisanonce",
-            # Note that we do not set an expiry for this test, on order
+            # Note that we do not set an expiry for this test, in order
             # to keep the computation static.
             # "expiry": str(calendar.timegm(time.gmtime()) + 600),
             "signature": "n-Yb8cHz-Hs3ZLv0tlKhkxAAcpYFo-QKDqq6jxywO0A="
