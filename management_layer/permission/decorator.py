@@ -398,7 +398,7 @@ def _get_user_and_site(request):
     client_id = request["token"]["aud"]
 
     try:
-        site_id = Mappings.site_id_for(client_id)
+        site_id = Mappings.site_id_for_token_client_id(client_id)
     except KeyError:
         raise JSONForbidden(message=f"No site linked to the client '{client_id}'")
 

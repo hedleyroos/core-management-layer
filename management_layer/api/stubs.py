@@ -682,6 +682,20 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # confirm_user_data_deletion -- Synchronisation point for meld
+    @staticmethod
+    async def confirm_user_data_deletion(request, user_id, account_id, signature, nonce, expiry, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param account_id: string 
+        :param signature: string 
+        :param nonce: string 
+        :param expiry: integer 
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod
     async def get_domain_roles(request, domain_id, **kwargs):
@@ -958,6 +972,16 @@ class AbstractStubClass(object):
     # refresh_clients -- Synchronisation point for meld
     @staticmethod
     async def refresh_clients(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
+    # refresh_credentials -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_credentials(request, **kwargs):
         """
         :param request: An HttpRequest
         :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
@@ -3194,6 +3218,25 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def confirm_user_data_deletion(request, user_id, account_id, signature, nonce, expiry, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param account_id: string 
+        :param signature: string 
+        :param nonce: string 
+        :param expiry: integer 
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def get_domain_roles(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -3248,7 +3291,10 @@ class MockedStubClass(AbstractStubClass):
                 "type": "object"
             },
             "deletion_method_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "description": {
                 "type": "string"
@@ -3813,6 +3859,21 @@ class MockedStubClass(AbstractStubClass):
         return MockedStubClass.GENERATOR.random_value(response_schema)
 
     @staticmethod
+    async def refresh_credentials(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        """
+        response_schema = schemas.__UNSPECIFIED__
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
     async def refresh_domains(request, **kwargs):
         """
         :param request: An HttpRequest
@@ -4173,7 +4234,8 @@ class MockedStubClass(AbstractStubClass):
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    ""
+                    "",
+                    "#/definitions/role"
                 ]
             },
             "requires_2fa": {
@@ -4532,7 +4594,10 @@ class MockedStubClass(AbstractStubClass):
                 "type": "object"
             },
             "deletion_method_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "description": {
                 "type": "string"

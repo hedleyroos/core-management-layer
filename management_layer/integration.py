@@ -1,15 +1,19 @@
+import calendar
 import datetime
 import logging
 import socket
+import time
 import uuid
 
 from management_layer.api.stubs import AbstractStubClass
-from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound
+from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound, \
+    JSONUnauthorized
 from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
 from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
+from management_layer.signature import has_valid_signature
 from management_layer.utils import client_exception_handler, transform_users_with_roles, \
     user_with_email_exists
 
@@ -1296,6 +1300,84 @@ class Implementation(AbstractStubClass):
             user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
             return user_roles.to_dict()
 
+    # confirm_user_data_deletion -- Synchronisation point for meld
+    @staticmethod
+    # No permission checking required. This function performs its own validation.
+    # If the signature is valid, we infer the calling site from the account_id and
+    # perform the action.
+    async def confirm_user_data_deletion(request, user_id, account_id, signature, nonce, expiry, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param account_id: string
+        :param signature: string
+        :param nonce: string
+        :param expiry: Unix timestamp (integer) when this request expires
+        :returns: result or (result, headers) tuple
+        """
+        # Compare expiry against current Unix timestamp
+        unix_now = calendar.timegm(time.gmtime())
+        if expiry < unix_now:
+            raise JSONUnauthorized(message="This request has expired.")
+
+        # Check signature
+        try:
+            params = dict()
+            params["user_id"] = user_id
+            params["account_id"] = account_id
+            params["nonce"] = nonce
+            params["signature"] = signature
+            params["expiry"] = expiry
+            if not has_valid_signature(**params):
+                raise JSONUnauthorized(message="Invalid signature.")
+
+            site_id = mappings.Mappings.site_id_for_account_id(account_id)
+        except KeyError:
+            raise JSONUnauthorized(message=f"Could not find site linked to account {account_id}.")
+
+        # Check whether nonce was used before
+        redis = request.app["redis"]
+        nonce_key = f"nonce/{nonce}"
+        # If the nonce exists in the key-value store, it has been processed before.
+        if await redis.get(nonce_key):
+            raise JSONUnauthorized(message=f"The specified nonce was already processed.")
+
+        # Check if the entry was not updated before
+        with client_exception_handler():
+            deleted_user_site = await request.app[
+                "user_data_api"].deletedusersite_read(user_id, site_id)
+
+        if not deleted_user_site:
+            raise JSONBadRequest(message=f"No deleted user site for user {user_id} and site "
+                                         f"{site_id}")
+
+        transform = transformations.DELETED_USER_SITE
+        deleted_user_site = transform.apply(deleted_user_site.to_dict())
+        if "deletion_confirmed_at" in deleted_user_site:
+            # The entry has already been flagged as processed.
+            logger.info(f"Deletion confirmation for user {user_id} and site {site_id} already "
+                        f"set.")
+            return {}
+
+        # Set the confirmation
+        confirmation_data = {
+            "deletion_confirmed_at": datetime.datetime.now(),
+            "deletion_confirmed_via": "API"
+        }
+        with client_exception_handler():
+            await request.app["user_data_api"].deletedusersite_update(
+                user_id, site_id, deleted_user_site_update=confirmation_data)
+
+        # We store the nonce and make it expire when request itself
+        # will expire. The Redis interface only supports relative expiration as part
+        # of the set() command, so we calculate the relative remaining time
+        # using the time the request was received.
+        remainder = expiry - unix_now
+        await redis.set(nonce_key, str(unix_now), expire=remainder)
+
+        logger.info(f"Confirmed deletion of data for user {user_id} on site {site_id}.")
+        return {}
+
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
@@ -1339,7 +1421,7 @@ class Implementation(AbstractStubClass):
                     raise JSONNotFound(message=str(e))
         else:
             try:
-                site_id = mappings.Mappings.site_id_for(client_token_id)
+                site_id = mappings.Mappings.site_id_for_token_client_id(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
             except KeyError as e:
                 raise JSONNotFound(message=str(e))
@@ -1514,7 +1596,7 @@ class Implementation(AbstractStubClass):
             raise JSONBadRequest(message="Malformed user id")
 
         try:
-            management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
+            management_portal_site_id = mappings.Mappings.site_id_for_token_client_id(MANAGEMENT_PORTAL_CLIENT_ID)
         except KeyError:
             raise JSONBadRequest(message="Misconfigured Management Portal Client ID")
 
@@ -1665,7 +1747,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         user_id = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        site_id = mappings.Mappings.site_id_for(client_id)
+        site_id = mappings.Mappings.site_id_for_token_client_id(client_id)
 
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_read(user_id, site_id)
@@ -1692,7 +1774,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         body["user_id"] = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        body["site_id"] = mappings.Mappings.site_id_for(client_id)
+        body["site_id"] = mappings.Mappings.site_id_for_token_client_id(client_id)
 
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_create(user_site_data_create=body)
@@ -1717,7 +1799,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         user_id = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        site_id = mappings.Mappings.site_id_for(client_id)
+        site_id = mappings.Mappings.site_id_for_token_client_id(client_id)
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id,
                                                                          user_site_data_update=body)
@@ -1943,6 +2025,17 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         await mappings.refresh_clients(request.app, **kwargs)
+        return {}
+
+    # refresh_clients -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_credentials(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        await mappings.refresh_credentials(request.app, **kwargs)
         return {}
 
     # refresh_domains -- Synchronisation point for meld

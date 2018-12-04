@@ -3163,6 +3163,56 @@ class OpsAllUserRolesUserId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsConfirmUserDataDeletionUserId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsConfirmUserDataDeletionUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
+            # account_id: string 
+            account_id = self.request.query.get("account_id", None)
+            schema = {'type': 'string'}
+            utils.validate(account_id, schema)
+            # signature: string 
+            signature = self.request.query.get("signature", None)
+            schema = {'type': 'string'}
+            utils.validate(signature, schema)
+            # nonce: string 
+            nonce = self.request.query.get("nonce", None)
+            schema = {'type': 'string'}
+            utils.validate(nonce, schema)
+            # expiry: integer 
+            expiry = self.request.query.get("expiry", None)
+            expiry = int(expiry)
+            schema = {'type': 'integer'}
+            utils.validate(expiry, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.confirm_user_data_deletion(
+            self.request, user_id, account_id, signature, nonce, expiry, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsDomainRolesDomainId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.domain_roles
@@ -3257,7 +3307,10 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
                 "type": "object"
             },
             "deletion_method_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "description": {
                 "type": "string"
@@ -4398,6 +4451,42 @@ class RefreshClients(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class RefreshCredentials(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RefreshCredentials instance
+        """
+        try:
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.refresh_credentials(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class RefreshDomains(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
@@ -5145,7 +5234,8 @@ class Roles(View, CorsViewMixin):
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    ""
+                    "",
+                    "#/definitions/role"
                 ]
             },
             "requires_2fa": {
@@ -5872,7 +5962,10 @@ class Sites(View, CorsViewMixin):
                 "type": "object"
             },
             "deletion_method_id": {
-                "type": "integer"
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
             },
             "description": {
                 "type": "string"
@@ -8620,7 +8713,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "maxLength": 100,
                     "type": "string",
                     "x-scope": [
-                        ""
+                        "",
+                        "#/definitions/role"
                     ]
                 },
                 "requires_2fa": {
@@ -8649,7 +8743,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "label": {
                     "$ref": "#/definitions/role_label",
                     "x-scope": [
-                        ""
+                        "",
+                        "#/definitions/role_create"
                     ]
                 },
                 "requires_2fa": {
@@ -8767,7 +8862,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "deletion_method_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -8858,7 +8956,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "deletion_method_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -9010,7 +9111,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/role_label",
                         "x-scope": [
-                            ""
+                            "",
+                            "#/definitions/site_role_labels_aggregated"
                         ]
                     },
                     "type": "array"
@@ -9043,7 +9145,10 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "object"
                 },
                 "deletion_method_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
                 },
                 "description": {
                     "type": "string"
@@ -9256,7 +9361,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/resource_permission",
                         "x-scope": [
-                            ""
+                            "",
+                            "#/definitions/user_permissions_check"
                         ]
                     },
                     "type": "array"
@@ -9432,7 +9538,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "items": {
                         "$ref": "#/definitions/role_label",
                         "x-scope": [
-                            ""
+                            "",
+                            "#/definitions/user_site_role_labels_aggregated"
                         ]
                     },
                     "type": "array"
@@ -10804,7 +10911,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:deletionmethod:read"
                 ]
             },
@@ -10842,7 +10949,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:deletionmethod:create"
                 ]
             }
@@ -10858,7 +10965,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:deletionmethod:delete"
                 ]
             },
@@ -10881,7 +10988,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:deletionmethod:read"
                 ]
             },
@@ -10927,7 +11034,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:deletionmethod:update"
                 ]
             }
@@ -12222,6 +12329,59 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/ops/confirm_user_data_deletion/{user_id}": {
+            "get": {
+                "description": "Called by a site to notify the core components that a user's data has been deleted.",
+                "operationId": "confirm_user_data_deletion",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful notification"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-admin-exclude": true
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "in": "query",
+                    "name": "account_id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "signature",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "nonce",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "expiry",
+                    "required": true,
+                    "type": "integer"
+                }
+            ]
+        },
         "/ops/domain_roles/{domain_id}": {
             "get": {
                 "description": "Get the domain and its lineages roles defined for a domain.",
@@ -13325,6 +13485,37 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "Successfully refreshed OIDC client data"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/refresh/credentials": {
+            "get": {
+                "description": "Refresh site credentials information",
+                "operationId": "refresh_credentials",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully refreshed site credentials data"
                     },
                     "403": {
                         "description": "Forbidden"

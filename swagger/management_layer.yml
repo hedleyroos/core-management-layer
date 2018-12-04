@@ -2030,6 +2030,21 @@ paths:
         403:
          description: "Forbidden"
 
+  /refresh/credentials:
+    parameters:
+      - $ref: '#/parameters/optional_portal_context_header'
+      - $ref: '#/parameters/optional_nocache'
+    get:
+      description: "Refresh site credentials information"
+      operationId: refresh_credentials
+      produces:
+        - application/json
+      responses:
+        200:
+          description: "Successfully refreshed site credentials data"
+        403:
+          description: "Forbidden"
+
   /refresh/domains:
     parameters:
       - $ref: '#/parameters/optional_portal_context_header'
@@ -2471,6 +2486,40 @@ paths:
             $ref: '#/definitions/user_site_data'
       tags:
       - user_data
+
+  /ops/confirm_user_data_deletion/{user_id}:
+    parameters:
+      # Support for the portal context header is not required.
+      - $ref: '#/parameters/user_id'
+      - in: query
+        name: account_id
+        type: string
+        required: true
+      - in: query
+        name: signature
+        type: string
+        required: true
+      - in: query
+        name: nonce
+        type: string
+        required: true
+      - in: query
+        name: expiry
+        type: integer
+        required: true
+    get:
+      description: Called by a site to notify the core components that a user's data has been deleted.
+      operationId: confirm_user_data_deletion
+      x-admin-exclude: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Successful notification'
+        '403':
+          description: 'Forbidden'
+      tags:
+        - user_data
 
   /domains:
     parameters:
