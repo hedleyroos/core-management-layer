@@ -1322,12 +1322,13 @@ class Implementation(AbstractStubClass):
 
         # Check signature
         try:
-            params = dict()
-            params["user_id"] = user_id
-            params["account_id"] = account_id
-            params["nonce"] = nonce
-            params["signature"] = signature
-            params["expiry"] = expiry
+            params = {
+                "user_id": user_id,
+                "account_id": account_id,
+                "nonce": nonce,
+                "signature": signature,
+                "expiry": expiry,
+            }
             if not has_valid_signature(**params):
                 raise JSONUnauthorized(message="Invalid signature.")
 
@@ -1368,7 +1369,7 @@ class Implementation(AbstractStubClass):
             await request.app["user_data_api"].deletedusersite_update(
                 user_id, site_id, deleted_user_site_update=confirmation_data)
 
-        # We store the nonce and make it expire when request itself
+        # We store the nonce and make it expire when the request itself
         # will expire. The Redis interface only supports relative expiration as part
         # of the set() command, so we calculate the relative remaining time
         # using the time the request was received.
