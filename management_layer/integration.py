@@ -1362,7 +1362,7 @@ class Implementation(AbstractStubClass):
 
         # Set the confirmation
         confirmation_data = {
-            "deletion_confirmed_at": datetime.datetime.now(),
+            "deletion_confirmed_at": f"{datetime.datetime.utcnow().isoformat()}Z",
             "deletion_confirmed_via": "API"
         }
         with client_exception_handler():
