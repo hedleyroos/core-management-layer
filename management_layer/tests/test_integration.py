@@ -310,8 +310,6 @@ class ExampleTestCase(AioHTTPTestCase):
        Mock(side_effect=return_clients))
 @patch("authentication_service.api.authentication_api.AuthenticationApi.user_read",
        Mock(side_effect=return_user))
-@patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_update",
-       Mock(side_effect=return_deletedusersite))
 class IntegrationTest(AioHTTPTestCase):
     """
     Test functionality in integration.py
@@ -997,6 +995,8 @@ class IntegrationTest(AioHTTPTestCase):
         self.assertEqual({"message": "Invalid signature."}, await response.json())
 
     @patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_read",
+           Mock(side_effect=return_deletedusersite))
+    @patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_update",
            Mock(side_effect=return_deletedusersite))
     @unittest_run_loop
     async def test_confirm_user_data_deletion_valid_signature_and_nonce_check(self):
