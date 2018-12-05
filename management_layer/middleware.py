@@ -88,6 +88,7 @@ TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
 # URLs that do not require authorisation.
 WHITELIST_URLS = ["/healthcheck", "/metrics"]
+WHITELIST_URL_PREFIXES = ["/ops/confirm_user_data_deletion/"]
 
 VERIFICATION_OPTIONS = {
     "verify_signature": True,
@@ -124,6 +125,9 @@ async def auth_middleware(request, handler):
         # HTTP OPTION requests do not need a token
         pass
     elif request.path in WHITELIST_URLS:
+        # URLs that do not require authorisation
+        pass
+    elif any(request.path.startswith(prefix) for prefix in WHITELIST_URL_PREFIXES):
         # URLs that do not require authorisation
         pass
     elif authorization_header:

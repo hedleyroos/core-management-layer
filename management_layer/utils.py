@@ -18,6 +18,7 @@ from authentication_service import User, Client
 
 from management_layer import mappings, transformations
 from management_layer.exceptions import JSONBadGateway
+from user_data_store import DeletedUserSite
 
 logger = logging.getLogger(__name__)
 
@@ -254,6 +255,34 @@ TEST_USER = {
     "created_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
     "updated_at": datetime.datetime(2018, 1, 1, 0, 0, 0)
 }
+
+TEST_DELETED_USER_SITE = {
+    "deleted_user_id": uuid.uuid4().hex,
+    "site_id": 1,
+    "deletion_requested_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "deletion_requested_via": "email",
+    "deletion_confirmed_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "deletion_confirmed_via": "API",
+    "created_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+    "updated_at": datetime.datetime(2018, 1, 1, 0, 0, 0),
+}
+
+
+async def return_deletedusersite(*args, **kwargs):
+    """
+    Some tests require a test deletedusersite to be returned
+    """
+    data = TEST_DELETED_USER_SITE.copy()
+    data.pop("deletion_confirmed_at")
+    data.pop("deletion_confirmed_via")
+    return DeletedUserSite(**data)
+
+
+async def return_confirmed_deletedusersite(*args, **kwargs):
+    """
+    Some tests require a test deletedusersite to be returned
+    """
+    return DeletedUserSite(**TEST_DELETED_USER_SITE)
 
 
 async def return_sites(*args, **kwargs):

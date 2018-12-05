@@ -1547,7 +1547,8 @@ role = json.loads("""
             "maxLength": 100,
             "type": "string",
             "x-scope": [
-                ""
+                "",
+                "#/definitions/role"
             ]
         },
         "requires_2fa": {
@@ -1580,7 +1581,8 @@ role_create = json.loads("""
             "maxLength": 100,
             "type": "string",
             "x-scope": [
-                ""
+                "",
+                "#/definitions/role_create"
             ]
         },
         "requires_2fa": {
@@ -1713,7 +1715,10 @@ site = json.loads("""
             "type": "object"
         },
         "deletion_method_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "description": {
             "type": "string"
@@ -1810,7 +1815,10 @@ site_create = json.loads("""
             "type": "object"
         },
         "deletion_method_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "description": {
             "type": "string"
@@ -1981,7 +1989,8 @@ site_role_labels_aggregated = json.loads("""
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    ""
+                    "",
+                    "#/definitions/site_role_labels_aggregated"
                 ]
             },
             "type": "array"
@@ -2020,7 +2029,10 @@ site_update = json.loads("""
             "type": "object"
         },
         "deletion_method_id": {
-            "type": "integer"
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
         },
         "description": {
             "type": "string"
@@ -2258,7 +2270,8 @@ user_permissions_check = json.loads("""
                 ],
                 "type": "object",
                 "x-scope": [
-                    ""
+                    "",
+                    "#/definitions/user_permissions_check"
                 ]
             },
             "type": "array"
@@ -2456,7 +2469,8 @@ user_site_role_labels_aggregated = json.loads("""
                 "maxLength": 100,
                 "type": "string",
                 "x-scope": [
-                    ""
+                    "",
+                    "#/definitions/user_site_role_labels_aggregated"
                 ]
             },
             "type": "array"
