@@ -1,5 +1,7 @@
 -e git+https://github.com/praekelt/swagger-django-generator.git@master#egg=swagger-django-generator
 -e git+https://github.com/praekelt/apitools@master#egg=apitools
+-e git+https://github.com/girleffect/core-kinesis-conducer@develop#egg=core-kinesis-conducer
+
 python_dateutil == 2.6.0
 aioredis
 jsonschema

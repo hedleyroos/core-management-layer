@@ -12,10 +12,14 @@ from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
+from management_layer.decorators import crud_push_event
 from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
 from management_layer.signature import has_valid_signature
 from management_layer.utils import client_exception_handler, transform_users_with_roles, \
     user_with_email_exists
+
+####
+from kinesis_conducer.producer_events import events, schemas
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
@@ -56,6 +60,7 @@ class Implementation(AbstractStubClass):
 
     # adminnote_create -- Synchronisation point for meld
     @staticmethod
+    #@crud_push_event("create", "urn:ge:user_data:adminnote")
     @require_permissions(all, [("urn:ge:user_data:adminnote", "create")])
     async def adminnote_create(request, body, **kwargs):
         """
@@ -68,6 +73,19 @@ class Implementation(AbstractStubClass):
 
         with client_exception_handler():
             admin_note = await request.app["user_data_api"].adminnote_create(admin_note_create=body)
+
+        events.put_event(
+            event_type=schemas.EventTypes.RESOURCE_CRUD,
+            site_id=0,
+            resource_urn="urn:ge:user_data:adminnote",
+            resource_id="1",
+            action="create",
+            user_id="8a50f7bc-fed2-11e8-9c34-0242ac12000c",
+            post_action_data={}
+        )
+        logger.error("*"*20)
+        logger.error("Event pushed to queue")
+        logger.error("*"*20)
 
         if admin_note:
             transform = transformations.ADMIN_NOTE
