@@ -5,7 +5,6 @@ from functools import wraps
 
 from kinesis_conducer.producer_events import events, schemas
 
-from management_layer.mappings import Mappings
 from management_layer.permission.decorator import get_value_from_args_or_kwargs, \
     get_user_and_site
 
@@ -18,6 +17,7 @@ def crud_event(
     request_field: typing.Union[int, str] = 0,
     resource_id_field: typing.Union[int, str] = None,
     body_field: typing.Union[int, str] = None,
+    composite_key_fields: typing.Union[str] = None,
 ) -> typing.Callable:
     """
     This function is used as a decorator for functions that alter resources (CRUD actions,
@@ -55,6 +55,9 @@ def crud_event(
         identifier is only available in the response body of a "create" action.
     :param body_field: An integer or string identifying either the positional
         argument or the name of the keyword argument identifying the body parameter.
+    :param composite_key_fields: A list of field names used to construct a composite key for the
+        resource. The fields must be available in the body_field and only makes sense
+        for "create" actions.
     """
     def wrap(f):
         @wraps(f)
@@ -66,12 +69,16 @@ def crud_event(
             """
             # Check that the decorator was implemented correctly.
             if action in ["create", "update"] and body_field is None:
-                raise RuntimeError("Actions for 'create' and 'update' require the body_field "
+                raise RuntimeError("Action 'create' and 'update' require the body_field "
                                    "argument.")
 
             if action in ["update", "delete"] and resource_id_field is None:
-                raise RuntimeError("Actions for 'update' and 'delete' require the "
+                raise RuntimeError("Actions 'update' and 'delete' require the "
                                    "resource_id_field argument.")
+
+            if composite_key_fields and action != "create":
+                raise RuntimeError("composite_key_fields can only be specified when the "
+                                   "action is 'create'.")
 
             # Extract the request from the function arguments
             request = get_value_from_args_or_kwargs(request_field, args, kwargs)
@@ -93,10 +100,13 @@ def crud_event(
             # The resource id field can come from the call or, in the case of a create action,
             # the result of the function call.
 
-            if resource_id_field is not None:
+            if resource_id_field is not None:  # Update and delete actions
                 resource_id = get_value_from_args_or_kwargs(resource_id_field, args, kwargs)
-            else:
-                resource_id = result.get("id")
+            else:  # Create actions
+                if composite_key_fields:  # Construct composite key from result field
+                    resource_id = get_value_from_args_or_kwargs(composite_key_fields, [], result)
+                else:  # Read the id from the response
+                    resource_id = result.get("id")  # Get id from response
 
             # If the call to function f does not raise an exception, then we
             # send the event to the Event Log

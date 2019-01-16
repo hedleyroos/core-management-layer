@@ -452,7 +452,8 @@ class Implementation(AbstractStubClass):
     # deletedusersite_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deletedusersite", "create")])
-    @crud_event("urn:ge:user_data:deletedusersite", "create", body_field=1)
+    @crud_event("urn:ge:user_data:deletedusersite", "create", body_field=1,
+                composite_key_fields=["deleted_user_id", "site_id"])
     async def deletedusersite_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -655,7 +656,8 @@ class Implementation(AbstractStubClass):
     # domainrole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "create")])
-    @crud_event("urn:ge:access_control:domainrole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:domainrole", "create", body_field=1,
+                composite_key_fields=["domain_id", "role_id"])
     async def domainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -911,7 +913,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "create")])
     @requester_has_role(body_field=1)
-    @crud_event("urn:ge:access_control:invitationdomainrole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:invitationdomainrole", "create", body_field=1,
+                composite_key_fields=["invitation_id", "domain_id", "role_id"])
     async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1264,7 +1267,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "create")])
     @requester_has_role(body_field=1)
-    @crud_event("urn:ge:access_control:invitationsiterole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:invitationsiterole", "create", body_field=1,
+                composite_key_fields=["invitation_id", "site_id", "role_id"])
     async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2315,7 +2319,8 @@ class Implementation(AbstractStubClass):
     # roleresourcepermission_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "create")])
-    @crud_event("urn:ge:access_control:roleresourcepermission", "create", body_field=1)
+    @crud_event("urn:ge:access_control:roleresourcepermission", "create", body_field=1,
+                composite_key_fields=["role_id", "resource_id", "permission_id"])
     async def roleresourcepermission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2600,7 +2605,8 @@ class Implementation(AbstractStubClass):
     # siterole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:siterole", "create")])
-    @crud_event("urn:ge:access_control:siterole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:siterole", "create", body_field=1,
+                composite_key_fields=["site_id", "role_id"])
     async def siterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2810,7 +2816,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "create")])
     @requester_has_role(body_field=1)
-    @crud_event("urn:ge:access_control:userdomainrole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:userdomainrole", "create", body_field=1,
+                composite_key_fields=["user_id", "domain_id", "role_id"])
     async def userdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -3012,7 +3019,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "create")])
     # The targeted user should not be allowed to make this call. This is admin only.
-    @crud_event("urn:ge:user_data:usersitedata", "create", body_field=1)
+    @crud_event("urn:ge:user_data:usersitedata", "create", body_field=1,
+                composite_key_fields=["user_id", "site_id"])
     async def usersitedata_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -3119,7 +3127,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:usersiterole", "create")])
     @requester_has_role(body_field=1)
-    @crud_event("urn:ge:access_control:usersiterole", "create", body_field=1)
+    @crud_event("urn:ge:access_control:usersiterole", "create", body_field=1,
+                composite_key_fields=["user_id", "site_id", "role_id"])
     async def usersiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest

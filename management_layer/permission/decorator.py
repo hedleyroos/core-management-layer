@@ -365,7 +365,9 @@ def get_value_from_args_or_kwargs(
     args: typing.Tuple[typing.Any, ...], kwargs: dict,
 ):
     """
-    :param argument_identifier: The index or name of a function argument
+    :param argument_identifier: The index or name of a function argument. When an array is passed,
+      it means that a composite value needs to be constructed, typically used by the `crud_event()`
+      decorator.
     :param args: A list of positional arguments
     :param kwargs: A dictionary of named arguments
     :return: The value of the argument.
@@ -379,7 +381,8 @@ def get_value_from_args_or_kwargs(
     if argument_identifier_type is str:
         return kwargs[argument_identifier]
 
-    # For event logging we need to be able to construct composite keys
+    # For event logging we need to be able to construct composite keys.
+    # Array elements are looked up, transformed to strings and concatenated.
     def _map(value):
         _type = type(value)
         if _type is int:
