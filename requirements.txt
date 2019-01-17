@@ -2,7 +2,7 @@
 -e git+https://github.com/praekelt/apitools@master#egg=apitools
 -e git+https://github.com/girleffect/core-kinesis-conducer@develop#egg=core-kinesis-conducer
 
-python_dateutil == 2.6.0
+python_dateutil == 2.7.5
 aioredis
 jsonschema
 aiohttp >= 3.3.2,<4.0
@@ -16,7 +16,7 @@ certifi
 pyjwt
 cryptography>=2.2.0,<3.0
 
-environs>=2.1.0,<3.0
+environs==4.0.0
 raven  # Sentry
 raven-aiohttp >= 0.7.0  # aiohttp support for Sentry
 
