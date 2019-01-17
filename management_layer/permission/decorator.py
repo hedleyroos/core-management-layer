@@ -418,5 +418,3 @@ def get_user_and_site(request):
         raise JSONForbidden(message=f"No site linked to the client '{client_id}'")
 
     return user_id, site_id
-
-
