@@ -3,7 +3,6 @@ The permission module exposes a decorator that can be used to protect
 function calls by specifying the permissions required to execute the function.
 """
 import asyncio
-import json
 import logging
 import typing
 import uuid
@@ -137,9 +136,9 @@ def require_permissions(
             :return: Whatever the wrapped function
             """
             # Extract the request from the function arguments
-            request = _get_value_from_args_or_kwargs(request_field, args, kwargs)
+            request = get_value_from_args_or_kwargs(request_field, args, kwargs)
 
-            user_id, site_id = _get_user_and_site(request)
+            user_id, site_id = get_user_and_site(request)
 
             # Start by checking if we should allow the call if it was made from the
             # Management Portal and whether the call was in fact made by the Management Portal.
@@ -151,7 +150,7 @@ def require_permissions(
             if not allowed and target_user_field is not None:
                 # For some calls the specified field may be optional
                 try:
-                    target_user_id = _get_value_from_args_or_kwargs(target_user_field, args, kwargs)
+                    target_user_id = get_value_from_args_or_kwargs(target_user_field, args, kwargs)
                     # We cast the values to strings when comparing, to that both strings and UUIDs
                     # can be used.
                     allowed = (str(user_id) == str(target_user_id))
@@ -275,9 +274,9 @@ def requester_has_role(
             :return: Whatever the wrapped function
             """
             # Extract the request from the function arguments
-            request = _get_value_from_args_or_kwargs(request_field, args, kwargs)
+            request = get_value_from_args_or_kwargs(request_field, args, kwargs)
 
-            user_id, token_site_id = _get_user_and_site(request)
+            user_id, token_site_id = get_user_and_site(request)
 
             # The decorator need to get the values for the following variables from the
             # decorated function.
@@ -288,7 +287,7 @@ def requester_has_role(
             site_id = None
 
             if body_field is not None:
-                body = _get_value_from_args_or_kwargs(body_field, args, kwargs)
+                body = get_value_from_args_or_kwargs(body_field, args, kwargs)
 
                 # When body_field is specified, the xxx_field arguments must be the names of the
                 # fields in the body dictionary or None, in which case the defaults will be used.
@@ -304,23 +303,23 @@ def requester_has_role(
             else:
                 # If the body_field is not specified, the rest of the arguments are considered to be
                 # positional arguments.
-                role_id = _get_value_from_args_or_kwargs(role_id_field, args, kwargs)
+                role_id = get_value_from_args_or_kwargs(role_id_field, args, kwargs)
                 if domain_id_field is None and site_id_field is None or \
                         domain_id_field is not None and site_id_field is not None:
                     raise RuntimeError("Either a domain_id_field or site_id_field needs to defined")
 
                 if domain_id_field:
-                    domain_id = _get_value_from_args_or_kwargs(domain_id_field, args, kwargs)
+                    domain_id = get_value_from_args_or_kwargs(domain_id_field, args, kwargs)
                 else:
-                    site_id = _get_value_from_args_or_kwargs(site_id_field, args, kwargs)
+                    site_id = get_value_from_args_or_kwargs(site_id_field, args, kwargs)
 
                 # Extract the user_id or invitation_id for which a role must be a assigned/revoked
                 if target_user_id_field is not None:
-                    target_user_id = _get_value_from_args_or_kwargs(
+                    target_user_id = get_value_from_args_or_kwargs(
                         target_user_id_field, args, kwargs
                     )
                 else:
-                    target_invitation_id = _get_value_from_args_or_kwargs(
+                    target_invitation_id = get_value_from_args_or_kwargs(
                         target_invitation_id_field, args, kwargs
                     )
 
@@ -361,12 +360,14 @@ def requester_has_role(
     return wrap
 
 
-def _get_value_from_args_or_kwargs(
-    argument_identifier: typing.Union[int, str],
+def get_value_from_args_or_kwargs(
+    argument_identifier: typing.Union[int, str, typing.Iterable[typing.Union[int, str]]],
     args: typing.Tuple[typing.Any, ...], kwargs: dict,
 ):
     """
-    :param argument_identifier: The index or name of a function argument
+    :param argument_identifier: The index or name of a function argument. When an array is passed,
+      it means that a composite value needs to be constructed, typically used by the `crud_event()`
+      decorator.
     :param args: A list of positional arguments
     :param kwargs: A dictionary of named arguments
     :return: The value of the argument.
@@ -380,10 +381,24 @@ def _get_value_from_args_or_kwargs(
     if argument_identifier_type is str:
         return kwargs[argument_identifier]
 
+    # For event logging we need to be able to construct composite keys.
+    # Array elements are looked up, transformed to strings and concatenated.
+    def _map(value):
+        _type = type(value)
+        if _type is int:
+            return args[value]
+
+        if _type is str:
+            return kwargs[value]
+
+    if argument_identifier_type is list:
+        mapped_values = map(_map, argument_identifier)
+        return ":".join(str(value) for value in mapped_values)
+
     raise RuntimeError("Invalid value for argument identifier")
 
 
-def _get_user_and_site(request):
+def get_user_and_site(request):
     """
     A request contains the JWT token payload from which we get
     * the user id from the "sub" (subscriber) field
@@ -398,7 +413,7 @@ def _get_user_and_site(request):
     client_id = request["token"]["aud"]
 
     try:
-        site_id = Mappings.site_id_for(client_id)
+        site_id = Mappings.site_id_for_token_client_id(client_id)
     except KeyError:
         raise JSONForbidden(message=f"No site linked to the client '{client_id}'")
 

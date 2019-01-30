@@ -1,16 +1,23 @@
+import calendar
 import datetime
 import logging
 import socket
+import time
 import uuid
 
 from management_layer.api.stubs import AbstractStubClass
-from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound
+from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound, \
+    JSONUnauthorized
 from management_layer import transformations, mappings, __version__, settings
 from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.permission import utils
 from management_layer.permission.decorator import require_permissions, requester_has_role
+from management_layer.decorators import crud_event
 from management_layer.settings import MANAGEMENT_PORTAL_CLIENT_ID
-from management_layer.utils import client_exception_handler, transform_users_with_roles
+from management_layer.signature import has_valid_signature
+from management_layer.utils import client_exception_handler, transform_users_with_roles, \
+    user_with_email_exists
+
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
@@ -52,6 +59,7 @@ class Implementation(AbstractStubClass):
     # adminnote_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:adminnote", "create")])
+    @crud_event("urn:ge:user_data:adminnote", "create", body_field=1)
     async def adminnote_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -73,6 +81,7 @@ class Implementation(AbstractStubClass):
     # adminnote_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:adminnote", "delete")])
+    @crud_event("urn:ge:user_data:adminnote", "delete", resource_id_field=1)
     async def adminnote_delete(request, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -105,6 +114,8 @@ class Implementation(AbstractStubClass):
     # adminnote_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:adminnote", "update")])
+    @crud_event("urn:ge:user_data:adminnote", "update",
+                body_field=1, resource_id_field=2)
     async def adminnote_update(request, body, admin_note_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -207,6 +218,110 @@ class Implementation(AbstractStubClass):
 
         return None
 
+    # credentials_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "read")])
+    async def credentials_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :param credentials_ids (optional): array An optional list of credentials ids
+        :param site_id (optional): integer An optional query parameter to filter by site_id
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials, _status, headers = await request.app[
+                "access_control_api"].credentials_list_with_http_info(**kwargs)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            credentials = [transform.apply(site_credentials.to_dict()) for site_credentials in
+                           credentials]
+
+        return credentials, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # credentials_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "create")])
+    @crud_event("urn:ge:access_control:credentials", "create", body_field=1)
+    async def credentials_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app["access_control_api"].credentials_create(
+                credentials_create=body)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
+    # credentials_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "delete")])
+    @crud_event("urn:ge:access_control:credentials", "delete", resource_id_field=1)
+    async def credentials_delete(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["access_control_api"].credentials_delete(
+                credentials_id)
+
+        return result
+
+    # credentials_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "read")])
+    async def credentials_read(request, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app["access_control_api"].credentials_read(credentials_id)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
+    # credentials_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:credentials", "update")])
+    @crud_event("urn:ge:access_control:credentials", "update",
+                body_field=1, resource_id_field=2)
+    async def credentials_update(request, body, credentials_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param credentials_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            credentials = await request.app[
+                "access_control_api"].credentials_update(credentials_id, credentials_update=body)
+
+        if credentials:
+            transform = transformations.CREDENTIALS
+            result = transform.apply(credentials.to_dict())
+            return result
+
+        return None
+
     # deleteduser_list -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deleteduser", "read")])
@@ -234,6 +349,7 @@ class Implementation(AbstractStubClass):
     # deleteduser_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deleteduser", "create")])
+    @crud_event("urn:ge:user_data:deleteduser", "create", body_field=1)
     async def deleteduser_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -256,6 +372,7 @@ class Implementation(AbstractStubClass):
     # deleteduser_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deleteduser", "delete")])
+    @crud_event("urn:ge:user_data:deleteduser", "delete", resource_id_field=1)
     async def deleteduser_delete(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -289,6 +406,8 @@ class Implementation(AbstractStubClass):
     # deleteduser_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deleteduser", "update")])
+    @crud_event("urn:ge:user_data:deleteduser", "update",
+                body_field=1, resource_id_field=2)
     async def deleteduser_update(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -333,6 +452,8 @@ class Implementation(AbstractStubClass):
     # deletedusersite_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deletedusersite", "create")])
+    @crud_event("urn:ge:user_data:deletedusersite", "create", body_field=1,
+                composite_key_fields=["deleted_user_id", "site_id"])
     async def deletedusersite_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -352,6 +473,7 @@ class Implementation(AbstractStubClass):
     # deletedusersite_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deletedusersite", "delete")])
+    @crud_event("urn:ge:user_data:deletedusersite", "delete", resource_id_field=[1, 2])
     async def deletedusersite_delete(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -388,6 +510,8 @@ class Implementation(AbstractStubClass):
     # deletedusersite_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:deletedusersite", "update")])
+    @crud_event("urn:ge:user_data:deletedusersite", "update",
+                body_field=1, resource_id_field=[2, 3])
     async def deletedusersite_update(request, body, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -403,6 +527,105 @@ class Implementation(AbstractStubClass):
         if deleted_user_site:
             transform = transformations.DELETED_USER_SITE
             return transform.apply(deleted_user_site.to_dict())
+
+        return None
+
+    # deletionmethod_list -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "read")])
+    async def deletionmethod_list(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+        :param limit (optional): integer An optional query parameter to limit the number of results returned.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_methods, _status, headers = await request.app[
+                "access_control_api"].deletionmethod_list_with_http_info(**kwargs)
+
+        if deletion_methods:
+            transform = transformations.DELETION_METHOD
+            deletion_methods = [transform.apply(deletion_method.to_dict())
+                for deletion_method in deletion_methods]
+
+        return deletion_methods, {
+            TOTAL_COUNT_HEADER: headers.get(CLIENT_TOTAL_COUNT_HEADER, "0")
+        }
+
+    # deletionmethod_create -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "create")])
+    @crud_event("urn:ge:access_control:deletionmethod", "create", body_field=1)
+    async def deletionmethod_create(request, body, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_create(
+                deletion_method_create=body)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            return transform.apply(deletion_method.to_dict())
+
+        return None
+
+    # deletionmethod_delete -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "delete")])
+    @crud_event("urn:ge:access_control:deletionmethod", "delete", resource_id_field=1)
+    async def deletionmethod_delete(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            result = await request.app["access_control_api"].deletionmethod_delete(deletionmethod_id)
+
+        return result
+
+    # deletionmethod_read -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "read")])
+    async def deletionmethod_read(request, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_read(deletionmethod_id)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            result = transform.apply(deletion_method.to_dict())
+            return result
+
+        return None
+
+    # deletionmethod_update -- Synchronisation point for meld
+    @staticmethod
+    @require_permissions(all, [("urn:ge:access_control:deletionmethod", "update")])
+    @crud_event("urn:ge:access_control:deletionmethod", "update",
+                body_field=1, resource_id_field=2)
+    async def deletionmethod_update(request, body, deletionmethod_id, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param deletionmethod_id: integer A unique integer value identifying the credentials.
+        :returns: result or (result, headers) tuple
+        """
+        with client_exception_handler():
+            deletion_method = await request.app["access_control_api"].deletionmethod_update(
+                deletionmethod_id, deletion_method_update=body)
+
+        if deletion_method:
+            transform = transformations.DELETION_METHOD
+            return transform.apply(deletion_method.to_dict())
 
         return None
 
@@ -433,6 +656,8 @@ class Implementation(AbstractStubClass):
     # domainrole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "create")])
+    @crud_event("urn:ge:access_control:domainrole", "create", body_field=1,
+                composite_key_fields=["domain_id", "role_id"])
     async def domainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -453,6 +678,7 @@ class Implementation(AbstractStubClass):
     # domainrole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "delete")])
+    @crud_event("urn:ge:access_control:domainrole", "delete", resource_id_field=[1, 2])
     async def domainrole_delete(request, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -488,6 +714,8 @@ class Implementation(AbstractStubClass):
     # domainrole_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domainrole", "update")])
+    @crud_event("urn:ge:access_control:domainrole", "update",
+                body_field=1, resource_id_field=[2, 3])
     async def domainrole_update(request, body, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -535,6 +763,7 @@ class Implementation(AbstractStubClass):
     # domain_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "create")])
+    @crud_event("urn:ge:access_control:domain", "create", body_field=1)
     async def domain_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -554,6 +783,7 @@ class Implementation(AbstractStubClass):
     # domain_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "delete")])
+    @crud_event("urn:ge:access_control:domain", "delete", resource_id_field=1)
     async def domain_delete(request, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -588,6 +818,8 @@ class Implementation(AbstractStubClass):
     # domain_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "update")])
+    @crud_event("urn:ge:access_control:domain", "update",
+                body_field=1, resource_id_field=2)
     async def domain_update(request, body, domain_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -681,6 +913,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "create")])
     @requester_has_role(body_field=1)
+    @crud_event("urn:ge:access_control:invitationdomainrole", "create", body_field=1,
+                composite_key_fields=["invitation_id", "domain_id", "role_id"])
     async def invitationdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -703,6 +937,7 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationdomainrole", "delete")])
     @requester_has_role(target_invitation_id_field=1, domain_id_field=2, role_id_field=3)
+    @crud_event("urn:ge:access_control:invitationdomainrole", "delete", resource_id_field=[1, 2, 3])
     async def invitationdomainrole_delete(request, invitation_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -767,6 +1002,7 @@ class Implementation(AbstractStubClass):
     # invitationredirecturl_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "create")])
+    @crud_event("urn:ge:access_control:invitationredirecturl", "create", body_field=1)
     async def invitationredirecturl_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -788,6 +1024,7 @@ class Implementation(AbstractStubClass):
     # invitationredirecturl_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "delete")])
+    @crud_event("urn:ge:access_control:invitationredirecturl", "delete", resource_id_field=1)
     async def invitationredirecturl_delete(request, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -823,6 +1060,8 @@ class Implementation(AbstractStubClass):
     # invitationredirecturl_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationredirecturl", "update")])
+    @crud_event("urn:ge:access_control:invitationredirecturl", "update",
+                body_field=1, resource_id_field=2)
     async def invitationredirecturl_update(request, body, invitationredirecturl_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -869,6 +1108,7 @@ class Implementation(AbstractStubClass):
     # invitation_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitation", "create")])
+    @crud_event("urn:ge:access_control:invitation", "create", body_field=1)
     async def invitation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -877,6 +1117,10 @@ class Implementation(AbstractStubClass):
         """
         # The caller of this function is considered the invitor.
         body["invitor_id"] = request["token"]["sub"]
+
+        # Check if a user with the specified email already exists.
+        if await user_with_email_exists(request, body["email"]):
+            raise JSONBadRequest(message="A user with the specified email address already exists.")
 
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_create(
@@ -892,6 +1136,7 @@ class Implementation(AbstractStubClass):
     # invitation_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitation", "delete")])
+    @crud_event("urn:ge:access_control:invitation", "delete", resource_id_field=1)
     async def invitation_delete(request, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -925,6 +1170,8 @@ class Implementation(AbstractStubClass):
     # invitation_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitation", "update")])
+    @crud_event("urn:ge:access_control:invitation", "update",
+                body_field=1, resource_id_field=2)
     async def invitation_update(request, body, invitation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -932,6 +1179,12 @@ class Implementation(AbstractStubClass):
         :param invitation_id: string A UUID value identifying the invitation.
         :returns: result or (result, headers) tuple
         """
+        if "email" in body:
+            # Check if a user with the specified email already exists.
+            if await user_with_email_exists(request, body["email"]):
+                raise JSONBadRequest(message="A user with the specified email address already "
+                                             "exists.")
+
         with client_exception_handler():
             invitation = await request.app["access_control_api"].invitation_update(
                 invitation_id, invitation_update=body)
@@ -1014,6 +1267,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "create")])
     @requester_has_role(body_field=1)
+    @crud_event("urn:ge:access_control:invitationsiterole", "create", body_field=1,
+                composite_key_fields=["invitation_id", "site_id", "role_id"])
     async def invitationsiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1035,6 +1290,7 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:invitationsiterole", "delete")])
     @requester_has_role(target_invitation_id_field=1, site_id_field=2, role_id_field=3)
+    @crud_event("urn:ge:access_control:invitationsiterole", "delete", resource_id_field=[1, 2, 3])
     async def invitationsiterole_delete(request, invitation_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1090,6 +1346,85 @@ class Implementation(AbstractStubClass):
             user_roles = await request.app["operational_api"].get_all_user_roles(user_id)
             return user_roles.to_dict()
 
+    # confirm_user_data_deletion -- Synchronisation point for meld
+    @staticmethod
+    # No permission checking required. This function performs its own validation.
+    # If the signature is valid, we infer the calling site from the account_id and
+    # perform the action.
+    async def confirm_user_data_deletion(request, user_id, account_id, signature, nonce, expiry, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param user_id: string A UUID value identifying the user.
+        :param account_id: string
+        :param signature: string
+        :param nonce: string
+        :param expiry: Unix timestamp (integer) when this request expires
+        :returns: result or (result, headers) tuple
+        """
+        # Compare expiry against current Unix timestamp
+        unix_now = calendar.timegm(time.gmtime())
+        if expiry < unix_now:
+            raise JSONUnauthorized(message="This request has expired.")
+
+        # Check signature
+        try:
+            params = {
+                "user_id": user_id,
+                "account_id": account_id,
+                "nonce": nonce,
+                "signature": signature,
+                "expiry": expiry,
+            }
+            if not has_valid_signature(**params):
+                raise JSONUnauthorized(message="Invalid signature.")
+
+            site_id = mappings.Mappings.site_id_for_account_id(account_id)
+        except KeyError:
+            raise JSONUnauthorized(message=f"Could not find site linked to account {account_id}.")
+
+        # Check whether nonce was used before
+        redis = request.app["redis"]
+        nonce_key = f"nonce/{nonce}"
+        # If the nonce exists in the key-value store, it has been processed before.
+        if await redis.get(nonce_key):
+            raise JSONUnauthorized(message=f"The specified nonce was already processed.")
+
+        # Check if the entry was not updated before
+        with client_exception_handler():
+            deleted_user_site = await request.app[
+                "user_data_api"].deletedusersite_read(user_id, site_id)
+
+        if not deleted_user_site:
+            raise JSONBadRequest(message=f"No deleted user site for user {user_id} and site "
+                                         f"{site_id}")
+
+        transform = transformations.DELETED_USER_SITE
+        deleted_user_site = transform.apply(deleted_user_site.to_dict())
+        if "deletion_confirmed_at" in deleted_user_site:
+            # The entry has already been flagged as processed.
+            logger.info(f"Deletion confirmation for user {user_id} and site {site_id} already "
+                        f"set.")
+            return {}
+
+        # Set the confirmation
+        confirmation_data = {
+            "deletion_confirmed_at": f"{datetime.datetime.utcnow().isoformat()}Z",
+            "deletion_confirmed_via": "API"
+        }
+        with client_exception_handler():
+            await request.app["user_data_api"].deletedusersite_update(
+                user_id, site_id, deleted_user_site_update=confirmation_data)
+
+        # We store the nonce and make it expire when the request itself
+        # will expire. The Redis interface only supports relative expiration as part
+        # of the set() command, so we calculate the relative remaining time
+        # using the time the request was received.
+        remainder = expiry - unix_now
+        await redis.set(nonce_key, str(unix_now), expire=remainder)
+
+        logger.info(f"Confirmed deletion of data for user {user_id} on site {site_id}.")
+        return {}
+
     # get_domain_roles -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:domain", "read"),
@@ -1133,7 +1468,7 @@ class Implementation(AbstractStubClass):
                     raise JSONNotFound(message=str(e))
         else:
             try:
-                site_id = mappings.Mappings.site_id_for(client_token_id)
+                site_id = mappings.Mappings.site_id_for_token_client_id(client_token_id)
                 result = mappings.Mappings.site_by_id(site_id)
             except KeyError as e:
                 raise JSONNotFound(message=str(e))
@@ -1308,7 +1643,7 @@ class Implementation(AbstractStubClass):
             raise JSONBadRequest(message="Malformed user id")
 
         try:
-            management_portal_site_id = mappings.Mappings.site_id_for(MANAGEMENT_PORTAL_CLIENT_ID)
+            management_portal_site_id = mappings.Mappings.site_id_for_token_client_id(MANAGEMENT_PORTAL_CLIENT_ID)
         except KeyError:
             raise JSONBadRequest(message="Misconfigured Management Portal Client ID")
 
@@ -1459,7 +1794,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         user_id = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        site_id = mappings.Mappings.site_id_for(client_id)
+        site_id = mappings.Mappings.site_id_for_token_client_id(client_id)
 
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_read(user_id, site_id)
@@ -1486,7 +1821,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         body["user_id"] = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        body["site_id"] = mappings.Mappings.site_id_for(client_id)
+        body["site_id"] = mappings.Mappings.site_id_for_token_client_id(client_id)
 
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_create(user_site_data_create=body)
@@ -1511,7 +1846,7 @@ class Implementation(AbstractStubClass):
         # The user_id and site_id is inferred from the token.
         user_id = request["token"]["sub"]
         client_id = request["token"]["aud"]
-        site_id = mappings.Mappings.site_id_for(client_id)
+        site_id = mappings.Mappings.site_id_for_token_client_id(client_id)
         with client_exception_handler():
             usd = await request.app["user_data_api"].usersitedata_update(user_id, site_id,
                                                                          user_site_data_update=body)
@@ -1546,6 +1881,8 @@ class Implementation(AbstractStubClass):
 
     # organisation_create -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:organisation", "create")])
+    @crud_event("urn:ge:identity_provider:organisation", "create", body_field=1)
     async def organisation_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1565,6 +1902,8 @@ class Implementation(AbstractStubClass):
 
     # organisation_delete -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:organisation", "delete")])
+    @crud_event("urn:ge:identity_provider:organisation", "delete", resource_id_field=1)
     async def organisation_delete(request, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1599,6 +1938,9 @@ class Implementation(AbstractStubClass):
 
     # organisation_update -- Synchronisation point for meld
     @staticmethod
+    @require_permissions(all, [("urn:ge:identity_provider:organisation", "update")])
+    @crud_event("urn:ge:identity_provider:organisation", "update",
+                body_field=1, resource_id_field=2)
     async def organisation_update(request, body, organisation_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1645,6 +1987,7 @@ class Implementation(AbstractStubClass):
     # permission_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:permission", "create")])
+    @crud_event("urn:ge:access_control:permission", "create", body_field=1)
     async def permission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1665,6 +2008,7 @@ class Implementation(AbstractStubClass):
     # permission_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:permission", "delete")])
+    @crud_event("urn:ge:access_control:permission", "delete", resource_id_field=1)
     async def permission_delete(request, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1698,6 +2042,8 @@ class Implementation(AbstractStubClass):
     # permission_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:permission", "update")])
+    @crud_event("urn:ge:access_control:permission", "update",
+                body_field=1, resource_id_field=2)
     async def permission_update(request, body, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1737,6 +2083,17 @@ class Implementation(AbstractStubClass):
         :returns: result or (result, headers) tuple
         """
         await mappings.refresh_clients(request.app, **kwargs)
+        return {}
+
+    # refresh_clients -- Synchronisation point for meld
+    @staticmethod
+    async def refresh_credentials(request, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+        :returns: result or (result, headers) tuple
+        """
+        await mappings.refresh_credentials(request.app, **kwargs)
         return {}
 
     # refresh_domains -- Synchronisation point for meld
@@ -1860,6 +2217,7 @@ class Implementation(AbstractStubClass):
     # resource_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:resource", "create")])
+    @crud_event("urn:ge:access_control:resource", "create", body_field=1)
     async def resource_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1879,6 +2237,7 @@ class Implementation(AbstractStubClass):
     # resource_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:resource", "delete")])
+    @crud_event("urn:ge:access_control:resource", "delete", resource_id_field=1)
     async def resource_delete(request, resource_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1912,6 +2271,8 @@ class Implementation(AbstractStubClass):
     # resource_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:resource", "update")])
+    @crud_event("urn:ge:access_control:resource", "update",
+                body_field=1, resource_id_field=2)
     async def resource_update(request, body, resource_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -1958,6 +2319,8 @@ class Implementation(AbstractStubClass):
     # roleresourcepermission_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "create")])
+    @crud_event("urn:ge:access_control:roleresourcepermission", "create", body_field=1,
+                composite_key_fields=["role_id", "resource_id", "permission_id"])
     async def roleresourcepermission_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -1978,6 +2341,8 @@ class Implementation(AbstractStubClass):
     # roleresourcepermission_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:roleresourcepermission", "delete")])
+    @crud_event("urn:ge:access_control:roleresourcepermission", "delete",
+                resource_id_field=[1, 2, 3])
     async def roleresourcepermission_delete(request, role_id, resource_id, permission_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2039,6 +2404,7 @@ class Implementation(AbstractStubClass):
     # role_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:role", "create")])
+    @crud_event("urn:ge:access_control:role", "create", body_field=1)
     async def role_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2058,6 +2424,7 @@ class Implementation(AbstractStubClass):
     # role_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:role", "delete")])
+    @crud_event("urn:ge:access_control:role", "delete", resource_id_field=1)
     async def role_delete(request, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2091,6 +2458,8 @@ class Implementation(AbstractStubClass):
     # role_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:role", "update")])
+    @crud_event("urn:ge:access_control:role", "update",
+                body_field=1, resource_id_field=2)
     async def role_update(request, body, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2134,6 +2503,7 @@ class Implementation(AbstractStubClass):
     # sitedataschema_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:sitedataschema", "create")])
+    @crud_event("urn:ge:user_data:sitedataschema", "create", body_field=1)
     async def sitedataschema_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2154,6 +2524,7 @@ class Implementation(AbstractStubClass):
     # sitedataschema_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:sitedataschema", "delete")])
+    @crud_event("urn:ge:user_data:sitedataschema", "delete", resource_id_field=1)
     async def sitedataschema_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2187,6 +2558,8 @@ class Implementation(AbstractStubClass):
     # sitedataschema_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:sitedataschema", "update")])
+    @crud_event("urn:ge:user_data:sitedataschema", "update",
+                body_field=1, resource_id_field=2)
     async def sitedataschema_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2232,6 +2605,8 @@ class Implementation(AbstractStubClass):
     # siterole_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:siterole", "create")])
+    @crud_event("urn:ge:access_control:siterole", "create", body_field=1,
+                composite_key_fields=["site_id", "role_id"])
     async def siterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2252,6 +2627,7 @@ class Implementation(AbstractStubClass):
     # siterole_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:siterole", "delete")])
+    @crud_event("urn:ge:access_control:siterole", "delete", resource_id_field=[1, 2])
     async def siterole_delete(request, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2287,6 +2663,8 @@ class Implementation(AbstractStubClass):
     # siterole_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:siterole", "update")])
+    @crud_event("urn:ge:access_control:siterole", "update",
+                body_field=1, resource_id_field=[2, 3])
     async def siterole_update(request, body, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2334,6 +2712,7 @@ class Implementation(AbstractStubClass):
     # site_create -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:site", "create")])
+    @crud_event("urn:ge:access_control:site", "create", body_field=1)
     async def site_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2353,6 +2732,7 @@ class Implementation(AbstractStubClass):
     # site_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:site", "delete")])
+    @crud_event("urn:ge:access_control:site", "delete", resource_id_field=1)
     async def site_delete(request, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2387,6 +2767,8 @@ class Implementation(AbstractStubClass):
     # site_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:site", "update")])
+    @crud_event("urn:ge:access_control:site", "update",
+                body_field=1, resource_id_field=2)
     async def site_update(request, body, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2434,6 +2816,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "create")])
     @requester_has_role(body_field=1)
+    @crud_event("urn:ge:access_control:userdomainrole", "create", body_field=1,
+                composite_key_fields=["user_id", "domain_id", "role_id"])
     async def userdomainrole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2464,6 +2848,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:userdomainrole", "delete")])
     @requester_has_role(target_user_id_field=1, domain_id_field=2, role_id_field=3)
+    @crud_event("urn:ge:access_control:userdomainrole", "delete",
+                resource_id_field=[1, 2, 3])
     async def userdomainrole_delete(request, user_id, domain_id, role_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2546,6 +2932,7 @@ class Implementation(AbstractStubClass):
     # user_delete -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:identity_provider:user", "delete")])
+    @crud_event("urn:ge:identity_provider:user", "delete", resource_id_field=1)
     async def user_delete(request, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2583,6 +2970,8 @@ class Implementation(AbstractStubClass):
     # user_update -- Synchronisation point for meld
     @staticmethod
     @require_permissions(all, [("urn:ge:identity_provider:user", "update")], target_user_field=2)
+    @crud_event("urn:ge:identity_provider:user", "update",
+                body_field=1, resource_id_field=2)
     async def user_update(request, body, user_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2630,6 +3019,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "create")])
     # The targeted user should not be allowed to make this call. This is admin only.
+    @crud_event("urn:ge:user_data:usersitedata", "create", body_field=1,
+                composite_key_fields=["user_id", "site_id"])
     async def usersitedata_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2650,6 +3041,7 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "delete")])
     # The targeted user should not be allowed to make this call. This is admin only.
+    @crud_event("urn:ge:user_data:usersitedata", "delete", resource_id_field=[1, 2])
     async def usersitedata_delete(request, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2686,6 +3078,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:user_data:usersitedata", "update")])
     # The targeted user should not be allowed to make this call. This is admin only.
+    @crud_event("urn:ge:user_data:usersitedata", "update",
+                body_field=1, resource_id_field=[1, 2])
     async def usersitedata_update(request, body, user_id, site_id, **kwargs):
         """
         :param request: An HttpRequest
@@ -2733,6 +3127,8 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:usersiterole", "create")])
     @requester_has_role(body_field=1)
+    @crud_event("urn:ge:access_control:usersiterole", "create", body_field=1,
+                composite_key_fields=["user_id", "site_id", "role_id"])
     async def usersiterole_create(request, body, **kwargs):
         """
         :param request: An HttpRequest
@@ -2763,6 +3159,7 @@ class Implementation(AbstractStubClass):
     @staticmethod
     @require_permissions(all, [("urn:ge:access_control:usersiterole", "delete")])
     @requester_has_role(target_user_id_field=1, site_id_field=2, role_id_field=3)
+    @crud_event("urn:ge:access_control:usersiterole", "delete", resource_id_field=[1, 2, 3])
     async def usersiterole_delete(request, user_id, site_id, role_id, **kwargs):
         """
         :param request: An HttpRequest

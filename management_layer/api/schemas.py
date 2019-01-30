@@ -225,6 +225,115 @@ country = json.loads("""
 }
 """)
 
+credentials = json.loads("""
+{
+    "description": "An object containing account credentials",
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "created_at": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "type": "integer"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        },
+        "updated_at": {
+            "format": "date-time",
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "site_id",
+        "account_id",
+        "account_secret",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+credentials_create = json.loads("""
+{
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        }
+    },
+    "required": [
+        "site_id",
+        "account_id",
+        "account_secret",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+credentials_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "account_id": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "account_secret": {
+            "maxLength": 256,
+            "minLength": 32,
+            "type": "string"
+        },
+        "description": {
+            "type": "string"
+        },
+        "site_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "name"
+            }
+        }
+    },
+    "type": "object"
+}
+""")
+
 deleted_user = json.loads("""
 {
     "properties": {
@@ -239,7 +348,11 @@ deleted_user = json.loads("""
         },
         "deleter_id": {
             "format": "uuid",
-            "type": "string"
+            "type": "string",
+            "x-related-info": {
+                "label": "username",
+                "model": "user"
+            }
         },
         "email": {
             "format": "email",
@@ -442,6 +555,88 @@ deleted_user_update = json.loads("""
             "type": "string"
         },
         "username": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+""")
+
+deletion_method = json.loads("""
+{
+    "properties": {
+        "created_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        },
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "id": {
+            "readOnly": true,
+            "type": "integer"
+        },
+        "label": {
+            "maxLength": 100,
+            "type": "string"
+        },
+        "updated_at": {
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+        }
+    },
+    "required": [
+        "id",
+        "label",
+        "data_schema",
+        "description",
+        "created_at",
+        "updated_at"
+    ],
+    "type": "object"
+}
+""")
+
+deletion_method_create = json.loads("""
+{
+    "properties": {
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "label": {
+            "maxLength": 100,
+            "type": "string"
+        }
+    },
+    "required": [
+        "label",
+        "data_schema",
+        "description"
+    ],
+    "type": "object"
+}
+""")
+
+deletion_method_update = json.loads("""
+{
+    "minProperties": 1,
+    "properties": {
+        "data_schema": {
+            "type": "object"
+        },
+        "description": {
+            "type": "string"
+        },
+        "label": {
+            "maxLength": 100,
             "type": "string"
         }
     },
@@ -1516,6 +1711,15 @@ site = json.loads("""
             "readOnly": true,
             "type": "string"
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
+        },
         "description": {
             "type": "string"
         },
@@ -1533,7 +1737,7 @@ site = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         },
         "updated_at": {
@@ -1547,6 +1751,8 @@ site = json.loads("""
         "domain_id",
         "name",
         "is_active",
+        "deletion_method_id",
+        "deletion_method_data",
         "created_at",
         "updated_at"
     ],
@@ -1605,6 +1811,15 @@ site_create = json.loads("""
                 "label": "name"
             }
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
+        },
         "description": {
             "type": "string"
         },
@@ -1618,13 +1833,15 @@ site_create = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         }
     },
     "required": [
         "domain_id",
-        "name"
+        "name",
+        "deletion_method_id",
+        "deletion_method_data"
     ],
     "type": "object"
 }
@@ -1808,6 +2025,15 @@ site_update = json.loads("""
                 "label": "name"
             }
         },
+        "deletion_method_data": {
+            "type": "object"
+        },
+        "deletion_method_id": {
+            "type": "integer",
+            "x-related-info": {
+                "label": "label"
+            }
+        },
         "description": {
             "type": "string"
         },
@@ -1821,7 +2047,7 @@ site_update = json.loads("""
             "type": "boolean"
         },
         "name": {
-            "maxLength": 100,
+            "maxLength": 30,
             "type": "string"
         }
     },

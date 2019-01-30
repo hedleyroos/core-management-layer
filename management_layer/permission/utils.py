@@ -330,7 +330,7 @@ async def get_user_roles_for_site(
     :param nocache: Bypass the cache if True
     :return: A set of role ids
     """
-    site_id = site if type(site) is int else Mappings.site_id_for(site)
+    site_id = site if type(site) is int else Mappings.site_id_for_token_client_id(site)
 
     user_roles = await get_all_user_roles(request, user, nocache)
     # Look up the list of role ids associated with the site key. Return an

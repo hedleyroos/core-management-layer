@@ -1,6 +1,11 @@
 Changelog
 =========
 
+1.10.0
+------
+- Added API end-points for `credentials` and `deletion_methods`.
+- Added event generator decorator (@crud_event)
+
 1.9.1
 -----
 - Change middleware order and return 401 on missing token

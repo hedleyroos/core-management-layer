@@ -1,3 +1,4 @@
+import calendar
 import json
 
 import aioredis
@@ -28,8 +29,8 @@ from management_layer.constants import TECH_ADMIN_ROLE_LABEL
 from management_layer.mappings import return_tech_admin_role_for_testing
 from management_layer.middleware import auth_middleware, metrics_middleware
 from management_layer.utils import return_users_with_roles, return_users, \
-    return_sites, TEST_SITE, return_clients, return_user
-from user_data_store import UserDataApi
+    return_sites, TEST_SITE, return_clients, return_user, return_deletedusersite, \
+    return_confirmed_deletedusersite
 
 LOGGER = logging.getLogger(__name__)
 DATA_GENERATOR = DataGenerator()
@@ -56,6 +57,8 @@ Resource = namedtuple("Resource", [
 # A list of resources. Used to parameterise tests.
 RESOURCES = {
     "adminnotes": Resource("/1", schemas.admin_note, schemas.admin_note_create, schemas.admin_note_update),
+    "credentials": Resource("/1", schemas.credentials, schemas.credentials_create,
+                            schemas.credentials_update),
     "deletedusers": Resource("/{}".format(uuid.uuid4()),
                              schemas.deleted_user, schemas.deleted_user_create, schemas.deleted_user_update),
     "deletedusersites": Resource("/{}/{}".format(uuid.uuid4(), 1),
@@ -88,6 +91,7 @@ RESOURCES = {
     "users": Resource("/{}".format(uuid.uuid4()), schemas.user, None, schemas.user_update),
     "countries": Resource("/za", schemas.country, None, None),
     "organisations": Resource("/1", schemas.organisation, schemas.organisation_create, schemas.organisation_update),
+    "deletionmethods": Resource("/1", schemas.deletion_method, schemas.deletion_method_create, schemas.deletion_method_update),
 }
 SKIP_DELETE_TESTS_FOR = ["clients", "countries", "organisations"]
 
@@ -277,7 +281,19 @@ class ExampleTestCase(AioHTTPTestCase):
                 _role_label_to_id_map={TECH_ADMIN_ROLE_LABEL: -1},
                 _permission_name_to_id_map={"read": 1},
                 _resource_urn_to_id_map={"urn:ge:test:resource": 1,
-                                         "urn:ge:test:resource2": 2})
+                                         "urn:ge:test:resource2": 2},
+                _account_id_to_credentials_map={
+                    "eibahchiefeuchaesheiQuo1leegh9pa": {
+                        "account_secret": "OhThufoh0eetheewoochah5sheegh1ye"
+                    },
+                    "accountwithoutsite": {
+                        "account_secret": "somesecret"
+                    }
+                },
+                _account_id_to_site_id_map={
+                    "eibahchiefeuchaesheiQuo1leegh9pa": 1
+                }
+                )
 @patch("management_layer.permission.utils.get_user_roles_for_site",
        Mock(side_effect=return_tech_admin_role_for_testing))
 @patch("management_layer.permission.utils.get_user_roles_for_domain",
@@ -352,7 +368,7 @@ class IntegrationTest(AioHTTPTestCase):
 
         user_data_store_configuration = user_data_store.configuration.Configuration()
         user_data_store_configuration.host = f"http://localhost:{USER_DATA_STORE_PORT}/api/v1"
-        app["user_data_api"] = UserDataApi(
+        app["user_data_api"] = user_data_store.api.UserDataApi(
             api_client=user_data_store.ApiClient(
                 configuration=user_data_store_configuration
             )
@@ -920,3 +936,133 @@ class IntegrationTest(AioHTTPTestCase):
         response = await self.client.post("/request_user_deletion", data=data)
         await self.assertStatus(response, 400)
 
+    @unittest_run_loop
+    async def test_cannot_create_or_update_invitation_for_existing_email(self):
+        # Invitation creation with existing email
+        invitation_create = {
+            "email": "jane@example.com",
+            "invitor_id": self.user_id,
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "organisation_id": 1
+        }
+        expected_response = {"message": "A user with the specified email address already exists."}
+        response = await self.client.post("/invitations", json=invitation_create)
+        await self.assertStatus(response, 400)
+        self.assertEqual(expected_response, await response.json())
+
+        # Invitation update with existing email
+        invitation_update = {
+            "email": "jane@example.com",
+        }
+        response = await self.client.put("/invitations/{}".format(uuid.uuid4().hex),
+                                         json=invitation_update
+                                        )
+        await self.assertStatus(response, 400)
+        self.assertEqual(expected_response, await response.json())
+
+    @unittest_run_loop
+    async def test_confirm_user_data_deletion_expired_request(self):
+        params = {
+            "account_id": "eibahchiefeuchaesheiQuo1leegh9pa",
+            "signature": "definitelynotright",
+            "nonce": "",
+            "expiry": 0  # This request expired long ago
+        }
+
+        # The expiry is in the past and must cause the request to fail
+        response = await self.client.get(
+            "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+            params=params
+        )
+        await self.assertStatus(response, 401)
+        self.assertEqual({"message": "This request has expired."}, await response.json())
+
+    @unittest_run_loop
+    async def test_confirm_user_data_deletion_invalid_signature(self):
+        params = {
+            "account_id": "eibahchiefeuchaesheiQuo1leegh9pa",
+            "signature": "definitelynotright",
+            "nonce": "",
+            "expiry": str(calendar.timegm(time.gmtime()) + 600)  # 5 minutes from now
+        }
+
+        response = await self.client.get(
+            "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+            params=params
+        )
+        await self.assertStatus(response, 401)
+        self.assertEqual({"message": "Invalid signature."}, await response.json())
+
+    @patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_read",
+           Mock(side_effect=return_deletedusersite))
+    @patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_update",
+           Mock(side_effect=return_deletedusersite))
+    @unittest_run_loop
+    async def test_confirm_user_data_deletion_valid_signature_and_nonce_check(self):
+        params = {
+            "account_id": "eibahchiefeuchaesheiQuo1leegh9pa",
+            "signature": "4XANMTcbeAEvTp3eQ5tAmMw-9H2kgdBXstdTN_UM_b8=",
+            "nonce": "some_arbitrary_nonce",
+            "expiry": 16000000000  # 2477-01-07 06:26:40
+        }
+        # Ensure nonce is not on Redis
+        await self.app["redis"].delete(f"nonce/{params['nonce']}")
+
+        response = await self.client.get(
+            "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+            params=params
+        )
+        await self.assertStatus(response, 200)
+
+        # Making the same call again
+        response = await self.client.get(
+            "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+            params=params
+        )
+        await self.assertStatus(response, 401)
+        self.assertEqual({"message": "The specified nonce was already processed."},
+                         await response.json())
+
+    @unittest_run_loop
+    async def test_confirm_user_data_deletion_account_without_site(self):
+        params = {
+            "account_id": "accountwithoutsite",
+            "signature": "CnI1ePprYMo1LrlOnTTz48Kn_QOMMW636f3z_zbm01I=",
+            "nonce": "some_other_arbitrary_nonce",
+            "expiry": 16000000000  # 2477-01-07 06:26:40
+        }
+
+        response = await self.client.get(
+            "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+            params=params
+        )
+        await self.assertStatus(response, 401)
+        self.assertEqual({"message": f"Could not find site linked to account "
+                                     f"{params['account_id']}."},
+                         await response.json())
+
+    @patch("user_data_store.api.user_data_api.UserDataApi.deletedusersite_read",
+           Mock(side_effect=return_confirmed_deletedusersite))
+    @unittest_run_loop
+    async def test_confirm_user_data_deletion_valid_signature_and_nonce_already_confirmed(self):
+        params = {
+            "account_id": "eibahchiefeuchaesheiQuo1leegh9pa",
+            "signature": "4XANMTcbeAEvTp3eQ5tAmMw-9H2kgdBXstdTN_UM_b8=",
+            "nonce": "some_arbitrary_nonce",
+            "expiry": 16000000000  # 2477-01-07 06:26:40
+        }
+        # Ensure nonce is not on Redis
+        await self.app["redis"].delete(f"nonce/{params['nonce']}")
+
+        with self.assertLogs("management_layer.integration", level=logging.INFO) as logs:
+            response = await self.client.get(
+                "/ops/confirm_user_data_deletion/{}".format(self.user_id),
+                params=params
+            )
+            await self.assertStatus(response, 200)
+
+        self.assertEqual(logs.output, [
+            f"INFO:management_layer.integration:"
+            f"Deletion confirmation for user {self.user_id} and site 1 already set."
+        ])

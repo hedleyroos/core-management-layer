@@ -69,6 +69,8 @@ import time
 
 import jwt
 import logging
+
+from aiohttp import web
 from aiohttp.web import middleware
 from aiohttp.web_response import json_response
 from prometheus_client import Histogram
@@ -86,6 +88,7 @@ TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
 # URLs that do not require authorisation.
 WHITELIST_URLS = ["/healthcheck", "/metrics"]
+WHITELIST_URL_PREFIXES = ["/ops/confirm_user_data_deletion/"]
 
 VERIFICATION_OPTIONS = {
     "verify_signature": True,
@@ -122,6 +125,9 @@ async def auth_middleware(request, handler):
         # HTTP OPTION requests do not need a token
         pass
     elif request.path in WHITELIST_URLS:
+        # URLs that do not require authorisation
+        pass
+    elif any(request.path.startswith(prefix) for prefix in WHITELIST_URL_PREFIXES):
         # URLs that do not require authorisation
         pass
     elif authorization_header:
@@ -189,6 +195,10 @@ async def auth_middleware(request, handler):
 async def sentry_middleware(request, handler):
     try:
         return await handler(request)
+    except web.HTTPException:
+        # Do not generate Sentry alerts for HTTPExceptions, which are
+        # used to generate specific responses.
+        raise
     except Exception:
         sentry.captureException(data={
             "request": {

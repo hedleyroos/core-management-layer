@@ -51,6 +51,7 @@ class Mappings:
     _roles = {}  # type: Dict[int, Dict] # (refer to transformations.ROLE for more detail)
     _sites = {}  # type: Dict[int, Dict] # (refer to transformations.SITE for more detail)
     _clients = {}  # type: Dict[int, Dict] # (refer to transformations.CLIENT for more detail)
+    _credentials = {}  # type: Dict[int, Dict] # (ref transformations.CREDENTIALS for more detail)
     _keys = {}  # type: Dict[str, Dict] # (refer to JWKS documentation)
 
     # Name/label to id mappings.
@@ -62,6 +63,8 @@ class Mappings:
     _client_name_to_id_map = {}  # type: Dict[str, int]
     _token_client_id_to_site_id_map = {}  # type: Dict[str, int]
     _client_id_to_site_id_map = {}  # type: Dict[int, int]
+    _account_id_to_credentials_map = {}  # type: Dict[str, Dict]
+    _account_id_to_site_id_map = {}  # type: Dict[str, int]
 
     @classmethod
     def site_by_id(cls, id_: int) -> dict:
@@ -136,7 +139,7 @@ class Mappings:
             raise
 
     @classmethod
-    def site_id_for(cls, token_client_id: str) -> int:
+    def site_id_for_token_client_id(cls, token_client_id: str) -> int:
         """
         Returns the site linked to a client.
         A token has a "client_id" string, which maps to a client with an integer id.
@@ -146,7 +149,6 @@ class Mappings:
 
         :param token_client_id:
         """
-
         try:
             return cls._token_client_id_to_site_id_map[token_client_id]
         except KeyError:
@@ -181,6 +183,30 @@ class Mappings:
             for resource in cls._resource_urn_to_id_map
             for permission in cls._permission_name_to_id_map
         ]
+
+    @classmethod
+    def credentials_by_id(cls, id_: int) -> dict:
+        try:
+            return cls._credentials[id_]
+        except KeyError:
+            logger.error(f"Credentials for ID {id_} not in credentials list")
+            raise
+
+    @classmethod
+    def credentials_by_account_id(cls, account_id: str) -> dict:
+        try:
+            return cls._account_id_to_credentials_map[account_id]
+        except KeyError:
+            logger.error(f"Credentials for account ID {account_id} not in credentials list")
+            raise
+
+    @classmethod
+    def site_id_for_account_id(cls, account_id: str) -> int:
+        try:
+            return cls._account_id_to_site_id_map[account_id]
+        except KeyError:
+            logger.error(f"'{account_id}' not in {cls._account_id_to_site_id_map}")
+            raise
 
 
 # Custom convenience type
@@ -385,12 +411,35 @@ async def refresh_keys(app: web.Application, nocache: bool=False):
 
 
 @timeit(TIMING_LOG_LEVEL)
+async def refresh_credentials(app: web.Application, nocache: bool=False):
+    """Refresh the domain information"""
+    logger.info("Refreshing credentials")
+    try:
+        Mappings._credentials, Mappings._account_id_to_credentials_id_map = await _load(
+            app["access_control_api"].credentials_list, app["redis"], transformations.CREDENTIALS,
+            bytes(f"{__name__}:credentials", encoding="utf8"), "account_id", nocache
+        )
+
+        Mappings._account_id_to_site_id_map = {
+            detail["account_id"]: detail["site_id"] for detail in Mappings._credentials.values()
+        }
+
+        Mappings._account_id_to_credentials_map = {
+            detail["account_id"]: detail for detail in Mappings._credentials.values()
+        }
+    except Exception as e:
+        sentry.captureException()
+        logger.error(e)
+
+
+@timeit(TIMING_LOG_LEVEL)
 async def refresh_all(app: web.Application, nocache: bool=False):
     """
     Refresh all data mappings
     """
     logger.info("Refreshing all mappings")
     await refresh_keys(app, nocache)
+    await refresh_credentials(app, nocache)
     await refresh_domains(app, nocache)
     await refresh_permissions(app, nocache)
     await refresh_resources(app, nocache)

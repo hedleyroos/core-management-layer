@@ -115,7 +115,7 @@ class TestRequirePermissionsDecorator(AioHTTPTestCase):
         with self.assertRaises(JSONForbidden):
             await example_call(self.mocked_request)
 
-        mocked_request_from_management_portal = copy(self.mocked_request)
+        mocked_request_from_management_portal = self.mocked_request
         mocked_request_from_management_portal["token"]["aud"] = MANAGEMENT_PORTAL_CLIENT_ID
 
         # Allow the call when the call is made from the Management Portal

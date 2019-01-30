@@ -568,6 +568,259 @@ class CountriesCountryCode(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Credentials(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "description": "An object containing account credentials",
+        "properties": {
+            "account_id": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "account_secret": {
+                "maxLength": 256,
+                "minLength": 32,
+                "type": "string"
+            },
+            "created_at": {
+                "format": "date-time",
+                "type": "string"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "type": "integer"
+            },
+            "site_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "name"
+                }
+            },
+            "updated_at": {
+                "format": "date-time",
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "site_id",
+            "account_id",
+            "account_secret",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.credentials
+    POST_BODY_SCHEMA = schemas.credentials_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Credentials instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
+                optional_args["limit"] = limit
+            # credentials_ids (optional): array An optional list of credentials ids
+            credentials_ids = self.request.query.get("credentials_ids", None)
+            if credentials_ids is not None:
+                credentials_ids = credentials_ids.split(",")
+            if credentials_ids:
+                credentials_ids = [int(e) for e in credentials_ids]
+            if credentials_ids is not None:
+                schema = {'type': 'array', 'items': {'type': 'integer'}, 'minItems': 1, 'uniqueItems': True}
+                utils.validate(credentials_ids, schema)
+                optional_args["credentials_ids"] = credentials_ids
+            # site_id (optional): integer An optional query parameter to filter by site_id
+            site_id = self.request.query.get("site_id", None)
+            if site_id is not None:
+                site_id = int(site_id)
+                schema = {'type': 'integer'}
+                utils.validate(site_id, schema)
+                optional_args["site_id"] = site_id
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Credentials instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.credentials_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class CredentialsCredentialsId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.credentials
+    PUT_RESPONSE_SCHEMA = schemas.credentials
+    PUT_BODY_SCHEMA = schemas.credentials_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_delete(
+            self.request, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.credentials_read(
+            self.request, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A CredentialsCredentialsId instance
+        """
+        try:
+            # credentials_id: integer A unique integer value identifying the credentials.
+            credentials_id = self.request.match_info["credentials_id"]
+            credentials_id = int(credentials_id)
+            schema = {'type': 'integer'}
+            utils.validate(credentials_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.credentials_update(
+            self.request, body, credentials_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class Deletedusers(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = json.loads("""{
@@ -584,7 +837,11 @@ class Deletedusers(View, CorsViewMixin):
             },
             "deleter_id": {
                 "format": "uuid",
-                "type": "string"
+                "type": "string",
+                "x-related-info": {
+                    "label": "username",
+                    "model": "user"
+                }
             },
             "email": {
                 "format": "email",
@@ -1058,6 +1315,234 @@ class DeletedusersitesUserIdSiteId(View, CorsViewMixin):
 
         result = await Stubs.deletedusersite_update(
             self.request, body, user_id, site_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.PUT_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class Deletionmethods(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = json.loads("""{
+    "items": {
+        "properties": {
+            "created_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            },
+            "data_schema": {
+                "type": "object"
+            },
+            "description": {
+                "type": "string"
+            },
+            "id": {
+                "readOnly": true,
+                "type": "integer"
+            },
+            "label": {
+                "maxLength": 100,
+                "type": "string"
+            },
+            "updated_at": {
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+            }
+        },
+        "required": [
+            "id",
+            "label",
+            "data_schema",
+            "description",
+            "created_at",
+            "updated_at"
+        ],
+        "type": "object",
+        "x-scope": [
+            ""
+        ]
+    },
+    "type": "array"
+}""")
+    POST_RESPONSE_SCHEMA = schemas.deletion_method
+    POST_BODY_SCHEMA = schemas.deletion_method_create
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletionmethods instance
+        """
+        try:
+            optional_args = {}
+            # offset (optional): integer An optional query parameter specifying the offset in the result set to start from.
+            offset = self.request.query.get("offset", None)
+            if offset is not None:
+                offset = int(offset)
+                schema = {'type': 'integer', 'default': 0, 'minimum': 0}
+                utils.validate(offset, schema)
+                optional_args["offset"] = offset
+            # limit (optional): integer An optional query parameter to limit the number of results returned.
+            limit = self.request.query.get("limit", None)
+            if limit is not None:
+                limit = int(limit)
+                schema = {'type': 'integer', 'minimum': 1, 'maximum': 100, 'default': 20}
+                utils.validate(limit, schema)
+                optional_args["limit"] = limit
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_list(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Deletionmethods instance
+        """
+        try:
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletionmethod_create(
+            self.request, body, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
+class DeletionmethodsDeletionmethodId(View, CorsViewMixin):
+
+    DELETE_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    GET_RESPONSE_SCHEMA = schemas.deletion_method
+    PUT_RESPONSE_SCHEMA = schemas.deletion_method
+    PUT_BODY_SCHEMA = schemas.deletion_method_update
+
+    async def delete(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_delete(
+            self.request, deletionmethod_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.DELETE_RESPONSE_SCHEMA)
+
+        return HTTPNoContent()
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.deletionmethod_read(
+            self.request, deletionmethod_id, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+    async def put(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A DeletionmethodsDeletionmethodId instance
+        """
+        try:
+            # deletionmethod_id: integer A unique integer value identifying the credentials.
+            deletionmethod_id = self.request.match_info["deletionmethod_id"]
+            deletionmethod_id = int(deletionmethod_id)
+            schema = {'type': 'integer'}
+            utils.validate(deletionmethod_id, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.PUT_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.deletionmethod_update(
+            self.request, body, deletionmethod_id, **optional_args)
 
         if type(result) is tuple:
             result, headers = result
@@ -2678,6 +3163,56 @@ class OpsAllUserRolesUserId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class OpsConfirmUserDataDeletionUserId(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A OpsConfirmUserDataDeletionUserId instance
+        """
+        try:
+            # user_id: string A UUID value identifying the user.
+            user_id = self.request.match_info["user_id"]
+            schema = {'type': 'string', 'format': 'uuid'}
+            utils.validate(user_id, schema)
+            # account_id: string 
+            account_id = self.request.query.get("account_id", None)
+            schema = {'type': 'string'}
+            utils.validate(account_id, schema)
+            # signature: string 
+            signature = self.request.query.get("signature", None)
+            schema = {'type': 'string'}
+            utils.validate(signature, schema)
+            # nonce: string 
+            nonce = self.request.query.get("nonce", None)
+            schema = {'type': 'string'}
+            utils.validate(nonce, schema)
+            # expiry: integer 
+            expiry = self.request.query.get("expiry", None)
+            expiry = int(expiry)
+            schema = {'type': 'integer'}
+            utils.validate(expiry, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.confirm_user_data_deletion(
+            self.request, user_id, account_id, signature, nonce, expiry, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
 class OpsDomainRolesDomainId(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.domain_roles
@@ -2768,6 +3303,15 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
+            },
             "description": {
                 "type": "string"
             },
@@ -2785,7 +3329,7 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -2799,6 +3343,8 @@ class OpsGetSitesUnderDomainDomainId(View, CorsViewMixin):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],
@@ -3893,6 +4439,42 @@ class RefreshClients(View, CorsViewMixin):
             return Response(status=400, text="Parameter validation failed: {}".format(ve))
 
         result = await Stubs.refresh_clients(
+            self.request, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.GET_RESPONSE_SCHEMA)
+
+        return json_response(result, headers=headers)
+
+
+class RefreshCredentials(View, CorsViewMixin):
+
+    GET_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+
+    async def get(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A RefreshCredentials instance
+        """
+        try:
+            optional_args = {}
+            # nocache (optional): boolean An optional query parameter to instructing an API call to by pass caches when reading data.
+            nocache = self.request.query.get("nocache", None)
+            if nocache is not None:
+                nocache = (nocache.lower() == "true")
+                schema = {'type': 'boolean', 'default': False}
+                utils.validate(nocache, schema)
+                optional_args["nocache"] = nocache
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        result = await Stubs.refresh_credentials(
             self.request, **optional_args)
 
         if type(result) is tuple:
@@ -5376,6 +5958,15 @@ class Sites(View, CorsViewMixin):
                 "readOnly": true,
                 "type": "string"
             },
+            "deletion_method_data": {
+                "type": "object"
+            },
+            "deletion_method_id": {
+                "type": "integer",
+                "x-related-info": {
+                    "label": "label"
+                }
+            },
             "description": {
                 "type": "string"
             },
@@ -5393,7 +5984,7 @@ class Sites(View, CorsViewMixin):
                 "type": "boolean"
             },
             "name": {
-                "maxLength": 100,
+                "maxLength": 30,
                 "type": "string"
             },
             "updated_at": {
@@ -5407,6 +5998,8 @@ class Sites(View, CorsViewMixin):
             "domain_id",
             "name",
             "is_active",
+            "deletion_method_id",
+            "deletion_method_data",
             "created_at",
             "updated_at"
         ],
@@ -6925,6 +7518,106 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             ],
             "type": "object"
         },
+        "credentials": {
+            "description": "An object containing account credentials",
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "created_at": {
+                    "format": "date-time",
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "site_id",
+                "account_id",
+                "account_secret",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "credentials_create": {
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                }
+            },
+            "required": [
+                "site_id",
+                "account_id",
+                "account_secret",
+                "description"
+            ],
+            "type": "object"
+        },
+        "credentials_update": {
+            "minProperties": 1,
+            "properties": {
+                "account_id": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "account_secret": {
+                    "maxLength": 256,
+                    "minLength": 32,
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "site_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "name"
+                    }
+                }
+            },
+            "type": "object"
+        },
         "deleted_user": {
             "properties": {
                 "created_at": {
@@ -6938,7 +7631,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "deleter_id": {
                     "format": "uuid",
-                    "type": "string"
+                    "type": "string",
+                    "x-related-info": {
+                        "label": "username",
+                        "model": "user"
+                    }
                 },
                 "email": {
                     "format": "email",
@@ -7126,6 +7823,79 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "deletion_method": {
+            "properties": {
+                "created_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                },
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "readOnly": true,
+                    "type": "integer"
+                },
+                "label": {
+                    "maxLength": 100,
+                    "type": "string"
+                },
+                "updated_at": {
+                    "format": "date-time",
+                    "readOnly": true,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "label",
+                "data_schema",
+                "description",
+                "created_at",
+                "updated_at"
+            ],
+            "type": "object"
+        },
+        "deletion_method_create": {
+            "properties": {
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "label": {
+                    "maxLength": 100,
+                    "type": "string"
+                }
+            },
+            "required": [
+                "label",
+                "data_schema",
+                "description"
+            ],
+            "type": "object"
+        },
+        "deletion_method_update": {
+            "minProperties": 1,
+            "properties": {
+                "data_schema": {
+                    "type": "object"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "label": {
+                    "maxLength": 100,
                     "type": "string"
                 }
             },
@@ -8088,6 +8858,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "readOnly": true,
                     "type": "string"
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8105,7 +8884,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 },
                 "updated_at": {
@@ -8119,6 +8898,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "domain_id",
                 "name",
                 "is_active",
+                "deletion_method_id",
+                "deletion_method_data",
                 "created_at",
                 "updated_at"
             ],
@@ -8171,6 +8952,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name"
                     }
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8184,13 +8974,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 }
             },
             "required": [
                 "domain_id",
-                "name"
+                "name",
+                "deletion_method_id",
+                "deletion_method_data"
             ],
             "type": "object"
         },
@@ -8349,6 +9141,15 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "label": "name"
                     }
                 },
+                "deletion_method_data": {
+                    "type": "object"
+                },
+                "deletion_method_id": {
+                    "type": "integer",
+                    "x-related-info": {
+                        "label": "label"
+                    }
+                },
                 "description": {
                     "type": "string"
                 },
@@ -8362,7 +9163,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "type": "boolean"
                 },
                 "name": {
-                    "maxLength": 100,
+                    "maxLength": 30,
                     "type": "string"
                 }
             },
@@ -8857,6 +9658,20 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "required": true,
             "type": "string"
         },
+        "credentials_id": {
+            "description": "A unique integer value identifying the credentials.",
+            "in": "path",
+            "name": "credentials_id",
+            "required": true,
+            "type": "integer"
+        },
+        "deletionmethod_id": {
+            "description": "A unique integer value identifying the credentials.",
+            "in": "path",
+            "name": "deletionmethod_id",
+            "required": true,
+            "type": "integer"
+        },
         "domain_id": {
             "description": "A unique integer value identifying the domain.",
             "in": "path",
@@ -8923,7 +9738,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "limit",
             "required": false,
             "type": "integer",
-            "x-admin-on-rest-exclude": true
+            "x-admin-exclude": true
         },
         "optional_nocache": {
             "default": false,
@@ -8941,7 +9756,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             "name": "offset",
             "required": false,
             "type": "integer",
-            "x-admin-on-rest-exclude": true
+            "x-admin-exclude": true
         },
         "optional_parent_filter": {
             "description": "An optional query parameter to filter by parent_id",
@@ -9116,7 +9931,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
@@ -9165,7 +9980,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:create"
                 ]
             }
@@ -9184,7 +9999,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:delete"
                 ]
             },
@@ -9210,7 +10025,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:read"
                 ]
             },
@@ -9265,7 +10080,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:adminnote:update"
                 ]
             }
@@ -9333,7 +10148,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
@@ -9366,7 +10181,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:oidc_provider:client:read"
                 ]
             },
@@ -9489,6 +10304,210 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 }
             ]
         },
+        "/credentials": {
+            "get": {
+                "operationId": "credentials_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "collectionFormat": "csv",
+                        "description": "An optional list of credentials ids",
+                        "in": "query",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "minItems": 1,
+                        "name": "credentials_ids",
+                        "required": false,
+                        "type": "array",
+                        "uniqueItems": true
+                    },
+                    {
+                        "$ref": "#/parameters/optional_site_filter",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/credentials",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:credentials:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "credentials_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/credentials_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:credentials:create"
+                ]
+            }
+        },
+        "/credentials/{credentials_id}": {
+            "delete": {
+                "operationId": "credentials_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:credentials:delete"
+                ]
+            },
+            "get": {
+                "operationId": "credentials_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:credentials:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/credentials_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "credentials_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/credentials_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/credentials",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:credentials:update"
+                ]
+            }
+        },
         "/deletedusers": {
             "get": {
                 "operationId": "deleteduser_list",
@@ -9538,7 +10557,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:read"
                 ]
             },
@@ -9576,7 +10595,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:create"
                 ]
             }
@@ -9592,7 +10611,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:delete"
                 ]
             },
@@ -9615,7 +10634,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:read"
                 ]
             },
@@ -9661,7 +10680,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deleteduser:update"
                 ]
             }
@@ -9715,7 +10734,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:read"
                 ]
             },
@@ -9753,7 +10772,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:create"
                 ]
             }
@@ -9769,7 +10788,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:delete"
                 ]
             },
@@ -9792,7 +10811,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:read"
                 ]
             },
@@ -9844,8 +10863,179 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:deletedusersite:update"
+                ]
+            }
+        },
+        "/deletionmethods": {
+            "get": {
+                "operationId": "deletionmethod_list",
+                "parameters": [
+                    {
+                        "$ref": "#/parameters/optional_offset",
+                        "x-scope": [
+                            ""
+                        ]
+                    },
+                    {
+                        "$ref": "#/parameters/optional_limit",
+                        "x-scope": [
+                            ""
+                        ]
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "headers": {
+                            "X-Total-Count": {
+                                "description": "The total number of results matching the query",
+                                "type": "integer"
+                            }
+                        },
+                        "schema": {
+                            "items": {
+                                "$ref": "#/definitions/deletion_method",
+                                "x-scope": [
+                                    ""
+                                ]
+                            },
+                            "type": "array"
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:deletionmethod:read"
+                ]
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletionmethod_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method_create",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:deletionmethod:create"
+                ]
+            }
+        },
+        "/deletionmethods/{deletionmethod_id}": {
+            "delete": {
+                "operationId": "deletionmethod_delete",
+                "responses": {
+                    "204": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:deletionmethod:delete"
+                ]
+            },
+            "get": {
+                "operationId": "deletionmethod_read",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:deletionmethod:read"
+                ]
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/deletionmethod_id",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ],
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "deletionmethod_update",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method_update",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/deletion_method",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    }
+                },
+                "tags": [
+                    "access_control"
+                ],
+                "x-permissions": [
+                    "urn:ge:access_control:deletionmethod:update"
                 ]
             }
         },
@@ -9904,7 +11094,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
@@ -9950,7 +11140,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:create"
                 ]
             }
@@ -9966,7 +11156,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:delete"
                 ]
             },
@@ -9989,7 +11179,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:read"
                 ]
             },
@@ -10047,7 +11237,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domainrole:update"
                 ]
             }
@@ -10114,7 +11304,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:read"
                 ]
             },
@@ -10160,7 +11350,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:create"
                 ]
             }
@@ -10176,7 +11366,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:delete"
                 ]
             },
@@ -10199,7 +11389,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:read"
                 ]
             },
@@ -10251,7 +11441,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:domain:update"
                 ]
             }
@@ -10338,7 +11528,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
@@ -10384,7 +11574,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:create"
                 ]
             }
@@ -10403,7 +11593,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:delete"
                 ]
             },
@@ -10426,7 +11616,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationdomainrole:read"
                 ]
             },
@@ -10513,7 +11703,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
@@ -10551,7 +11741,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:create"
                 ]
             }
@@ -10567,7 +11757,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:delete"
                 ]
             },
@@ -10590,7 +11780,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:read"
                 ]
             },
@@ -10636,7 +11826,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationredirecturl:update"
                 ]
             }
@@ -10706,7 +11896,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:read"
                 ]
             },
@@ -10752,7 +11942,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:create"
                 ]
             }
@@ -10807,7 +11997,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:delete"
                 ]
             },
@@ -10830,7 +12020,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:read"
                 ]
             },
@@ -10882,7 +12072,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitation:update"
                 ]
             }
@@ -10980,7 +12170,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
@@ -11026,7 +12216,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:create"
                 ]
             }
@@ -11042,7 +12232,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:delete"
                 ]
             },
@@ -11065,7 +12255,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:invitationsiterole:read"
                 ]
             },
@@ -11136,6 +12326,59 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                     "x-scope": [
                         ""
                     ]
+                }
+            ]
+        },
+        "/ops/confirm_user_data_deletion/{user_id}": {
+            "get": {
+                "description": "Called by a site to notify the core components that a user's data has been deleted.",
+                "operationId": "confirm_user_data_deletion",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful notification"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "tags": [
+                    "user_data"
+                ],
+                "x-admin-exclude": true
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/user_id",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "in": "query",
+                    "name": "account_id",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "signature",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "nonce",
+                    "required": true,
+                    "type": "string"
+                },
+                {
+                    "in": "query",
+                    "name": "expiry",
+                    "required": true,
+                    "type": "integer"
                 }
             ]
         },
@@ -11714,7 +12957,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             },
             "parameters": [
                 {
@@ -11763,7 +13007,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             },
             "put": {
                 "consumes": [
@@ -11799,7 +13044,8 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 },
                 "tags": [
                     "user_data"
-                ]
+                ],
+                "x-admin-exclude": true
             }
         },
         "/organisations": {
@@ -11858,7 +13104,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:read"
                 ]
             },
@@ -11904,7 +13150,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:create"
                 ]
             }
@@ -11920,7 +13166,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:delete"
                 ]
             },
@@ -11943,7 +13189,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:read"
                 ]
             },
@@ -11995,7 +13241,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:organisation:update"
                 ]
             }
@@ -12056,7 +13302,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:read"
                 ]
             },
@@ -12102,7 +13348,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:create"
                 ]
             }
@@ -12118,7 +13364,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:delete"
                 ]
             },
@@ -12141,7 +13387,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:read"
                 ]
             },
@@ -12193,7 +13439,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:permission:update"
                 ]
             }
@@ -12239,6 +13485,37 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "responses": {
                     "200": {
                         "description": "Successfully refreshed OIDC client data"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "parameters": [
+                {
+                    "$ref": "#/parameters/optional_portal_context_header",
+                    "x-scope": [
+                        ""
+                    ]
+                },
+                {
+                    "$ref": "#/parameters/optional_nocache",
+                    "x-scope": [
+                        ""
+                    ]
+                }
+            ]
+        },
+        "/refresh/credentials": {
+            "get": {
+                "description": "Refresh site credentials information",
+                "operationId": "refresh_credentials",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully refreshed site credentials data"
                     },
                     "403": {
                         "description": "Forbidden"
@@ -12541,7 +13818,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:read"
                 ]
             },
@@ -12587,7 +13864,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:create"
                 ]
             }
@@ -12603,7 +13880,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:delete"
                 ]
             },
@@ -12626,7 +13903,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:read"
                 ]
             },
@@ -12678,7 +13955,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:resource:update"
                 ]
             }
@@ -12746,7 +14023,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:read"
                 ]
             },
@@ -12792,7 +14069,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:create"
                 ]
             }
@@ -12808,7 +14085,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:delete"
                 ]
             },
@@ -12831,7 +14108,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:roleresourcepermission:update"
                 ]
             },
@@ -12918,7 +14195,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:read"
                 ]
             },
@@ -12964,7 +14241,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:create"
                 ]
             }
@@ -12980,7 +14257,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:delete"
                 ]
             },
@@ -13003,7 +14280,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:read"
                 ]
             },
@@ -13049,7 +14326,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:role:update"
                 ]
             }
@@ -13110,7 +14387,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
@@ -13156,7 +14433,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:create"
                 ]
             }
@@ -13172,7 +14449,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:delete"
                 ]
             },
@@ -13195,7 +14472,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:read"
                 ]
             },
@@ -13247,7 +14524,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:sitedataschema:update"
                 ]
             }
@@ -13307,7 +14584,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:read"
                 ]
             },
@@ -13353,7 +14630,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:create"
                 ]
             }
@@ -13369,7 +14646,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:delete"
                 ]
             },
@@ -13392,7 +14669,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:read"
                 ]
             },
@@ -13450,7 +14727,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:siterole:update"
                 ]
             }
@@ -13518,7 +14795,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:read"
                 ]
             },
@@ -13564,7 +14841,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:create"
                 ]
             }
@@ -13580,7 +14857,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:delete"
                 ]
             },
@@ -13603,7 +14880,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:read"
                 ]
             },
@@ -13655,7 +14932,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:site:update"
                 ]
             }
@@ -13721,7 +14998,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
@@ -13767,7 +15044,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:create"
                 ]
             }
@@ -13783,7 +15060,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:delete"
                 ]
             },
@@ -13806,7 +15083,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:userdomainrole:read"
                 ]
             },
@@ -13859,7 +15136,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "birth_date",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date",
                             "range": true
                         }
@@ -13883,7 +15160,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "date_joined",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date-time",
                             "range": true
                         }
@@ -13931,7 +15208,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "last_login",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date",
                             "range": true
                         }
@@ -13980,7 +15257,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                         "name": "updated_at",
                         "required": false,
                         "type": "string",
-                        "x-aor-filter": {
+                        "x-filter": {
                             "format": "date-time",
                             "range": true
                         }
@@ -14085,7 +15362,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
             },
@@ -14109,7 +15386,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:delete"
                 ]
             },
@@ -14132,7 +15409,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:read"
                 ]
             },
@@ -14184,7 +15461,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "authentication"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:identity_provider:user:update"
                 ]
             }
@@ -14244,7 +15521,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
@@ -14290,7 +15567,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:create"
                 ]
             }
@@ -14306,7 +15583,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:delete"
                 ]
             },
@@ -14329,7 +15606,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:read"
                 ]
             },
@@ -14387,7 +15664,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "user_data"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:user_data:usersitedata:update"
                 ]
             }
@@ -14453,7 +15730,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
@@ -14499,7 +15776,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:create"
                 ]
             }
@@ -14515,7 +15792,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:delete"
                 ]
             },
@@ -14538,7 +15815,7 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "tags": [
                     "access_control"
                 ],
-                "x-aor-permissions": [
+                "x-permissions": [
                     "urn:ge:access_control:usersiterole:read"
                 ]
             },
