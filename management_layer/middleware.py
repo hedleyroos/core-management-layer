@@ -86,8 +86,8 @@ INVALID_TOKEN_STATUS = 401
 TOKEN_PREFIX = "bearer "
 TOKEN_PREFIX_LENGTH = len(TOKEN_PREFIX)
 
-# URLs that do not require authorisation.
-WHITELIST_URLS = ["/healthcheck", "/metrics"]
+# URLs that do not require authorisation or implement their own.
+WHITELIST_URLS = ["/healthcheck", "/metrics", "/events"]
 WHITELIST_URL_PREFIXES = ["/ops/confirm_user_data_deletion/"]
 
 VERIFICATION_OPTIONS = {

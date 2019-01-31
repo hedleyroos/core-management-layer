@@ -1,6 +1,9 @@
 Changelog
 =========
 
+1.11.0
+------
+- Added support for 2rd party sites to publish events to the Event Log via the `/events` API end-point
 1.10.0
 ------
 - Added API end-points for `credentials` and `deletion_methods`.
