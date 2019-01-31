@@ -266,6 +266,11 @@ parameters:
     type: integer
 
 definitions:
+  event:
+    type: object
+    minProperties: 1
+    description: 'An event is an opaque structure which the application will validate'
+
   country:
     type: object
     properties:
@@ -1987,6 +1992,36 @@ definitions:
     minProperties: 1
 
 paths:
+  /events:
+    post:
+      consumes:
+        - application/json
+      operationId: event_create
+      parameters:
+        - in: body
+          name: data
+          schema:
+            $ref: '#/definitions/event'
+        - in: query
+          name: account_id
+          type: string
+          required: true
+        - in: query
+          name: event_type
+          type: string
+          required: true
+        - in: query
+          name: signature
+          type: string
+          required: true
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 'Event queued'
+        403:
+          description: 'Forbidden'
+
   /healthcheck:
     get:
       security: [ ]

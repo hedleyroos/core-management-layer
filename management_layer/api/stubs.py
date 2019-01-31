@@ -438,6 +438,19 @@ class AbstractStubClass(object):
         """
         raise NotImplementedError()
 
+    # event_create -- Synchronisation point for meld
+    @staticmethod
+    async def event_create(request, body, account_id, event_type, signature, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param account_id: string 
+        :param event_type: string 
+        :param signature: string 
+        :returns: result or (result, headers) tuple
+        """
+        raise NotImplementedError()
+
     # healthcheck -- Synchronisation point for meld
     @staticmethod
     async def healthcheck(request, **kwargs):
@@ -2650,6 +2663,24 @@ class MockedStubClass(AbstractStubClass):
         :param domain_id: integer A unique integer value identifying the domain.
         """
         response_schema = schemas.domain
+        if "type" not in response_schema:
+            response_schema["type"] = "object"
+
+        if response_schema["type"] == "array" and "type" not in response_schema["items"]:
+            response_schema["items"]["type"] = "object"
+
+        return MockedStubClass.GENERATOR.random_value(response_schema)
+
+    @staticmethod
+    async def event_create(request, body, account_id, event_type, signature, **kwargs):
+        """
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param account_id: string 
+        :param event_type: string 
+        :param signature: string 
+        """
+        response_schema = schemas.__UNSPECIFIED__
         if "type" not in response_schema:
             response_schema["type"] = "object"
 

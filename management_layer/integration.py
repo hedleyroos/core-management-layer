@@ -5,6 +5,9 @@ import socket
 import time
 import uuid
 
+from jsonschema import ValidationError
+from kinesis_conducer.producer_events import events, schemas
+
 from management_layer.api.stubs import AbstractStubClass
 from management_layer.exceptions import JSONBadRequest, JSONForbidden, JSONNotFound, \
     JSONUnauthorized
@@ -21,6 +24,14 @@ from management_layer.utils import client_exception_handler, transform_users_wit
 
 TOTAL_COUNT_HEADER = "X-Total-Count"
 CLIENT_TOTAL_COUNT_HEADER = "X-Total-Count"
+
+# Third parties are not allowed to generate any event type, since some only make
+# sense for the core components. The list below controls which event types are
+# exposed to third parties.
+THIRD_PARTY_ALLOWED_EVENT_TYPES = [
+    schemas.EventTypes.USER_LOGIN,
+    schemas.EventTypes.USER_LOGOUT
+]
 
 logger = logging.getLogger(__name__)
 
@@ -837,6 +848,48 @@ class Implementation(AbstractStubClass):
             return result
 
         return None
+
+    # event_create -- Synchronisation point for meld
+    @staticmethod
+    # This function uses a signature check for authentication.
+    async def event_create(request, body, account_id, event_type, signature, **kwargs):
+        """Function called by 3rd party sites to generate events.
+
+        :param request: An HttpRequest
+        :param body: dict A dictionary containing the parsed and validated body
+        :param account_id: string
+        :param event_type: string
+        :param signature: string
+        :returns: result or (result, headers) tuple
+        """
+        params = body.copy()
+        params["account_id"] = account_id
+        params["event_type"] = event_type
+        params["signature"] = signature
+        if not has_valid_signature(**params):
+            raise JSONUnauthorized(message="Invalid signature")
+
+        # Check that the event type is valid
+        if event_type not in schemas.EventTypes.SCHEMAS:
+            raise JSONBadRequest(message="Unknown event type")
+
+        # Check that the event type is allowed
+        if event_type not in THIRD_PARTY_ALLOWED_EVENT_TYPES:
+            raise JSONForbidden(message="Event type not allowed")
+
+        try:
+            site_id = mappings.Mappings.site_id_for_account_id(account_id)
+        except KeyError:
+            raise JSONUnauthorized(message=f"Could not find site linked to account {account_id}.")
+
+        body["event_type"] = event_type
+        body["site_id"] = site_id
+        try:
+            events.put_event(**body)
+            logger.debug(f"Event Log: {body}")
+        except ValidationError:
+            raise JSONBadRequest(message="The data does not comply with the schema definition "
+                                         "for the specified event type.")
 
     # healthcheck -- Synchronisation point for meld
     @staticmethod
