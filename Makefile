@@ -28,6 +28,10 @@ help:
 $(VENV):
 	@echo "$(CYAN)Initialise base ve...$(CLEAR)"
 	virtualenv $(VENV) -p python3
+	$(PIP) install pip==9.0.3  # The swagger-parser lib from swagger-django-generator requires this
+	$(PIP) install -r requirements.txt
+	$(PIP) install -r $(VENV)/src/swagger-django-generator/requirements.txt
+	$(PIP) install pytest pytest-cov
 	@echo "$(GREEN)DONE$(CLEAR)"
 
 # Creates the virtual environment.

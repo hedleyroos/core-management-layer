@@ -2058,6 +2058,59 @@ class DomainsDomainId(View, CorsViewMixin):
         return json_response(result, headers=headers)
 
 
+class Events(View, CorsViewMixin):
+
+    POST_RESPONSE_SCHEMA = schemas.__UNSPECIFIED__
+    POST_BODY_SCHEMA = schemas.event
+
+    async def post(self):
+        """
+        No parameters are passed explicitly. We unpack it from the request.
+        :param self: A Events instance
+        """
+        try:
+            # account_id: string 
+            account_id = self.request.query.get("account_id", None)
+            schema = {'type': 'string'}
+            utils.validate(account_id, schema)
+            # event_type: string 
+            event_type = self.request.query.get("event_type", None)
+            schema = {'type': 'string'}
+            utils.validate(event_type, schema)
+            # signature: string 
+            signature = self.request.query.get("signature", None)
+            schema = {'type': 'string'}
+            utils.validate(signature, schema)
+            optional_args = {}
+        except ValidationError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve.message))
+        except ValueError as ve:
+            return Response(status=400, text="Parameter validation failed: {}".format(ve))
+
+        try:
+            body = await self.request.json()
+            if not body:
+                return Response(status=400, text="Body required")
+
+            utils.validate(body, schema=self.POST_BODY_SCHEMA)
+        except ValidationError as ve:
+            return Response(status=400, text="Body validation failed: {}".format(ve.message))
+        except Exception:
+            return Response(status=400, text="JSON body expected")
+
+        result = await Stubs.event_create(
+            self.request, body, account_id, event_type, signature, **optional_args)
+
+        if type(result) is tuple:
+            result, headers = result
+        else:
+            headers = {}
+
+        maybe_validate_result(result, self.POST_RESPONSE_SCHEMA)
+
+        return json_response(result, status=201, headers=headers)
+
+
 class Healthcheck(View, CorsViewMixin):
 
     GET_RESPONSE_SCHEMA = schemas.health_info
@@ -8086,6 +8139,11 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
             },
             "type": "object"
         },
+        "event": {
+            "description": "An event is an opaque structure which the application will validate",
+            "minProperties": 1,
+            "type": "object"
+        },
         "health_info": {
             "description": "Health check response",
             "properties": {
@@ -11444,6 +11502,55 @@ class __SWAGGER_SPEC__(View, CorsViewMixin):
                 "x-permissions": [
                     "urn:ge:access_control:domain:update"
                 ]
+            }
+        },
+        "/events": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "operationId": "event_create",
+                "parameters": [
+                    {
+                        "in": "body",
+                        "name": "data",
+                        "schema": {
+                            "$ref": "#/definitions/event",
+                            "x-scope": [
+                                ""
+                            ]
+                        }
+                    },
+                    {
+                        "in": "query",
+                        "name": "account_id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "event_type",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "name": "signature",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Event queued"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
             }
         },
         "/healthcheck": {

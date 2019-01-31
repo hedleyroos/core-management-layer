@@ -850,6 +850,14 @@ domain_update = json.loads("""
 }
 """)
 
+event = json.loads("""
+{
+    "description": "An event is an opaque structure which the application will validate",
+    "minProperties": 1,
+    "type": "object"
+}
+""")
+
 health_info = json.loads("""
 {
     "description": "Health check response",
