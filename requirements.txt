@@ -13,7 +13,7 @@ cchardet  # For use with aiohttp
 rstr      # For mock class in generated server code.
 urllib3
 certifi
-pyjwt
+pyjwt==1.7.1
 cryptography>=2.2.0,<3.0
 
 environs==4.0.0

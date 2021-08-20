@@ -11,7 +11,7 @@ RUN pip3 install --no-cache-dir -r /app/requirements/requirements.txt --src /usr
 
 COPY . /app/
 
-EXPOSE 8000
+EXPOSE 80
 
 ENTRYPOINT ["python3"]
 

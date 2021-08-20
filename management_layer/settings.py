@@ -12,7 +12,7 @@ JWT_AUDIENCE = env.str("JWT_AUDIENCE", None)
 JWT_ISSUER = env.str("JWT_ISSUER", None)
 
 # The port to listen on
-PORT = env.int("SERVER_PORT", 8000)
+PORT = env.int("SERVER_PORT", 80)
 WITH_UI = env.bool("WITH_UI", False)
 
 # API locations
